@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "solved=false": {
+      "model": "lacuna:block/labyrinth_trigger"
+    },
+    "solved=true": {
+      "model": "lacuna:block/labyrinth_trigger_solved"
+    }
+  }
+}

@@ -417,3 +417,28 @@ Built:
   Smoke phase 1 places both structures and locates `#lacuna:orrery_targets`.
 
 Gates: 3 ✔, 4 (logic, 29 tests) ✔, 1/2/5/6 not runnable here.
+
+## M10c — Mirror Labyrinth, Reflection
+
+Built:
+- **Mirror Labyrinth** (`lacuna:mirror_labyrinth`, all Forgotten Land biomes, spacing 30/10): 25×25×5, five
+  deterministic variants (`mirror_labyrinth/maze_1..5`) from a seeded depth-first maze over 12×12 cells
+  (generator check: the trigger is reachable from the entrance, the hoard is sealed). Unbreakable ruin-brick floor,
+  `mirror_glass` walls and ceiling (unbreakable in survival, see-through), 3×3 central room with the
+  `labyrinth_trigger` ring, entrance to the south, an exit door to the north and the Mirror Hoard alcove next to the
+  room, both sealed with `labyrinth_exit` blocks. Loot `lacuna:chests/mirror_hoard`: divine glass shards, rubies,
+  chronal shards, echo fragments, amethyst, 10 % Solar Flare Fragment.
+- Stepping on the ring (not in creative/spectator) spawns one **Reflection** per labyrinth: dark-silver
+  translucent humanoid (zombie-layer model), 20 HP, contact damage 6 (`lacuna:reflection_touch`, 10 tick
+  interval), no physics, never saved. It replays its player's own path 60 ticks late: the player's position is
+  sampled every 5 ticks into a volatile `ScentTrail` (same class as the hound's trails) and interpolated
+  (`positionAt`, unit-tested). It vanishes when the player leaves 48 blocks, logs out, dies or changes dimension
+  (the ring re-arms). Killed by a player → every `labyrinth_exit` within the labyrinth turns to air with
+  particles, the ring shows as solved.
+- Reflection is in `lacuna:cannot_be_banished` and `lacuna:unreflectable`; selftest checks its attributes.
+- GameTests: a defeat opens the seals (not the mirrors) and marks the ring solved; a lost reflection does not.
+
+Deviation: the Mirror Hoard chest is "locked" by sealing it behind `labyrinth_exit` blocks instead of a vanilla
+container lock (no item key to lose, works with every chest UI).
+
+Gates: 3 ✔, 4 (logic, 30 tests) ✔, 1/2/5/6 not runnable here.

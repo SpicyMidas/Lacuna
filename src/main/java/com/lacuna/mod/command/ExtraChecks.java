@@ -17,7 +17,7 @@ final class ExtraChecks {
     static void registries(List<String> failures, int[] checks) {
         // M9: every living Lacuna mob needs an attribute table (a missing one crashes on spawn)
         List<EntityType<?>> living = List.of(ModEntities.ECHO.get(), ModEntities.LANTERN_MOTH.get(), ModEntities.GLOOMCRAWLER.get(),
-                ModEntities.CLOCKWORK_HOUND.get(), ModEntities.DECOY.get());
+                ModEntities.CLOCKWORK_HOUND.get(), ModEntities.DECOY.get(), ModEntities.REFLECTION.get());
         for (EntityType<?> type : living) {
             checks[0]++;
             if (!DefaultAttributes.hasSupplier(type)) {

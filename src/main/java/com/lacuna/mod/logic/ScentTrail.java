@@ -86,6 +86,29 @@ public final class ScentTrail {
         return -1;
     }
 
+    /**
+     * Position on the trail at {@code time}, linearly interpolated between the two surrounding points (used by the
+     * Reflection to replay a path with a delay). Empty before the first point; the newest point after the last.
+     */
+    public java.util.Optional<double[]> positionAt(long time) {
+        if (points.isEmpty() || time < points.get(0).time()) {
+            return java.util.Optional.empty();
+        }
+        for (int i = points.size() - 1; i >= 0; i--) {
+            Point a = points.get(i);
+            if (a.time() <= time) {
+                if (i == points.size() - 1) {
+                    return java.util.Optional.of(new double[] {a.x(), a.y(), a.z()});
+                }
+                Point b = points.get(i + 1);
+                double t = (double) (time - a.time()) / Math.max(1L, b.time() - a.time());
+                return java.util.Optional.of(new double[] {a.x() + (b.x() - a.x()) * t, a.y() + (b.y() - a.y()) * t,
+                        a.z() + (b.z() - a.z()) * t});
+            }
+        }
+        return java.util.Optional.empty();
+    }
+
     /** Breaks the trail at a point (e.g. the player hid in water): that point and everything older is forgotten. */
     public void breakAt(int index) {
         if (index < 0) {

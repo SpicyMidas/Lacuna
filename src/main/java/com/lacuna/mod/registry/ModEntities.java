@@ -8,6 +8,7 @@ import com.lacuna.mod.mob.DecoyEntity;
 import com.lacuna.mod.mob.Gloomcrawler;
 import com.lacuna.mod.mob.LanternMoth;
 import com.lacuna.mod.mob.ThrownDecoyEntity;
+import com.lacuna.mod.structure.ReflectionEntity;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
@@ -64,6 +65,11 @@ public final class ModEntities {
             () -> EntityType.Builder.<ThrownDecoyEntity>of(ThrownDecoyEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10).build("thrown_clockwork_decoy"));
 
+    // ------------------------------------------------------------------ M10 structures
+    public static final DeferredHolder<EntityType<?>, EntityType<ReflectionEntity>> REFLECTION = ENTITIES.register("reflection",
+            () -> EntityType.Builder.<ReflectionEntity>of(ReflectionEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F).clientTrackingRange(8).updateInterval(1).noSave().build("reflection"));
+
     private ModEntities() {}
 
     /** Mod bus: attribute tables for every living Lacuna entity. */
@@ -73,6 +79,7 @@ public final class ModEntities {
         event.put(GLOOMCRAWLER.get(), Gloomcrawler.createAttributes().build());
         event.put(CLOCKWORK_HOUND.get(), ClockworkHound.createAttributes().build());
         event.put(DECOY.get(), DecoyEntity.createAttributes().build());
+        event.put(REFLECTION.get(), ReflectionEntity.createAttributes().build());
     }
 
     /** Mod bus: natural spawn placement rules for the M9 mobs (new entries need a placement type and heightmap). */

@@ -62,4 +62,18 @@ class ScentTrailTest {
         assertEquals(0, t.firstAfter(Long.MIN_VALUE));
         assertEquals(-1, t.firstAfter(30));
     }
+
+    @Test
+    void replaysInterpolatedPositions() {
+        ScentTrail t = new ScentTrail(5, 120, 40);
+        t.record(0, 64, 0, 100);
+        t.record(10, 64, 0, 105);
+        t.record(10, 64, 20, 110);
+        assertTrue(t.positionAt(99).isEmpty());
+        assertEquals(0.0, t.positionAt(100).orElseThrow()[0], 1e-9);
+        assertEquals(5.0, t.positionAt(102).orElseThrow()[0] + 1.0, 1e-9); // 4 + 1
+        assertEquals(10.0, t.positionAt(107).orElseThrow()[0], 1e-9);
+        assertEquals(8.0, t.positionAt(107).orElseThrow()[2], 1e-9);
+        assertEquals(20.0, t.positionAt(500).orElseThrow()[2], 1e-9);
+    }
 }

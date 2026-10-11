@@ -5,6 +5,7 @@ import com.lacuna.mod.fl.FlatDecorBlock;
 import com.lacuna.mod.fl.SporeMushroomBlock;
 import com.lacuna.mod.fl.UpdraftSpringBlock;
 import com.lacuna.mod.mob.SilkDustGlowBlock;
+import com.lacuna.mod.structure.LabyrinthTriggerBlock;
 import com.lacuna.mod.structure.ObeliskInscriptionBlock;
 import com.lacuna.mod.structure.SunkenBellBlock;
 import net.minecraft.world.level.block.IceBlock;
@@ -129,6 +130,21 @@ public final class ModBlocks {
             () -> new ObeliskInscriptionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F)
                     .noLootTable().lightLevel(s -> 3).sound(SoundType.POLISHED_DEEPSLATE).pushReaction(PushReaction.BLOCK)
                     .isValidSpawn(Blocks::never)));
+
+    public static final DeferredBlock<TransparentBlock> MIRROR_GLASS = block("mirror_glass", () -> new TransparentBlock(
+            mirrorProps()));
+    public static final DeferredBlock<TransparentBlock> LABYRINTH_EXIT = block("labyrinth_exit", () -> new TransparentBlock(
+            mirrorProps().lightLevel(s -> 4)));
+    public static final DeferredBlock<LabyrinthTriggerBlock> LABYRINTH_TRIGGER = block("labyrinth_trigger", () -> new LabyrinthTriggerBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(-1.0F, 3600000.0F).noCollission()
+                    .noLootTable().lightLevel(s -> 6).sound(SoundType.AMETHYST).pushReaction(PushReaction.BLOCK)));
+
+    /** Labyrinth mirrors: unbreakable in survival (the maze would be pointless otherwise), see-through, no drops. */
+    private static BlockBehaviour.Properties mirrorProps() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(-1.0F, 3600000.0F).noOcclusion().noLootTable()
+                .sound(SoundType.GLASS).pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)
+                .isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false);
+    }
 
     private ModBlocks() {}
 

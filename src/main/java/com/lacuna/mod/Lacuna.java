@@ -90,5 +90,6 @@ public final class Lacuna {
         SafeRun.resetAll();
         OrreryBlock.clearVolatile();
         SunkenBellBlock.clearVolatile();
+        com.lacuna.mod.structure.LabyrinthHandler.clearVolatile();
     }
 }

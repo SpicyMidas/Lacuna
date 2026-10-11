@@ -100,6 +100,93 @@ def obelisk(Template):
     t.save()
 
 
+MIRROR = L + "mirror_glass"
+EXIT = L + "labyrinth_exit"
+HOARD_LOOT = "lacuna:chests/mirror_hoard"
+CELLS = 12            # 12 x 12 cells -> 25 x 25 blocks (cell i at block 2i+1, walls on even coordinates)
+ROOM = {(5, 5), (5, 6), (6, 5), (6, 6)}
+HOARD = (6, 4)        # sealed alcove north of the central room
+
+
+def cell_block(i):
+    return 2 * i + 1
+
+
+def mirror_labyrinth(Template, variant):
+    t = Template(f"mirror_labyrinth/maze_{variant}", 25, 5, 25)
+    size = 25
+    # floor of unbreakable ruin bricks, solid mirror walls everywhere, mirror ceiling
+    for x in range(size):
+        for z in range(size):
+            t.set(x, 0, z, L + ("ruin_stone_bricks" if (x + z) % 5 else "cracked_ruin_stone_bricks"))
+            for y in (1, 2, 3):
+                t.set(x, y, z, MIRROR)
+            t.set(x, 4, z, MIRROR)
+
+    def carve(x, z, block="air"):
+        for y in (1, 2, 3):
+            t.set(x, y, z, block)
+
+    # depth-first maze over the cells outside the room and the hoard alcove
+    visited = set(ROOM) | {HOARD}
+    start = (5, CELLS - 1)
+    stack = [start]
+    visited.add(start)
+    carve(cell_block(start[0]), cell_block(start[1]))
+    while stack:
+        cx, cz = stack[-1]
+        options = [(cx + dx, cz + dz, dx, dz) for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1))
+                   if 0 <= cx + dx < CELLS and 0 <= cz + dz < CELLS and (cx + dx, cz + dz) not in visited]
+        if not options:
+            stack.pop()
+            continue
+        nx, nz, dx, dz = t.r.choice(options)
+        carve(cell_block(cx) + dx, cell_block(cz) + dz)
+        carve(cell_block(nx), cell_block(nz))
+        visited.add((nx, nz))
+        stack.append((nx, nz))
+    # the central room (3 x 3) with the trigger, joined to the maze on its south side
+    for x in range(11, 14):
+        for z in range(11, 14):
+            carve(x, z)
+    carve(11, 14)
+    t.set(12, 0, 12, L + "chiseled_ruin_glyph")
+    t.set(12, 1, 12, L + "labyrinth_trigger", {"solved": "false"})
+    # sealed Mirror Hoard alcove: opened (with the north door) when the Reflection dies
+    hx, hz = cell_block(HOARD[0]), cell_block(HOARD[1])
+    carve(hx, hz)
+    t.set(hx, 1, hz, "chest", {"facing": "south", "type": "single", "waterlogged": "false"},
+          {"id": "minecraft:chest", "LootTable": HOARD_LOOT})
+    carve(hx, hz + 1, EXIT)
+    # entrance (south) and the exit door (north, made of labyrinth_exit)
+    carve(cell_block(5), size - 1)
+    carve(cell_block(6), 0, EXIT)
+    # corner pillars of ruin stone
+    for (x, z) in ((0, 0), (0, size - 1), (size - 1, 0), (size - 1, size - 1)):
+        for y in range(1, 5):
+            t.set(x, y, z, L + "ruin_pillar", {"axis": "y"})
+    check_maze(t, size, (cell_block(5), size - 1), (12, 12), (hx, hz))
+    t.save()
+
+
+def check_maze(t, size, entrance, trigger, hoard):
+    """The ring must be reachable from the entrance while the hoard stays sealed (exit blocks count as walls)."""
+    walkable = {"minecraft:air", L + "labyrinth_trigger"}
+    seen = {entrance}
+    todo = [entrance]
+    while todo:
+        x, z = todo.pop()
+        for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            n = (x + dx, z + dz)
+            if 0 <= n[0] < size and 0 <= n[1] < size and n not in seen and t.get(n[0], 1, n[1]) in walkable:
+                seen.add(n)
+                todo.append(n)
+    if trigger not in seen or hoard in seen:
+        raise RuntimeError(f"{t.name}: maze check failed (trigger reachable={trigger in seen}, hoard sealed={hoard not in seen})")
+
+
 def build(Template):
     sunken_bell_tower(Template)
     obelisk(Template)
+    for v in range(1, 6):
+        mirror_labyrinth(Template, v)

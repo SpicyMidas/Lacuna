@@ -342,6 +342,12 @@
    "z"
   ]
  },
+ "labyrinth_trigger": {
+  "solved": [
+   "true",
+   "false"
+  ]
+ },
  "mural_block_1": {
   "facing": [
    "north",

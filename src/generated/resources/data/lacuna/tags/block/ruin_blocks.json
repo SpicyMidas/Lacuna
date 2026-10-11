@@ -13,6 +13,9 @@
     "lacuna:mural_block_3",
     "lacuna:mural_block_4",
     "lacuna:mural_block_5",
-    "lacuna:obelisk_inscription"
+    "lacuna:obelisk_inscription",
+    "lacuna:mirror_glass",
+    "lacuna:labyrinth_exit",
+    "lacuna:labyrinth_trigger"
   ]
 }

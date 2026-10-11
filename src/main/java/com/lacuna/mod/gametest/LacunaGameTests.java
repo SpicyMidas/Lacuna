@@ -403,4 +403,29 @@ public final class LacunaGameTests {
                 helper.absolutePos(CENTER)) < 0, "inscription is unbreakable in survival");
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ M10c Mirror Labyrinth
+    @GameTest(template = PLATFORM)
+    public static void defeatedReflectionOpensTheLabyrinth(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.LABYRINTH_TRIGGER.get());
+        helper.setBlock(CENTER.east(2), ModBlocks.LABYRINTH_EXIT.get());
+        helper.setBlock(CENTER.east(2).above(), ModBlocks.LABYRINTH_EXIT.get());
+        helper.setBlock(CENTER.west(2), ModBlocks.MIRROR_GLASS.get());
+        com.lacuna.mod.structure.LabyrinthHandler.onReflectionGone(helper.getLevel(), helper.absolutePos(CENTER), true);
+        helper.assertBlockPresent(Blocks.AIR, CENTER.east(2));
+        helper.assertBlockPresent(Blocks.AIR, CENTER.east(2).above());
+        helper.assertBlockPresent(ModBlocks.MIRROR_GLASS.get(), CENTER.west(2));
+        check(helper, helper.getBlockState(CENTER).getValue(com.lacuna.mod.structure.LabyrinthTriggerBlock.SOLVED), "trigger solved");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void lostReflectionKeepsTheLabyrinthSealed(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.LABYRINTH_TRIGGER.get());
+        helper.setBlock(CENTER.east(2), ModBlocks.LABYRINTH_EXIT.get());
+        com.lacuna.mod.structure.LabyrinthHandler.onReflectionGone(helper.getLevel(), helper.absolutePos(CENTER), false);
+        helper.assertBlockPresent(ModBlocks.LABYRINTH_EXIT.get(), CENTER.east(2));
+        check(helper, !helper.getBlockState(CENTER).getValue(com.lacuna.mod.structure.LabyrinthTriggerBlock.SOLVED), "still armed");
+        helper.succeed();
+    }
 }

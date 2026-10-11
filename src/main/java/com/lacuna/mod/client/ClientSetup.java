@@ -48,5 +48,6 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.CLOCKWORK_HOUND.get(), ClockworkHoundRenderer::new);
         event.registerEntityRenderer(ModEntities.DECOY.get(), DecoyRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWN_DECOY.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(ModEntities.REFLECTION.get(), ReflectionRenderer::new);
     }
 }

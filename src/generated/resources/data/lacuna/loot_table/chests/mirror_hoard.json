@@ -1,0 +1,110 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "max": 6.0,
+                "min": 2.0,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "lacuna:divine_glass_shard",
+          "type": "minecraft:item",
+          "weight": 20
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "max": 5.0,
+                "min": 2.0,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "lacuna:ruby",
+          "type": "minecraft:item",
+          "weight": 15
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "max": 2.0,
+                "min": 1.0,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "lacuna:chronal_shard",
+          "type": "minecraft:item",
+          "weight": 8
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "max": 2.0,
+                "min": 1.0,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "lacuna:echo_fragment",
+          "type": "minecraft:item",
+          "weight": 6
+        },
+        {
+          "functions": [
+            {
+              "add": false,
+              "count": {
+                "max": 6.0,
+                "min": 2.0,
+                "type": "minecraft:uniform"
+              },
+              "function": "minecraft:set_count"
+            }
+          ],
+          "name": "minecraft:amethyst_shard",
+          "type": "minecraft:item",
+          "weight": 10
+        }
+      ],
+      "rolls": {
+        "max": 7.0,
+        "min": 4.0,
+        "type": "minecraft:uniform"
+      }
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 9
+        },
+        {
+          "name": "lacuna:solar_flare_fragment",
+          "type": "minecraft:item",
+          "weight": 1
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "type": "minecraft:chest"
+}

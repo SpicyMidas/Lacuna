@@ -216,3 +216,15 @@ All `/lacuna` commands need permission level 2.
 - [ ] Obelisk inscriptions print a lore line (always the same line for the same block); occasionally (12 %) a small
       reward drops, never twice for the same player and obelisk; inscriptions cannot be mined in survival.
 - [ ] The Orrery points to the nearest obelisk or bell tower.
+## M10c — Mirror Labyrinth
+```
+/execute in lacuna:forgotten_land run tp @s 0 100 0
+/locate structure lacuna:mirror_labyrinth
+/place structure lacuna:mirror_labyrinth ~ ~ ~
+```
+- [ ] The maze is walled and roofed with see-through mirrors that cannot be mined in survival; the entrance is on
+      the south side, a glowing cracked seal on the north side.
+- [ ] Stepping on the ring in the centre makes a silvery Reflection appear; after 3 s it walks exactly where you
+      walked, through walls, and hurts on contact (6).
+- [ ] Killing it shatters the seals: the north door and the hoard alcove open; the chest has the Mirror Hoard loot.
+- [ ] Walking 48+ blocks away (or logging out) makes the Reflection vanish; the ring can be triggered again.

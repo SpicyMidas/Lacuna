@@ -12,6 +12,7 @@ def build(g):
     bell_tower(g)
     obelisk(g)
     g.tag("worldgen/structure", "lacuna:orrery_targets", "lacuna:sunken_bell_tower", "lacuna:obelisk")
+    labyrinth(g)
 
 
 # ============================================================================================ 10a blocks
@@ -298,3 +299,40 @@ def obelisk(g):
     for i, (en, it) in enumerate(OBELISK_LINES):
         g.name(f"lacuna.obelisk.line.{i}", en, it)
     g.name("lacuna.obelisk.reward", "Something falls from a crack in the stone.", "Qualcosa cade da una crepa nella pietra.")
+
+
+# ============================================================================================ 10c mirror labyrinth
+def plate(texture):
+    faces = {"up": {"uv": [1, 1, 15, 15], "texture": "#plate"}, "down": {"uv": [1, 1, 15, 15], "texture": "#plate", "cullface": "down"}}
+    for d in ("north", "south", "east", "west"):
+        faces[d] = {"uv": [1, 15, 15, 16], "texture": "#plate"}
+    return {"parent": "minecraft:block/block", "textures": {"particle": texture, "plate": texture},
+            "elements": [{"from": [1, 0, 1], "to": [15, 1, 15], "faces": faces}]}
+
+
+def labyrinth(g):
+    g.cube("mirror_glass", "Mirror Glass", "Vetro a specchio", render="minecraft:translucent", loot=None)
+    g.cube("labyrinth_exit", "Labyrinth Seal", "Sigillo del labirinto", render="minecraft:translucent", loot=None)
+    g.single("labyrinth_trigger", "Labyrinth Ring", "Anello del labirinto", plate("lacuna:block/labyrinth_trigger"), loot=None,
+             blockstate={"variants": {"solved=false": {"model": "lacuna:block/labyrinth_trigger"},
+                                      "solved=true": {"model": "lacuna:block/labyrinth_trigger_solved"}}})
+    g.asset("models/block/labyrinth_trigger_solved", plate("lacuna:block/labyrinth_trigger_solved"))
+    g.props("labyrinth_trigger", solved=["true", "false"])
+    for b in ("mirror_glass", "labyrinth_exit", "labyrinth_trigger"):
+        g.tag("block", "lacuna:ruin_blocks", mod(b))
+    g.name("entity.lacuna.reflection", "Reflection", "Riflesso")
+    g.tag("entity_type", "lacuna:cannot_be_banished", "lacuna:reflection")
+    g.tag("entity_type", "lacuna:unreflectable", "lacuna:reflection")
+    g.name("lacuna.labyrinth.reflection", "Something in the mirrors starts to walk your path.",
+           "Qualcosa negli specchi comincia a percorrere i tuoi passi.")
+    locs = [mod(f"mirror_labyrinth/maze_{i}") for i in range(1, 6)]
+    g.data("worldgen/template_pool/mirror_labyrinth", wg.pool(locs))
+    g.data("worldgen/structure/mirror_labyrinth", wg.jigsaw_structure(mod("mirror_labyrinth"), "#lacuna:is_forgotten_land"))
+    g.data("worldgen/structure_set/mirror_labyrinth", wg.structure_set([mod("mirror_labyrinth")], 30, 10, 1179408013))
+    g.data("loot_table/chests/mirror_hoard", wg.chest_table([
+        wg.chest_pool([wg.loot_entry("lacuna:divine_glass_shard", 20, 2, 6), wg.loot_entry("lacuna:ruby", 15, 2, 5),
+                       wg.loot_entry("lacuna:chronal_shard", 8, 1, 2), wg.loot_entry("lacuna:echo_fragment", 6, 1, 2),
+                       wg.loot_entry("minecraft:amethyst_shard", 10, 2, 6)], 4, 7),
+        {"bonus_rolls": 0.0, "rolls": 1.0, "entries": [
+            {"type": "minecraft:empty", "weight": 9},
+            {"type": "minecraft:item", "name": "lacuna:solar_flare_fragment", "weight": 1}]}]))

@@ -206,7 +206,51 @@ def obelisk_inscription():
     save(img, "block/obelisk_inscription")
 
 
+def mirror(name, crack=False):
+    img = new(16, 16)
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            t = ((x + y) % 16) / 15.0
+            px[x, y] = lerp(c("#5E6670", 150), c("#B9C2CC", 150), 1.0 - abs(t - 0.5) * 2)
+    for i in range(16):
+        for (x, y) in ((i, 0), (0, i), (i, 15), (15, i)):
+            px[x, y] = c("#E8EEF4", 230)
+    for i in range(3, 8):
+        px[i, 11 - i] = c("#FFFFFF", 200)  # glint
+    if crack:
+        for (x, y) in ((8, 2), (8, 3), (7, 4), (8, 5), (9, 6), (9, 7), (8, 8), (7, 9), (8, 10), (10, 8), (11, 9), (6, 5), (5, 6)):
+            px[x, y] = c("#E7C46A", 255)
+    save(img, f"block/{name}")
+
+
+def trigger(name, lit):
+    img = noise_fill(ramp("#4A5560", "#5E6A76", "#76828E", "#8E9AA6"), name, cell=4, speckle=0.15)
+    px = img.load()
+    ring = c("#9FE8FF") if lit else c("#3A444E")
+    for y in range(16):
+        for x in range(16):
+            d = (x - 7.5) ** 2 + (y - 7.5) ** 2
+            if 20 <= d <= 34:
+                px[x, y] = ring
+            if d <= 3:
+                px[x, y] = c("#E8FAFF") if lit else c("#2A323A")
+    save(img, f"block/{name}")
+
+
+def reflection():
+    from art.humanoid import humanoid_skin
+    img = humanoid_skin("reflection", body=ramp("#2A2F36", "#4A525C", "#7A848F", "#B9C2CC"), alpha=215,
+                        eyes=c("#E8FAFF"), seed="reflection", legs=ramp("#22262C", "#3A4048", "#5E6670"))
+    save(img, "entity/reflection")
+
+
 def paint():
+    mirror("mirror_glass")
+    mirror("labyrinth_exit", crack=True)
+    trigger("labyrinth_trigger", True)
+    trigger("labyrinth_trigger_solved", False)
+    reflection()
     sunken_bell()
     obelisk_inscription()
     ashen_snow()

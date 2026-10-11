@@ -4,6 +4,7 @@
     "minecraft:wither",
     "minecraft:warden",
     "minecraft:elder_guardian",
-    "lacuna:clockwork_decoy"
+    "lacuna:clockwork_decoy",
+    "lacuna:reflection"
   ]
 }

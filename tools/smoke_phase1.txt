@@ -18,6 +18,7 @@ execute in lacuna:forgotten_land run locate biome lacuna:clockwork_dunes
 execute in lacuna:forgotten_land run place feature lacuna:floating_island 200 100 200
 execute in lacuna:forgotten_land run place feature lacuna:clear_ice_cap 64 70 64
 execute in lacuna:forgotten_land run place feature lacuna:marsh_pool 96 70 96
+execute in lacuna:forgotten_land run place structure lacuna:mirror_labyrinth 208 80 16
 execute in lacuna:forgotten_land run forceload remove all
 # --- M2: banishment round trip of a named pig (record must survive the restart)
 summon minecraft:pig 8 120 8 {CustomName:'"smoke_pig"',NoAI:1b}
