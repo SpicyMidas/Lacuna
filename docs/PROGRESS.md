@@ -616,3 +616,19 @@ maven.neoforged.net and the Mojang servers (blocked here); the scripts are ready
 with 1 player in a Township, peak during township generation, heap after 30 minutes.
 
 Gates: 3 ✔, 4 (logic, 43 tests) ✔, 1/2/5/6 not runnable here.
+
+## Real build and runtime verification (network enabled)
+
+- `./gradlew build`: **passes** (jar `build/libs/lacuna-0.1.0.jar`). The first real compile found one wrong import
+  (`PathNavigation` lives in `entity.ai.navigation`).
+- `./gradlew runGameTestServer`: **all 36 GameTests pass**. The first run exposed data the offline validator did not
+  check — township `max_distance_from_center` 128 + beard padding > 128 (now 116), a wrong sound id
+  (`ambient.underwater.loop.additions`), storage recipe file names containing `:` — all fixed, and the validator now
+  checks each of them. Test-only fixes: tests set the blocks/rotation they depend on; the GameTest server has no
+  datapack dimensions, so the banishment round trip is covered by the smoke test instead.
+- `tools/smoke.sh` (dedicated server, two boots on the same world): **SMOKE PASS** — selftest 537 checks, FL
+  generation, all ruin/FL/Overworld structures, a plains Township, `locate`, banishment record persisted across restart.
+  `/place feature lacuna:floating_island` on live chunks no longer reads worldgen heightmaps.
+- Client: launches under a virtual display with software OpenGL and loads all Lacuna resources with no model/texture/
+  renderer errors (entity renderers are constructed at resource load); joining a world was too slow to finish on
+  software rendering here.

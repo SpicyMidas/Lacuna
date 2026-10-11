@@ -7,3 +7,7 @@ Couldn't load .*(authlib|yggdrasil|profile)
 Missing data pack (bundle|trade_rebalance|update_1_21)
 # Lacuna's own command echo lines mention 'Missing' / 'Failed' only in [SMOKE] commands
 \[SMOKE\] >
+# Offline sandbox: Mojang auth services unreachable (environment, not the mod)
+Failed to request yggdrasil public key
+Failed to read from https://api\.minecraftservices\.com
+UnknownHostException: api\.minecraftservices\.com

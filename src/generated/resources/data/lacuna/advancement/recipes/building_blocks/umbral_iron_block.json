@@ -4,7 +4,7 @@
       "conditions": {
         "items": [
           {
-            "items": "lacuna:ruby"
+            "items": "lacuna:umbral_iron_ingot"
           }
         ]
       },
@@ -12,7 +12,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "lacuna:lacuna:ruby_block"
+        "recipe": "lacuna:umbral_iron_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "lacuna:lacuna:ruby_block"
+      "lacuna:umbral_iron_block"
     ]
   }
 }

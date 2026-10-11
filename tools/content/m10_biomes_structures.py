@@ -185,7 +185,7 @@ def biomes(g):
             0.7, 0.8, feats(s2=["lacuna:floating_island"],
                             s9=["lacuna:divine_glass_cluster_patch", "lacuna:fl_crystal_willow", "minecraft:patch_grass_plain"]),
             grass="#7FA394", foliage="#76A08F", water=wg.rgb("#5E8FB0"), water_fog=wg.rgb("#4A7393"),
-            additions="minecraft:ambient.underwater.additions")),
+            additions="minecraft:ambient.underwater.loop.additions")),
         "whispering_marsh": ("Whispering Marsh", "Palude sussurrante", wg.biome(
             0.4, 0.9, feats(s1=["lacuna:marsh_pool"],
                             s9=["lacuna:fl_tidebloom_grove", "lacuna:spore_mushroom_patch", "minecraft:patch_waterlily",

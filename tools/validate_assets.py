@@ -300,6 +300,16 @@ def check_lang(ids, lang: dict) -> None:
                 err(f"profession {prof}: missing texture entity/{kind}/profession/{prof}.png")
 
 
+def check_file_names() -> None:
+    """Resource paths may only contain [a-z0-9_./-]; anything else is silently ignored by the game."""
+    for base in (os.path.join(ROOT, "src", "generated", "resources"), os.path.join(ROOT, "src", "main", "resources")):
+        for dirpath, _, files in os.walk(base):
+            for f in files:
+                rel = os.path.relpath(os.path.join(dirpath, f), base).replace(os.sep, "/")
+                if rel.startswith(("assets/", "data/")) and not re.fullmatch(r"[a-z0-9_./-]+", rel):
+                    err(f"invalid resource path {rel}")
+
+
 def check_java_texture_refs() -> None:
     """Renderers reference textures by path in Java (Lacuna.id("textures/...png")); each must exist."""
     pat = re.compile(r'id\("(textures/[a-z0-9_/]+\.png)"\)')
@@ -316,6 +326,7 @@ def check_java_texture_refs() -> None:
 def main() -> int:
     check_all_json()
     check_java_texture_refs()
+    check_file_names()
     ids = java_ids()
     textures = all_files("textures", ".png")
     models = all_files("models", ".json")
@@ -494,6 +505,10 @@ def check_worldgen(ids, tag_files) -> None:
             for sp in group:
                 if not entity_known(sp["type"], ids):
                     err(f"biome {key}: unknown spawn entity {sp['type']}")
+        eff = d.get("effects", {})
+        for snd in (eff.get("additions_sound", {}).get("sound"), eff.get("mood_sound", {}).get("sound"), eff.get("ambient_sound")):
+            if isinstance(snd, str) and snd.startswith("minecraft:") and snd[10:] not in VANILLA.get("sound_event", []):
+                err(f"biome {key}: unknown sound event {snd}")
         if len(d.get("features", [])) != 11:
             err(f"biome {key}: features must have 11 decoration steps")
     for key, path in all_files("worldgen/placed_feature", ".json").items():
@@ -518,6 +533,10 @@ def check_worldgen(ids, tag_files) -> None:
                 err(f"structure set {key}: unknown structure {st['structure']}")
     for key, path in all_files("worldgen/structure", ".json").items():
         d = load_json(path) or {}
+        if d.get("type") == "minecraft:jigsaw":
+            pad = 12 if d.get("terrain_adaptation", "none") != "none" else 0
+            if d.get("max_distance_from_center", 80) + pad > 128:
+                err(f"structure {key}: max_distance_from_center + terrain adaptation padding exceeds 128")
         b = d.get("biomes", "")
         if isinstance(b, str) and b.startswith("#") and not tag_known("worldgen/biome", b[1:], tag_files["worldgen/biome"]):
             err(f"structure {key}: unknown biome tag {b}")

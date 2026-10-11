@@ -390,7 +390,7 @@ class Gen:
         self.cooking(f"{base}_from_blasting", "blasting", ingredient_id, result, xp, 100)
 
     def storage(self, block: str, item: str, category: str = "building") -> None:
-        self.shaped(block, ["###", "###", "###"], {"#": item}, block, 1, category)
+        self.shaped(strip(block), ["###", "###", "###"], {"#": item}, block, 1, category)
         self.shapeless(f"{strip(item)}_from_{strip(block)}", [block], item, 9, "misc")
 
     def unlock(self, rid: str, trigger_item: str, category: str) -> None:

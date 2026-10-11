@@ -5,7 +5,7 @@
   "downfall": 0.8,
   "effects": {
     "additions_sound": {
-      "sound": "minecraft:ambient.underwater.additions",
+      "sound": "minecraft:ambient.underwater.loop.additions",
       "tick_chance": 0.0011
     },
     "fog_color": 9215408,

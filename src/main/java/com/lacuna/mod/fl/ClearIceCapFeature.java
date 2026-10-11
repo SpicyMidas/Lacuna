@@ -26,7 +26,6 @@ public class ClearIceCapFeature extends Feature<NoneFeatureConfiguration> {
         BlockPos origin = context.origin();
         BlockState ice = ModBlocks.CLEAR_ICE.get().defaultBlockState();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        boolean placed = false;
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 int x = origin.getX() + i;
@@ -35,10 +34,9 @@ public class ClearIceCapFeature extends Feature<NoneFeatureConfiguration> {
                 pos.set(x, y, z);
                 if (level.getBlockState(pos).is(Blocks.WATER) && ForgottenBiomes.is(level, pos, ForgottenBiomes.CINDERFROST_FLATS)) {
                     level.setBlock(pos, ice, 2);
-                    placed = true;
                 }
             }
         }
-        return placed;
+        return true; // like vanilla freeze_top_layer: a chunk without ponds is not a failure
     }
 }

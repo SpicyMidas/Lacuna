@@ -93,7 +93,7 @@ def structures(g):
             [mod(f"{base}/road_1"), mod(f"{base}/road_2"), mod(f"{base}/road_end")], projection="terrain_matching", weights=[3, 2, 2]))
         g.data(f"worldgen/template_pool/{base}/farm", wg.pool([mod(f"{base}/farm_{i}") for i in (1, 2, 3)]))
         g.tag("worldgen/biome", f"lacuna:has_structure/township_{v}", *biomes)
-        data = wg.jigsaw_structure(mod(f"{base}/core"), f"#lacuna:has_structure/township_{v}", size=12, max_distance=128)
+        data = wg.jigsaw_structure(mod(f"{base}/core"), f"#lacuna:has_structure/township_{v}", size=12, max_distance=116)  # +12 beard_thin padding must stay <= 128
         g.data(f"worldgen/structure/township_{v}", data)
         structures_list.append(mod(f"township_{v}"))
     g.data("worldgen/structure_set/townships", {

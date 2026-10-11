@@ -13,7 +13,6 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.AmethystClusterBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
@@ -121,8 +120,13 @@ public class FloatingIslandFeature extends Feature<NoneFeatureConfiguration> {
 
     /** Ground basin spring plus islet springs up to 2 blocks above the island top, beside the island. */
     private static void springs(WorldGenLevel level, RandomSource r, BlockPos column, int islandTop) {
-        BlockPos ground = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE_WG, column).below();
-        if (!level.getFluidState(ground).isEmpty() || ground.getY() >= islandTop - 4) {
+        // scan down instead of reading a worldgen heightmap (those are unprimed when /place feature runs on live chunks)
+        BlockPos.MutableBlockPos scan = new BlockPos.MutableBlockPos(column.getX(), islandTop - 6, column.getZ());
+        while (scan.getY() > level.getMinBuildHeight() && level.isEmptyBlock(scan)) {
+            scan.move(0, -1, 0);
+        }
+        BlockPos ground = scan.immutable();
+        if (!level.getFluidState(ground).isEmpty() || ground.getY() >= islandTop - 4 || ground.getY() <= level.getMinBuildHeight()) {
             return;
         }
         basin(level, ground);

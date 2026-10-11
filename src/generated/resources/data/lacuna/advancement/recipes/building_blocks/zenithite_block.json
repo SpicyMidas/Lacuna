@@ -4,7 +4,7 @@
       "conditions": {
         "items": [
           {
-            "items": "lacuna:raw_ruby"
+            "items": "lacuna:zenithite_shard"
           }
         ]
       },
@@ -12,7 +12,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "lacuna:lacuna:raw_ruby_block"
+        "recipe": "lacuna:zenithite_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "lacuna:lacuna:raw_ruby_block"
+      "lacuna:zenithite_block"
     ]
   }
 }
