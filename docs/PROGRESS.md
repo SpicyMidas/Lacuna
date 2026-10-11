@@ -498,3 +498,41 @@ Deviations: the aqueduct is part of the core template instead of a separate jigs
 fountain); eight lot slots per township (pools of 6 buildings each).
 
 Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here (20-placement check is in `tools/smoke_townships.txt`).
+
+## M11b — Ledger, reputation, laws, bell, gates
+
+Built:
+- `township_ledger` is now an entity block: its block entity holds a persistent `townshipId`; the first server tick
+  registers the record in `TownshipSavedData` (`lacuna_townships`, overworld storage) — lazy and idempotent. Record:
+  id, dimension, centre (the ledger), radius 64, seed, 2 laws, coin value, price index, policy + end day, next
+  council day, per-player reputation, per-player daily counters, pardon days, weekly reputation samples. Right click
+  the ledger (or `/lacuna township info`) prints reputation + tier, laws, policy and next council, coin value.
+- `logic/ReputationMath` + `logic/TownshipLaws` (unit-tested): −100..100, tiers Hostile/Wary/Neutral/Friendly/Honored,
+  price multiplier `1 − rep/400`, daily caps per kind of change, Festival doubles gains only, fines, law selection by
+  seed, dawn/gate time windows.
+- Changes (`TownshipEvents`, SafeRun): +1 per trade with a township villager (cap 2/day), +3 per hostile mob killed
+  within 32 of the ledger (cap 10/day), −20 for killing a villager/guard, −10 for hitting one (once per 5 s), −5 for
+  breaking `#lacuna:township_protected` blocks (cap 15/day), −1 per mature crop harvested on township farmland unless
+  Honored (cap 10/day), −3 for opening a container inside the walls with a villager within 12 blocks unless Honored
+  (cap 9/day). Creative/spectator players are ignored. An action-bar line shows every change.
+- Effects: villager prices × `1 − rep/400` × price index × policy, applied to the offers in
+  `PlayerContainerEvent.Open` (after the villager reset its special prices, before the offers are sent); Hostile
+  players are attacked by the township's (non player-made) iron golems; Honored players harvest freely and gates open
+  for them at night.
+- Laws (2 per township): no drawn weapons inside the walls (`#lacuna:drawn_weapons` in the main hand), gates close at
+  dusk (strangers with rep < 10 inside the walls at night), no breaking blocks inside the walls (extra −2, cap 10/day),
+  the bell rings only at dawn. Enforcement from the ledger every 20 ticks: 3 s action-bar warning, then −1 every 10 s
+  (5 s under Martial Law) and the nearest guard walks over. Never instant death.
+- Bell: right clicks on vanilla bells inside a township (event not cancelled): +2 once per day at dawn, −5 after 3
+  rings a day, −3 outside dawn when law 4 is active.
+- Gates: each `township_gate` cell keeps a 40-tick scheduled tick (random-tick fallback for worldgen gates): open
+  23000–12000, closed at night unless an Honored player is within 4 blocks; survival players can only break a gate
+  while sneaking with an axe (and lose 5 through the protected-block rule).
+- Commands: `/lacuna rep get|set <player> [value]`, `/lacuna township info`.
+- GameTests: ledger registration is idempotent and covers its radius, Honored tier lowers prices; gates follow the
+  time of day and keep their schedule.
+
+Deviation: "inside the walls" is approximated as within 30 blocks (Chebyshev) of the ledger, which sits 6 blocks off
+the core's centre.
+
+Gates: 3 ✔, 4 (logic, 40 tests) ✔, 1/2/5/6 not runnable here.

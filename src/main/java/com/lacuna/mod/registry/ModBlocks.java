@@ -8,6 +8,7 @@ import com.lacuna.mod.mob.SilkDustGlowBlock;
 import com.lacuna.mod.structure.LabyrinthTriggerBlock;
 import com.lacuna.mod.township.CivicBlock;
 import com.lacuna.mod.township.TownshipGateBlock;
+import com.lacuna.mod.township.TownshipLedgerBlock;
 import net.minecraft.world.phys.shapes.Shapes;
 import com.lacuna.mod.structure.ObeliskInscriptionBlock;
 import com.lacuna.mod.structure.SunkenBellBlock;
@@ -143,11 +144,11 @@ public final class ModBlocks {
                     .noLootTable().lightLevel(s -> 6).sound(SoundType.AMETHYST).pushReaction(PushReaction.BLOCK)));
 
     // ------------------------------------------------------------------ M11 townships
-    public static final DeferredBlock<CivicBlock> TOWNSHIP_LEDGER = block("township_ledger", () -> new CivicBlock(
-            civicProps(MapColor.WOOD, SoundType.WOOD), Shapes.or(Block.box(2, 0, 2, 14, 10, 14), Block.box(0, 10, 0, 16, 13, 16))));
+    public static final DeferredBlock<TownshipLedgerBlock> TOWNSHIP_LEDGER = block("township_ledger", () -> new TownshipLedgerBlock(
+            civicProps(MapColor.WOOD, SoundType.WOOD)));
     public static final DeferredBlock<TownshipGateBlock> TOWNSHIP_GATE = block("township_gate", () -> new TownshipGateBlock(
             BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.0F, 1200.0F).sound(SoundType.CHAIN).noOcclusion()
-                    .requiresCorrectToolForDrops().pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
+                    .randomTicks().pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
     public static final DeferredBlock<CivicBlock> COUNCIL_TABLE = block("council_table", () -> new CivicBlock(
             civicProps(MapColor.WOOD, SoundType.WOOD), Shapes.or(Block.box(0, 12, 0, 16, 16, 16), Block.box(6, 0, 6, 10, 12, 10))));
     public static final DeferredBlock<CivicBlock> JUDGE_BENCH = block("judge_bench", () -> new CivicBlock(

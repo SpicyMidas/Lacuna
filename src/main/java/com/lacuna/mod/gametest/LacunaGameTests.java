@@ -454,4 +454,38 @@ public final class LacunaGameTests {
         check(helper, !helper.getLevel().getBlockState(abs).getCollisionShape(helper.getLevel(), abs).isEmpty(), "closed gate collides");
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ M11b ledger, reputation, gates
+    @GameTest(template = PLATFORM, timeoutTicks = 60)
+    public static void ledgerRegistersItsTownshipOnce(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.TOWNSHIP_LEDGER.get());
+        BlockPos abs = helper.absolutePos(CENTER);
+        helper.succeedWhen(() -> {
+            var be = (com.lacuna.mod.township.TownshipLedgerBlockEntity) helper.getLevel().getBlockEntity(abs);
+            check(helper, be != null, "ledger block entity");
+            var first = be.township(helper.getLevel()).orElseThrow();
+            var second = be.township(helper.getLevel()).orElseThrow();
+            check(helper, first == second, "registration is idempotent");
+            check(helper, com.lacuna.mod.township.TownshipService.at(helper.getLevel(), abs.east(20)).isPresent(), "township covers its radius");
+            java.util.UUID player = java.util.UUID.randomUUID();
+            com.lacuna.mod.township.TownshipService.set(helper.getLevel(), first, player, 80);
+            check(helper, com.lacuna.mod.township.TownshipService.tier(first, player) == com.lacuna.mod.logic.ReputationMath.Tier.HONORED, "honored");
+            check(helper, com.lacuna.mod.township.TownshipService.priceFactor(first, player) < 1.0, "honored players pay less");
+            com.lacuna.mod.township.TownshipSavedData.get(helper.getLevel().getServer()).remove(first.id);
+        });
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void townshipGateFollowsTheDay(GameTestHelper helper) {
+        var closed = ModBlocks.TOWNSHIP_GATE.get().defaultBlockState().setValue(com.lacuna.mod.township.TownshipGateBlock.OPEN, false);
+        helper.setBlock(CENTER, closed);
+        BlockPos abs = helper.absolutePos(CENTER);
+        ServerLevel level = helper.getLevel();
+        level.getBlockState(abs).tick(level, abs, level.getRandom());
+        boolean shouldBeOpen = com.lacuna.mod.logic.TownshipLaws.gatesOpen(level.getDayTime());
+        check(helper, level.getBlockState(abs).getValue(com.lacuna.mod.township.TownshipGateBlock.OPEN) == shouldBeOpen,
+                "gate state follows the time of day");
+        check(helper, level.getBlockTicks().hasScheduledTick(abs, ModBlocks.TOWNSHIP_GATE.get()), "gate keeps its schedule");
+        helper.succeed();
+    }
 }

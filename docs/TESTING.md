@@ -255,3 +255,21 @@ All `/lacuna` commands need permission level 2.
 - [ ] Roads leave each gate, follow the terrain and have farms on their sides; villagers and two iron golems live
       there; no vanilla village overlaps a township.
 - [ ] Optional: run `tools/smoke_townships.txt` (20 placements) and check the log is clean.
+## M11b — Reputation, laws, bell, gates
+```
+/place structure lacuna:township_plains
+/lacuna township info
+/lacuna rep get @s
+/lacuna rep set @s 60
+/time set 13000
+/give @s minecraft:iron_sword
+```
+- [ ] Right click the ledger: reputation, tier, two laws, policy and coin value are listed.
+- [ ] Trading, killing zombies near the plaza, hitting a villager, breaking wall blocks, harvesting ripe wheat and
+      opening a chest next to a villager change reputation with action-bar feedback and daily caps.
+- [ ] With "no drawn weapons": holding the sword inside the walls warns for 3 s, then −1 every 10 s and a golem walks
+      over. With "gates close at dusk": at night strangers get the same treatment.
+- [ ] Gates are open by day, closed at night; with reputation 60 they open when you approach; they cannot be mined
+      unless sneaking with an axe.
+- [ ] Ring the bell at dawn (+2 once), four times (−5), outside dawn with law 4 (−3).
+- [ ] At −60 reputation the iron golems attack; at +60 villager prices drop.

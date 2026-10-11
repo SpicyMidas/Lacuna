@@ -15,6 +15,7 @@ HORIZONTAL = {"north": 0, "east": 90, "south": 180, "west": 270}
 def build(g):
     civic_blocks(g)
     structures(g)
+    reputation(g)
 
 
 def horizontal_states(model):
@@ -102,3 +103,39 @@ def structures(g):
                       "exclusion_zone": {"other_set": "minecraft:villages", "chunk_count": 4}},
         "structures": [{"structure": s, "weight": 1} for s in structures_list]})
     g.tag("worldgen/structure", "lacuna:townships", *structures_list)
+
+
+# ============================================================================================ 11b reputation, laws
+LAWS = [("No drawn weapons inside the walls", "Niente armi sguainate dentro le mura"),
+        ("Gates close at dusk", "Le porte si chiudono al tramonto"),
+        ("No breaking blocks inside the walls", "Vietato rompere blocchi dentro le mura"),
+        ("The bell rings only at dawn", "La campana suona solo all'alba")]
+TIERS = {"hostile": ("Hostile", "Ostile"), "wary": ("Wary", "Diffidente"), "neutral": ("Neutral", "Neutrale"),
+         "friendly": ("Friendly", "Amichevole"), "honored": ("Honored", "Onorato")}
+POLICIES = {"none": ("no policy yet", "nessuna politica"), "free_market": ("Free Market", "Libero mercato"),
+            "austerity": ("Austerity", "Austerità"), "festival": ("Festival", "Festa"), "martial_law": ("Martial Law", "Legge marziale")}
+
+
+def reputation(g):
+    for i, (en, it) in enumerate(LAWS):
+        g.name(f"lacuna.township.law.{i}", en, it)
+    for k, (en, it) in TIERS.items():
+        g.name(f"lacuna.township.tier.{k}", en, it)
+    for k, (en, it) in POLICIES.items():
+        g.name(f"lacuna.township.policy.{k}", en, it)
+    g.name("lacuna.township.header", "— Township %s —", "— Borgo %s —")
+    g.name("lacuna.township.reputation", "Your reputation: %s (%s)", "La tua reputazione: %s (%s)")
+    g.name("lacuna.township.laws", "Laws: %s; %s", "Leggi: %s; %s")
+    g.name("lacuna.township.policy", "Policy: %s (council in %s days)", "Politica: %s (consiglio tra %s giorni)")
+    g.name("lacuna.township.coin", "Coin value: %s, price index: %s", "Valore della moneta: %s, indice dei prezzi: %s")
+    g.name("lacuna.township.rep_change", "Township reputation %s → %s (%s)", "Reputazione nel borgo %s → %s (%s)")
+    g.name("lacuna.township.warn.weapon", "Sheathe your weapon inside the walls!", "Riponi l'arma dentro le mura!")
+    g.name("lacuna.township.warn.curfew", "Strangers must leave the walls by dusk!", "Gli stranieri devono uscire dalle mura al tramonto!")
+    g.tag("block", "lacuna:township_protected", *[mod(b) for b in ("township_gate", "township_ledger", "council_table", "judge_bench",
+                                                                   "guild_board", "school_desk", "mint_press")],
+          "#minecraft:doors", "minecraft:bell", "minecraft:dirt_path", "minecraft:cobblestone", "minecraft:stone_bricks",
+          "minecraft:mossy_stone_bricks", "minecraft:chiseled_stone_bricks", "minecraft:stone_brick_wall", "minecraft:sandstone",
+          "minecraft:cut_sandstone", "minecraft:smooth_sandstone", "minecraft:chiseled_sandstone", "minecraft:sandstone_wall",
+          "minecraft:mud_bricks", "minecraft:packed_mud", "minecraft:mud_brick_wall", "minecraft:cobblestone_wall",
+          "minecraft:mossy_cobblestone", "minecraft:polished_diorite", "minecraft:diorite", "minecraft:diorite_wall",
+          "minecraft:quartz_block")

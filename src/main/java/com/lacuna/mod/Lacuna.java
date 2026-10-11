@@ -65,6 +65,7 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(DeathMemory::onServerStopped);
         GearEvents.register(NeoForge.EVENT_BUS);
         ForgottenBiomeEvents.register(NeoForge.EVENT_BUS);
+        com.lacuna.mod.township.TownshipEvents.register(NeoForge.EVENT_BUS);
         NeoForge.EVENT_BUS.addListener(com.lacuna.mod.merchant.MerchantSpawner::onServerTick);
         // M9 volatile scent trails
         NeoForge.EVENT_BUS.addListener(ScentTracker::onServerTick);
@@ -92,5 +93,6 @@ public final class Lacuna {
         OrreryBlock.clearVolatile();
         SunkenBellBlock.clearVolatile();
         com.lacuna.mod.structure.LabyrinthHandler.clearVolatile();
+        com.lacuna.mod.township.TownshipEvents.clearVolatile();
     }
 }
