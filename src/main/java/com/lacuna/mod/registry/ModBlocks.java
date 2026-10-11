@@ -6,6 +6,9 @@ import com.lacuna.mod.fl.SporeMushroomBlock;
 import com.lacuna.mod.fl.UpdraftSpringBlock;
 import com.lacuna.mod.mob.SilkDustGlowBlock;
 import com.lacuna.mod.structure.LabyrinthTriggerBlock;
+import com.lacuna.mod.township.CivicBlock;
+import com.lacuna.mod.township.TownshipGateBlock;
+import net.minecraft.world.phys.shapes.Shapes;
 import com.lacuna.mod.structure.ObeliskInscriptionBlock;
 import com.lacuna.mod.structure.SunkenBellBlock;
 import net.minecraft.world.level.block.IceBlock;
@@ -138,6 +141,29 @@ public final class ModBlocks {
     public static final DeferredBlock<LabyrinthTriggerBlock> LABYRINTH_TRIGGER = block("labyrinth_trigger", () -> new LabyrinthTriggerBlock(
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(-1.0F, 3600000.0F).noCollission()
                     .noLootTable().lightLevel(s -> 6).sound(SoundType.AMETHYST).pushReaction(PushReaction.BLOCK)));
+
+    // ------------------------------------------------------------------ M11 townships
+    public static final DeferredBlock<CivicBlock> TOWNSHIP_LEDGER = block("township_ledger", () -> new CivicBlock(
+            civicProps(MapColor.WOOD, SoundType.WOOD), Shapes.or(Block.box(2, 0, 2, 14, 10, 14), Block.box(0, 10, 0, 16, 13, 16))));
+    public static final DeferredBlock<TownshipGateBlock> TOWNSHIP_GATE = block("township_gate", () -> new TownshipGateBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.0F, 1200.0F).sound(SoundType.CHAIN).noOcclusion()
+                    .requiresCorrectToolForDrops().pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
+    public static final DeferredBlock<CivicBlock> COUNCIL_TABLE = block("council_table", () -> new CivicBlock(
+            civicProps(MapColor.WOOD, SoundType.WOOD), Shapes.or(Block.box(0, 12, 0, 16, 16, 16), Block.box(6, 0, 6, 10, 12, 10))));
+    public static final DeferredBlock<CivicBlock> JUDGE_BENCH = block("judge_bench", () -> new CivicBlock(
+            civicProps(MapColor.COLOR_BROWN, SoundType.WOOD), Block.box(0, 0, 0, 16, 14, 16)));
+    public static final DeferredBlock<CivicBlock> GUILD_BOARD = block("guild_board", () -> new CivicBlock(
+            civicProps(MapColor.WOOD, SoundType.WOOD), Block.box(0, 0, 6, 16, 16, 10)));
+    public static final DeferredBlock<CivicBlock> SCHOOL_DESK = block("school_desk", () -> new CivicBlock(
+            civicProps(MapColor.WOOD, SoundType.WOOD), Shapes.or(Block.box(0, 10, 0, 16, 13, 16), Block.box(1, 0, 1, 15, 10, 3))));
+    public static final DeferredBlock<CivicBlock> MINT_PRESS = block("mint_press", () -> new CivicBlock(
+            civicProps(MapColor.METAL, SoundType.ANVIL).requiresCorrectToolForDrops(), Shapes.or(Block.box(1, 0, 1, 15, 6, 15),
+                    Block.box(6, 6, 6, 10, 16, 10))));
+
+    private static BlockBehaviour.Properties civicProps(MapColor color, SoundType sound) {
+        return BlockBehaviour.Properties.of().mapColor(color).strength(2.5F, 6.0F).sound(sound).noOcclusion()
+                .pushReaction(PushReaction.BLOCK).ignitedByLava();
+    }
 
     /** Labyrinth mirrors: unbreakable in survival (the maze would be pointless otherwise), see-through, no drops. */
     private static BlockBehaviour.Properties mirrorProps() {

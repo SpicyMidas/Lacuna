@@ -39,4 +39,10 @@ place structure lacuna:sunken_bell_tower 628 40 628
 locate structure #lacuna:orrery_targets
 summon lacuna:last_merchant 612 90 612
 forceload remove 600 600 640 640
+# --- M11a: one township from the start piece (all variants: tools/smoke_townships.txt)
+forceload add 1800 1800 2100 2100
+@wait 600
+place structure lacuna:township_plains 1950 80 1950
+locate structure #lacuna:townships
+forceload remove 1800 1800 2100 2100
 save-all flush

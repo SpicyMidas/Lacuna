@@ -49,6 +49,7 @@ class Template:
         self.blocks: Dict[Pos, Tuple[Tuple[str, Tuple[Tuple[str, str], ...]], Optional[dict]]] = {}
         self.entities: List[Tuple[Tuple[float, float, float], Pos, dict]] = []
         self.r = rng(name)
+        self.strict = name.startswith("township/")  # township pieces must never lose blocks silently
 
     # ------------------------------------------------------------------------------------- editing
     def inside(self, x: int, y: int, z: int) -> bool:
@@ -58,6 +59,8 @@ class Template:
     def set(self, x: int, y: int, z: int, name: str, props: Optional[Dict[str, str]] = None,
             nbt: Optional[dict] = None) -> None:
         if not self.inside(x, y, z):
+            if self.strict:
+                raise ValueError(f"{self.name}: block {name} at {(x, y, z)} is outside {self.size}")
             return
         self.blocks[(x, y, z)] = (state_key(name, props), nbt)
 

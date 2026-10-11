@@ -52,6 +52,11 @@
     "lacuna:echo_birch_trapdoor",
     "lacuna:echo_birch_pressure_plate",
     "lacuna:echo_birch_button",
-    "lacuna:tidebloom_roots"
+    "lacuna:tidebloom_roots",
+    "lacuna:township_ledger",
+    "lacuna:council_table",
+    "lacuna:judge_bench",
+    "lacuna:guild_board",
+    "lacuna:school_desk"
   ]
 }

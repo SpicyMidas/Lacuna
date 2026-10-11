@@ -424,6 +424,7 @@ def main() -> int:
             loc = e.get("location")
             if loc and rl(loc)[0] == MODID and f"{rl(loc)[0]}:{rl(loc)[1]}" not in structures:
                 err(f"template pool {key}: missing structure file {loc}")
+    check_jigsaws(structures, pools, ids)
     for key, path in all_files("worldgen/structure", ".json").items():
         data = load_json(path)
         if isinstance(data, dict) and data.get("start_pool"):
@@ -591,6 +592,44 @@ def check_structures(structures: Dict[str, str], ids) -> None:
             if st < 0 or st >= n:
                 err(f"structure {key}: block state index {st} out of palette range {n}")
                 break
+
+
+def check_jigsaws(structures: Dict[str, str], pools: Dict[str, str], ids) -> None:
+    """Every jigsaw block must name an existing pool, whose pieces must offer a connector named like its target."""
+    import nbtlib
+    connectors: Dict[str, List[dict]] = {}
+    for key, path in structures.items():
+        if rl(key)[0] != MODID:
+            continue
+        try:
+            root = nbtlib.load(path)
+        except Exception:  # noqa: BLE001  (reported by check_structures)
+            continue
+        found = []
+        for b in root.get("blocks", []):
+            nbt = b.get("nbt")
+            if nbt is not None and str(nbt.get("id", "")) == "minecraft:jigsaw":
+                found.append({k: str(nbt.get(k, "")) for k in ("name", "target", "pool", "final_state")})
+        connectors[key] = found
+    pool_names: Dict[str, Set[str]] = {}
+    for pkey, ppath in pools.items():
+        names: Set[str] = set()
+        for el in (load_json(ppath) or {}).get("elements", []):
+            loc = el.get("element", {}).get("location")
+            if loc:
+                names |= {c["name"] for c in connectors.get(f"{rl(loc)[0]}:{rl(loc)[1]}", [])}
+        pool_names[pkey] = names
+    for key, found in connectors.items():
+        for j in found:
+            pool = j["pool"]
+            if pool != "minecraft:empty":
+                if pool not in pools:
+                    err(f"structure {key}: jigsaw pool {pool} does not exist")
+                elif j["target"] not in pool_names.get(pool, set()):
+                    err(f"structure {key}: no piece in {pool} has a connector named {j['target']}")
+            fs = j["final_state"].split("[", 1)[0]
+            if fs and not block_known(fs, ids):
+                err(f"structure {key}: jigsaw final_state {j['final_state']} is not a known block")
 
 
 def load_mod_block_props() -> Dict[str, Dict[str, List[str]]]:

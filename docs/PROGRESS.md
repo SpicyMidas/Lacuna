@@ -465,3 +465,36 @@ Built:
 Deviation: no trader llamas (optional in the spec).
 
 Gates: 3 ✔, 4 (logic, 34 tests) ✔, 1/2/5/6 not runnable here.
+
+## M11a — Township structures
+
+Built:
+- Five structures `lacuna:township_plains|desert|savanna|taiga|snowy` (jigsaw, size 12, max distance 128,
+  beard_thin, projected to WORLD_SURFACE_WG) in their village biomes, one structure set (spacing 34, separation 12,
+  unique salt, `exclusion_zone` 4 chunks from `minecraft:villages`), structure tag `lacuna:townships`.
+- `tools/structures/m11_townships.py` builds 34 templates per biome palette (170 total), all deterministic:
+  - **core** (63×63×24): stone wall ring with crenellations, four corner towers, four 2×3 `township_gate`
+    openings flanked by lantern pillars; cobbled main streets; plaza with checkered paving, fountain fed by an
+    **aqueduct** (arched water channel from beyond the north wall), founder **statue** (3 designs, sign plaque with
+    lore), **bell tower** with a vanilla bell, `township_ledger` podium, benches and lamps; civic halls on the
+    diagonals: **Council Hall** (`council_table`), **Courthouse** (`judge_bench`), **Guild Hall** (`guild_board` +
+    three patterned banners), **Library/School** (bookshelves, lectern, `school_desk`s); flower beds, orchard trees,
+    two iron golem guards.
+  - eight **district lots** (11×11) on jigsaw connectors `lot_market` (north street), `lot_workshop` (east),
+    `lot_residential` (south), `lot_civic` (west); pools of 6 buildings each: market stalls with villagers, 2–3 story
+    houses with beds/ladders, workshops (all 13 vanilla job-site blocks across the pool), granary, orchard, public
+    garden, stables (with a horse), tavern, school annex.
+  - outside each gate: terrain-matching road pieces (chain + end piece with lamps) with side connectors to farms
+    (wheat/carrot/potato/beetroot fields with water, orchards).
+- Civic blocks (decorative in 11a): `township_ledger`, `township_gate` (OPEN state: no collision when open),
+  `council_table`, `judge_bench`, `guild_board`, `school_desk`, `mint_press`.
+- Validator: every jigsaw names an existing pool whose pieces offer a connector with its target name and a valid
+  `final_state` (negative-tested); township templates are generated in strict mode (an out-of-bounds block is an
+  error, not silently dropped).
+- Smoke: phase 1 places one plains township and locates `#lacuna:townships`; `tools/smoke_townships.txt` places
+  20 townships (4 per variant) for the spec's 20-position check.
+
+Deviations: the aqueduct is part of the core template instead of a separate jigsaw piece (it must line up with the
+fountain); eight lot slots per township (pools of 6 buildings each).
+
+Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here (20-placement check is in `tools/smoke_townships.txt`).

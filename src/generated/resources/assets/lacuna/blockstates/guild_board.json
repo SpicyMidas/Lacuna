@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "lacuna:block/guild_board",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/guild_board"
+    },
+    "facing=south": {
+      "model": "lacuna:block/guild_board",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "lacuna:block/guild_board",
+      "y": 270
+    }
+  }
+}

@@ -442,4 +442,16 @@ public final class LacunaGameTests {
         check(helper, offers.stream().anyMatch(o -> o.getResult().is(Items.EMERALD)), "buys materials for currency");
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ M11a township blocks
+    @GameTest(template = PLATFORM)
+    public static void townshipGateCollidesOnlyWhenClosed(GameTestHelper helper) {
+        var open = ModBlocks.TOWNSHIP_GATE.get().defaultBlockState().setValue(com.lacuna.mod.township.TownshipGateBlock.OPEN, true);
+        helper.setBlock(CENTER, open);
+        BlockPos abs = helper.absolutePos(CENTER);
+        check(helper, helper.getLevel().getBlockState(abs).getCollisionShape(helper.getLevel(), abs).isEmpty(), "open gate: no collision");
+        helper.setBlock(CENTER, open.setValue(com.lacuna.mod.township.TownshipGateBlock.OPEN, false));
+        check(helper, !helper.getLevel().getBlockState(abs).getCollisionShape(helper.getLevel(), abs).isEmpty(), "closed gate collides");
+        helper.succeed();
+    }
 }

@@ -112,6 +112,14 @@
    "z"
   ]
  },
+ "council_table": {
+  "facing": [
+   "north",
+   "east",
+   "south",
+   "west"
+  ]
+ },
  "crystal_willow_door": {
   "facing": [
    "north",
@@ -342,10 +350,34 @@
    "z"
   ]
  },
+ "guild_board": {
+  "facing": [
+   "north",
+   "east",
+   "south",
+   "west"
+  ]
+ },
+ "judge_bench": {
+  "facing": [
+   "north",
+   "east",
+   "south",
+   "west"
+  ]
+ },
  "labyrinth_trigger": {
   "solved": [
    "true",
    "false"
+  ]
+ },
+ "mint_press": {
+  "facing": [
+   "north",
+   "east",
+   "south",
+   "west"
   ]
  },
  "mural_block_1": {
@@ -460,6 +492,14 @@
   ]
  },
  "rusted_gear": {
+  "facing": [
+   "north",
+   "east",
+   "south",
+   "west"
+  ]
+ },
+ "school_desk": {
   "facing": [
    "north",
    "east",
@@ -634,6 +674,24 @@
    "x",
    "y",
    "z"
+  ]
+ },
+ "township_gate": {
+  "axis": [
+   "x",
+   "z"
+  ],
+  "open": [
+   "true",
+   "false"
+  ]
+ },
+ "township_ledger": {
+  "facing": [
+   "north",
+   "east",
+   "south",
+   "west"
   ]
  },
  "updraft_spring": {

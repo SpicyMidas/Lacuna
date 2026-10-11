@@ -1,0 +1,83 @@
+# Optional heavy smoke run (spec 18.1): 20 township placements, 4 per biome variant, each in its own forceloaded area.
+# Run with the same SmokeRunner (-Dlacuna.smoke=tools/smoke_townships.txt); expect no errors in the log.
+forceload add 3850 -4150 4150 -3850
+@wait 600
+place structure lacuna:township_plains 4000 80 -4000
+forceload remove 3850 -4150 4150 -3850
+forceload add 4250 -4550 4550 -4250
+@wait 600
+place structure lacuna:township_plains 4400 80 -4400
+forceload remove 4250 -4550 4550 -4250
+forceload add 4650 -4950 4950 -4650
+@wait 600
+place structure lacuna:township_plains 4800 80 -4800
+forceload remove 4650 -4950 4950 -4650
+forceload add 5050 -4150 5350 -3850
+@wait 600
+place structure lacuna:township_plains 5200 80 -4000
+forceload remove 5050 -4150 5350 -3850
+forceload add 5450 -4550 5750 -4250
+@wait 600
+place structure lacuna:township_desert 5600 80 -4400
+forceload remove 5450 -4550 5750 -4250
+forceload add 5850 -4950 6150 -4650
+@wait 600
+place structure lacuna:township_desert 6000 80 -4800
+forceload remove 5850 -4950 6150 -4650
+forceload add 6250 -4150 6550 -3850
+@wait 600
+place structure lacuna:township_desert 6400 80 -4000
+forceload remove 6250 -4150 6550 -3850
+forceload add 6650 -4550 6950 -4250
+@wait 600
+place structure lacuna:township_desert 6800 80 -4400
+forceload remove 6650 -4550 6950 -4250
+forceload add 7050 -4950 7350 -4650
+@wait 600
+place structure lacuna:township_savanna 7200 80 -4800
+forceload remove 7050 -4950 7350 -4650
+forceload add 7450 -4150 7750 -3850
+@wait 600
+place structure lacuna:township_savanna 7600 80 -4000
+forceload remove 7450 -4150 7750 -3850
+forceload add 7850 -4550 8150 -4250
+@wait 600
+place structure lacuna:township_savanna 8000 80 -4400
+forceload remove 7850 -4550 8150 -4250
+forceload add 8250 -4950 8550 -4650
+@wait 600
+place structure lacuna:township_savanna 8400 80 -4800
+forceload remove 8250 -4950 8550 -4650
+forceload add 8650 -4150 8950 -3850
+@wait 600
+place structure lacuna:township_taiga 8800 80 -4000
+forceload remove 8650 -4150 8950 -3850
+forceload add 9050 -4550 9350 -4250
+@wait 600
+place structure lacuna:township_taiga 9200 80 -4400
+forceload remove 9050 -4550 9350 -4250
+forceload add 9450 -4950 9750 -4650
+@wait 600
+place structure lacuna:township_taiga 9600 80 -4800
+forceload remove 9450 -4950 9750 -4650
+forceload add 9850 -4150 10150 -3850
+@wait 600
+place structure lacuna:township_taiga 10000 80 -4000
+forceload remove 9850 -4150 10150 -3850
+forceload add 10250 -4550 10550 -4250
+@wait 600
+place structure lacuna:township_snowy 10400 80 -4400
+forceload remove 10250 -4550 10550 -4250
+forceload add 10650 -4950 10950 -4650
+@wait 600
+place structure lacuna:township_snowy 10800 80 -4800
+forceload remove 10650 -4950 10950 -4650
+forceload add 11050 -4150 11350 -3850
+@wait 600
+place structure lacuna:township_snowy 11200 80 -4000
+forceload remove 11050 -4150 11350 -3850
+forceload add 11450 -4550 11750 -4250
+@wait 600
+place structure lacuna:township_snowy 11600 80 -4400
+forceload remove 11450 -4550 11750 -4250
+save-all flush

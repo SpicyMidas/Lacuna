@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "lacuna:block/school_desk",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/school_desk"
+    },
+    "facing=south": {
+      "model": "lacuna:block/school_desk",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "lacuna:block/school_desk",
+      "y": 270
+    }
+  }
+}

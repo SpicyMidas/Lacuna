@@ -239,3 +239,19 @@ All `/lacuna` commands need permission level 2.
       offer; he sells divine glass shards, rubies, chronal shards and echo shards for emeralds.
 - [ ] Re-spawn several merchants: about 1 in 12 offers a Solar Flare Fragment for 16 rubies + 24 divine glass shards.
 - [ ] Leaving the area (chunk unload) or restarting removes the merchant; he never comes back from a save.
+## M11a — Township structures
+```
+/locate structure #lacuna:townships
+/place structure lacuna:township_plains
+/place structure lacuna:township_desert
+/place structure lacuna:township_savanna
+/place structure lacuna:township_taiga
+/place structure lacuna:township_snowy
+```
+- [ ] Walls with four towers and four open gates; streets lead to a plaza with fountain + aqueduct, statue with a
+      readable plaque, bell tower, ledger podium.
+- [ ] Four civic halls (council table, judge's bench, guild board + banners, library with desks) and eight lot
+      buildings (market, workshops with job blocks, houses with beds, granary/orchard/garden/stables/tavern/school).
+- [ ] Roads leave each gate, follow the terrain and have farms on their sides; villagers and two iron golems live
+      there; no vanilla village overlaps a township.
+- [ ] Optional: run `tools/smoke_townships.txt` (20 placements) and check the log is clean.

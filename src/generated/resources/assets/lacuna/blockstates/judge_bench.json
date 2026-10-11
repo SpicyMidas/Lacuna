@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "lacuna:block/judge_bench",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/judge_bench"
+    },
+    "facing=south": {
+      "model": "lacuna:block/judge_bench",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "lacuna:block/judge_bench",
+      "y": 270
+    }
+  }
+}
