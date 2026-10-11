@@ -155,6 +155,9 @@ public final class ModItems {
     public static final DeferredItem<DeferredSpawnEggItem> LAST_MERCHANT_SPAWN_EGG = item("last_merchant_spawn_egg",
             p -> new DeferredSpawnEggItem(ModEntities.LAST_MERCHANT, 0x3B4A6B, 0xC9A869, p), new Item.Properties());
 
+    // ------------------------------------------------------------------ M11 townships
+    public static final DeferredItem<Item> TOWNSHIP_COIN = item("township_coin", Item::new, new Item.Properties());
+
     private ModItems() {}
 
     /**

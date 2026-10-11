@@ -435,11 +435,12 @@ public final class LacunaGameTests {
         var merchant = helper.spawn(ModEntities.LAST_MERCHANT.get(), CENTER);
         var offers = merchant.getOffers();
         check(helper, offers.size() >= 9, "merchant should stock at least 9 offers, has " + offers.size());
+        var currency = com.lacuna.mod.merchant.CurrencyService.currency();
         for (var good : List.of(ModItems.DIVINE_GLASS_SHARD.get(), ModItems.RUBY.get(), ModItems.CHRONAL_SHARD.get(), Items.ECHO_SHARD)) {
-            check(helper, offers.stream().anyMatch(o -> o.getResult().is(good) && o.getBaseCostA().is(Items.EMERALD)),
-                    "sells " + good + " for the placeholder currency");
+            check(helper, offers.stream().anyMatch(o -> o.getResult().is(good) && o.getBaseCostA().is(currency)),
+                    "sells " + good + " for the current currency");
         }
-        check(helper, offers.stream().anyMatch(o -> o.getResult().is(Items.EMERALD)), "buys materials for currency");
+        check(helper, offers.stream().anyMatch(o -> o.getResult().is(currency)), "buys materials for currency");
         helper.succeed();
     }
 
@@ -486,6 +487,19 @@ public final class LacunaGameTests {
         check(helper, level.getBlockState(abs).getValue(com.lacuna.mod.township.TownshipGateBlock.OPEN) == shouldBeOpen,
                 "gate state follows the time of day");
         check(helper, level.getBlockTicks().hasScheduledTick(abs, ModBlocks.TOWNSHIP_GATE.get()), "gate keeps its schedule");
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ M11c professions, currency
+    @GameTest(template = PLATFORM)
+    public static void townshipProfessionsHaveJobSitesAndTrades(GameTestHelper helper) {
+        var mint = net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(ModBlocks.MINT_PRESS.get().defaultBlockState());
+        check(helper, mint.isPresent() && mint.get().is(com.lacuna.mod.registry.ModVillagers.COINER_POI.getKey()), "mint press is the coiner job site");
+        var bench = net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(ModBlocks.JUDGE_BENCH.get().defaultBlockState());
+        check(helper, bench.isPresent() && bench.get().is(com.lacuna.mod.registry.ModVillagers.MAGISTRATE_POI.getKey()), "judge bench is the magistrate job site");
+        var trades = net.minecraft.world.entity.npc.VillagerTrades.TRADES.get(com.lacuna.mod.registry.ModVillagers.COINER.get());
+        check(helper, trades != null && trades.get(1) != null && trades.get(1).length >= 3, "coiner has level 1 trades");
+        check(helper, com.lacuna.mod.merchant.CurrencyService.currency() == ModItems.TOWNSHIP_COIN.get(), "township coin is the currency");
         helper.succeed();
     }
 }

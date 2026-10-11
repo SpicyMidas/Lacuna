@@ -528,6 +528,8 @@ def workshop(Template, v, pal, i):
     for (name, props), (x, z) in zip(jobs, spots):
         b.set(x, 1, z, name, props)
     b.set(x0 + 1, 1, (z0 + z1) // 2, "crafting_table")
+    if i in (2, 5):
+        b.set(x0 + 5, 1, z0 + 1, L + "mint_press", {"facing": "south"})  # M11c: Coiner job site
     b.chest(x0 + 3, 1, z1 - 1, "north")
     b.lantern(4, 4, 5, hanging=True)
     b.villager(5, 1, 4)

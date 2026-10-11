@@ -291,6 +291,13 @@ def check_lang(ids, lang: dict) -> None:
                 err(f"missing lang key {key}")
     if "itemGroup.lacuna" not in lang:
         err("missing lang key itemGroup.lacuna")
+    for prof in sorted(ids.get("profession", ())):
+        if f"entity.minecraft.villager.{MODID}.{prof}" not in lang:
+            err(f"missing lang key entity.minecraft.villager.{MODID}.{prof}")
+        for kind in ("villager", "zombie_villager"):
+            tex = os.path.join(ROOT, "src", "main", "resources", "assets", MODID, "textures", "entity", kind, "profession", prof + ".png")
+            if not os.path.isfile(tex):
+                err(f"profession {prof}: missing texture entity/{kind}/profession/{prof}.png")
 
 
 def check_java_texture_refs() -> None:

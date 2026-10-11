@@ -29,6 +29,8 @@ public final class ModRegistries {
         ModBlockEntities.BLOCK_ENTITIES.register(modBus);
         ModArmorMaterials.ARMOR_MATERIALS.register(modBus);
         ModFeatures.TREE_DECORATORS.register(modBus);
+        ModVillagers.POI_TYPES.register(modBus);
+        ModVillagers.PROFESSIONS.register(modBus);
         ModFeatures.FEATURES.register(modBus);
     }
 }

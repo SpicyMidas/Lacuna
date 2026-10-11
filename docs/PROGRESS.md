@@ -536,3 +536,28 @@ Deviation: "inside the walls" is approximated as within 30 blocks (Chebyshev) of
 the core's centre.
 
 Gates: 3 ✔, 4 (logic, 40 tests) ✔, 1/2/5/6 not runnable here.
+
+## M11c — Council, currency, courthouse
+
+Built:
+- **Council** (`TownshipDaily`, at dawn): the first council is 7 days after a township is first seen, then every 7
+  days; it picks one policy for 7 days with `logic/CouncilMath` (unit-tested), weighted by the week's average
+  reputation of players around the township (sampled once per dawn): Free Market (prices ×0.90), Austerity (×1.10),
+  Festival (reputation gains ×2, firework/happy particles over the plaza every 5 s), Martial Law (guards get a
+  transient +50 % attack modifier, laws penalise every 5 s). Players in the township are told the decree.
+- **Currency**: `township_coin`. `CurrencyService` now returns the coin while `township.enabled` and
+  `township.currency` are on (the Last Merchant trades in coins too), the emerald otherwise.
+- **Coiner** profession (job site `mint_press`, placed in two workshop buildings) buys raw iron/copper/gold, raw ruby,
+  raw umbral iron and ingots for coins; **Magistrate** (job site `judge_bench`) sells paper, books, name tags and a bell
+  for coins. POI types + professions are registered through DeferredRegister (POIs after blocks), trades through
+  `VillagerTradesEvent`; villager/zombie-villager profession overlays and names exist for both (and the M11d
+  Guildmaster).
+- **Coin value** 0.6–1.4: −2 % per 16 ore minted at a Coiner (`TradeWithVillagerEvent`), +0.01 per day back toward
+  1.0. When a trading screen opens in a township, coin prices are multiplied by `1/coinValue` and ore-for-coin trades
+  by `coinValue`, on top of reputation × price index × policy.
+- **Courthouse**: `judge_bench` with coins in hand pays fines (+5 reputation per coin, never above 0, one pardon per 3
+  in-game days); empty hand shows standing, fine and pardon cooldown.
+- Validator: every profession needs its lang name and villager + zombie-villager textures (negative-tested by the
+  first run). GameTests: mint press/judge bench map to their POIs, Coiner has level-1 trades, coin is the currency.
+
+Gates: 3 ✔, 4 (logic, 43 tests) ✔, 1/2/5/6 not runnable here.

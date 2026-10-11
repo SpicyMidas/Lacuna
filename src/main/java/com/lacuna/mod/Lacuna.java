@@ -51,6 +51,9 @@ public final class Lacuna {
         modBus.addListener(ModEntities::onSpawnPlacements);
         modBus.addListener(LacunaNetwork::register);
         modBus.addListener((FMLCommonSetupEvent e) -> e.enqueueWork(WoodSetup::setup));
+        // M11c: the township coin replaces the emerald placeholder while townships and their currency are enabled
+        com.lacuna.mod.merchant.CurrencyService.install(() -> LacunaConfig.get(LacunaConfig.TOWNSHIP_ENABLED)
+                && LacunaConfig.get(LacunaConfig.TOWNSHIP_CURRENCY) ? ModItems.TOWNSHIP_COIN.get() : net.minecraft.world.item.Items.EMERALD);
 
         // M6 utility items
         NeoForge.EVENT_BUS.addListener((MobEffectEvent.Added e) -> {

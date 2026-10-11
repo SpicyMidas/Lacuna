@@ -50,6 +50,7 @@ public class TownshipLedgerBlockEntity extends BlockEntity {
         SafeRun.run(TownshipService.FEATURE, () -> be.township(server).ifPresent(t -> {
             LawEnforcement.tick(server, t);
             if (time % Balance.TOWNSHIP_LEDGER_INTERVAL == 0) {
+                TownshipDaily.policyEffects(server, t);
                 TownshipDaily.tick(server, t);
             }
         }));

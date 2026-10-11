@@ -273,3 +273,19 @@ All `/lacuna` commands need permission level 2.
       unless sneaking with an axe.
 - [ ] Ring the bell at dawn (+2 once), four times (−5), outside dawn with law 4 (−3).
 - [ ] At −60 reputation the iron golems attack; at +60 villager prices drop.
+## M11c — Council, currency, courthouse
+```
+/give @s lacuna:township_coin 32
+/give @s lacuna:mint_press
+/give @s minecraft:villager_spawn_egg
+/lacuna rep set @s -30
+/time add 168000
+```
+- [ ] A villager next to a mint press becomes a Coiner (buys raw ores/ingots for coins); next to a judge's bench a
+      Magistrate.
+- [ ] Selling many raw ores lowers the township's coin value (ledger summary); it recovers by 0.01 per day.
+- [ ] Paying coins at the judge's bench raises reputation by 5 per coin up to 0; a second pardon within 3 days is
+      refused; empty hand shows the fine.
+- [ ] After 7+ days at dawn the council announces a policy; Festival shows fireworks on the plaza, Martial Law guards
+      hit harder, Free Market/Austerity change villager prices.
+- [ ] The Last Merchant now trades in township coins.

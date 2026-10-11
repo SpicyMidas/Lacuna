@@ -48,6 +48,8 @@ public final class TownshipEvents {
         bus.addListener(TownshipEvents::onEntityInteract);
         bus.addListener(TownshipEvents::onContainerOpen);
         bus.addListener(TownshipEvents::onLogout);
+        bus.addListener(TownshipTrades::onVillagerTrades);
+        bus.addListener(TownshipTrades::onTrade);
     }
 
     public static void clearVolatile() {
@@ -185,7 +187,13 @@ public final class TownshipEvents {
             double factor = TownshipService.priceFactor(t, p.getUUID());
             for (MerchantOffer offer : menu.getOffers()) {
                 int base = offer.getBaseCostA().getCount();
-                int delta = (int) Math.round(base * (factor - 1.0));
+                double f = factor;
+                if (TownshipTrades.costsCoins(offer)) {
+                    f /= t.coinValue;          // a strong coin buys more
+                } else if (TownshipTrades.paysCoins(offer)) {
+                    f *= t.coinValue;          // ...and costs more ore to mint
+                }
+                int delta = (int) Math.round(base * (f - 1.0));
                 if (delta != 0) {
                     offer.addToSpecialPriceDiff(delta);
                 }

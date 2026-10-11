@@ -96,7 +96,67 @@ def gate():
     save(from_ascii(GATE, {"W": c("#5E4029"), "w": c("#734F33"), "i": c("#5A5F66"), "I": c("#8E949B")}), "block/township_gate")
 
 
+COIN = [
+    "................",
+    "................",
+    ".....oooooo.....",
+    "....oGGGGGGo....",
+    "...oGgGGGGgGo...",
+    "..oGgGhhhhGgGo..",
+    "..oGGhGGGGhGGo..",
+    "..oGGhGGGGGGGo..",
+    "..oGGhGGGGhGGo..",
+    "..oGgGhhhhGgGo..",
+    "...oGgGGGGgGo...",
+    "....oGGGGGGo....",
+    ".....oooooo.....",
+    "................",
+    "................",
+    "................",
+]
+
+
+def coin():
+    save(from_ascii(COIN, {"o": c("#6B4A12"), "G": c("#E2B64A"), "g": c("#B98A2A"), "h": c("#FFF2B0")}), "item/township_coin")
+
+
+def profession_overlay(name, robe, trim, accessory):
+    from art.m09_mobs import paint_box
+    img = new(64, 64)
+    px = img.load()
+    r = rng(name)
+    paint_box(px, r, 0, 38, 8, 20, 6, robe)        # robe over the jacket area
+    paint_box(px, r, 16, 20, 8, 12, 6, robe)       # body
+    for y in range(44, 64):
+        px[10, y] = trim
+    for x in range(6, 14):
+        px[x, 44] = trim
+    accessory(px)
+    for kind in ("villager", "zombie_villager"):
+        save(img, f"entity/{kind}/profession/{name}")
+
+
+def coiner_bits(px):
+    for (x, y) in ((8, 50), (9, 50), (8, 51), (12, 54), (13, 54), (12, 55)):
+        px[x, y] = c("#E2B64A")  # coins sewn on the apron
+
+
+def magistrate_bits(px):
+    for x in range(22, 30):
+        px[x, 26] = c("#F2F2F2")  # white collar
+        px[x, 27] = c("#F2F2F2")
+
+
+def guildmaster_bits(px):
+    for i in range(12):
+        px[6 + i % 8, 44 + i] = c("#C9A869")  # sash
+
+
 def paint():
+    coin()
+    profession_overlay("coiner", ramp("#4A3220", "#5E4029", "#734F33"), c("#E2B64A"), coiner_bits)
+    profession_overlay("magistrate", ramp("#14141A", "#1E1E26", "#2A2A33"), c("#B03A2E"), magistrate_bits)
+    profession_overlay("guildmaster", ramp("#3A1E4A", "#4E2A63", "#663A80"), c("#C9A869"), guildmaster_bits)
     ledger()
     furniture()
     gate()

@@ -16,6 +16,7 @@ def build(g):
     civic_blocks(g)
     structures(g)
     reputation(g)
+    council_currency(g)
 
 
 def horizontal_states(model):
@@ -139,3 +140,19 @@ def reputation(g):
           "minecraft:mud_bricks", "minecraft:packed_mud", "minecraft:mud_brick_wall", "minecraft:cobblestone_wall",
           "minecraft:mossy_cobblestone", "minecraft:polished_diorite", "minecraft:diorite", "minecraft:diorite_wall",
           "minecraft:quartz_block")
+
+
+# ============================================================================================ 11c council, currency, court
+def council_currency(g):
+    g.item("township_coin", "Township Coin", "Moneta del borgo")
+    g.name("item.lacuna.township_coin.lore", "Minted from what the land gave up.", "Coniata da ciò che la terra ha ceduto.")
+    for prof, en, it in (("coiner", "Coiner", "Coniatore"), ("magistrate", "Magistrate", "Magistrato"),
+                         ("guildmaster", "Guildmaster", "Maestro di gilda")):
+        g.name(f"entity.minecraft.villager.lacuna.{prof}", en, it)
+    g.name("lacuna.township.council", "The council has decreed a new policy: %s.", "Il consiglio ha decretato una nuova politica: %s.")
+    g.name("lacuna.court.standing", "Standing: %s (%s). Fine to clear it: %s coins. Next pardon in %s days.",
+           "Posizione: %s (%s). Multa per saldarla: %s monete. Prossimo perdono tra %s giorni.")
+    g.name("lacuna.court.too_soon", "The court heard you recently. Come back in a few days.",
+           "Il tribunale ti ha ascoltato da poco. Torna tra qualche giorno.")
+    g.name("lacuna.court.nothing_owed", "You owe the township nothing.", "Non devi nulla al borgo.")
+    g.name("lacuna.court.paid", "Fine paid: %s coins. Reputation is now %s.", "Multa pagata: %s monete. Reputazione ora %s.")
