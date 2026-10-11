@@ -39,7 +39,8 @@
     [],
     [
       "lacuna:divine_glass_cluster_patch",
-      "minecraft:patch_grass_plain"
+      "minecraft:patch_grass_plain",
+      "lacuna:fl_echo_birch_grove"
     ],
     []
   ],
@@ -50,7 +51,14 @@
     "axolotls": [],
     "creature": [],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "maxCount": 2,
+        "minCount": 1,
+        "type": "lacuna:gloomcrawler",
+        "weight": 4
+      }
+    ],
     "underground_water_creature": [],
     "water_ambient": [],
     "water_creature": []

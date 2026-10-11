@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "lacuna:block/rusted_gear",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/rusted_gear"
+    },
+    "facing=south": {
+      "model": "lacuna:block/rusted_gear",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "lacuna:block/rusted_gear",
+      "y": 270
+    }
+  }
+}

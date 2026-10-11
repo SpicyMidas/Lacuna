@@ -182,3 +182,22 @@ All `/lacuna` commands need permission level 2.
       Bones/meat do nothing to it.
 - [ ] Throw a decoy near zombies chasing you: they turn to the mannequin for 15 s; the decoy cannot be damaged by
       its thrower; it vanishes in a puff of smoke afterwards.
+## M10a — Forgotten Land biomes
+```
+/execute in lacuna:forgotten_land run tp @s 0 100 0
+/locate biome lacuna:cinderfrost_flats
+/locate biome lacuna:inverted_falls
+/locate biome lacuna:whispering_marsh
+/locate biome lacuna:clockwork_dunes
+/give @s lacuna:updraft_spring 4
+/give @s lacuna:spore_mushroom 8
+```
+- [ ] Cinderfrost Flats: gray ashen snow shows dark footprints that fade over ~5 s; ponds are capped with almost
+      invisible ice; ash drifts in the air; no monsters spawn.
+- [ ] Inverted Falls: stone islands float at Y 110–150 with zenithite ore, glass clusters and willows; standing in
+      the pool's spring lifts you through the islet springs to the island's edge; place a spring yourself: items and
+      mobs rise too; a block above the spring cuts the column.
+- [ ] Whispering Marsh: fog closes in, far sounds are muffled; spore mushrooms glow and make nearby mobs (and you)
+      glow; crouched Gloomcrawlers become visible.
+- [ ] Clockwork Dunes: buried watches (drop chronal shards) and rusted gears on sand; Clockwork Hounds; wheat
+      planted here grows visibly slower than in the Overworld; a faint ticking ambience.

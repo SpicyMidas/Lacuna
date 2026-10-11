@@ -493,6 +493,16 @@ def check_worldgen(ids, tag_files) -> None:
         f = d.get("feature")
         if isinstance(f, str) and not exists("worldgen/configured_feature", f):
             err(f"placed feature {key}: unknown configured feature {f}")
+        for mod_ in d.get("placement", []):
+            t = mod_.get("type", "")
+            if t.split(":", 1)[-1] not in VANILLA.get("worldgen/placement_modifier_type", []):
+                err(f"placed feature {key}: unknown placement modifier {t}")
+    for key, path in all_files("worldgen/configured_feature", ".json").items():
+        d = load_json(path) or {}
+        n, p_ = rl(d.get("type", ""))
+        known = p_ in ids.get("feature", set()) if n == MODID else (n == "minecraft" and p_ in VANILLA.get("worldgen/feature", []))
+        if not known:
+            err(f"configured feature {key}: unknown feature type {d.get('type')}")
     for key, path in all_files("worldgen/structure_set", ".json").items():
         d = load_json(path) or {}
         for st in d.get("structures", []):

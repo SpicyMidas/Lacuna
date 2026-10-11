@@ -327,4 +327,50 @@ public final class LacunaGameTests {
         }
         helper.succeedWhen(() -> check(helper, crawler.isCrouched() && crawler.getBbHeight() < 0.5F, "gloomcrawler should crouch next to leaves"));
     }
+
+    // ------------------------------------------------------------------ M10a Forgotten Land biome blocks
+    @GameTest(template = PLATFORM)
+    public static void ashenSnowFootprintsFade(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.ASHEN_SNOW_BLOCK.get());
+        BlockPos abs = helper.absolutePos(CENTER);
+        ServerLevel level = helper.getLevel();
+        var pig = helper.spawn(EntityType.PIG, CENTER.above());
+        level.getBlockState(abs).getBlock().stepOn(level, abs, level.getBlockState(abs), pig);
+        check(helper, level.getBlockState(abs).getValue(com.lacuna.mod.fl.AshenSnowBlock.FOOTPRINT) == 3, "fresh footprint");
+        check(helper, level.getBlockTicks().hasScheduledTick(abs, ModBlocks.ASHEN_SNOW_BLOCK.get()), "fade tick scheduled");
+        for (int i = 0; i < 3; i++) {
+            level.getBlockState(abs).tick(level, abs, level.getRandom());
+        }
+        check(helper, level.getBlockState(abs).getValue(com.lacuna.mod.fl.AshenSnowBlock.FOOTPRINT) == 0, "footprint faded");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM, timeoutTicks = 100)
+    public static void updraftSpringLiftsMobs(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.UPDRAFT_SPRING.get());
+        var pig = helper.spawn(EntityType.PIG, CENTER);
+        double startY = pig.getY();
+        helper.succeedWhen(() -> check(helper, pig.getY() > startY + 2.5, "pig should rise in the updraft"));
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void sporeMushroomRevealsHiddenMobs(GameTestHelper helper) {
+        helper.setBlock(CENTER.below(), Blocks.MOSS_BLOCK);
+        helper.setBlock(CENTER, ModBlocks.SPORE_MUSHROOM.get());
+        var crawler = helper.spawn(ModEntities.GLOOMCRAWLER.get(), CENTER.east(3));
+        int n = com.lacuna.mod.fl.SporeMushroomBlock.revealAround(helper.getLevel(), helper.absolutePos(CENTER));
+        check(helper, n >= 1 && crawler.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING), "gloomcrawler should glow");
+        check(helper, helper.getLevel().getBlockState(helper.absolutePos(CENTER)).getLightEmission(helper.getLevel(),
+                helper.absolutePos(CENTER)) == 7, "spore mushroom emits light 7");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void buriedWatchDropsChronalShards(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.BURIED_WATCH.get());
+        List<ItemStack> result = drops(helper, CENTER, new ItemStack(Items.IRON_PICKAXE));
+        check(helper, result.stream().anyMatch(st -> st.is(ModItems.CHRONAL_SHARD.get()) && st.getCount() >= 1 && st.getCount() <= 2),
+                "buried watch drops 1-2 chronal shards");
+        helper.succeed();
+    }
 }

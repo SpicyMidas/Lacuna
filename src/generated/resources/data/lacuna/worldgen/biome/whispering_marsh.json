@@ -1,0 +1,77 @@
+{
+  "carvers": {
+    "air": []
+  },
+  "downfall": 0.9,
+  "effects": {
+    "additions_sound": {
+      "sound": "minecraft:ambient.warped_forest.additions",
+      "tick_chance": 0.0011
+    },
+    "fog_color": 9215408,
+    "foliage_color": 6453343,
+    "grass_color": 7044970,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000
+    },
+    "particle": {
+      "options": {
+        "type": "minecraft:white_ash"
+      },
+      "probability": 0.01
+    },
+    "sky_color": 8360102,
+    "water_color": 5139290,
+    "water_fog_color": 3888198
+  },
+  "features": [
+    [],
+    [
+      "lacuna:marsh_pool"
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "lacuna:fl_tidebloom_grove",
+      "lacuna:spore_mushroom_patch",
+      "minecraft:patch_waterlily",
+      "minecraft:patch_grass_normal"
+    ],
+    []
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [
+      {
+        "maxCount": 3,
+        "minCount": 1,
+        "type": "lacuna:lantern_moth",
+        "weight": 8
+      }
+    ],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [
+      {
+        "maxCount": 2,
+        "minCount": 1,
+        "type": "lacuna:gloomcrawler",
+        "weight": 6
+      }
+    ],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.4
+}

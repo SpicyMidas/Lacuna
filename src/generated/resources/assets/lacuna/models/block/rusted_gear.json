@@ -1,0 +1,78 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#gear",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#gear",
+          "uv": [
+            0,
+            7,
+            16,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#gear",
+          "uv": [
+            0,
+            7,
+            16,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#gear",
+          "uv": [
+            0,
+            7,
+            16,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#gear",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#gear",
+          "uv": [
+            0,
+            7,
+            16,
+            8
+          ]
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1,
+        16
+      ]
+    }
+  ],
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "gear": "lacuna:block/rusted_gear",
+    "particle": "lacuna:block/rusted_gear"
+  }
+}

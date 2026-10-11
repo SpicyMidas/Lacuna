@@ -1,0 +1,62 @@
+{
+  "carvers": {
+    "air": []
+  },
+  "downfall": 0.0,
+  "effects": {
+    "additions_sound": {
+      "sound": "minecraft:block.note_block.hat",
+      "tick_chance": 0.0015
+    },
+    "fog_color": 11117455,
+    "foliage_color": 10524522,
+    "grass_color": 11116402,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000
+    },
+    "sky_color": 10263180,
+    "water_color": 6193052,
+    "water_fog_color": 4875903
+  },
+  "features": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "lacuna:buried_watch_patch",
+      "lacuna:rusted_gear_patch",
+      "minecraft:patch_dead_bush_2",
+      "lacuna:fl_echo_birch_sparse"
+    ],
+    []
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [
+      {
+        "maxCount": 2,
+        "minCount": 1,
+        "type": "lacuna:clockwork_hound",
+        "weight": 3
+      }
+    ],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 1.4
+}

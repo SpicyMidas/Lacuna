@@ -4,6 +4,7 @@ import com.lacuna.mod.banish.BanishEvents;
 import com.lacuna.mod.command.LacunaCommands;
 import com.lacuna.mod.eclipse.EclipseEvents;
 import com.lacuna.mod.chrono.ChronoshardWatchItem;
+import com.lacuna.mod.fl.ForgottenBiomeEvents;
 import com.lacuna.mod.flute.DeathMemory;
 import com.lacuna.mod.gear.GearEvents;
 import com.lacuna.mod.lantern.NullLanternItem;
@@ -60,6 +61,7 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(DeathMemory::onDeath);
         NeoForge.EVENT_BUS.addListener(DeathMemory::onServerStopped);
         GearEvents.register(NeoForge.EVENT_BUS);
+        ForgottenBiomeEvents.register(NeoForge.EVENT_BUS);
         // M9 volatile scent trails
         NeoForge.EVENT_BUS.addListener(ScentTracker::onServerTick);
         NeoForge.EVENT_BUS.addListener(ScentTracker::onLogout);

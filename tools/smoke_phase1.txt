@@ -10,6 +10,14 @@ execute in lacuna:forgotten_land run place structure lacuna:sunken_plaza 112 80 
 execute in lacuna:forgotten_land run place structure lacuna:memory_shrine 144 80 16
 execute in lacuna:forgotten_land run place structure lacuna:obelisk_ruin 176 80 16
 execute in lacuna:forgotten_land run locate structure #lacuna:forgotten_ruins
+# --- M10: every Forgotten Land biome generates; code features run once each
+execute in lacuna:forgotten_land run locate biome lacuna:cinderfrost_flats
+execute in lacuna:forgotten_land run locate biome lacuna:inverted_falls
+execute in lacuna:forgotten_land run locate biome lacuna:whispering_marsh
+execute in lacuna:forgotten_land run locate biome lacuna:clockwork_dunes
+execute in lacuna:forgotten_land run place feature lacuna:floating_island 200 100 200
+execute in lacuna:forgotten_land run place feature lacuna:clear_ice_cap 64 70 64
+execute in lacuna:forgotten_land run place feature lacuna:marsh_pool 96 70 96
 execute in lacuna:forgotten_land run forceload remove all
 # --- M2: banishment round trip of a named pig (record must survive the restart)
 summon minecraft:pig 8 120 8 {CustomName:'"smoke_pig"',NoAI:1b}

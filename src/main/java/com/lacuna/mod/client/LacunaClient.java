@@ -22,5 +22,8 @@ public final class LacunaClient {
         NeoForge.EVENT_BUS.addListener(OutlineRenderer::onRenderLevel);
         NeoForge.EVENT_BUS.addListener(OutlineRenderer::onLogout);
         NeoForge.EVENT_BUS.addListener(MagnifierInput::onMovementInput);
+        NeoForge.EVENT_BUS.addListener(MarshAtmosphere::onClientTick);
+        NeoForge.EVENT_BUS.addListener(MarshAtmosphere::onFog);
+        NeoForge.EVENT_BUS.addListener(MarshAtmosphere::onPlaySound);
     }
 }

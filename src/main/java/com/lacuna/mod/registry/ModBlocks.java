@@ -1,6 +1,11 @@
 package com.lacuna.mod.registry;
 
+import com.lacuna.mod.fl.AshenSnowBlock;
+import com.lacuna.mod.fl.FlatDecorBlock;
+import com.lacuna.mod.fl.SporeMushroomBlock;
+import com.lacuna.mod.fl.UpdraftSpringBlock;
 import com.lacuna.mod.mob.SilkDustGlowBlock;
+import net.minecraft.world.level.block.IceBlock;
 
 import com.lacuna.mod.block.MuralBlock;
 import com.lacuna.mod.orrery.OrreryBlock;
@@ -94,6 +99,25 @@ public final class ModBlocks {
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).noCollission().instabreak().noOcclusion().noLootTable()
                     .lightLevel(s -> 9).sound(SoundType.AMETHYST_CLUSTER).replaceable().pushReaction(PushReaction.DESTROY)
                     .isValidSpawn(Blocks::never)));
+
+    // ------------------------------------------------------------------ M10 Forgotten Land biomes
+    public static final DeferredBlock<AshenSnowBlock> ASHEN_SNOW_BLOCK = block("ashen_snow_block", () -> new AshenSnowBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.SNOW_BLOCK).mapColor(MapColor.COLOR_LIGHT_GRAY)));
+    public static final DeferredBlock<IceBlock> CLEAR_ICE = block("clear_ice", () -> new IceBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.ICE).mapColor(MapColor.ICE)));
+    public static final DeferredBlock<UpdraftSpringBlock> UPDRAFT_SPRING = block("updraft_spring", () -> new UpdraftSpringBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.WATER).strength(1.5F, 6.0F).noCollission().noOcclusion()
+                    .lightLevel(s -> 5).sound(SoundType.WET_GRASS).pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)
+                    .isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)));
+    public static final DeferredBlock<SporeMushroomBlock> SPORE_MUSHROOM = block("spore_mushroom", () -> new SporeMushroomBlock(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.BROWN_MUSHROOM).mapColor(MapColor.COLOR_CYAN).lightLevel(s -> 7)
+                    .randomTicks()));
+    public static final DeferredBlock<FlatDecorBlock> BURIED_WATCH = block("buried_watch", () -> new FlatDecorBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(0.8F).sound(SoundType.METAL).noOcclusion()
+                    .pushReaction(PushReaction.DESTROY), 6.0));
+    public static final DeferredBlock<FlatDecorBlock> RUSTED_GEAR = block("rusted_gear", () -> new FlatDecorBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(SoundType.METAL).noOcclusion()
+                    .pushReaction(PushReaction.DESTROY), 2.0));
 
     private ModBlocks() {}
 

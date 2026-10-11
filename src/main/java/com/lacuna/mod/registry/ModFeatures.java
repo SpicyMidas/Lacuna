@@ -1,7 +1,10 @@
 package com.lacuna.mod.registry;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.fl.ClearIceCapFeature;
+import com.lacuna.mod.fl.FloatingIslandFeature;
 import com.lacuna.mod.wood.HangingStrandsDecorator;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecoratorType;
@@ -15,6 +18,12 @@ public final class ModFeatures {
 
     public static final DeferredHolder<TreeDecoratorType<?>, TreeDecoratorType<HangingStrandsDecorator>> HANGING_STRANDS =
             TREE_DECORATORS.register("hanging_strands", () -> new TreeDecoratorType<>(HangingStrandsDecorator.CODEC));
+
+    // M10: Forgotten Land biome features
+    public static final DeferredHolder<Feature<?>, FloatingIslandFeature> FLOATING_ISLAND =
+            FEATURES.register("floating_island", () -> new FloatingIslandFeature(NoneFeatureConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>, ClearIceCapFeature> CLEAR_ICE_CAP =
+            FEATURES.register("clear_ice_cap", () -> new ClearIceCapFeature(NoneFeatureConfiguration.CODEC));
 
     private ModFeatures() {}
 }

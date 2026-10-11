@@ -348,3 +348,46 @@ Known limitations: brain-driven mobs (piglins, hoglins, wardens) ignore the deco
 `Mob#setTarget`-based goals.
 
 Gates: 3 ✔, 4 (logic, 26 tests) ✔, 1/2/5/6 not runnable here.
+
+## M10a — Forgotten Land biomes
+
+Built:
+- The dimension's `multi_noise` source now has five biomes (temperature/vegetation noise only; terrain unchanged):
+  Forgotten Plains (base), Cinderfrost Flats (T < −0.45), Whispering Marsh (humid), Clockwork Dunes (hot, dry),
+  Inverted Falls (hot, humid). Per-biome surface rules, features, spawns, tints, particles and ambient sounds.
+- **Forgotten Plains**: + Echo Birch groves (rarity 1/7 × 3) and Gloomcrawlers (weight 4).
+- **Cinderfrost Flats**: `ashen_snow_block` surface over tuff (blockstate `footprint` 0–3: any living entity
+  stepping on it sets 3, a scheduled tick fades one stage per 100 ticks), ash particles, rare Cindervine spires,
+  `clear_ice` (near-transparent ice, silk touch only) capping every still pond through a `lacuna:clear_ice_cap`
+  top-layer feature, so ruins below stay visible. No precipitation, no hostile spawns.
+- **Inverted Falls**: `lacuna:floating_island` feature: stone ellipsoids at Y 110–150 with grass/moss top,
+  2–3 zenithite veins, divine glass clusters, 50 % a Crystal Willow. Beside each island a chain of
+  `updraft_spring` blocks (pool basin on the ground, then small islets every ≤ 38 blocks) ends 2 blocks above the
+  island top so it can be reached. Spring: translucent, no collision, blockstate `range` 1–40 (worldgen sets the
+  exact length; placed by hand = 40), ticking block entity: server every 4 ticks for non-player entities, client
+  every tick for the local player only (players move client-side); net upward acceleration 0.08/tick (gravity
+  compensated) capped at 0.4, fall distance reset, column re-scanned every 40 ticks and stopped by the first
+  motion-blocking non-spring block; rising cloud/bubble/splash particles. Inverted Falls also has Crystal Willows
+  and divine glass clusters on the ground.
+- **Whispering Marsh**: mud/grass surface, `marsh_pool` shallow pools (vanilla `waterlogged_vegetation_patch`
+  with mud floor and seagrass), Tidebloom mangroves, lily pads, `spore_mushroom` patches (light 7, spore particles;
+  every 20 ticks living entities within 6 blocks glow for 60 ticks — reveals crouched Gloomcrawlers; skipped when no
+  player is within 48 blocks; worldgen-placed mushrooms start their cycle on the first random tick), Lantern
+  Moths (ambient 8) and Gloomcrawlers (monster 6). Client (config `marshFog`, SafeRun): fog far plane blends to 28
+  blocks and non-relative sounds from beyond 16 blocks play at 40 % (a delegating `SoundInstance`, because
+  `PlaySoundEvent` fires before the sound is resolved).
+- **Clockwork Dunes**: sand over sandstone, `buried_watch` (tilted half-buried watch, drops 1–2 chronal shards,
+  silk touch drops itself), `rusted_gear` (flat decorative gear), dead bushes, sparse Echo Birch, Clockwork Hounds
+  (creature 3), quiet note-block "hat" ticking as the additions sound. Slow time: 50 % of `CropGrowEvent.Pre`
+  results are `DO_NOT_GROW` in this biome (config `dunesSlowCrops`).
+- Gloomcrawler spawn rule: dark-only monster rules in the Overworld, any light in the Forgotten Land (its sky is
+  always lit, so the M9 rule could never pass there). Moths treat the Forgotten Land's fixed dusk as night.
+- Validator: configured feature types (vanilla or registered in `ModFeatures`) and placement modifier types are
+  checked now (negative-tested).
+- GameTests: footprint set/fade, updraft lifts a pig, spore mushroom makes a Gloomcrawler glow and emits light 7,
+  buried watch drops. Smoke phase 1 locates all four new biomes and runs the three new features once.
+
+Deviations: the updraft's "+0.08/tick" is applied as net acceleration (gravity compensated), otherwise a 0.08
+push only cancels gravity and nothing rises; islet springs make islands at Y 110–150 reachable with 40-block columns.
+
+Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.

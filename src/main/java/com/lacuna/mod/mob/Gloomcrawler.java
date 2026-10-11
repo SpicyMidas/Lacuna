@@ -1,7 +1,11 @@
 package com.lacuna.mod.mob;
 
 import com.lacuna.mod.LacunaConfig;
+import com.lacuna.mod.registry.ModDimensions;
 import com.lacuna.mod.registry.ModTags;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.level.ServerLevelAccessor;
 import java.util.EnumSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -151,6 +155,18 @@ public class Gloomcrawler extends Monster {
         }
         Player p = level().getNearestPlayer(this, 6.0);
         return p != null && holdsLight(p);
+    }
+
+    /**
+     * Normal dark-only monster rules in the Overworld; in the Forgotten Land (permanent dusk, light 15 skies) any
+     * light is allowed, like bogged/strays in their structures, otherwise it could never appear there.
+     */
+    public static boolean checkSpawnRules(EntityType<Gloomcrawler> type, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos,
+                                          RandomSource random) {
+        if (level.getLevel().dimension() == ModDimensions.FORGOTTEN_LAND) {
+            return Monster.checkAnyLightMonsterSpawnRules(type, level, reason, pos, random);
+        }
+        return Monster.checkMonsterSpawnRules(type, level, reason, pos, random);
     }
 
     /** Flees toward the darkest reachable spot (block light <= 4) when light is near. */

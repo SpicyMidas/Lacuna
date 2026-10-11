@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "lacuna:block/buried_watch",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/buried_watch"
+    },
+    "facing=south": {
+      "model": "lacuna:block/buried_watch",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "lacuna:block/buried_watch",
+      "y": 270
+    }
+  }
+}

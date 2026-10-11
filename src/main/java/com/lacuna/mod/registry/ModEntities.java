@@ -9,7 +9,6 @@ import com.lacuna.mod.mob.Gloomcrawler;
 import com.lacuna.mod.mob.LanternMoth;
 import com.lacuna.mod.mob.ThrownDecoyEntity;
 import net.minecraft.world.entity.SpawnPlacementTypes;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import com.lacuna.mod.pearl.ArrivalShardEntity;
@@ -81,7 +80,7 @@ public final class ModEntities {
         event.register(LANTERN_MOTH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 LanternMoth::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(GLOOMCRAWLER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+                Gloomcrawler::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(CLOCKWORK_HOUND.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 ClockworkHound::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }

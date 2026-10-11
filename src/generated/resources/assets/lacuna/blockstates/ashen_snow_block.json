@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "footprint=0": {
+      "model": "lacuna:block/ashen_snow_block"
+    },
+    "footprint=1": {
+      "model": "lacuna:block/ashen_snow_block_footprint_1"
+    },
+    "footprint=2": {
+      "model": "lacuna:block/ashen_snow_block_footprint_2"
+    },
+    "footprint=3": {
+      "model": "lacuna:block/ashen_snow_block_footprint_3"
+    }
+  }
+}
