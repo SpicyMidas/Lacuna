@@ -591,3 +591,28 @@ Built:
 Deviation: Guildmasters share one profession (one POI type); the guild comes from the board they work at.
 
 Gates: 3 ✔, 4 (logic, 43 tests) ✔, 1/2/5/6 not runnable here.
+
+## M12 — Polish
+
+Built:
+- `it_it` covers every key (415/415, generated next to `en_us`).
+- Advancement tab "Lacuna": root (first ruby) → enter the Forgotten Land → come back (goal); forge the Eclipser (goal)
+  → throw Sun's Fury (challenge, granted from code via `minecraft:impossible` + `LacunaAdvancements`); split a
+  Fractured Pearl (code); walk into a Township (`minecraft:location` with `#lacuna:townships`).
+- Curated creative tab: relics, weapons/tools/armour, materials, township and creature items, then all blocks;
+  anything unlisted is appended (GameTest checks completeness).
+- Tooltip polish: any item with an `item.lacuna.<id>.tip` key gets a grey italic line (client `ItemTooltipEvent`);
+  21 materials/blocks have one.
+- Player README, `docs/CHANGELOG.md`, `tools/smoke_soak.txt` (deterministic 30-minute console soak: selftest,
+  time/weather changes, banish/return round trips, FL features, mob and merchant spawns, structure placements, saves).
+- GameTest: tab order/completeness and all seven advancements loaded.
+
+Not done (optional in the spec): wood signs/hanging signs/boats, Orrery block-entity animation, TerraBlender
+injection. Emissive layers exist where they mattered (Gloomcrawler eyes, full-bright Lantern Moths).
+
+Final QA status: the 30-minute soak, memory/tick profiling and `./gradlew build` need a machine with access to
+maven.neoforged.net and the Mojang servers (blocked here); the scripts are ready (`tools/smoke.sh`,
+`tools/smoke_soak.txt`, `tools/smoke_townships.txt`). Profiling note to fill in after that run: average tick time
+with 1 player in a Township, peak during township generation, heap after 30 minutes.
+
+Gates: 3 ✔, 4 (logic, 43 tests) ✔, 1/2/5/6 not runnable here.

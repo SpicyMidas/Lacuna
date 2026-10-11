@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.throw_suns_fury.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:suns_fury"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.throw_suns_fury.title"
+    }
+  },
+  "parent": "lacuna:lacuna/forge_eclipser",
+  "requirements": [
+    [
+      "code"
+    ]
+  ]
+}

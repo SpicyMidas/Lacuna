@@ -1,0 +1,46 @@
+{
+  "criteria": {
+    "raw_ruby": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:raw_ruby"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "ruby": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:ruby"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "background": "lacuna:textures/block/ruin_stone_bricks.png",
+    "description": {
+      "translate": "advancements.lacuna.root.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:totem_of_banishing"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "ruby",
+      "raw_ruby"
+    ]
+  ]
+}

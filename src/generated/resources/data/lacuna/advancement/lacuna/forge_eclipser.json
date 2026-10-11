@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "eclipser": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:eclipser"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.forge_eclipser.description"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:eclipser"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.forge_eclipser.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "eclipser"
+    ]
+  ]
+}

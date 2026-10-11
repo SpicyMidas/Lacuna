@@ -1,0 +1,31 @@
+{
+  "criteria": {
+    "enter": {
+      "conditions": {
+        "to": "lacuna:forgotten_land"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.enter_forgotten_land.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:chiseled_ruin_glyph"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.enter_forgotten_land.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "enter"
+    ]
+  ]
+}

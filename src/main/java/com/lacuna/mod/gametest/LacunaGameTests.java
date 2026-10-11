@@ -538,4 +538,20 @@ public final class LacunaGameTests {
         check(helper, poi.isPresent() && poi.get().is(com.lacuna.mod.registry.ModVillagers.GUILDMASTER_POI.getKey()), "guild board is a job site");
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ M12 polish
+    @GameTest(template = PLATFORM)
+    public static void creativeTabIsCuratedAndComplete(GameTestHelper helper) {
+        var ordered = new java.util.ArrayList<>(com.lacuna.mod.registry.ModCreativeTabs.ordered());
+        check(helper, ordered.get(0) == ModItems.TOTEM_OF_BANISHING.get(), "relics come first");
+        for (var holder : com.lacuna.mod.registry.ModRegistries.ITEMS.getEntries()) {
+            check(helper, ordered.contains(holder.get()), holder.getId() + " missing from the creative tab");
+        }
+        var advancements = helper.getLevel().getServer().getAdvancements();
+        for (String key : List.of("root", "enter_forgotten_land", "survive_banishment", "forge_eclipser", "throw_suns_fury",
+                "link_pearl", "find_township")) {
+            check(helper, advancements.get(com.lacuna.mod.Lacuna.id("lacuna/" + key)) != null, "advancement lacuna/" + key + " loaded");
+        }
+        helper.succeed();
+    }
 }

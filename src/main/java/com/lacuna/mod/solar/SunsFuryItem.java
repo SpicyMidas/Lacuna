@@ -43,6 +43,7 @@ public class SunsFuryItem extends Item {
             spear.setItem(stack.copyWithCount(1));
             spear.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, Balance.SUNS_FURY_SPEED, 0.5F);
             level.addFreshEntity(spear);
+            com.lacuna.mod.util.LacunaAdvancements.award(player, "lacuna/throw_suns_fury");
             // x/y/z overload accepts both SoundEvent and Holder<SoundEvent>
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TRIDENT_THROW, SoundSource.PLAYERS, 1.0F, 0.6F);
         }

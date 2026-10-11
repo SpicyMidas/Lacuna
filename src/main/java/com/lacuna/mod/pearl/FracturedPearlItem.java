@@ -37,6 +37,7 @@ public class FracturedPearlItem extends Item {
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_CLUSTER_BREAK,
                     SoundSource.PLAYERS, 1.0F, 0.8F);
             player.displayClientMessage(Component.translatable("lacuna.pearl.split"), true);
+            com.lacuna.mod.util.LacunaAdvancements.award(player, "lacuna/link_pearl");
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }

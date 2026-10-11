@@ -304,3 +304,10 @@ All `/lacuna` commands need permission level 2.
 - [ ] A repair kit used with a damaged tool in the other hand restores a quarter of its durability.
 - [ ] Villagers working near the library desks gain XP each dawn and level up to 3 by trading.
 - [ ] Kill a Last Merchant near a township: the ledger's price index rises by 0.2 and decays daily.
+## M12 — Polish
+- [ ] Creative tab: relics first, then weapons/armour, materials, township/creature items, blocks.
+- [ ] Hover silk dust, township coin, updraft spring…: a grey italic hint line.
+- [ ] The "Lacuna" advancement tab unlocks in order (ruby, Forgotten Land, coming back, Eclipser, Sun's Fury, pearl,
+      Township).
+- [ ] Switch the game to Italian: every Lacuna text is translated.
+- [ ] Dedicated server: `java -Dlacuna.smoke=tools/smoke_soak.txt ...` runs for 30 minutes without errors.

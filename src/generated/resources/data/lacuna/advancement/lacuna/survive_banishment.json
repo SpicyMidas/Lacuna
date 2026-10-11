@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "return": {
+      "conditions": {
+        "from": "lacuna:forgotten_land",
+        "to": "minecraft:overworld"
+      },
+      "trigger": "minecraft:changed_dimension"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.survive_banishment.description"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:totem_of_banishing"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.survive_banishment.title"
+    }
+  },
+  "parent": "lacuna:lacuna/enter_forgotten_land",
+  "requirements": [
+    [
+      "return"
+    ]
+  ]
+}
