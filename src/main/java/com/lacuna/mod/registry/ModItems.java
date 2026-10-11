@@ -5,6 +5,9 @@ import com.lacuna.mod.banish.TotemOfBanishingItem;
 import com.lacuna.mod.beam.DivineMagnifyingGlassItem;
 import com.lacuna.mod.eclipse.EclipseCharge;
 import com.lacuna.mod.eclipse.EclipserItem;
+import com.lacuna.mod.pearl.ArrivalShardItem;
+import com.lacuna.mod.pearl.DepartureShardItem;
+import com.lacuna.mod.pearl.FracturedPearlItem;
 import com.lacuna.mod.solar.SunsFuryItem;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -59,6 +62,14 @@ public final class ModItems {
     public static final DeferredItem<Item> SOLAR_FLARE = item("solar_flare", Item::new, new Item.Properties().rarity(Rarity.RARE));
     public static final DeferredItem<SunsFuryItem> SUNS_FURY = item("suns_fury", SunsFuryItem::new,
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant());
+
+    // ------------------------------------------------------------------ M5 fractured pearl
+    public static final DeferredItem<FracturedPearlItem> FRACTURED_PEARL = item("fractured_pearl", FracturedPearlItem::new,
+            new Item.Properties().stacksTo(1).rarity(Rarity.RARE));
+    public static final DeferredItem<ArrivalShardItem> ARRIVAL_SHARD = item("arrival_shard", ArrivalShardItem::new,
+            new Item.Properties().durability(Balance.ARRIVAL_SHARD_DURABILITY).rarity(Rarity.RARE));
+    public static final DeferredItem<DepartureShardItem> DEPARTURE_SHARD = item("departure_shard", DepartureShardItem::new,
+            new Item.Properties().durability(Balance.DEPARTURE_SHARD_DURABILITY).rarity(Rarity.RARE));
 
     private ModItems() {}
 

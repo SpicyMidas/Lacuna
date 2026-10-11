@@ -25,5 +25,6 @@ public final class ModRegistries {
         ModComponents.COMPONENTS.register(modBus);
         ModEffects.EFFECTS.register(modBus);
         ModEntities.ENTITIES.register(modBus);
+        ModBlockEntities.BLOCK_ENTITIES.register(modBus);
     }
 }

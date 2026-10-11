@@ -176,3 +176,26 @@ Deviations:
 - Same-dimension spectator "teleport to player" cannot be blocked without Mixins; documented limitation.
 
 Gates: 3 ✔, 4 (logic, 21 tests) ✔, 1/2/5/6 not runnable here.
+
+## M5 — Fractured Pearl system
+
+Built:
+- `fractured_pearl` (recipe `DRD / RPR / DRD`, stack 1): right click splits into an `arrival_shard` and a
+  `departure_shard` sharing a random link id (data component `lacuna:pearl_link` {id, cracked}).
+- Arrival Shard (durability 10, 1 per throw, 30 s cooldown): thrown entity (speed 1.5, gravity 0.03, no damage,
+  never teleports the thrower). On a block it locks: `arrival_anchor` placed in the adjacent replaceable non-fluid
+  block (mayInteract respected), the shard stack is stored in the anchor's block entity, `PearlLinkSavedData`
+  records link → {dimension, pos}; re-locking removes the old anchor first (its chunk loaded once). Entity hits,
+  unplaceable spots → drops back as an item; void/unloaded chunk → returned to the thrower.
+- Arrival Anchor: floating teal crystal (rotated cube model, light 6), blast resistance 1200, push-immune, not
+  replaceable by fluids, no loot table; broken by a (non-creative) player it pops the stored shard and clears the
+  link; removed any other way, the next Departure use finds no anchor and cleans the record.
+- Departure Shard (durability 5, 15 s cooldown): teleports to the anchor (safe spot, chunk loaded once, dismount,
+  leashes break, portal particles both ends). Missing/invalid link, another dimension or the Forgotten Land:
+  "The shard hums, but nothing answers.", no durability, no cooldown, tooltip switches to "Cracked".
+- Tooltips: `Linked: ABCD-1234`. Anvil: both shards +3 durability per ender pearl; item+item merging disabled.
+- GameTests (spec list): link round trip (resolution never checks the holder, so a friend can use it), two pairs
+  do not interfere, broken anchor invalidates, cross-dimension and Forgotten Land refusal. Restart persistence uses
+  the same SavedData pattern as banishment records (covered by the smoke test's banished pig).
+
+Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.

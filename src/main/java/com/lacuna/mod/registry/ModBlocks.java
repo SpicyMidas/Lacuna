@@ -1,6 +1,7 @@
 package com.lacuna.mod.registry;
 
 import com.lacuna.mod.block.MuralBlock;
+import com.lacuna.mod.pearl.ArrivalAnchorBlock;
 import java.util.function.Supplier;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.AmethystClusterBlock;
@@ -66,6 +67,11 @@ public final class ModBlocks {
             BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_BLUE)));
     public static final DeferredBlock<Block> RAW_UMBRAL_IRON_BLOCK = block("raw_umbral_iron_block", () -> new Block(
             BlockBehaviour.Properties.ofFullCopy(Blocks.RAW_IRON_BLOCK).mapColor(MapColor.COLOR_BLUE)));
+
+    // ------------------------------------------------------------------ M5 fractured pearl
+    public static final DeferredBlock<ArrivalAnchorBlock> ARRIVAL_ANCHOR = blockNoItem("arrival_anchor", () -> new ArrivalAnchorBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(1.5F, 1200.0F).noOcclusion().noLootTable()
+                    .lightLevel(s -> 6).sound(SoundType.AMETHYST).pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
 
     private ModBlocks() {}
 

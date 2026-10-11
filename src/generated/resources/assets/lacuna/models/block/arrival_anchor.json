@@ -1,0 +1,87 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#crystal",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#crystal",
+          "uv": [
+            5,
+            4,
+            11,
+            12
+          ]
+        },
+        "north": {
+          "texture": "#crystal",
+          "uv": [
+            5,
+            4,
+            11,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#crystal",
+          "uv": [
+            5,
+            4,
+            11,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#crystal",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#crystal",
+          "uv": [
+            5,
+            4,
+            11,
+            12
+          ]
+        }
+      },
+      "from": [
+        5,
+        4,
+        5
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          8,
+          8
+        ]
+      },
+      "to": [
+        11,
+        12,
+        11
+      ]
+    }
+  ],
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "crystal": "lacuna:block/arrival_anchor",
+    "particle": "lacuna:block/arrival_anchor"
+  }
+}

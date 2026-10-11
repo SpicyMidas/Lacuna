@@ -85,3 +85,17 @@ All `/lacuna` commands need permission level 2.
       your mode returns; ending inside a wall moves you out. Log out mid-walk and back in: survival restored.
 - [ ] Sun's Fury: throw it in the overworld: time jumps to noon, a golden column burns mobs and carves a crater
       (radius 6) over ~1 s; with `mobGriefing false` only damage. In the Forgotten Land it fizzles and is kept.
+
+## M5 — Fractured Pearl
+```
+/give @s lacuna:fractured_pearl 2
+/give @s minecraft:ender_pearl 4
+```
+- [ ] Use the pearl: you get a teal Arrival Shard and a violet Departure Shard; tooltips show the same `Linked:` id.
+- [ ] Throw the Arrival Shard at a wall: a floating teal crystal appears against the face.
+- [ ] Walk away, use the Departure Shard: you appear at the crystal. Give the Departure Shard to a friend: it
+      works for them too.
+- [ ] Mine the crystal: the Arrival Shard drops (same link). Use the Departure Shard now: "The shard hums, but
+      nothing answers.", no cooldown/durability spent, tooltip shows "Cracked".
+- [ ] Anchor in the Nether, Departure from the overworld: refused. Inside the Forgotten Land: refused.
+- [ ] Restart the server/world: an existing link still works.

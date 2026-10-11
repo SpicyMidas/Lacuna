@@ -4,6 +4,8 @@ import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.banish.BanishmentManager;
 import com.lacuna.mod.beam.BeamHandler;
 import com.lacuna.mod.eclipse.EclipserItem;
+import com.lacuna.mod.pearl.PearlLink;
+import com.lacuna.mod.pearl.PearlLinks;
 import com.lacuna.mod.registry.ModDimensions;
 import com.lacuna.mod.registry.ModBlocks;
 import com.lacuna.mod.registry.ModItems;
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -143,6 +146,53 @@ public final class LacunaGameTests {
         EclipserItem.resetOnDamage(player);
         check(helper, EclipserItem.charge(sword) == 0, "taking damage resets the charge");
         zombie.discard();
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ M5 (spec-required pearl tests)
+    private static PearlLink lockPair(GameTestHelper helper, BlockPos floorRelative) {
+        ItemStack[] pair = PearlLinks.split();
+        PearlLink link = PearlLinks.link(pair[0]);
+        boolean locked = PearlLinks.lock(helper.getLevel(), helper.absolutePos(floorRelative), Direction.UP, pair[0], null);
+        check(helper, locked, "arrival shard should lock on top of the floor");
+        check(helper, link != null && link.equals(PearlLinks.link(pair[1])), "both halves share the link id");
+        return link;
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void pearlLinkRoundTrip(GameTestHelper helper) {
+        PearlLink link = lockPair(helper, new BlockPos(2, 0, 2));
+        var target = PearlLinks.resolve(helper.getLevel().getServer(), Level.OVERWORLD, link);
+        check(helper, target.isPresent() && target.get().pos().equals(helper.absolutePos(new BlockPos(2, 1, 2))),
+                "departure must resolve to the anchor (any holder: links are not bound to a player)");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void pearlPairsDoNotInterfere(GameTestHelper helper) {
+        PearlLink a = lockPair(helper, new BlockPos(1, 0, 1));
+        PearlLink b = lockPair(helper, new BlockPos(6, 0, 6));
+        var ta = PearlLinks.resolve(helper.getLevel().getServer(), Level.OVERWORLD, a);
+        var tb = PearlLinks.resolve(helper.getLevel().getServer(), Level.OVERWORLD, b);
+        check(helper, ta.isPresent() && tb.isPresent() && !ta.get().pos().equals(tb.get().pos()), "each pair keeps its own anchor");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void pearlBrokenAnchorInvalidates(GameTestHelper helper) {
+        PearlLink link = lockPair(helper, new BlockPos(3, 0, 3));
+        helper.getLevel().removeBlock(helper.absolutePos(new BlockPos(3, 1, 3)), false);
+        check(helper, PearlLinks.resolve(helper.getLevel().getServer(), Level.OVERWORLD, link).isEmpty(),
+                "a destroyed anchor must not resolve");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void pearlRefusesOtherDimensions(GameTestHelper helper) {
+        PearlLink link = lockPair(helper, new BlockPos(4, 0, 4));
+        check(helper, PearlLinks.resolve(helper.getLevel().getServer(), Level.NETHER, link).isEmpty(), "no cross-dimension travel");
+        check(helper, PearlLinks.resolve(helper.getLevel().getServer(), ModDimensions.FORGOTTEN_LAND, link).isEmpty(),
+                "no Forgotten Land crossings");
         helper.succeed();
     }
 }

@@ -1,0 +1,24 @@
+{
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "lacuna:divine_glass_shard"
+    },
+    "P": {
+      "item": "minecraft:ender_pearl"
+    },
+    "R": {
+      "item": "lacuna:ruby"
+    }
+  },
+  "pattern": [
+    "DRD",
+    "RPR",
+    "DRD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:fractured_pearl"
+  },
+  "type": "minecraft:crafting_shaped"
+}
