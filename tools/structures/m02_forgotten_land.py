@@ -208,6 +208,8 @@ def obelisk_ruin(Template, i):
         if y < 5:
             for (x, z) in ((1, 2), (3, 2), (2, 1), (2, 3)):
                 brick(t, x, y, z, 0.3)
+    # M10: the Forgotten Land obelisk still bears one inscription, just above the ring of bricks
+    t.set(2, 5, 2, L + "obelisk_inscription")
     # broken top lying beside the base
     for x in range(0, 3):
         t.set(x, 1, 4, PILLAR, {"axis": "x"})

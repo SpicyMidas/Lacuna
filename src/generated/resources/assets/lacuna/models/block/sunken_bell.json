@@ -1,0 +1,213 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#bell",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#bell",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "north": {
+          "texture": "#bell",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#bell",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#bell",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#bell",
+          "uv": [
+            7,
+            0,
+            9,
+            3
+          ]
+        }
+      },
+      "from": [
+        7,
+        13,
+        7
+      ],
+      "to": [
+        9,
+        16,
+        9
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#bell",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#bell",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        },
+        "north": {
+          "texture": "#bell",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#bell",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#bell",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#bell",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        }
+      },
+      "from": [
+        5,
+        4,
+        5
+      ],
+      "to": [
+        11,
+        13,
+        11
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "texture": "#bell",
+          "uv": [
+            4,
+            12,
+            12,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#bell",
+          "uv": [
+            4,
+            12,
+            12,
+            14
+          ]
+        },
+        "north": {
+          "texture": "#bell",
+          "uv": [
+            4,
+            12,
+            12,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#bell",
+          "uv": [
+            4,
+            12,
+            12,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#bell",
+          "uv": [
+            4,
+            12,
+            12,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#bell",
+          "uv": [
+            4,
+            12,
+            12,
+            14
+          ]
+        }
+      },
+      "from": [
+        4,
+        2,
+        4
+      ],
+      "to": [
+        12,
+        4,
+        12
+      ]
+    }
+  ],
+  "parent": "minecraft:block/block",
+  "textures": {
+    "bell": "lacuna:block/sunken_bell",
+    "particle": "lacuna:block/sunken_bell"
+  }
+}

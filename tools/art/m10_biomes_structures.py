@@ -160,7 +160,55 @@ def rusted_gear():
     save(img, "block/rusted_gear")
 
 
+def sunken_bell():
+    img = noise_fill(ramp("#2F6B5E", "#3F8A74", "#5BA88C", "#7FC4A6", "#A8DCC0"), "sunken_bell", cell=3, speckle=0.25)
+    px = img.load()
+    r = rng("sunken_bell_spots")
+    for _ in range(20):
+        x, y = r.randrange(16), r.randrange(16)
+        px[x, y] = r.choice([c("#B87A4A"), c("#C98E5A"), c("#2A4F45")])  # bare bronze and deep patina
+    for x in range(16):
+        px[x, 12] = c("#24463D")
+        px[x, 13] = c("#C98E5A")
+    for y in range(0, 3):
+        for x in range(7, 9):
+            px[x, y] = c("#3A2A18")
+    save(img, "block/sunken_bell")
+
+
+GLYPHS = [
+    "................",
+    ".gg..g.....g.gg.",
+    ".g..ggg...gg..g.",
+    ".gg..g.....g.gg.",
+    "................",
+    "..g.g..gg..g....",
+    "..ggg...g..ggg..",
+    "....g..gg....g..",
+    "................",
+    ".g...ggg..g..g..",
+    ".gg....g..ggg...",
+    ".g...ggg....g...",
+    "................",
+    "...gg..g.g..gg..",
+    "....g..ggg...g..",
+    "...gg....g..gg..",
+]
+
+
+def obelisk_inscription():
+    img = noise_fill(ramp("#0E0C12", "#16141C", "#1F1C27", "#2A2633"), "obelisk_inscription", cell=4, speckle=0.12)
+    px = img.load()
+    for y, row in enumerate(GLYPHS):
+        for x, ch in enumerate(row):
+            if ch == "g":
+                px[x, y] = c("#B08A3E") if (x + y) % 3 else c("#E7C46A")
+    save(img, "block/obelisk_inscription")
+
+
 def paint():
+    sunken_bell()
+    obelisk_inscription()
     ashen_snow()
     clear_ice()
     updraft_spring()

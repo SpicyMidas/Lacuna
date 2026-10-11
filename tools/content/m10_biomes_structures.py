@@ -9,6 +9,9 @@ HORIZONTAL = {"north": 0, "east": 90, "south": 180, "west": 270}
 def build(g):
     biome_blocks(g)
     biomes(g)
+    bell_tower(g)
+    obelisk(g)
+    g.tag("worldgen/structure", "lacuna:orrery_targets", "lacuna:sunken_bell_tower", "lacuna:obelisk")
 
 
 # ============================================================================================ 10a blocks
@@ -223,3 +226,75 @@ def biomes(g):
         {"biome": "lacuna:clockwork_dunes", "parameters": wg.climate([0.45, 1.0], [-1.0, 0.0])},
         {"biome": "lacuna:inverted_falls", "parameters": wg.climate([0.45, 1.0], [0.0, 1.0])},
     ]))
+
+
+# ============================================================================================ 10b structures
+def single_structure(g, name, biomes_tag, heightmap, salt, spacing, separation, adaptation="beard_thin"):
+    g.data(f"worldgen/template_pool/{name}", wg.pool([mod(name)]))
+    data = wg.jigsaw_structure(mod(name), biomes_tag, adaptation=adaptation, heightmap=heightmap)
+    g.data(f"worldgen/structure/{name}", data)
+    g.data(f"worldgen/structure_set/{name}", wg.structure_set([mod(name)], spacing, separation, salt))
+
+
+def bell_tower(g):
+    bell_faces = lambda uv: {d: {"uv": uv, "texture": "#bell"} for d in ("north", "south", "east", "west", "up", "down")}
+    g.single("sunken_bell", "Sunken Bell", "Campana sommersa", {
+        "parent": "minecraft:block/block", "textures": {"particle": "lacuna:block/sunken_bell", "bell": "lacuna:block/sunken_bell"},
+        "elements": [{"from": [7, 13, 7], "to": [9, 16, 9], "faces": bell_faces([7, 0, 9, 3])},
+                     {"from": [5, 4, 5], "to": [11, 13, 11], "faces": bell_faces([5, 3, 11, 12])},
+                     {"from": [4, 2, 4], "to": [12, 4, 12], "faces": bell_faces([4, 12, 12, 14])}]})
+    g.tag("block", "minecraft:mineable/pickaxe", mod("sunken_bell"))
+    g.tag("worldgen/biome", "lacuna:has_structure/sunken_bell_tower", "#minecraft:is_ocean", "#minecraft:is_deep_ocean")
+    single_structure(g, "sunken_bell_tower", "#lacuna:has_structure/sunken_bell_tower", "OCEAN_FLOOR_WG", 1530771209, 36, 12)
+    g.data("loot_table/chests/sunken_bell_tower", wg.chest_table([
+        wg.chest_pool([wg.loot_entry("minecraft:prismarine_shard", 20, 2, 6), wg.loot_entry("minecraft:prismarine_crystals", 15, 1, 4),
+                       wg.loot_entry("lacuna:ruby", 10, 1, 3), wg.loot_entry("lacuna:divine_glass_shard", 10, 1, 3),
+                       wg.loot_entry("minecraft:gold_ingot", 10, 1, 3), wg.loot_entry("minecraft:iron_ingot", 12, 1, 4),
+                       wg.loot_entry("minecraft:nautilus_shell", 5), wg.loot_entry("lacuna:chronal_shard", 3),
+                       wg.loot_entry("minecraft:copper_ingot", 12, 2, 6)], 3, 6),
+        {"bonus_rolls": 0.0, "rolls": 1.0, "entries": [{"type": "minecraft:empty", "weight": 49},
+                                                        {"type": "minecraft:item", "name": "minecraft:heart_of_the_sea", "weight": 1}]}]))
+    g.name("lacuna.bell.reveal", "The bell's toll echoes through the stone: %s ores answer.",
+           "Il rintocco della campana attraversa la pietra: rispondono %s minerali.")
+    g.name("lacuna.bell.cooldown", "The bell is still humming (%ss).", "La campana vibra ancora (%ss).")
+
+
+OBELISK_LINES = [
+    ("Here the names were carved so deep that the stone forgot them.", "Qui i nomi furono incisi così a fondo che la pietra li dimenticò."),
+    ("We built the city of glass, and the city remembered us instead.", "Costruimmo la città di vetro, e fu la città a ricordare noi."),
+    ("Count the towers. Then count the people. One number is missing.", "Conta le torri. Poi conta le persone. Manca un numero."),
+    ("The sun was ours for a thousand summers.", "Il sole fu nostro per mille estati."),
+    ("Whoever reads this has already forgotten who wrote it.", "Chi legge ha già dimenticato chi l'ha scritto."),
+    ("The bells rang under the sea so the drowned would not feel alone.", "Le campane suonavano sotto il mare perché gli annegati non si sentissero soli."),
+    ("Twelve steps there are one step here.", "Dodici passi là sono un passo qui."),
+    ("A name is a door. We closed all of ours.", "Un nome è una porta. Abbiamo chiuso tutte le nostre."),
+    ("The watches still tick in the sand, counting for no one.", "Gli orologi ticchettano ancora nella sabbia, contando per nessuno."),
+    ("Do not look for us in the mirrors. Only you live there now.", "Non cercarci negli specchi. Ora ci vivi solo tu."),
+    ("We traded our past for a quiet land. The land kept both.", "Barattammo il passato per una terra quieta. La terra tenne entrambi."),
+    ("The rubies were tears of the mountain. We made crowns of them.", "I rubini erano lacrime della montagna. Ne facemmo corone."),
+    ("Ash falls where snow once did; it remembers footsteps a little longer.", "Cade cenere dove un tempo cadeva neve; ricorda i passi un po' più a lungo."),
+    ("The waterfalls turned upward the day the river lost its name.", "Le cascate si rovesciarono il giorno in cui il fiume perse il nome."),
+    ("Every festival ended with a song no one could finish.", "Ogni festa finiva con un canto che nessuno sapeva concludere."),
+    ("If you hear whispering in the marsh, answer politely.", "Se senti sussurri nella palude, rispondi con garbo."),
+    ("The merchant who still walks remembers every price but his own.", "Il mercante che ancora cammina ricorda ogni prezzo tranne il proprio."),
+    ("Here stood the library. The books are still here; the words left.", "Qui sorgeva la biblioteca. I libri ci sono ancora; le parole se ne sono andate."),
+    ("Eclipse was not the end. It was a door left ajar.", "L'eclisse non fu la fine. Fu una porta socchiusa."),
+    ("Mark the place where you stand: one day it will forget you too.", "Segna il luogo in cui sei: un giorno dimenticherà anche te."),
+    ("Seven brothers, one obelisk, no names.", "Sette fratelli, un obelisco, nessun nome."),
+    ("The glass grows where the light was kindest.", "Il vetro cresce dove la luce fu più gentile."),
+    ("The hounds of brass still follow a master who never returns.", "I segugi d'ottone seguono ancora un padrone che non torna mai."),
+    ("Read slowly. The letters move when you are not looking.", "Leggi piano. Le lettere si muovono quando non guardi."),
+]
+
+
+def obelisk(g):
+    g.cube("obelisk_inscription", "Obelisk Inscription", "Iscrizione dell'obelisco", loot=None)
+    g.tag("block", "lacuna:ruin_blocks", mod("obelisk_inscription"))
+    g.tag("worldgen/biome", "lacuna:has_structure/obelisk", "#minecraft:is_forest", "#minecraft:is_taiga", "#minecraft:is_savanna",
+          "#minecraft:is_jungle", "#minecraft:is_badlands", "#minecraft:is_hill", "#c:is_plains", "#c:is_desert",
+          "#c:is_snowy_plains")
+    single_structure(g, "obelisk", "#lacuna:has_structure/obelisk", "WORLD_SURFACE_WG", 772491035, 44, 16)
+    assert len(OBELISK_LINES) == 24
+    for i, (en, it) in enumerate(OBELISK_LINES):
+        g.name(f"lacuna.obelisk.line.{i}", en, it)
+    g.name("lacuna.obelisk.reward", "Something falls from a crack in the stone.", "Qualcosa cade da una crepa nella pietra.")

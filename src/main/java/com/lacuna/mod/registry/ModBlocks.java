@@ -5,6 +5,8 @@ import com.lacuna.mod.fl.FlatDecorBlock;
 import com.lacuna.mod.fl.SporeMushroomBlock;
 import com.lacuna.mod.fl.UpdraftSpringBlock;
 import com.lacuna.mod.mob.SilkDustGlowBlock;
+import com.lacuna.mod.structure.ObeliskInscriptionBlock;
+import com.lacuna.mod.structure.SunkenBellBlock;
 import net.minecraft.world.level.block.IceBlock;
 
 import com.lacuna.mod.block.MuralBlock;
@@ -118,6 +120,15 @@ public final class ModBlocks {
     public static final DeferredBlock<FlatDecorBlock> RUSTED_GEAR = block("rusted_gear", () -> new FlatDecorBlock(
             BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_ORANGE).strength(1.0F).sound(SoundType.METAL).noOcclusion()
                     .pushReaction(PushReaction.DESTROY), 2.0));
+
+    // ------------------------------------------------------------------ M10 structures
+    public static final DeferredBlock<SunkenBellBlock> SUNKEN_BELL = block("sunken_bell", () -> new SunkenBellBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.WARPED_STEM).strength(5.0F, 6.0F).sound(SoundType.ANVIL)
+                    .noOcclusion().requiresCorrectToolForDrops().pushReaction(PushReaction.DESTROY)));
+    public static final DeferredBlock<ObeliskInscriptionBlock> OBELISK_INSCRIPTION = block("obelisk_inscription",
+            () -> new ObeliskInscriptionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(-1.0F, 3600000.0F)
+                    .noLootTable().lightLevel(s -> 3).sound(SoundType.POLISHED_DEEPSLATE).pushReaction(PushReaction.BLOCK)
+                    .isValidSpawn(Blocks::never)));
 
     private ModBlocks() {}
 

@@ -10,7 +10,9 @@ import com.lacuna.mod.gear.GearEvents;
 import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
 import com.lacuna.mod.mob.ScentTracker;
+import com.lacuna.mod.network.LacunaNetwork;
 import com.lacuna.mod.orrery.OrreryBlock;
+import com.lacuna.mod.structure.SunkenBellBlock;
 import com.lacuna.mod.registry.ModEntities;
 import com.lacuna.mod.wood.WoodSetup;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -47,6 +49,7 @@ public final class Lacuna {
         EclipseEvents.register(NeoForge.EVENT_BUS);
         modBus.addListener(ModEntities::onAttributes);
         modBus.addListener(ModEntities::onSpawnPlacements);
+        modBus.addListener(LacunaNetwork::register);
         modBus.addListener((FMLCommonSetupEvent e) -> e.enqueueWork(WoodSetup::setup));
 
         // M6 utility items
@@ -86,5 +89,6 @@ public final class Lacuna {
         // Volatile, session-scoped state must not leak into the next world (spec section 3, "Data").
         SafeRun.resetAll();
         OrreryBlock.clearVolatile();
+        SunkenBellBlock.clearVolatile();
     }
 }

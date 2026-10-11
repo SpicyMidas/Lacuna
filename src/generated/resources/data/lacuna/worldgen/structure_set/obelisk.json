@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "salt": 772491035,
+    "separation": 16,
+    "spacing": 44,
+    "type": "minecraft:random_spread"
+  },
+  "structures": [
+    {
+      "structure": "lacuna:obelisk",
+      "weight": 1
+    }
+  ]
+}

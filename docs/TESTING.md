@@ -201,3 +201,18 @@ All `/lacuna` commands need permission level 2.
       glow; crouched Gloomcrawlers become visible.
 - [ ] Clockwork Dunes: buried watches (drop chronal shards) and rusted gears on sand; Clockwork Hounds; wheat
       planted here grows visibly slower than in the Overworld; a faint ticking ambience.
+## M10b — Sunken Bell Tower, Obelisk
+```
+/locate structure lacuna:sunken_bell_tower
+/locate structure lacuna:obelisk
+/place structure lacuna:sunken_bell_tower ~ ~ ~20
+/place structure lacuna:obelisk ~20 ~ ~
+/give @s lacuna:orrery_of_thresholds
+```
+- [ ] The bell tower stands on the ocean floor, water-filled below sea level, ladder up to the bell chamber; the base
+      chest has loot.
+- [ ] Ringing the bell tolls, draws rings and outlines nearby ores in gold for 8 s; ringing again within 60 s shows
+      the cooldown.
+- [ ] Obelisk inscriptions print a lore line (always the same line for the same block); occasionally (12 %) a small
+      reward drops, never twice for the same player and obelisk; inscriptions cannot be mined in survival.
+- [ ] The Orrery points to the nearest obelisk or bell tower.

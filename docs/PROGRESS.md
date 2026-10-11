@@ -391,3 +391,29 @@ Deviations: the updraft's "+0.08/tick" is applied as net acceleration (gravity c
 push only cancels gravity and nothing rises; islet springs make islands at Y 110–150 reachable with 40-block columns.
 
 Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.
+
+## M10b — Sunken Bell Tower, Obelisk of Unreadable Names
+
+Built:
+- **Sunken Bell Tower** (`lacuna:sunken_bell_tower`, oceans and deep oceans, spacing 36/12): 9×9×26 mossy
+  stone-brick tower projected to the ocean floor (interior positions are left out of the template, so the sea
+  fills it; 1.21 waterlogging applies), arched windows, prismarine floors with a ladder shaft, sea lanterns, base
+  chest (`lacuna:chests/sunken_bell_tower`: prismarine, metals, rubies, divine shards, nautilus shell, chronal
+  shard, 2 % heart of the sea), open bell chamber with oxidized copper roof and the **`sunken_bell`**.
+- `sunken_bell`: right click (60 s volatile cooldown per player) → bell toll, rings of nautilus particles and a
+  `RevealOresPayload(positions ≤ 64, 160 ticks)` (first custom payload; registered with
+  `RegisterPayloadHandlersEvent`, client handler only touched on the physical client) with the nearest ores in
+  `#c:ores` within 24 blocks. The scan never loads chunks and skips sections whose palette has no ore. The client
+  draws them with the shared `OutlineRenderer` (gold, through walls).
+- **Obelisk of Unreadable Names** (`lacuna:obelisk`, rare in land biomes, spacing 44/16): polished blackstone
+  platform, 3×3 base with an `obelisk_inscription` on every face, 1×1 pillar to 10 blocks. The Forgotten Land
+  `obelisk_ruin` templates now carry one inscription too.
+- `obelisk_inscription` (unbreakable in survival, no drops): right click prints one of 24 lore lines (EN/IT),
+  chosen by a position hash (`logic/ObeliskRules`, unit-tested: stable, all lines reachable); 12 % chance of a
+  reward (1–3 rubies / 1–2 divine glass shards / 1 chronal shard), at most once per player per obelisk and with a
+  20 min cooldown per obelisk (`ObeliskSavedData` in the overworld storage).
+- Structure tag `lacuna:orrery_targets` = obelisk + sunken bell tower (the Orrery from M6 now finds them).
+- GameTests: ore scan (vanilla + `c:ores` ruby, nearest first, limit), obelisk claim/cooldown and unbreakability.
+  Smoke phase 1 places both structures and locates `#lacuna:orrery_targets`.
+
+Gates: 3 ✔, 4 (logic, 29 tests) ✔, 1/2/5/6 not runnable here.

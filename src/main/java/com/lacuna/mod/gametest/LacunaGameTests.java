@@ -373,4 +373,34 @@ public final class LacunaGameTests {
                 "buried watch drops 1-2 chronal shards");
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ M10b Sunken Bell, Obelisk
+    @GameTest(template = PLATFORM)
+    public static void sunkenBellScanFindsNearbyOres(GameTestHelper helper) {
+        helper.setBlock(CENTER.east(3), Blocks.IRON_ORE);
+        helper.setBlock(CENTER.west(2).above(), ModBlocks.RUBY_ORE.get());
+        BlockPos center = helper.absolutePos(CENTER);
+        var found = com.lacuna.mod.structure.OreScan.scan(helper.getLevel(), center, 4, 64); // small radius: neighbouring tests may hold ores too
+        check(helper, found.contains(helper.absolutePos(CENTER.east(3))), "iron ore found");
+        check(helper, found.contains(helper.absolutePos(CENTER.west(2).above())), "ruby ore found (c:ores)");
+        check(helper, found.size() <= 64, "at most 64 positions");
+        var limited = com.lacuna.mod.structure.OreScan.scan(helper.getLevel(), center, 4, 1);
+        check(helper, limited.size() == 1 && limited.get(0).equals(helper.absolutePos(CENTER.west(2).above())), "nearest first");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void obeliskRewardsOncePerPlayer(GameTestHelper helper) {
+        var data = com.lacuna.mod.structure.ObeliskSavedData.get(helper.getLevel().getServer());
+        java.util.UUID player = java.util.UUID.randomUUID();
+        String key = "lacuna:gametest|" + helper.absolutePos(CENTER).asLong();
+        check(helper, !data.claimed(player, key), "not claimed yet");
+        data.reward(player, key, helper.getLevel().getGameTime() + 24000);
+        check(helper, data.claimed(player, key), "claimed after reward");
+        check(helper, data.cooldownUntil(key) > helper.getLevel().getGameTime(), "obelisk cools down");
+        helper.setBlock(CENTER, ModBlocks.OBELISK_INSCRIPTION.get());
+        check(helper, helper.getLevel().getBlockState(helper.absolutePos(CENTER)).getDestroySpeed(helper.getLevel(),
+                helper.absolutePos(CENTER)) < 0, "inscription is unbreakable in survival");
+        helper.succeed();
+    }
 }

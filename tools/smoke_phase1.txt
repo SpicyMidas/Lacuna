@@ -30,4 +30,11 @@ forceload add 400 400 416 416
 summon lacuna:solar_ray 408 90 408
 @wait 120
 forceload remove 400 400 416 416
+# --- M10b: Overworld structures generate and are Orrery targets
+forceload add 600 600 640 640
+@wait 40
+place structure lacuna:obelisk 608 80 608
+place structure lacuna:sunken_bell_tower 628 40 628
+locate structure #lacuna:orrery_targets
+forceload remove 600 600 640 640
 save-all flush

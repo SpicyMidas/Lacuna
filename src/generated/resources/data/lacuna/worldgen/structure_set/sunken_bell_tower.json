@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "salt": 1530771209,
+    "separation": 12,
+    "spacing": 36,
+    "type": "minecraft:random_spread"
+  },
+  "structures": [
+    {
+      "structure": "lacuna:sunken_bell_tower",
+      "weight": 1
+    }
+  ]
+}
