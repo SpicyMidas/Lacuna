@@ -13,6 +13,7 @@ def build(g):
     obelisk(g)
     g.tag("worldgen/structure", "lacuna:orrery_targets", "lacuna:sunken_bell_tower", "lacuna:obelisk")
     labyrinth(g)
+    merchant(g)
 
 
 # ============================================================================================ 10a blocks
@@ -336,3 +337,12 @@ def labyrinth(g):
         {"bonus_rolls": 0.0, "rolls": 1.0, "entries": [
             {"type": "minecraft:empty", "weight": 9},
             {"type": "minecraft:item", "name": "lacuna:solar_flare_fragment", "weight": 1}]}]))
+
+
+# ============================================================================================ 10d last merchant
+def merchant(g):
+    g.name("entity.lacuna.last_merchant", "Last Merchant", "Ultimo mercante")
+    g.item("last_merchant_spawn_egg", "Last Merchant Spawn Egg", "Uovo generatore dell'ultimo mercante", model="spawn_egg")
+    g.data("loot_table/entities/last_merchant", {"type": "minecraft:entity", "random_sequence": "lacuna:entities/last_merchant"})
+    g.data("loot_table/entities/reflection", {"type": "minecraft:entity", "random_sequence": "lacuna:entities/reflection"})
+    g.tag("entity_type", "lacuna:cannot_be_banished", "lacuna:last_merchant")

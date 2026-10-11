@@ -245,7 +245,50 @@ def reflection():
     save(img, "entity/reflection")
 
 
+def last_merchant():
+    from art.m09_mobs import paint_box
+    img = new(64, 64)
+    px = img.load()
+    r = rng("last_merchant")
+    skin = ramp("#8C7A6A", "#A8927E", "#BFA892", "#D2BCA4")
+    robe = ramp("#1E2638", "#2B3650", "#3B4A6B", "#4E5F86")
+    trim = c("#C9A869")
+    paint_box(px, r, 0, 0, 8, 10, 8, skin)                  # head
+    paint_box(px, r, 24, 0, 2, 4, 2, ramp("#9C846E", "#B39A82"))  # nose
+    paint_box(px, r, 32, 0, 8, 10, 8, ramp("#1A1A22", "#262633", "#33334A", alpha=255))  # hood
+    paint_box(px, r, 16, 20, 8, 12, 6, robe)                # body
+    paint_box(px, r, 0, 38, 8, 20, 6, robe)                 # robe overlay
+    paint_box(px, r, 44, 22, 4, 8, 4, robe)                 # arms
+    paint_box(px, r, 40, 38, 8, 4, 4, robe)                 # folded arms
+    paint_box(px, r, 0, 22, 4, 12, 4, ramp("#2A2018", "#3A2C20", "#4A3A2A"))  # legs
+    # hood shows the face: clear the front of the hood overlay, keep a rim
+    for y in range(10, 18):
+        for x in range(42, 46):
+            px[x, y] = (0, 0, 0, 0)
+    for x in range(40, 48):
+        px[x, 8] = trim
+    # face: tired kind eyes, grey beard
+    for (x, y) in ((9, 12), (14, 12)):
+        px[x, y] = c("#1C2A3A")
+        px[x, y - 1] = c("#6B5A4A")
+    for y in range(14, 18):
+        for x in range(9, 15):
+            if (x + y) % 3:
+                px[x, y] = c("#B8B4AC")
+    # gold trim down the robe front and hem, a coin pouch
+    for y in range(44, 64):
+        px[10, y] = trim
+    for x in range(6, 14):
+        px[x, 62] = trim
+        px[x, 63] = c("#A68A50")
+    for (x, y) in ((24, 33), (25, 33), (24, 34), (25, 34)):
+        px[x, y] = c("#7A5A2A")
+    px[24, 33] = trim
+    save(img, "entity/last_merchant")
+
+
 def paint():
+    last_merchant()
     mirror("mirror_glass")
     mirror("labyrinth_exit", crack=True)
     trigger("labyrinth_trigger", True)

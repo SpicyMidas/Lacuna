@@ -41,5 +41,10 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Boolean>> HEARTWOOD_ARROW = ATTACHMENTS.register("heartwood_arrow",
             () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL, v -> v).build());
 
+    /** M10: ore totals at the player's last Last Merchant visit (stock reflects what was mined since). */
+    public static final Supplier<AttachmentType<java.util.Map<String, Integer>>> MINED_SNAPSHOT = ATTACHMENTS.register("mined_snapshot",
+            () -> AttachmentType.<java.util.Map<String, Integer>>builder(() -> java.util.Map.of())
+                    .serialize(Codec.unboundedMap(Codec.STRING, Codec.INT), m -> !m.isEmpty()).copyOnDeath().build());
+
     private ModAttachments() {}
 }

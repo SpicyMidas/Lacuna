@@ -5,6 +5,7 @@
     "minecraft:warden",
     "minecraft:elder_guardian",
     "lacuna:clockwork_decoy",
-    "lacuna:reflection"
+    "lacuna:reflection",
+    "lacuna:last_merchant"
   ]
 }

@@ -37,5 +37,6 @@ forceload add 600 600 640 640
 place structure lacuna:obelisk 608 80 608
 place structure lacuna:sunken_bell_tower 628 40 628
 locate structure #lacuna:orrery_targets
+summon lacuna:last_merchant 612 90 612
 forceload remove 600 600 640 640
 save-all flush

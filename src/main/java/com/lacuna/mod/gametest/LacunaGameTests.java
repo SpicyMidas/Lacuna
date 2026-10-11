@@ -428,4 +428,18 @@ public final class LacunaGameTests {
         check(helper, !helper.getBlockState(CENTER).getValue(com.lacuna.mod.structure.LabyrinthTriggerBlock.SOLVED), "still armed");
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ M10d Last Merchant
+    @GameTest(template = PLATFORM)
+    public static void lastMerchantTradesMinedMaterials(GameTestHelper helper) {
+        var merchant = helper.spawn(ModEntities.LAST_MERCHANT.get(), CENTER);
+        var offers = merchant.getOffers();
+        check(helper, offers.size() >= 9, "merchant should stock at least 9 offers, has " + offers.size());
+        for (var good : List.of(ModItems.DIVINE_GLASS_SHARD.get(), ModItems.RUBY.get(), ModItems.CHRONAL_SHARD.get(), Items.ECHO_SHARD)) {
+            check(helper, offers.stream().anyMatch(o -> o.getResult().is(good) && o.getBaseCostA().is(Items.EMERALD)),
+                    "sells " + good + " for the placeholder currency");
+        }
+        check(helper, offers.stream().anyMatch(o -> o.getResult().is(Items.EMERALD)), "buys materials for currency");
+        helper.succeed();
+    }
 }

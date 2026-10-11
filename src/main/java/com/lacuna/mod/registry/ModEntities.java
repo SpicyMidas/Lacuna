@@ -3,6 +3,7 @@ package com.lacuna.mod.registry;
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.flute.EchoEntity;
 import com.lacuna.mod.gear.PyrrhicBoltEntity;
+import com.lacuna.mod.merchant.LastMerchant;
 import com.lacuna.mod.mob.ClockworkHound;
 import com.lacuna.mod.mob.DecoyEntity;
 import com.lacuna.mod.mob.Gloomcrawler;
@@ -70,6 +71,10 @@ public final class ModEntities {
             () -> EntityType.Builder.<ReflectionEntity>of(ReflectionEntity::new, MobCategory.MISC)
                     .sized(0.6F, 1.95F).clientTrackingRange(8).updateInterval(1).noSave().build("reflection"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<LastMerchant>> LAST_MERCHANT = ENTITIES.register("last_merchant",
+            () -> EntityType.Builder.<LastMerchant>of(LastMerchant::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).noSave().build("last_merchant"));
+
     private ModEntities() {}
 
     /** Mod bus: attribute tables for every living Lacuna entity. */
@@ -80,6 +85,7 @@ public final class ModEntities {
         event.put(CLOCKWORK_HOUND.get(), ClockworkHound.createAttributes().build());
         event.put(DECOY.get(), DecoyEntity.createAttributes().build());
         event.put(REFLECTION.get(), ReflectionEntity.createAttributes().build());
+        event.put(LAST_MERCHANT.get(), net.minecraft.world.entity.Mob.createMobAttributes().build());
     }
 
     /** Mod bus: natural spawn placement rules for the M9 mobs (new entries need a placement type and heightmap). */

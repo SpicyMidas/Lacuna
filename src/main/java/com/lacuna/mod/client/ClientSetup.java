@@ -49,5 +49,6 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.DECOY.get(), DecoyRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWN_DECOY.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntities.REFLECTION.get(), ReflectionRenderer::new);
+        event.registerEntityRenderer(ModEntities.LAST_MERCHANT.get(), LastMerchantRenderer::new);
     }
 }

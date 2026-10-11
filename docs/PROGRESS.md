@@ -442,3 +442,26 @@ Deviation: the Mirror Hoard chest is "locked" by sealing it behind `labyrinth_ex
 container lock (no item key to lose, works with every chest UI).
 
 Gates: 3 ✔, 4 (logic, 30 tests) ✔, 1/2/5/6 not runnable here.
+
+## M10d — Caravan of the Last Merchant
+
+Built:
+- `last_merchant`: extends `WanderingTrader` (vanilla goals, trading UI, despawn timer) rendered with the vanilla
+  wandering-trader `VillagerModel` and a faded travelling-robe texture; entity type is `noSave` ("no persistent
+  state"), so it is gone after despawn, chunk unload or restart. Spawn egg for testing.
+- `MerchantSpawner` (server tick, Overworld): every `lastMerchantIntervalTicks` (default 72000 = 3 days, next attempt
+  kept in `lacuna_last_merchant` SavedData) a 25 % chance by day (respects `doTraderSpawning`) to spawn 16–48 blocks
+  from a random player on dry solid ground; despawns after 3 days; config `lastMerchant`.
+- Stock (`logic/MerchantPricing`, unit-tested): buys the three ore families the nearest player mined most (raw iron,
+  copper, gold, coal, redstone, lapis, diamond, quartz, raw ruby, raw umbral iron, zenithite) plus a bulk offer for the
+  top one, and two ingot/gem buys; sells divine glass shards (2), rubies (3), chronal shards (8) and echo shards (10);
+  8 % chance of one Solar Flare Fragment for 16 rubies + 24 divine glass shards (spec 14). "Recently mined" = vanilla
+  `Stats.BLOCK_MINED` over `#c:ores` since the player's previous merchant visit (a `mined_snapshot` attachment, kept on
+  death); the first visit uses lifetime totals.
+- `CurrencyService`: every Lacuna trade asks it for the currency item (emerald until M11c installs the township coin).
+  Sell prices take a price index (township caravan effect hooks in with M11d).
+- GameTest: a merchant stocks ≥ 9 offers, sells the four goods for the currency and buys materials.
+
+Deviation: no trader llamas (optional in the spec).
+
+Gates: 3 ✔, 4 (logic, 34 tests) ✔, 1/2/5/6 not runnable here.

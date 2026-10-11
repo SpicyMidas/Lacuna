@@ -228,3 +228,14 @@ All `/lacuna` commands need permission level 2.
       walked, through walls, and hurts on contact (6).
 - [ ] Killing it shatters the seals: the north door and the hoard alcove open; the chest has the Mirror Hoard loot.
 - [ ] Walking 48+ blocks away (or logging out) makes the Reflection vanish; the ring can be triggered again.
+## M10d — Last Merchant
+```
+/give @s lacuna:last_merchant_spawn_egg
+/give @s minecraft:emerald 64
+/give @s minecraft:raw_iron 64
+/gamerule doTraderSpawning true
+```
+- [ ] Mine some ores (e.g. copper), then spawn a merchant nearby: his first buy offer is that ore family plus a bulk
+      offer; he sells divine glass shards, rubies, chronal shards and echo shards for emeralds.
+- [ ] Re-spawn several merchants: about 1 in 12 offers a Solar Flare Fragment for 16 rubies + 24 divine glass shards.
+- [ ] Leaving the area (chunk unload) or restarting removes the merchant; he never comes back from a save.

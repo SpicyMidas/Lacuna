@@ -152,6 +152,9 @@ public final class ModItems {
     public static final DeferredItem<DeferredSpawnEggItem> CLOCKWORK_HOUND_SPAWN_EGG = item("clockwork_hound_spawn_egg",
             p -> new DeferredSpawnEggItem(ModEntities.CLOCKWORK_HOUND, 0xB08D57, 0x6B3A22, p), new Item.Properties());
 
+    public static final DeferredItem<DeferredSpawnEggItem> LAST_MERCHANT_SPAWN_EGG = item("last_merchant_spawn_egg",
+            p -> new DeferredSpawnEggItem(ModEntities.LAST_MERCHANT, 0x3B4A6B, 0xC9A869, p), new Item.Properties());
+
     private ModItems() {}
 
     /**
