@@ -561,3 +561,33 @@ Built:
   first run). GameTests: mint press/judge bench map to their POIs, Coiner has level-1 trades, coin is the currency.
 
 Gates: 3 ✔, 4 (logic, 43 tests) ✔, 1/2/5/6 not runnable here.
+
+## M11d — Guilds, contracts, schools, caravan effect
+
+Built:
+- **Guilds** (Smiths', Gemcutters', Scholars'): the Guild Hall now has one `guild_board` per guild (blockstate
+  `guild`, each under its banner; creative players cycle it with sneak + empty hand). Join with 20 coins in hand
+  (reputation ≥ 10, one guild per player; stored in the `guild` player attachment, kept on death).
+- **Guildmaster** profession (job site `guild_board`): its guild is read from its job-site board (brain `JOB_SITE`
+  memory) and cached in a villager attachment; non-members get "Guild members only" and the trading screen does not
+  open. Trades in coins, generated per guild by dispatching item listings: Smiths — umbral iron ingots, iron ingots,
+  repair kits (new `repair_kit`: restores 25 % durability of the item in the other hand), an umbral pickaxe;
+  Gemcutters — rubies, lapis, rare divine glass shards, zenithite, amethyst; Scholars — chronal shards, paper, echo
+  shards, enchanted books (random tradeable enchantment).
+- **Contracts**: members right click their board for one `guild_contract` (data component `{item, count,
+  reward_coins, township, guild}` with Codec + StreamCodec; tooltip shows the task); handing it in at that guild's board
+  with the items pays the coins and +3 reputation. One active contract at a time.
+- **Schools**: once a day at dawn, up to 40 working villagers of the township within 24 blocks of a `school_desk` or
+  lectern gain 10 XP, capped at the level-3 threshold so natural levelling (on their next trade) stops at level 3.
+  Desks come from a palette-filtered scan of loaded chunks only.
+- **Caravan effect**: a Last Merchant killed within 128 blocks raises that township's price index by 0.2 (max 1.5),
+  −0.03 per day back to 1.0; a newly spawned Last Merchant uses the nearest township's price index for his prices.
+- Gardens: harvest rules from 18.2 apply to all township farmland (Honored players harvest freely).
+- Everything runs behind `township.enabled` and its sub-flags (`currency`, `guilds`), inside SafeRun, only for loaded
+  chunks, with bounded loops (≤ 40 villagers/golems).
+- GameTests: schools teach a farmer next to a desk; contract component round trip; price index cap/decay; guild board
+  is the Guildmaster job site.
+
+Deviation: Guildmasters share one profession (one POI type); the guild comes from the board they work at.
+
+Gates: 3 ✔, 4 (logic, 43 tests) ✔, 1/2/5/6 not runnable here.

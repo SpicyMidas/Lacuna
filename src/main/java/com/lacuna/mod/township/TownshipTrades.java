@@ -30,6 +30,10 @@ public final class TownshipTrades {
             add(event, 3, buy(Items.GOLD_INGOT, 3), buy(ModItems.UMBRAL_IRON_INGOT.get(), 2), buy(ModItems.RUBY.get(), 2));
             add(event, 4, sell(Items.EMERALD, 1, 4), buy(Items.COPPER_INGOT, 10));
             add(event, 5, sell(ModItems.RUBY.get(), 1, 3));
+        } else if (event.getType() == ModVillagers.GUILDMASTER.get()) {
+            for (int tier = 1; tier <= 3; tier++) {
+                event.getTrades().computeIfAbsent(tier, k -> new java.util.ArrayList<>()).addAll(Guilds.listings(tier));
+            }
         } else if (event.getType() == ModVillagers.MAGISTRATE.get()) {
             add(event, 1, sell(Items.PAPER, 8, 1), sell(Items.WRITABLE_BOOK, 1, 4));
             add(event, 2, sell(Items.NAME_TAG, 1, 8));

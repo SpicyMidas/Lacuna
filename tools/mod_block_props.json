@@ -356,6 +356,11 @@
    "east",
    "south",
    "west"
+  ],
+  "guild": [
+   "smiths",
+   "gemcutters",
+   "scholars"
   ]
  },
  "judge_bench": {

@@ -502,4 +502,40 @@ public final class LacunaGameTests {
         check(helper, com.lacuna.mod.merchant.CurrencyService.currency() == ModItems.TOWNSHIP_COIN.get(), "township coin is the currency");
         helper.succeed();
     }
+
+    // ------------------------------------------------------------------ M11d guilds, schools, caravan
+    @GameTest(template = PLATFORM, timeoutTicks = 60)
+    public static void schoolsTeachNearbyVillagers(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.TOWNSHIP_LEDGER.get());
+        helper.setBlock(CENTER.east(3), ModBlocks.SCHOOL_DESK.get());
+        var villager = helper.spawn(EntityType.VILLAGER, CENTER.west(2));
+        villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(1));
+        villager.setVillagerXp(1); // xp > 0: the villager keeps its profession without a job site
+        BlockPos abs = helper.absolutePos(CENTER);
+        helper.succeedWhen(() -> {
+            var be = (com.lacuna.mod.township.TownshipLedgerBlockEntity) helper.getLevel().getBlockEntity(abs);
+            check(helper, be != null, "ledger");
+            var t = be.township(helper.getLevel()).orElseThrow();
+            com.lacuna.mod.township.Schools.run(helper.getLevel(), t);
+            check(helper, villager.getVillagerXp() >= 11, "villager near the desk learned something");
+            com.lacuna.mod.township.TownshipSavedData.get(helper.getLevel().getServer()).remove(t.id);
+        });
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void guildContractsAndCaravanIndex(GameTestHelper helper) {
+        var contract = new ItemStack(ModItems.GUILD_CONTRACT.get());
+        contract.set(com.lacuna.mod.registry.ModComponents.GUILD_CONTRACT.get(),
+                new com.lacuna.mod.township.ContractData("minecraft:paper", 16, 6, "t", "scholars"));
+        var data = com.lacuna.mod.township.GuildContractItem.data(contract);
+        check(helper, data.count() == 16 && data.rewardCoins() == 6 && "scholars".equals(data.guild()), "contract component round trip");
+        check(helper, Math.abs(com.lacuna.mod.township.CaravanEffect.raise(1.4) - 1.5) < 1e-9, "price index capped at 1.5");
+        check(helper, Math.abs(com.lacuna.mod.township.CaravanEffect.decay(1.02) - 1.0) < 1e-9, "price index decays to 1.0");
+        var board = ModBlocks.GUILD_BOARD.get().defaultBlockState().setValue(com.lacuna.mod.township.GuildBoardBlock.GUILD,
+                com.lacuna.mod.township.GuildType.GEMCUTTERS);
+        helper.setBlock(CENTER, board);
+        var poi = net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(helper.getBlockState(CENTER));
+        check(helper, poi.isPresent() && poi.get().is(com.lacuna.mod.registry.ModVillagers.GUILDMASTER_POI.getKey()), "guild board is a job site");
+        helper.succeed();
+    }
 }

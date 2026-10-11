@@ -398,10 +398,13 @@ def civic_buildings(b):
                 b.stairs(cx + 2, 1, z, "west", block=p["roof"])
             b.villager(cx, 1, cz + 2)
         elif kind == "guild":
-            b.set(x0 + 1, 2, cz, L + "guild_board", {"facing": "east"})
-            for i, (color, pattern) in enumerate((("gray", "minecraft:half_vertical"), ("red", "minecraft:rhombus"),
-                                                  ("purple", "minecraft:circle"))):
-                b.set(x0 + 1, 3, z0 + 2 + i * 3, f"{color}_wall_banner", {"facing": "east"},
+            # one board per guild, each under its banner (smiths gray, gemcutters red, scholars purple)
+            for i, (guild, color, pattern) in enumerate((("smiths", "gray", "minecraft:half_vertical"),
+                                                         ("gemcutters", "red", "minecraft:rhombus"),
+                                                         ("scholars", "purple", "minecraft:circle"))):
+                z = z0 + 2 + i * 2
+                b.set(x0 + 1, 2, z, L + "guild_board", {"facing": "east", "guild": guild})
+                b.set(x0 + 1, 3, z, f"{color}_wall_banner", {"facing": "east"},
                       {"id": "minecraft:banner", "patterns": [{"color": "yellow", "pattern": pattern}]})
             b.villager(cx + 1, 1, cz + 2)
         else:

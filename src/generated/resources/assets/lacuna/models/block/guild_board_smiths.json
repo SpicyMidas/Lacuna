@@ -36,7 +36,7 @@
   "parent": "minecraft:block/block",
   "textures": {
     "frame": "lacuna:block/township_ledger_side",
-    "front": "lacuna:block/guild_board",
-    "particle": "lacuna:block/guild_board"
+    "front": "lacuna:block/guild_board_smiths",
+    "particle": "lacuna:block/guild_board_smiths"
   }
 }

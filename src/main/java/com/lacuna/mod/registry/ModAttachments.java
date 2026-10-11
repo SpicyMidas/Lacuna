@@ -46,5 +46,13 @@ public final class ModAttachments {
             () -> AttachmentType.<java.util.Map<String, Integer>>builder(() -> java.util.Map.of())
                     .serialize(Codec.unboundedMap(Codec.STRING, Codec.INT), m -> !m.isEmpty()).copyOnDeath().build());
 
+    /** M11d: the player's guild ("" = none, else smiths/gemcutters/scholars); survives death. */
+    public static final Supplier<AttachmentType<String>> GUILD = ATTACHMENTS.register("guild",
+            () -> AttachmentType.builder(() -> "").serialize(Codec.STRING, s -> !s.isEmpty()).copyOnDeath().build());
+
+    /** M11d: a Guildmaster villager's guild, read once from its job-site board. */
+    public static final Supplier<AttachmentType<String>> VILLAGER_GUILD = ATTACHMENTS.register("villager_guild",
+            () -> AttachmentType.builder(() -> "").serialize(Codec.STRING, s -> !s.isEmpty()).build());
+
     private ModAttachments() {}
 }

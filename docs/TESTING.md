@@ -289,3 +289,18 @@ All `/lacuna` commands need permission level 2.
 - [ ] After 7+ days at dawn the council announces a policy; Festival shows fireworks on the plaza, Martial Law guards
       hit harder, Free Market/Austerity change villager prices.
 - [ ] The Last Merchant now trades in township coins.
+## M11d — Guilds, contracts, schools, caravan
+```
+/lacuna rep set @s 20
+/give @s lacuna:township_coin 64
+/give @s minecraft:paper 64
+/give @s lacuna:repair_kit
+/give @s lacuna:last_merchant_spawn_egg
+```
+- [ ] Right click a guild board with 20 coins: you join that guild (a second guild is refused); its Guildmaster now
+      trades with you, other Guildmasters say "Guild members only".
+- [ ] Empty-hand right click on your board gives one contract (tooltip: what to deliver, reward); delivering it pays
+      coins and +3 reputation; a second contract is refused while one is active.
+- [ ] A repair kit used with a damaged tool in the other hand restores a quarter of its durability.
+- [ ] Villagers working near the library desks gain XP each dawn and level up to 3 by trading.
+- [ ] Kill a Last Merchant near a township: the ledger's price index rises by 0.2 and decays daily.

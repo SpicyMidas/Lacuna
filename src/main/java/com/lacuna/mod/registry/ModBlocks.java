@@ -7,6 +7,7 @@ import com.lacuna.mod.fl.UpdraftSpringBlock;
 import com.lacuna.mod.mob.SilkDustGlowBlock;
 import com.lacuna.mod.structure.LabyrinthTriggerBlock;
 import com.lacuna.mod.township.CivicBlock;
+import com.lacuna.mod.township.GuildBoardBlock;
 import com.lacuna.mod.township.JudgeBenchBlock;
 import com.lacuna.mod.township.TownshipGateBlock;
 import com.lacuna.mod.township.TownshipLedgerBlock;
@@ -154,7 +155,7 @@ public final class ModBlocks {
             civicProps(MapColor.WOOD, SoundType.WOOD), Shapes.or(Block.box(0, 12, 0, 16, 16, 16), Block.box(6, 0, 6, 10, 12, 10))));
     public static final DeferredBlock<JudgeBenchBlock> JUDGE_BENCH = block("judge_bench", () -> new JudgeBenchBlock(
             civicProps(MapColor.COLOR_BROWN, SoundType.WOOD), Block.box(0, 0, 0, 16, 14, 16)));
-    public static final DeferredBlock<CivicBlock> GUILD_BOARD = block("guild_board", () -> new CivicBlock(
+    public static final DeferredBlock<GuildBoardBlock> GUILD_BOARD = block("guild_board", () -> new GuildBoardBlock(
             civicProps(MapColor.WOOD, SoundType.WOOD), Block.box(0, 0, 6, 16, 16, 10)));
     public static final DeferredBlock<CivicBlock> SCHOOL_DESK = block("school_desk", () -> new CivicBlock(
             civicProps(MapColor.WOOD, SoundType.WOOD), Shapes.or(Block.box(0, 10, 0, 16, 13, 16), Block.box(1, 0, 1, 15, 10, 3))));

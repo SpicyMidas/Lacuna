@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
@@ -169,9 +170,20 @@ public final class TownshipEvents {
     }
 
     private static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        if (event.getEntity() instanceof ServerPlayer p && event.getTarget() instanceof AbstractVillager villager) {
-            TRADING_WITH.put(p.getUUID(), villager.getId());
+        if (!(event.getEntity() instanceof ServerPlayer p) || !(event.getTarget() instanceof AbstractVillager villager)) {
+            return;
         }
+        if (villager instanceof Villager v && Guilds.enabled() && Guilds.isGuildmaster(v) && !p.isCreative()) {
+            GuildType guild = SafeRun.call(TownshipService.FEATURE, () -> Guilds.guildOf(v), null);
+            if (guild != null && Guilds.guildOf(p) != guild) {
+                p.displayClientMessage(Component.translatable("lacuna.guild.members_only",
+                        Component.translatable("lacuna.guild." + guild.getSerializedName())), true);
+                event.setCanceled(true);
+                event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+                return;
+            }
+        }
+        TRADING_WITH.put(p.getUUID(), villager.getId());
     }
 
     /** Fires after the villager reset its special prices and before the offers are sent: adjust them here. */

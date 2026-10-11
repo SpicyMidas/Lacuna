@@ -1,0 +1,42 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#frame"
+        },
+        "east": {
+          "texture": "#frame"
+        },
+        "north": {
+          "texture": "#front"
+        },
+        "south": {
+          "texture": "#front"
+        },
+        "up": {
+          "texture": "#frame"
+        },
+        "west": {
+          "texture": "#frame"
+        }
+      },
+      "from": [
+        0,
+        0,
+        6
+      ],
+      "to": [
+        16,
+        16,
+        10
+      ]
+    }
+  ],
+  "parent": "minecraft:block/block",
+  "textures": {
+    "frame": "lacuna:block/township_ledger_side",
+    "front": "lacuna:block/guild_board_scholars",
+    "particle": "lacuna:block/guild_board_scholars"
+  }
+}

@@ -1,18 +1,48 @@
 {
   "variants": {
-    "facing=east": {
-      "model": "lacuna:block/guild_board",
+    "facing=east,guild=gemcutters": {
+      "model": "lacuna:block/guild_board_gemcutters",
       "y": 90
     },
-    "facing=north": {
-      "model": "lacuna:block/guild_board"
+    "facing=east,guild=scholars": {
+      "model": "lacuna:block/guild_board_scholars",
+      "y": 90
     },
-    "facing=south": {
-      "model": "lacuna:block/guild_board",
+    "facing=east,guild=smiths": {
+      "model": "lacuna:block/guild_board_smiths",
+      "y": 90
+    },
+    "facing=north,guild=gemcutters": {
+      "model": "lacuna:block/guild_board_gemcutters"
+    },
+    "facing=north,guild=scholars": {
+      "model": "lacuna:block/guild_board_scholars"
+    },
+    "facing=north,guild=smiths": {
+      "model": "lacuna:block/guild_board_smiths"
+    },
+    "facing=south,guild=gemcutters": {
+      "model": "lacuna:block/guild_board_gemcutters",
       "y": 180
     },
-    "facing=west": {
-      "model": "lacuna:block/guild_board",
+    "facing=south,guild=scholars": {
+      "model": "lacuna:block/guild_board_scholars",
+      "y": 180
+    },
+    "facing=south,guild=smiths": {
+      "model": "lacuna:block/guild_board_smiths",
+      "y": 180
+    },
+    "facing=west,guild=gemcutters": {
+      "model": "lacuna:block/guild_board_gemcutters",
+      "y": 270
+    },
+    "facing=west,guild=scholars": {
+      "model": "lacuna:block/guild_board_scholars",
+      "y": 270
+    },
+    "facing=west,guild=smiths": {
+      "model": "lacuna:block/guild_board_smiths",
       "y": 270
     }
   }

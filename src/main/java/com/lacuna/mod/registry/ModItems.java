@@ -157,6 +157,10 @@ public final class ModItems {
 
     // ------------------------------------------------------------------ M11 townships
     public static final DeferredItem<Item> TOWNSHIP_COIN = item("township_coin", Item::new, new Item.Properties());
+    public static final DeferredItem<com.lacuna.mod.township.GuildContractItem> GUILD_CONTRACT = item("guild_contract",
+            com.lacuna.mod.township.GuildContractItem::new, new Item.Properties().stacksTo(1));
+    public static final DeferredItem<com.lacuna.mod.township.RepairKitItem> REPAIR_KIT = item("repair_kit",
+            com.lacuna.mod.township.RepairKitItem::new, new Item.Properties().stacksTo(16));
 
     private ModItems() {}
 

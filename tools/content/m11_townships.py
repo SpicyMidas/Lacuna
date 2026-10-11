@@ -17,6 +17,7 @@ def build(g):
     structures(g)
     reputation(g)
     council_currency(g)
+    guilds(g)
 
 
 def horizontal_states(model):
@@ -52,11 +53,7 @@ def civic_blocks(g):
     civic(g, "judge_bench", "Judge's Bench", "Banco del giudice",
           {"particle": "lacuna:block/judge_bench", "all": "lacuna:block/judge_bench"},
           [box([0, 0, 0], [16, 14, 16], "#all"), box([0, 14, 0], [16, 16, 3], "#all")])
-    civic(g, "guild_board", "Guild Board", "Bacheca della gilda",
-          {"particle": "lacuna:block/guild_board", "front": "lacuna:block/guild_board", "frame": "lacuna:block/township_ledger_side"},
-          [{"from": [0, 0, 6], "to": [16, 16, 10], "faces": {"north": {"texture": "#front"}, "south": {"texture": "#front"},
-                                                               "east": {"texture": "#frame"}, "west": {"texture": "#frame"},
-                                                               "up": {"texture": "#frame"}, "down": {"texture": "#frame"}}}])
+    guild_board(g)
     civic(g, "school_desk", "School Desk", "Banco di scuola",
           {"particle": "lacuna:block/school_desk", "top": "lacuna:block/school_desk", "leg": "lacuna:block/township_ledger_side"},
           [box([0, 10, 0], [16, 13, 16], "#top"), box([1, 0, 1], [15, 10, 3], "#leg")])
@@ -156,3 +153,59 @@ def council_currency(g):
            "Il tribunale ti ha ascoltato da poco. Torna tra qualche giorno.")
     g.name("lacuna.court.nothing_owed", "You owe the township nothing.", "Non devi nulla al borgo.")
     g.name("lacuna.court.paid", "Fine paid: %s coins. Reputation is now %s.", "Multa pagata: %s monete. Reputazione ora %s.")
+
+
+# ============================================================================================ 11d guilds
+GUILDS = {"smiths": ("Smiths' Guild", "Gilda dei fabbri"), "gemcutters": ("Gemcutters' Guild", "Gilda dei tagliagemme"),
+          "scholars": ("Scholars' Guild", "Gilda degli studiosi")}
+
+
+def guild_board(g):
+    g.block_lang("guild_board", "Guild Board", "Bacheca della gilda")
+    variants = {}
+    for guild in GUILDS:
+        g.asset(f"models/block/guild_board_{guild}", {"parent": "minecraft:block/block", "textures": {
+            "particle": f"lacuna:block/guild_board_{guild}", "front": f"lacuna:block/guild_board_{guild}",
+            "frame": "lacuna:block/township_ledger_side"},
+            "elements": [{"from": [0, 0, 6], "to": [16, 16, 10], "faces": {
+                "north": {"texture": "#front"}, "south": {"texture": "#front"}, "east": {"texture": "#frame"},
+                "west": {"texture": "#frame"}, "up": {"texture": "#frame"}, "down": {"texture": "#frame"}}}]})
+        for f, y in HORIZONTAL.items():
+            v = {"model": f"lacuna:block/guild_board_{guild}"}
+            if y:
+                v["y"] = y
+            variants[f"facing={f},guild={guild}"] = v
+    g.asset("blockstates/guild_board", {"variants": variants})
+    g.block_item_parent("guild_board", "lacuna:block/guild_board_smiths")
+    g.loot("guild_board", "self")
+    g.props("guild_board", facing=list(HORIZONTAL), guild=list(GUILDS))
+
+
+def guilds(g):
+    for k, (en, it) in GUILDS.items():
+        g.name(f"lacuna.guild.{k}", en, it)
+    g.item("guild_contract", "Guild Contract", "Contratto di gilda")
+    g.item("repair_kit", "Repair Kit", "Kit di riparazione")
+    msgs = {
+        "item.lacuna.guild_contract.blank": ("A blank contract.", "Un contratto in bianco."),
+        "item.lacuna.guild_contract.deliver": ("Deliver %s × %s", "Consegna %s × %s"),
+        "item.lacuna.guild_contract.reward": ("Reward: %s coins and +3 reputation", "Ricompensa: %s monete e +3 reputazione"),
+        "item.lacuna.repair_kit.use": ("Use with a damaged item in the other hand: restores 25%%.",
+                                       "Usa con un oggetto danneggiato nell'altra mano: ripristina il 25%%."),
+        "lacuna.guild.already": ("You already belong to the %s.", "Appartieni già alla %s."),
+        "lacuna.guild.other": ("You are sworn to the %s.", "Hai giurato fedeltà alla %s."),
+        "lacuna.guild.need_rep": ("The guild only accepts friends of the township (reputation 10+).",
+                                  "La gilda accetta solo amici del borgo (reputazione 10+)."),
+        "lacuna.guild.need_coins": ("Joining costs %s township coins.", "L'iscrizione costa %s monete del borgo."),
+        "lacuna.guild.joined": ("Welcome to the %s!", "Benvenuto nella %s!"),
+        "lacuna.guild.info": ("%s: right click with %s coins to join (reputation 10+, one guild per person).",
+                              "%s: clic destro con %s monete per iscriverti (reputazione 10+, una gilda a persona)."),
+        "lacuna.guild.contract_active": ("Finish your current contract first.", "Prima completa il contratto in corso."),
+        "lacuna.guild.contract_given": ("The guild hands you a contract.", "La gilda ti consegna un contratto."),
+        "lacuna.guild.wrong_board": ("This contract belongs to another guild.", "Questo contratto appartiene a un'altra gilda."),
+        "lacuna.guild.missing": ("Still missing: %s × %s", "Mancano ancora: %s × %s"),
+        "lacuna.guild.contract_done": ("Contract fulfilled: %s coins.", "Contratto completato: %s monete."),
+        "lacuna.guild.members_only": ("Guild members only (%s).", "Solo per i membri della gilda (%s)."),
+    }
+    for k, (en, it) in msgs.items():
+        g.name(k, en, it)

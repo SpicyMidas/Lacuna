@@ -27,7 +27,11 @@ public final class TownshipDaily {
         t.lastDailyDay = day;
         sampleReputation(level, t);
         t.coinValue = CouncilMath.recover(t.coinValue);
+        t.priceIndex = CaravanEffect.decay(t.priceIndex);
         council(level, t, day);
+        if (com.lacuna.mod.LacunaConfig.get(com.lacuna.mod.LacunaConfig.TOWNSHIP_GUILDS)) {
+            Schools.run(level, t);
+        }
         TownshipSavedData.get(level.getServer()).touch();
     }
 

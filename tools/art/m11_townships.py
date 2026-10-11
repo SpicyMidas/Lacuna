@@ -45,18 +45,6 @@ def furniture():
         px[i, 15] = c("#C9A869")
     save(img, "block/council_table")
     save(planks(DARK, "judge_bench"), "block/judge_bench")
-    board = planks(DARK, "guild_board")
-    bp = board.load()
-    r = rng("guild_notes")
-    for _ in range(4):
-        x0, y0 = r.randrange(1, 11), r.randrange(1, 11)
-        for y in range(y0, y0 + 4):
-            for x in range(x0, x0 + 4):
-                bp[x, y] = c("#E8DFC4")
-        bp[x0 + 1, y0] = c("#B03A2E")  # pin
-        for x in range(x0, x0 + 3):
-            bp[x, y0 + 2] = c("#6A6050")
-    save(board, "block/guild_board")
     desk = planks(ramp("#6E5236", "#86663F", "#9C7A4C", "#B08C5A"), "school_desk")
     dp = desk.load()
     for (x, y) in ((3, 4), (4, 4), (5, 4), (3, 5), (5, 5)):
@@ -152,7 +140,80 @@ def guildmaster_bits(px):
         px[6 + i % 8, 44 + i] = c("#C9A869")  # sash
 
 
+EMBLEMS = {
+    "smiths": ["................", "................", "....aaaaaaaa....", "...aaaaaaaaaaa..", "....aaaaaaaa....",
+               "......aaaa......", ".....aaaaaa.....", "....aaaaaaaa....", "................"],
+    "gemcutters": ["................", ".......gg.......", "......gGGg......", ".....gGhhGg.....", "....gGGhhGGg....",
+                   ".....gGGGGg.....", "......gGGg......", ".......gg.......", "................"],
+    "scholars": ["................", "...bbbb..bbbb...", "..bwwwwbbwwwwb..", "..bwlwwbbwlwwb..", "..bwwwwbbwwwwb..",
+                 "..bwlwwbbwlwwb..", "..bwwwwbbwwwwb..", "...bbbbbbbbbb...", "................"],
+}
+
+
+def guild_boards():
+    pal = {"a": c("#5A5F66"), "g": c("#7A1E2A"), "G": c("#C0202C"), "h": c("#FF8A8A"), "b": c("#3A2A50"), "w": c("#EFE6CF"),
+           "l": c("#6A6050")}
+    for guild, emblem in EMBLEMS.items():
+        img = planks(DARK, f"guild_board_{guild}")
+        px = img.load()
+        for y, row in enumerate(emblem):
+            for x, ch in enumerate(row):
+                if ch != ".":
+                    px[x, y + 3] = pal[ch]
+        for (x, y) in ((2, 13), (3, 13), (12, 13), (13, 13)):
+            px[x, y] = c("#E8DFC4")
+        save(img, f"block/guild_board_{guild}")
+
+
+CONTRACT = [
+    "................",
+    "...pppppppppp...",
+    "..pPPPPPPPPPPp..",
+    "..pPllllllllPp..",
+    "..pPPPPPPPPPPp..",
+    "..pPlllllllPPp..",
+    "..pPPPPPPPPPPp..",
+    "..pPllllllPPPp..",
+    "..pPPPPPPPPPPp..",
+    "..pPPPPPPPrrPp..",
+    "..pPPPPPPrRRrp..",
+    "..pPPPPPPrRRrp..",
+    "..pPPPPPPPrrPp..",
+    "...pppppppppp...",
+    "................",
+    "................",
+]
+
+KIT = [
+    "................",
+    "................",
+    "....oooooooo....",
+    "...oLLLLLLLLo...",
+    "..oLlllllllLLo..",
+    "..oLlhhllsslLo..",
+    "..oLlhhllsslLo..",
+    "..oLllllllllLo..",
+    "..oGGGGGGGGGGo..",
+    "..oLllllllllLo..",
+    "..oLlllllllLLo..",
+    "...oLLLLLLLLo...",
+    "....oooooooo....",
+    "................",
+    "................",
+    "................",
+]
+
+
+def items():
+    save(from_ascii(CONTRACT, {"p": c("#8A7A5A"), "P": c("#EFE6CF"), "l": c("#6A6050"), "r": c("#7A1E2A"), "R": c("#C0202C")}),
+         "item/guild_contract")
+    save(from_ascii(KIT, {"o": c("#2A1A10"), "L": c("#734F33"), "l": c("#8A6040"), "h": c("#B8BEC4"), "s": c("#6A6F76"),
+                          "G": c("#C9A869")}), "item/repair_kit")
+
+
 def paint():
+    guild_boards()
+    items()
     coin()
     profession_overlay("coiner", ramp("#4A3220", "#5E4029", "#734F33"), c("#E2B64A"), coiner_bits)
     profession_overlay("magistrate", ramp("#14141A", "#1E1E26", "#2A2A33"), c("#B03A2E"), magistrate_bits)
