@@ -1,0 +1,21 @@
+{
+  "category": "equipment",
+  "key": {
+    "R": {
+      "item": "lacuna:ruby"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "RRR",
+    " S ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:ruby_pickaxe"
+  },
+  "type": "minecraft:crafting_shaped"
+}

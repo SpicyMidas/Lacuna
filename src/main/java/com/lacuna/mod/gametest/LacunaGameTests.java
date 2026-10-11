@@ -1,0 +1,73 @@
+package com.lacuna.mod.gametest;
+
+import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.registry.ModBlocks;
+import com.lacuna.mod.registry.ModItems;
+import java.util.List;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.gametest.GameTestHolder;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+
+/**
+ * In-world GameTests (spec section 4, gate 5). All use the 9x6x9 platform template
+ * {@code lacuna:gametest_platform} (stone floor at y=0) produced by tools/gen_structures.py.
+ */
+@GameTestHolder(Lacuna.MODID)
+@PrefixGameTestTemplate(false)
+public final class LacunaGameTests {
+    public static final String PLATFORM = "gametest_platform";
+    static final BlockPos CENTER = new BlockPos(4, 1, 4);
+
+    private LacunaGameTests() {}
+
+    static void check(GameTestHelper helper, boolean condition, String message) {
+        if (!condition) {
+            helper.fail(message);
+        }
+    }
+
+    static List<ItemStack> drops(GameTestHelper helper, BlockPos relative, ItemStack tool) {
+        ServerLevel level = helper.getLevel();
+        BlockPos abs = helper.absolutePos(relative);
+        BlockState state = level.getBlockState(abs);
+        return Block.getDrops(state, level, abs, level.getBlockEntity(abs), null, tool);
+    }
+
+    // ------------------------------------------------------------------ M1
+    @GameTest(template = PLATFORM)
+    public static void rubyOreDropsRuby(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.RUBY_ORE.get());
+        List<ItemStack> result = drops(helper, CENTER, new ItemStack(Items.IRON_PICKAXE));
+        check(helper, result.stream().anyMatch(s -> s.is(ModItems.RUBY.get())), "ruby ore should drop a ruby, got " + result);
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void divineGlassIsLitAndSeeThrough(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.DIVINE_GLASS.get());
+        BlockPos abs = helper.absolutePos(CENTER);
+        BlockState state = helper.getLevel().getBlockState(abs);
+        check(helper, state.getLightEmission(helper.getLevel(), abs) == 7, "divine glass should emit light 7");
+        check(helper, !state.isSuffocating(helper.getLevel(), abs), "divine glass must not suffocate");
+        check(helper, !state.isViewBlocking(helper.getLevel(), abs), "divine glass must not block view");
+        List<ItemStack> result = drops(helper, CENTER, ItemStack.EMPTY);
+        check(helper, result.stream().anyMatch(s -> s.is(ModBlocks.DIVINE_GLASS.get().asItem())), "divine glass drops itself without silk touch");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void divineClusterDropsShards(GameTestHelper helper) {
+        helper.setBlock(CENTER, ModBlocks.DIVINE_GLASS_CLUSTER.get());
+        List<ItemStack> result = drops(helper, CENTER, new ItemStack(Items.IRON_PICKAXE));
+        int shards = result.stream().filter(s -> s.is(ModItems.DIVINE_GLASS_SHARD.get())).mapToInt(ItemStack::getCount).sum();
+        check(helper, shards >= 2 && shards <= 4, "cluster should drop 2-4 shards, got " + shards);
+        helper.succeed();
+    }
+}

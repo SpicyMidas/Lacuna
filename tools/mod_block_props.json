@@ -1,1 +1,38 @@
-{}
+{
+ "divine_glass_cluster": {
+  "facing": [
+   "north",
+   "east",
+   "south",
+   "west",
+   "up",
+   "down"
+  ],
+  "waterlogged": [
+   "true",
+   "false"
+  ]
+ },
+ "divine_glass_pane": {
+  "east": [
+   "true",
+   "false"
+  ],
+  "north": [
+   "true",
+   "false"
+  ],
+  "south": [
+   "true",
+   "false"
+  ],
+  "waterlogged": [
+   "true",
+   "false"
+  ],
+  "west": [
+   "true",
+   "false"
+  ]
+ }
+}

@@ -1,0 +1,17 @@
+{
+  "category": "building",
+  "key": {
+    "D": {
+      "item": "lacuna:divine_glass_shard"
+    }
+  },
+  "pattern": [
+    "DD",
+    "DD"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:divine_glass"
+  },
+  "type": "minecraft:crafting_shaped"
+}

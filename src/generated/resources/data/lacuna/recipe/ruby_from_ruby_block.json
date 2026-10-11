@@ -1,0 +1,13 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lacuna:ruby_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "lacuna:ruby"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

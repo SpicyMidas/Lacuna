@@ -1,0 +1,21 @@
+{
+  "category": "equipment",
+  "key": {
+    "R": {
+      "item": "lacuna:ruby"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "R",
+    "R",
+    "S"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:ruby_sword"
+  },
+  "type": "minecraft:crafting_shaped"
+}

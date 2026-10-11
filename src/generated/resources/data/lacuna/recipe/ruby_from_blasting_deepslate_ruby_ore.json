@@ -1,0 +1,12 @@
+{
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 1.0,
+  "ingredient": {
+    "item": "lacuna:deepslate_ruby_ore"
+  },
+  "result": {
+    "id": "lacuna:ruby"
+  },
+  "type": "minecraft:blasting"
+}

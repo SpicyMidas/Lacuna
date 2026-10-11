@@ -2,7 +2,7 @@ package com.lacuna.mod;
 
 import com.lacuna.mod.command.LacunaCommands;
 import com.lacuna.mod.debug.SmokeRunner;
-import com.lacuna.mod.registry.ModCreativeTabs;
+import com.lacuna.mod.registry.ModRegistries;
 import com.lacuna.mod.util.SafeRun;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +20,7 @@ public final class Lacuna {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Lacuna(IEventBus modBus, ModContainer container) {
-        ModCreativeTabs.TABS.register(modBus);
+        ModRegistries.register(modBus);
 
         container.registerConfig(ModConfig.Type.COMMON, LacunaConfig.SPEC);
 

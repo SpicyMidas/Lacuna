@@ -1,0 +1,18 @@
+{
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "lacuna:ruby"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:ruby_block"
+  },
+  "type": "minecraft:crafting_shaped"
+}

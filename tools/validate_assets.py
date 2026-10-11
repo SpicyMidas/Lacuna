@@ -265,8 +265,8 @@ def tag_known(kind: str, t: str, tags: Dict[str, str]) -> bool:
         return True
     if f"{ns}:{p}" in tags:
         return True
-    if ns in ("c", "neoforge"):
-        return True  # common tags provided by NeoForge
+    if ns == "c" and p in set(VANILLA.get("c_tags", {}).get(kind, [])):
+        return True  # common tags provided by NeoForge 21.1
     return False
 
 

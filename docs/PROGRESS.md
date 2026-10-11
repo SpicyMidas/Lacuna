@@ -50,3 +50,29 @@ Deviations: smoke test drives the server through `SmokeRunner` reading `run/lacu
 of piping stdin (Gradle run tasks do not forward stdin reliably).
 
 Gates: 3 ✔, 4 (logic) ✔ 8/8, 1/2/5/6 not runnable here (see note).
+
+## M1 — Ruby, Divine Glass, Divine Sight
+
+Built:
+- Blocks `ruby_ore`, `deepslate_ruby_ore` (DropExperienceBlock XP 3–7, hardness 3.0/4.5, blast 3, iron tool),
+  `ruby_block`, `raw_ruby_block`; items `ruby`, `raw_ruby`; Ruby tool set (SimpleTier: diamond level, 800 uses,
+  speed 7, +3 damage like diamond, enchantability 15, repair with ruby).
+- Ore worldgen (size 4, count 4, trapezoid −64..16, air discard 0.5) through a NeoForge biome modifier on
+  `#minecraft:is_overworld`. Recipes: storage ⇄ 9, raw variants, smelt/blast.
+- `divine_glass` (TransparentBlock: light 7, hardness 0.5, blast 6, no suffocation/view blocking, translucent,
+  culls against itself, always drops itself), `divine_glass_pane` (IronBarsBlock), `divine_glass_cluster`
+  (AmethystClusterBlock, 2–4 shards, Fortune +1/level, Silk Touch keeps cluster), `divine_glass_shard`.
+- Divine Sight (client, SafeRun): every 10 ticks the view ray looks for Divine Glass within 6 blocks; behind it,
+  a 50° cone up to `divineSight.range` is sampled (≤ 4096 positions, loaded chunks only); targets in
+  `lacuna:divine_sight_targets` (ores gold, containers white, spawners violet) and living entities (hostile red,
+  passive green) are outlined without depth test. Generic `OutlineRenderer`/`OutlineSet` for reuse by the
+  Sunken Bell.
+- GameTests: ruby ore drop, divine glass light/transparency/self-drop, cluster shard count.
+- `/lacuna selftest` now checks registry binding, that every recipe file loaded, coordinates and tag contents.
+
+Deviations:
+- Outlines render at `RenderLevelStageEvent.Stage.AFTER_PARTICLES` (after translucent blocks) because the
+  render-type stages (incl. AFTER_TRANSLUCENT_BLOCKS) pass a null PoseStack in NeoForge 21.1.
+- No animated shimmer `.mcmeta` (optional in spec).
+
+Gates: 3 ✔ (validator also negative-tested with injected faults), 4 (logic) ✔, 1/2/5/6 not runnable here.

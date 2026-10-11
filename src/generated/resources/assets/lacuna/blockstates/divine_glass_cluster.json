@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "lacuna:block/divine_glass_cluster",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "lacuna:block/divine_glass_cluster",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/divine_glass_cluster",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "lacuna:block/divine_glass_cluster",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "lacuna:block/divine_glass_cluster"
+    },
+    "facing=west": {
+      "model": "lacuna:block/divine_glass_cluster",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

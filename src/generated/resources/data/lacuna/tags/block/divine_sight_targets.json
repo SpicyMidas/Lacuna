@@ -1,0 +1,15 @@
+{
+  "values": [
+    "#c:ores",
+    "minecraft:spawner",
+    "minecraft:trial_spawner",
+    "#c:chests",
+    "#c:barrels",
+    "minecraft:barrel",
+    "minecraft:chest",
+    "minecraft:trapped_chest",
+    "minecraft:suspicious_sand",
+    "minecraft:suspicious_gravel",
+    "minecraft:vault"
+  ]
+}
