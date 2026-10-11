@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "lacuna:block/silk_dust_glow",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "lacuna:block/silk_dust_glow",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/silk_dust_glow",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "lacuna:block/silk_dust_glow",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "lacuna:block/silk_dust_glow"
+    },
+    "facing=west": {
+      "model": "lacuna:block/silk_dust_glow",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

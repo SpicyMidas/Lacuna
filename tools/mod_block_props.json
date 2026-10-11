@@ -437,6 +437,16 @@
    "tall"
   ]
  },
+ "silk_dust_glow": {
+  "facing": [
+   "up",
+   "down",
+   "north",
+   "east",
+   "south",
+   "west"
+  ]
+ },
  "stripped_cindervine_log": {
   "axis": [
    "x",

@@ -293,8 +293,22 @@ def check_lang(ids, lang: dict) -> None:
         err("missing lang key itemGroup.lacuna")
 
 
+def check_java_texture_refs() -> None:
+    """Renderers reference textures by path in Java (Lacuna.id("textures/...png")); each must exist."""
+    pat = re.compile(r'id\("(textures/[a-z0-9_/]+\.png)"\)')
+    for dirpath, _, files in os.walk(os.path.join(ROOT, "src", "main", "java")):
+        for f in files:
+            if not f.endswith(".java"):
+                continue
+            with open(os.path.join(dirpath, f), encoding="utf-8") as fh:
+                for ref in pat.findall(fh.read()):
+                    if not os.path.isfile(os.path.join(ROOT, "src", "main", "resources", "assets", MODID, ref)):
+                        err(f"{f}: referenced texture {ref} does not exist")
+
+
 def main() -> int:
     check_all_json()
+    check_java_texture_refs()
     ids = java_ids()
     textures = all_files("textures", ".png")
     models = all_files("models", ".json")

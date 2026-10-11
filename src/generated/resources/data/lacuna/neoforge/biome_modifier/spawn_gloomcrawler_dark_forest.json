@@ -1,0 +1,14 @@
+{
+  "biomes": [
+    "minecraft:dark_forest"
+  ],
+  "spawners": [
+    {
+      "maxCount": 2,
+      "minCount": 1,
+      "type": "lacuna:gloomcrawler",
+      "weight": 6
+    }
+  ],
+  "type": "neoforge:add_spawns"
+}

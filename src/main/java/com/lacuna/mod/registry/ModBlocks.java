@@ -1,5 +1,7 @@
 package com.lacuna.mod.registry;
 
+import com.lacuna.mod.mob.SilkDustGlowBlock;
+
 import com.lacuna.mod.block.MuralBlock;
 import com.lacuna.mod.orrery.OrreryBlock;
 import com.lacuna.mod.pearl.ArrivalAnchorBlock;
@@ -86,6 +88,12 @@ public final class ModBlocks {
             UniformInt.of(2, 5), BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_LAPIS_ORE).mapColor(MapColor.COLOR_LIGHT_BLUE)));
     public static final DeferredBlock<Block> ZENITHITE_BLOCK = block("zenithite_block", () -> new Block(
             BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK).mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(s -> 3)));
+
+    // ------------------------------------------------------------------ M9 silk dust decal
+    public static final DeferredBlock<SilkDustGlowBlock> SILK_DUST_GLOW = blockNoItem("silk_dust_glow", () -> new SilkDustGlowBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).noCollission().instabreak().noOcclusion().noLootTable()
+                    .lightLevel(s -> 9).sound(SoundType.AMETHYST_CLUSTER).replaceable().pushReaction(PushReaction.DESTROY)
+                    .isValidSpawn(Blocks::never)));
 
     private ModBlocks() {}
 

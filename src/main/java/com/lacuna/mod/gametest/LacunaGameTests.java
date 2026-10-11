@@ -32,6 +32,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
@@ -265,5 +266,65 @@ public final class LacunaGameTests {
         check(helper, helper.getBlockState(CENTER).getValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT), "persistent leaves stay");
         check(helper, new ItemStack(ModWoodBlocks.CINDERVINE_PLANKS.get()).getBurnTime(null) == 400, "cindervine planks burn 400 ticks");
         helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ M9
+    @GameTest(template = PLATFORM)
+    public static void mobsHaveSpecAttributes(GameTestHelper helper) {
+        var moth = helper.spawn(ModEntities.LANTERN_MOTH.get(), CENTER);
+        var crawler = helper.spawn(ModEntities.GLOOMCRAWLER.get(), CENTER.east(2));
+        var hound = helper.spawn(ModEntities.CLOCKWORK_HOUND.get(), CENTER.west(2));
+        check(helper, moth.getMaxHealth() == 6.0F, "lantern moth has 6 HP");
+        check(helper, crawler.getMaxHealth() == 22.0F, "gloomcrawler has 22 HP");
+        check(helper, crawler.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) == 4.0, "gloomcrawler deals 4");
+        check(helper, hound.getMaxHealth() == 30.0F, "clockwork hound has 30 HP");
+        check(helper, hound.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) == 5.0, "hound deals 5");
+        check(helper, Math.abs(hound.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED) - 0.33) < 1e-6, "hound speed 0.33");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void houndCannotBeTamedOrFed(GameTestHelper helper) {
+        var hound = helper.spawn(ModEntities.CLOCKWORK_HOUND.get(), CENTER);
+        var player = helper.makeMockPlayer(GameType.SURVIVAL);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.BONE, 64));
+        for (int i = 0; i < 20; i++) {
+            hound.mobInteract(player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        }
+        check(helper, !hound.isTame(), "hound must never be tamed");
+        check(helper, !hound.isFood(new ItemStack(Items.BEEF)), "hound has no food");
+        check(helper, hound.getMaxHealth() == 30.0F, "taming side effects must not change health");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void silkDustGlowSchedulesItsRemoval(GameTestHelper helper) {
+        BlockState glow = ModBlocks.SILK_DUST_GLOW.get().defaultBlockState();
+        helper.setBlock(CENTER, glow);
+        BlockPos abs = helper.absolutePos(CENTER);
+        ServerLevel level = helper.getLevel();
+        check(helper, level.getBlockState(abs).getLightEmission(level, abs) == 9, "glow emits light 9");
+        check(helper, level.getBlockTicks().hasScheduledTick(abs, ModBlocks.SILK_DUST_GLOW.get()), "removal tick scheduled");
+        check(helper, level.getBlockState(abs).getCollisionShape(level, abs).isEmpty(), "glow has no collision");
+        level.getBlockState(abs).tick(level, abs, level.getRandom());
+        check(helper, level.getBlockState(abs).isAir(), "glow removes itself on its tick");
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM, timeoutTicks = 100)
+    public static void decoyLuresIdleMonsters(GameTestHelper helper) {
+        var zombie = helper.spawn(EntityType.ZOMBIE, CENTER.east(3));
+        var decoy = helper.spawn(ModEntities.DECOY.get(), CENTER);
+        helper.succeedWhen(() -> check(helper, zombie.getTarget() == decoy, "zombie should target the decoy"));
+    }
+
+    @GameTest(template = PLATFORM, timeoutTicks = 100)
+    public static void gloomcrawlerCrouchesInCover(GameTestHelper helper) {
+        var crawler = helper.spawn(ModEntities.GLOOMCRAWLER.get(), CENTER);
+        BlockState leaves = Blocks.OAK_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
+        for (Direction d : Direction.Plane.HORIZONTAL) {
+            helper.setBlock(CENTER.relative(d), leaves);
+        }
+        helper.succeedWhen(() -> check(helper, crawler.isCrouched() && crawler.getBbHeight() < 0.5F, "gloomcrawler should crouch next to leaves"));
     }
 }

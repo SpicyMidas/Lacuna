@@ -1,0 +1,12 @@
+{
+  "biomes": "#c:is_forest",
+  "spawners": [
+    {
+      "maxCount": 3,
+      "minCount": 1,
+      "type": "lacuna:lantern_moth",
+      "weight": 8
+    }
+  ],
+  "type": "neoforge:add_spawns"
+}

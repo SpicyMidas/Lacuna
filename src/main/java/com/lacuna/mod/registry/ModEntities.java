@@ -3,6 +3,15 @@ package com.lacuna.mod.registry;
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.flute.EchoEntity;
 import com.lacuna.mod.gear.PyrrhicBoltEntity;
+import com.lacuna.mod.mob.ClockworkHound;
+import com.lacuna.mod.mob.DecoyEntity;
+import com.lacuna.mod.mob.Gloomcrawler;
+import com.lacuna.mod.mob.LanternMoth;
+import com.lacuna.mod.mob.ThrownDecoyEntity;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import com.lacuna.mod.pearl.ArrivalShardEntity;
 import com.lacuna.mod.solar.SolarRayEntity;
 import com.lacuna.mod.solar.SunsFuryEntity;
@@ -39,10 +48,41 @@ public final class ModEntities {
             () -> EntityType.Builder.<PyrrhicBoltEntity>of(PyrrhicBoltEntity::new, MobCategory.MISC)
                     .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(2).fireImmune().noSave().build("pyrrhic_bolt"));
 
+    // ------------------------------------------------------------------ M9 mobs (vanilla models; sizes are vanilla x 0.8 where scaled)
+    public static final DeferredHolder<EntityType<?>, EntityType<LanternMoth>> LANTERN_MOTH = ENTITIES.register("lantern_moth",
+            () -> EntityType.Builder.<LanternMoth>of(LanternMoth::new, MobCategory.AMBIENT)
+                    .sized(0.56F, 0.48F).eyeHeight(0.24F).clientTrackingRange(8).build("lantern_moth"));
+    public static final DeferredHolder<EntityType<?>, EntityType<Gloomcrawler>> GLOOMCRAWLER = ENTITIES.register("gloomcrawler",
+            () -> EntityType.Builder.<Gloomcrawler>of(Gloomcrawler::new, MobCategory.MONSTER)
+                    .sized(1.12F, 0.72F).eyeHeight(0.52F).clientTrackingRange(8).build("gloomcrawler"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ClockworkHound>> CLOCKWORK_HOUND = ENTITIES.register("clockwork_hound",
+            () -> EntityType.Builder.<ClockworkHound>of(ClockworkHound::new, MobCategory.CREATURE)
+                    .sized(0.6F, 0.85F).eyeHeight(0.68F).clientTrackingRange(10).build("clockwork_hound"));
+    public static final DeferredHolder<EntityType<?>, EntityType<DecoyEntity>> DECOY = ENTITIES.register("clockwork_decoy",
+            () -> EntityType.Builder.<DecoyEntity>of(DecoyEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F).clientTrackingRange(8).noSave().build("clockwork_decoy"));
+    public static final DeferredHolder<EntityType<?>, EntityType<ThrownDecoyEntity>> THROWN_DECOY = ENTITIES.register("thrown_clockwork_decoy",
+            () -> EntityType.Builder.<ThrownDecoyEntity>of(ThrownDecoyEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10).build("thrown_clockwork_decoy"));
+
     private ModEntities() {}
 
     /** Mod bus: attribute tables for every living Lacuna entity. */
     public static void onAttributes(EntityAttributeCreationEvent event) {
         event.put(ECHO.get(), EchoEntity.createAttributes().build());
+        event.put(LANTERN_MOTH.get(), LanternMoth.createAttributes().build());
+        event.put(GLOOMCRAWLER.get(), Gloomcrawler.createAttributes().build());
+        event.put(CLOCKWORK_HOUND.get(), ClockworkHound.createAttributes().build());
+        event.put(DECOY.get(), DecoyEntity.createAttributes().build());
+    }
+
+    /** Mod bus: natural spawn placement rules for the M9 mobs (new entries need a placement type and heightmap). */
+    public static void onSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        event.register(LANTERN_MOTH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                LanternMoth::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(GLOOMCRAWLER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Monster::checkMonsterSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(CLOCKWORK_HOUND.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                ClockworkHound::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 }

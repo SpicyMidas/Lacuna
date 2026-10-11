@@ -13,6 +13,9 @@ import com.lacuna.mod.gear.TidecallerSickleItem;
 import net.minecraft.world.item.ArmorItem;
 import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
+import com.lacuna.mod.mob.ClockworkDecoyItem;
+import com.lacuna.mod.mob.SilkDustItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import com.lacuna.mod.eclipse.EclipseCharge;
 import com.lacuna.mod.eclipse.EclipserItem;
 import com.lacuna.mod.pearl.ArrivalShardItem;
@@ -136,6 +139,18 @@ public final class ModItems {
     // ------------------------------------------------------------------ M8 wood extras
     public static final DeferredItem<Item> EMBER = item("ember", Item::new, new Item.Properties().fireResistant());
     public static final DeferredItem<Item> CRYSTAL_WILLOW_SHARD = item("crystal_willow_shard", Item::new, new Item.Properties());
+
+    // ------------------------------------------------------------------ M9 mobs
+    public static final DeferredItem<SilkDustItem> SILK_DUST = item("silk_dust", SilkDustItem::new, new Item.Properties());
+    public static final DeferredItem<Item> CLOCKWORK_GEAR = item("clockwork_gear", Item::new, new Item.Properties());
+    public static final DeferredItem<ClockworkDecoyItem> CLOCKWORK_DECOY = item("clockwork_decoy", ClockworkDecoyItem::new,
+            new Item.Properties().stacksTo(16));
+    public static final DeferredItem<DeferredSpawnEggItem> LANTERN_MOTH_SPAWN_EGG = item("lantern_moth_spawn_egg",
+            p -> new DeferredSpawnEggItem(ModEntities.LANTERN_MOTH, 0xF3E9B5, 0xFFC94A, p), new Item.Properties());
+    public static final DeferredItem<DeferredSpawnEggItem> GLOOMCRAWLER_SPAWN_EGG = item("gloomcrawler_spawn_egg",
+            p -> new DeferredSpawnEggItem(ModEntities.GLOOMCRAWLER, 0x23301F, 0x7A1E2A, p), new Item.Properties());
+    public static final DeferredItem<DeferredSpawnEggItem> CLOCKWORK_HOUND_SPAWN_EGG = item("clockwork_hound_spawn_egg",
+            p -> new DeferredSpawnEggItem(ModEntities.CLOCKWORK_HOUND, 0xB08D57, 0x6B3A22, p), new Item.Properties());
 
     private ModItems() {}
 

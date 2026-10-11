@@ -291,3 +291,60 @@ Built:
 Deviations: no signs, hanging signs or boats (spec: optional in M12).
 
 Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.
+
+## M9 — Mobs
+
+Built:
+- **Lantern Moth** (`lantern_moth`, ambient): extends `Bee` purely to reuse the vanilla `BeeModel` and flying
+  move control/navigation; every bee goal is removed after `Bee#registerGoals` (so Bee's internal goal fields
+  exist), no hive/pollination/sting/anger/breeding. 6 HP, scale 0.8, drawn full-bright. Goal: hover around a block
+  light ≥ 12 within 16 blocks or a player holding `#lacuna:moth_attractor` (torches, lanterns, glowstone, candles;
+  the Null Lantern is excluded). Spawns at night under open sky in `#c:is_forest` (includes flower forests) and
+  `#c:is_swamp` (weight 8, groups 1–3); the Forgotten Land's fixed dusk counts as night for the Whispering Marsh
+  (M10). Despawns like a bat. Drops 0–2 `silk_dust` (+ looting).
+- **Silk Dust** + **`silk_dust_glow`**: right click a face places a thin, collision-less, light-9 translucent decal
+  (6 facings, button-style rotations) that removes itself after 3600 ticks through a scheduled tick (saved with
+  the chunk); a random tick re-schedules it if the tick ever went missing. Breaks with its supporting block.
+- **Gloomcrawler** (monster): own `Monster` subclass with the vanilla `SpiderModel` (scale 0.8), wall climbing
+  (`WallClimberNavigation` + synced climbing flag). Next to leaves/grass/ferns/bushes/saplings and without a target
+  it crouches (half-height hitbox, flattened, near-invisible translucent texture, eyes hidden); while crouched it
+  only acquires a non-sneaking player within 4 blocks, then leaps (`LeapAtTargetGoal`) and bites. A flee goal runs
+  to the darkest of 10 sampled spots (block light ≤ 4) whenever block light ≥ 7 is at its feet or a player
+  holding `#lacuna:light_sources` is inside 6 blocks; it never targets or keeps targeting such a player. 22 HP,
+  4 damage. Spawns in dark forests, swamps, taigas (monster light rules, weight 6). Drops 0–2 string, 5 % umbral
+  iron nugget (player kill, looting bonus).
+- **Clockwork Hound** (creature): extends `Wolf` to reuse `WolfModel`/sounds/anger timer; taming, feeding,
+  dyeing, armor, breeding and `applyTamingSideEffects` are disabled; all wolf goals replaced. 30 HP, 5 damage,
+  speed 0.33. `ScentTracker` (volatile, server-thread only) records each player every 200 ticks for 3600 ticks
+  (≤ 18 points), cleared on logout, dimension change and server stop, never saved; pure trail logic is
+  `logic/ScentTrail` (unit-tested). With no target a hound picks the oldest trail point within 48 blocks, walks the
+  trail oldest → newest (tracking by point time, so pruning never skips it) and targets the player inside 16
+  blocks. If that player is in water or sneaking within 8 blocks it loses the scent: target and anger cleared,
+  the trail broken at the newest point near the player, 400 tick calm period. A player who hits it is fought
+  normally (neutral mob). Spawns on sand/terracotta in deserts and badlands (weight 3). Drops 1–3 clockwork gears,
+  4 % chronal shard.
+- **Clockwork Decoy**: shapeless recipe (3 gears + redstone + white wool), thrown (snowball arc, stack 16, 400
+  tick cooldown); on landing it becomes a `clockwork_decoy` humanoid (zombie-layer model, brass texture, 20 HP,
+  immovable, never saved, no loot/XP, immune to its owner) for 300 ticks. On its first tick every `Enemy` mob within
+  16 blocks that targets the owner or nothing switches to it, and it re-asserts that every 5 ticks (vanilla
+  target goals would otherwise switch back within a second); expiry/death releases them.
+- Spawn eggs (`DeferredSpawnEggItem`) for moth, gloomcrawler and hound; attributes via
+  `EntityAttributeCreationEvent`; placements via `RegisterSpawnPlacementsEvent` (REPLACE, ON_GROUND,
+  MOTION_BLOCKING_NO_LEAVES); spawns via `neoforge:add_spawns` biome modifiers; vanilla sounds (bee, spider, wolf).
+- `/lacuna scent` lists every trail and marks the caller's points with particles. Selftest now checks that every
+  living Lacuna entity has attributes and that the light tags are non-empty.
+- Validator: new check that every `Lacuna.id("textures/…png")` referenced from Java exists (negative-tested).
+- GameTests: spec attributes for the three mobs, hound cannot be tamed/fed, silk glow light/no collision/
+  scheduled removal, decoy lures an idle zombie, gloomcrawler crouches next to leaves.
+
+Deviations:
+- The Gloomcrawler extends `Monster` instead of `Spider` (avoids spider jockeys/effects on spawn); the model is the
+  vanilla `SpiderModel`, so the visual result is the same.
+- The hound's "calm down" only applies to scent hunts; once a player has hurt it, it fights like any neutral mob.
+- Gloomcrawler flee threshold uses block light ≥ 7 at its own position as the "light source ≥ 9 within 6 blocks"
+  proxy, plus any player holding a light item inside 6 blocks (cheap and avoids a 13³ block scan per tick).
+
+Known limitations: brain-driven mobs (piglins, hoglins, wardens) ignore the decoy because they do not use
+`Mob#setTarget`-based goals.
+
+Gates: 3 ✔, 4 (logic, 26 tests) ✔, 1/2/5/6 not runnable here.

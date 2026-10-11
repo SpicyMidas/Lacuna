@@ -1,0 +1,44 @@
+{
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "texture": "#glow",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#glow",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "from": [
+        0,
+        0.1,
+        0
+      ],
+      "shade": false,
+      "to": [
+        16,
+        0.1,
+        16
+      ]
+    }
+  ],
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "glow": "lacuna:block/silk_dust_glow",
+    "particle": "lacuna:block/silk_dust_glow"
+  }
+}

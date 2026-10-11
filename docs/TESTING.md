@@ -161,3 +161,24 @@ All `/lacuna` commands need permission level 2.
 - [ ] Two Echo Birch saplings 3 blocks apart grow together and get a bridge of leaves.
 - [ ] Cindervine logs do not burn in fire or lava; planks smelt 2 items in a furnace (400 ticks); Embers burn long.
 - [ ] Leaves decay after logs are removed; placed leaves do not.
+## M9 — Mobs
+```
+/give @s lacuna:lantern_moth_spawn_egg 4
+/give @s lacuna:gloomcrawler_spawn_egg 2
+/give @s lacuna:clockwork_hound_spawn_egg 2
+/give @s lacuna:clockwork_decoy 4
+/give @s lacuna:silk_dust 16
+/give @s minecraft:torch 16
+/lacuna scent
+```
+- [ ] Moths glow, flutter like small pale bees, never sting, and gather around a torch held in hand or a placed
+      lantern; a Null Lantern in hand does not attract them. Killing one drops 0–2 Silk Dust.
+- [ ] Silk Dust on the floor, walls and ceiling leaves a faint sparkling light-9 decal; walk through it; it
+      disappears after 3 minutes (try `/tick sprint 3600`), also after leaving and re-entering the world.
+- [ ] A Gloomcrawler next to leaves/tall grass flattens and turns almost invisible; walking past it (not sneaking)
+      within 4 blocks makes it leap; sneaking past does not. Holding a torch within 6 blocks makes it flee to darkness.
+- [ ] Clockwork Hound: walk 60+ blocks away over ~2 minutes, then `/lacuna scent`; the hound follows the particle
+      trail and attacks once within 16 blocks. Jumping into water or sneaking near it makes it give up.
+      Bones/meat do nothing to it.
+- [ ] Throw a decoy near zombies chasing you: they turn to the mannequin for 15 s; the decoy cannot be damaged by
+      its thrower; it vanishes in a puff of smoke afterwards.

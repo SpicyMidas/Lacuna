@@ -8,6 +8,7 @@ import com.lacuna.mod.flute.DeathMemory;
 import com.lacuna.mod.gear.GearEvents;
 import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
+import com.lacuna.mod.mob.ScentTracker;
 import com.lacuna.mod.orrery.OrreryBlock;
 import com.lacuna.mod.registry.ModEntities;
 import com.lacuna.mod.wood.WoodSetup;
@@ -44,6 +45,7 @@ public final class Lacuna {
         BanishEvents.register(NeoForge.EVENT_BUS);
         EclipseEvents.register(NeoForge.EVENT_BUS);
         modBus.addListener(ModEntities::onAttributes);
+        modBus.addListener(ModEntities::onSpawnPlacements);
         modBus.addListener((FMLCommonSetupEvent e) -> e.enqueueWork(WoodSetup::setup));
 
         // M6 utility items
@@ -58,6 +60,11 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(DeathMemory::onDeath);
         NeoForge.EVENT_BUS.addListener(DeathMemory::onServerStopped);
         GearEvents.register(NeoForge.EVENT_BUS);
+        // M9 volatile scent trails
+        NeoForge.EVENT_BUS.addListener(ScentTracker::onServerTick);
+        NeoForge.EVENT_BUS.addListener(ScentTracker::onLogout);
+        NeoForge.EVENT_BUS.addListener(ScentTracker::onChangeDimension);
+        NeoForge.EVENT_BUS.addListener(ScentTracker::onServerStopped);
         AnvilRepairs.add(ModItems.WHISPERBONE_FLUTE, ModItems.ECHO_FRAGMENT, Balance.FLUTE_REPAIR_PER_FRAGMENT);
 
         AnvilRepairs.add(ModItems.DIVINE_MAGNIFYING_GLASS, ModItems.DIVINE_GLASS_SHARD, Balance.BEAM_REPAIR_PER_SHARD);

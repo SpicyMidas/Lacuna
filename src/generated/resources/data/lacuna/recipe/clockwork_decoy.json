@@ -1,0 +1,25 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lacuna:clockwork_gear"
+    },
+    {
+      "item": "lacuna:clockwork_gear"
+    },
+    {
+      "item": "lacuna:clockwork_gear"
+    },
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "minecraft:white_wool"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:clockwork_decoy"
+  },
+  "type": "minecraft:crafting_shapeless"
+}
