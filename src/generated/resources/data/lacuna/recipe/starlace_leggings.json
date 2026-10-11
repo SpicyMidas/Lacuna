@@ -1,0 +1,18 @@
+{
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "lacuna:starlace_cloth"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "C C",
+    "C C"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:starlace_leggings"
+  },
+  "type": "minecraft:crafting_shaped"
+}

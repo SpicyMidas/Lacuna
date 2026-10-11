@@ -21,5 +21,13 @@ public final class ModTiers {
     public static final Tier ECLIPSER = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.ECLIPSER_DURABILITY,
             Balance.UMBRAL_TOOL_SPEED, 0.0F, 10, () -> Ingredient.of(ModItems.UMBRAL_IRON_INGOT.get()));
 
+    /** Special weapons get their own tiers so TieredItem uses their exact durability and repair material. */
+    public static final Tier GRAVEMAW = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.GRAVEMAW_DURABILITY,
+            6.0F, 0.0F, 10, () -> Ingredient.of(ModItems.UMBRAL_IRON_INGOT.get()));
+    public static final Tier TIDECALLER = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.SICKLE_DURABILITY,
+            6.0F, 0.0F, 10, () -> Ingredient.of(net.minecraft.world.item.Items.PRISMARINE_SHARD));
+    public static final Tier ECHO_DAGGER = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.ECHO_DAGGER_DURABILITY,
+            6.0F, 0.0F, 10, () -> Ingredient.of(net.minecraft.world.item.Items.ECHO_SHARD));
+
     private ModTiers() {}
 }

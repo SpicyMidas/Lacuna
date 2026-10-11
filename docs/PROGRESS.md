@@ -231,3 +231,32 @@ Built:
 - GameTest: deaths are remembered once and turn into capped Echoes.
 
 Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.
+
+## M7 — Gear
+
+Built:
+- Zenithite: `zenithite_ore` + `deepslate_zenithite_ore` (XP 2–5, 1–2 shards, Fortune), `zenithite_block`,
+  `zenithite_shard`. World generation on Inverted Falls islands comes with M10.
+- Starlace (registered `ArmorMaterial`: 2/6/5/2, toughness 0.5, enchantability 18, factor 24, repair cloth):
+  `starlace_cloth` (shard + 2 string → 2), four armor pieces, 64x32 armor layers. Starlace Boots: sneaking while
+  falling > 4 blocks gives slow falling 80 ticks once (item cooldown 200 ticks, 1 durability), server-side only.
+- Umbral Iron tool set (tier from M4). `lacuna:umbral_gear` (tools + Eclipser + Gravemaw) deals +25 %
+  (`gear.umbralDarkBonus`) direct melee damage while the wielder's max local raw brightness ≤ 4.
+- Special weapons (own tiers for exact durability/repair; only Unbreaking via `supportsEnchantment` /
+  `isPrimaryItemFor`; added to `enchantable/durability`):
+  Gravemaw Greatsword (700, 11 dmg, 0.8 speed; still-standing charge ≤ 40 ticks, release ≥ 20 → 8-block ±35°
+  crescent, `10 + 0.3·charge`, knockback 1, sweep particles at 3 distances, 3 durability, cooldown 120; moving
+  > 0.05/tick cancels), Tidecaller Sickle (450, 4 dmg, 2.2 speed, prismarine repair; hook within 12 blocks pulls
+  the target in, 3 dmg, 2 durability, cooldown 100; Tide Charges in water/rain, max 3, heal 2 on the next hit),
+  Heartwood Bow (480; arrows tagged through `customArrow` + attachment apply `lacuna:rooted` 2 s, 4 s + pinned
+  particles with a wall ≤ 1.5 blocks behind the target; green particles on blocks; recipe and repair material
+  `#lacuna:heartwood_bow_repair` arrive with Echo Birch in M8), Echo Dagger (300, 3 dmg, 2.6 speed, echo shard
+  repair; each direct melee hit repeats once 10 ticks later at 60 % as `lacuna:echo_strike`, which never echoes),
+  Pyrrhic Scepter (250, gold repair; pays 2 HP — refused at ≤ 4 HP — for a homing bolt: speed 1.2, 30° cone,
+  24 blocks, turn rate 0.15, `5 + (1 − hp/max)·10` damage, 2 s fire; particle-only `NoopRenderer`, noSave).
+- `lacuna:rooted` effect (movement speed and jump strength −100 %).
+- GameTest: special weapons accept Unbreaking only; durability values.
+
+Deviations: Zenithite ore is split into stone and deepslate variants (spec: "(stone/deepslate)").
+
+Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.

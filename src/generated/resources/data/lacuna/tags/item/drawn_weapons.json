@@ -1,5 +1,26 @@
 {
   "values": [
-    "lacuna:eclipser"
+    "lacuna:eclipser",
+    "lacuna:umbral_iron_sword",
+    "lacuna:umbral_iron_axe",
+    "lacuna:ruby_sword",
+    "lacuna:ruby_axe",
+    "lacuna:gravemaw_greatsword",
+    "lacuna:tidecaller_sickle",
+    "lacuna:echo_dagger",
+    "lacuna:heartwood_bow",
+    "minecraft:wooden_sword",
+    "minecraft:stone_sword",
+    "minecraft:iron_sword",
+    "minecraft:golden_sword",
+    "minecraft:diamond_sword",
+    "minecraft:netherite_sword",
+    "minecraft:bow",
+    "minecraft:crossbow",
+    "minecraft:trident",
+    "minecraft:iron_axe",
+    "minecraft:diamond_axe",
+    "minecraft:netherite_axe",
+    "minecraft:mace"
   ]
 }

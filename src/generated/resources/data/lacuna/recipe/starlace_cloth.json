@@ -1,0 +1,19 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lacuna:zenithite_shard"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ],
+  "result": {
+    "count": 2,
+    "id": "lacuna:starlace_cloth"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

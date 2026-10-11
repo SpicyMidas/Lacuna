@@ -217,4 +217,21 @@ public final class LacunaGameTests {
             helper.succeed();
         });
     }
+
+    // ------------------------------------------------------------------ M7
+    @GameTest(template = PLATFORM)
+    public static void specialWeaponsAcceptOnlyUnbreaking(GameTestHelper helper) {
+        var enchantments = helper.getLevel().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+        var unbreaking = enchantments.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING);
+        var sharpness = enchantments.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS);
+        for (var item : List.of(ModItems.ECLIPSER.get(), ModItems.GRAVEMAW_GREATSWORD.get(), ModItems.TIDECALLER_SICKLE.get(),
+                ModItems.HEARTWOOD_BOW.get(), ModItems.ECHO_DAGGER.get(), ModItems.PYRRHIC_SCEPTER.get())) {
+            ItemStack stack = new ItemStack(item);
+            check(helper, stack.supportsEnchantment(unbreaking), item + " must accept Unbreaking");
+            check(helper, !stack.supportsEnchantment(sharpness), item + " must reject Sharpness");
+        }
+        check(helper, new ItemStack(ModItems.GRAVEMAW_GREATSWORD.get()).getMaxDamage() == 700, "Gravemaw durability 700");
+        check(helper, new ItemStack(ModItems.ECLIPSER.get()).getMaxDamage() == 250, "Eclipser durability 250");
+        helper.succeed();
+    }
 }

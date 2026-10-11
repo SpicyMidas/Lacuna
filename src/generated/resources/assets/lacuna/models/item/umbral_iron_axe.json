@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "lacuna:item/umbral_iron_axe"
+  }
+}

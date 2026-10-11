@@ -5,6 +5,12 @@ import com.lacuna.mod.banish.TotemOfBanishingItem;
 import com.lacuna.mod.beam.DivineMagnifyingGlassItem;
 import com.lacuna.mod.chrono.ChronoshardWatchItem;
 import com.lacuna.mod.flute.WhisperboneFluteItem;
+import com.lacuna.mod.gear.EchoDaggerItem;
+import com.lacuna.mod.gear.GravemawGreatswordItem;
+import com.lacuna.mod.gear.HeartwoodBowItem;
+import com.lacuna.mod.gear.PyrrhicScepterItem;
+import com.lacuna.mod.gear.TidecallerSickleItem;
+import net.minecraft.world.item.ArmorItem;
 import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
 import com.lacuna.mod.eclipse.EclipseCharge;
@@ -86,6 +92,46 @@ public final class ModItems {
     public static final DeferredItem<WhisperboneFluteItem> WHISPERBONE_FLUTE = item("whisperbone_flute", WhisperboneFluteItem::new,
             new Item.Properties().durability(Balance.FLUTE_DURABILITY).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<Item> ECHO_FRAGMENT = item("echo_fragment", Item::new, new Item.Properties());
+
+    // ------------------------------------------------------------------ M7 gear
+    public static final DeferredItem<Item> ZENITHITE_SHARD = item("zenithite_shard", Item::new, new Item.Properties());
+    public static final DeferredItem<Item> STARLACE_CLOTH = item("starlace_cloth", Item::new, new Item.Properties());
+    public static final DeferredItem<ArmorItem> STARLACE_HELMET = item("starlace_helmet",
+            p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.HELMET, p),
+            new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
+    public static final DeferredItem<ArmorItem> STARLACE_CHESTPLATE = item("starlace_chestplate",
+            p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.CHESTPLATE, p),
+            new Item.Properties().durability(ArmorItem.Type.CHESTPLATE.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
+    public static final DeferredItem<ArmorItem> STARLACE_LEGGINGS = item("starlace_leggings",
+            p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.LEGGINGS, p),
+            new Item.Properties().durability(ArmorItem.Type.LEGGINGS.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
+    public static final DeferredItem<ArmorItem> STARLACE_BOOTS = item("starlace_boots",
+            p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.BOOTS, p),
+            new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
+
+    public static final DeferredItem<SwordItem> UMBRAL_IRON_SWORD = item("umbral_iron_sword", p -> new SwordItem(ModTiers.UMBRAL, p),
+            new Item.Properties().attributes(SwordItem.createAttributes(ModTiers.UMBRAL, 3, -2.4F)));
+    public static final DeferredItem<PickaxeItem> UMBRAL_IRON_PICKAXE = item("umbral_iron_pickaxe", p -> new PickaxeItem(ModTiers.UMBRAL, p),
+            new Item.Properties().attributes(PickaxeItem.createAttributes(ModTiers.UMBRAL, 1.0F, -2.8F)));
+    public static final DeferredItem<AxeItem> UMBRAL_IRON_AXE = item("umbral_iron_axe", p -> new AxeItem(ModTiers.UMBRAL, p),
+            new Item.Properties().attributes(AxeItem.createAttributes(ModTiers.UMBRAL, 5.5F, -3.05F)));
+    public static final DeferredItem<ShovelItem> UMBRAL_IRON_SHOVEL = item("umbral_iron_shovel", p -> new ShovelItem(ModTiers.UMBRAL, p),
+            new Item.Properties().attributes(ShovelItem.createAttributes(ModTiers.UMBRAL, 1.5F, -3.0F)));
+    public static final DeferredItem<HoeItem> UMBRAL_IRON_HOE = item("umbral_iron_hoe", p -> new HoeItem(ModTiers.UMBRAL, p),
+            new Item.Properties().attributes(HoeItem.createAttributes(ModTiers.UMBRAL, -2.5F, -1.0F)));
+
+    public static final DeferredItem<GravemawGreatswordItem> GRAVEMAW_GREATSWORD = item("gravemaw_greatsword",
+            p -> new GravemawGreatswordItem(ModTiers.GRAVEMAW, p),
+            new Item.Properties().rarity(Rarity.EPIC).attributes(weapon(Balance.GRAVEMAW_DAMAGE, Balance.GRAVEMAW_SPEED)));
+    public static final DeferredItem<TidecallerSickleItem> TIDECALLER_SICKLE = item("tidecaller_sickle",
+            p -> new TidecallerSickleItem(ModTiers.TIDECALLER, p.component(ModComponents.TIDE_CHARGES.get(), 0)),
+            new Item.Properties().rarity(Rarity.RARE).attributes(weapon(Balance.SICKLE_DAMAGE, Balance.SICKLE_SPEED)));
+    public static final DeferredItem<HeartwoodBowItem> HEARTWOOD_BOW = item("heartwood_bow", HeartwoodBowItem::new,
+            new Item.Properties().durability(Balance.HEARTWOOD_DURABILITY).rarity(Rarity.RARE));
+    public static final DeferredItem<EchoDaggerItem> ECHO_DAGGER = item("echo_dagger", p -> new EchoDaggerItem(ModTiers.ECHO_DAGGER, p),
+            new Item.Properties().rarity(Rarity.RARE).attributes(weapon(Balance.ECHO_DAGGER_DAMAGE, Balance.ECHO_DAGGER_SPEED)));
+    public static final DeferredItem<PyrrhicScepterItem> PYRRHIC_SCEPTER = item("pyrrhic_scepter", PyrrhicScepterItem::new,
+            new Item.Properties().durability(Balance.SCEPTER_DURABILITY).rarity(Rarity.RARE));
 
     private ModItems() {}
 

@@ -37,5 +37,9 @@ public final class ModComponents {
             COMPONENTS.registerComponentType("mirror_stored",
                     b -> b.persistent(StoredProjectile.LIST_CODEC).networkSynchronized(StoredProjectile.LIST_STREAM_CODEC));
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> TIDE_CHARGES =
+            COMPONENTS.registerComponentType("tide_charges",
+                    b -> b.persistent(Codec.intRange(0, 3)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private ModComponents() {}
 }

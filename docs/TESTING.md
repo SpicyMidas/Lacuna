@@ -119,3 +119,27 @@ All `/lacuna` commands need permission level 2.
 - [ ] Flute: kill 2 cows nearby, play the flute: 2 translucent Echoes appear and fight what you hit; after 10 s
       they fade and drop Echo Fragments. With no recent deaths: "The bones stay silent."
 - [ ] Orrery: right click shows coordinates ÷12 and (after M10) the direction to an obelisk / bell tower.
+
+## M7 — Gear
+```
+/give @s lacuna:starlace_boots
+/give @s lacuna:starlace_chestplate
+/give @s lacuna:umbral_iron_sword
+/give @s lacuna:gravemaw_greatsword
+/give @s lacuna:tidecaller_sickle
+/give @s lacuna:heartwood_bow
+/give @s minecraft:arrow 32
+/give @s lacuna:echo_dagger
+/give @s lacuna:pyrrhic_scepter
+```
+- [ ] Starlace armor renders on the player (pale blue weave); jump from 10 blocks and sneak: slow falling, then a
+      10 s cooldown on the boots.
+- [ ] Umbral sword in a dark cave hits harder (+25 %) than in daylight.
+- [ ] Gravemaw: stand still, hold use ≥ 1 s, release: sweep particles in an arc, mobs in front take damage; moving
+      cancels.
+- [ ] Sickle: right click a mob 10 blocks away: it is yanked toward you; in rain you gain Tide charges (tooltip)
+      and your next hit heals 1 heart.
+- [ ] Heartwood Bow: the hit mob cannot move for 2 s (4 s if pinned against a wall, with particles).
+- [ ] Echo Dagger: each hit is followed by a second, weaker hit half a second later.
+- [ ] Scepter: costs 1 heart per shot, the flame bolt curves toward hostiles; refused at ≤ 2 hearts.
+- [ ] Enchanting table/anvil: only Unbreaking applies to the special weapons.

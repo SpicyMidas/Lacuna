@@ -37,5 +37,9 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<HarmfulEffectLog>> HARMFUL_EFFECTS = ATTACHMENTS.register("harmful_effects",
             () -> AttachmentType.builder(() -> HarmfulEffectLog.EMPTY).serialize(HarmfulEffectLog.CODEC, l -> !l.applied().isEmpty()).build());
 
+    /** Marks arrows shot from the Heartwood Bow (they root what they hit). */
+    public static final Supplier<AttachmentType<Boolean>> HEARTWOOD_ARROW = ATTACHMENTS.register("heartwood_arrow",
+            () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL, v -> v).build());
+
     private ModAttachments() {}
 }

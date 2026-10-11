@@ -5,6 +5,7 @@ import com.lacuna.mod.command.LacunaCommands;
 import com.lacuna.mod.eclipse.EclipseEvents;
 import com.lacuna.mod.chrono.ChronoshardWatchItem;
 import com.lacuna.mod.flute.DeathMemory;
+import com.lacuna.mod.gear.GearEvents;
 import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
 import com.lacuna.mod.orrery.OrreryBlock;
@@ -53,6 +54,7 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(NullLanternItem::onSpawnCheck);
         NeoForge.EVENT_BUS.addListener(DeathMemory::onDeath);
         NeoForge.EVENT_BUS.addListener(DeathMemory::onServerStopped);
+        GearEvents.register(NeoForge.EVENT_BUS);
         AnvilRepairs.add(ModItems.WHISPERBONE_FLUTE, ModItems.ECHO_FRAGMENT, Balance.FLUTE_REPAIR_PER_FRAGMENT);
 
         AnvilRepairs.add(ModItems.DIVINE_MAGNIFYING_GLASS, ModItems.DIVINE_GLASS_SHARD, Balance.BEAM_REPAIR_PER_SHARD);

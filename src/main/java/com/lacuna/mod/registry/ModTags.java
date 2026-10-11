@@ -33,6 +33,7 @@ public final class ModTags {
         public static final TagKey<Item> LIGHT_SOURCES = tag("light_sources");
         public static final TagKey<Item> DRAWN_WEAPONS = tag("drawn_weapons");
         public static final TagKey<Item> UMBRAL_GEAR = tag("umbral_gear");
+        public static final TagKey<Item> HEARTWOOD_REPAIR = tag("heartwood_bow_repair");
 
         private static TagKey<Item> tag(String path) {
             return TagKey.create(Registries.ITEM, Lacuna.id(path));

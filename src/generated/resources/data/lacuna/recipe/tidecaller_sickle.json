@@ -1,0 +1,21 @@
+{
+  "category": "equipment",
+  "key": {
+    "P": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    " PP",
+    " SP",
+    "S  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:tidecaller_sickle"
+  },
+  "type": "minecraft:crafting_shaped"
+}

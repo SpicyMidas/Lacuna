@@ -1,5 +1,6 @@
 {
   "values": [
-    "#c:gems/ruby"
+    "#c:gems/ruby",
+    "#c:gems/zenithite"
   ]
 }

@@ -1,0 +1,13 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lacuna:zenithite_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "lacuna:zenithite_shard"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

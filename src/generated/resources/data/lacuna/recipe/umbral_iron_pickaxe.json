@@ -1,0 +1,21 @@
+{
+  "category": "equipment",
+  "key": {
+    "R": {
+      "item": "lacuna:umbral_iron_ingot"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "RRR",
+    " S ",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:umbral_iron_pickaxe"
+  },
+  "type": "minecraft:crafting_shaped"
+}

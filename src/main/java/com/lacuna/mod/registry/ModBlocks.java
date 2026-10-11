@@ -79,6 +79,14 @@ public final class ModBlocks {
             BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(2.0F, 6.0F).noOcclusion().lightLevel(s -> 4)
                     .sound(SoundType.METAL).requiresCorrectToolForDrops()));
 
+    // ------------------------------------------------------------------ M7 zenithite
+    public static final DeferredBlock<DropExperienceBlock> ZENITHITE_ORE = block("zenithite_ore", () -> new DropExperienceBlock(
+            UniformInt.of(2, 5), BlockBehaviour.Properties.ofFullCopy(Blocks.LAPIS_ORE).mapColor(MapColor.COLOR_LIGHT_BLUE)));
+    public static final DeferredBlock<DropExperienceBlock> DEEPSLATE_ZENITHITE_ORE = block("deepslate_zenithite_ore", () -> new DropExperienceBlock(
+            UniformInt.of(2, 5), BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_LAPIS_ORE).mapColor(MapColor.COLOR_LIGHT_BLUE)));
+    public static final DeferredBlock<Block> ZENITHITE_BLOCK = block("zenithite_block", () -> new Block(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK).mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(s -> 3)));
+
     private ModBlocks() {}
 
     /** destroyTime -1 (unbreakable in survival/adventure, creative can still break), immovable, blast-proof. */

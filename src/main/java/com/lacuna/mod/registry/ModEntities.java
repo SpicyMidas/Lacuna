@@ -2,6 +2,7 @@ package com.lacuna.mod.registry;
 
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.flute.EchoEntity;
+import com.lacuna.mod.gear.PyrrhicBoltEntity;
 import com.lacuna.mod.pearl.ArrivalShardEntity;
 import com.lacuna.mod.solar.SolarRayEntity;
 import com.lacuna.mod.solar.SunsFuryEntity;
@@ -32,6 +33,11 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<EchoEntity>> ECHO = ENTITIES.register("echo",
             () -> EntityType.Builder.<EchoEntity>of(EchoEntity::new, MobCategory.MISC)
                     .sized(0.6F, 1.95F).clientTrackingRange(8).noSave().build("echo"));
+
+    // ------------------------------------------------------------------ M7
+    public static final DeferredHolder<EntityType<?>, EntityType<PyrrhicBoltEntity>> PYRRHIC_BOLT = ENTITIES.register("pyrrhic_bolt",
+            () -> EntityType.Builder.<PyrrhicBoltEntity>of(PyrrhicBoltEntity::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(2).fireImmune().noSave().build("pyrrhic_bolt"));
 
     private ModEntities() {}
 
