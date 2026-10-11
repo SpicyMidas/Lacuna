@@ -1,0 +1,18 @@
+{
+  "itemGroup.lacuna": "Lacuna",
+  "lacuna.configuration.beam": "Divine Magnifying Glass",
+  "lacuna.configuration.divineSight": "Divine Sight",
+  "lacuna.configuration.eclipser": "Eclipser",
+  "lacuna.configuration.forgottenBiomes": "Forgotten Land Biomes",
+  "lacuna.configuration.forgottenLand": "Forgotten Land",
+  "lacuna.configuration.gear": "Gear",
+  "lacuna.configuration.general": "General",
+  "lacuna.configuration.items": "Utility Items",
+  "lacuna.configuration.mobs": "Mobs",
+  "lacuna.configuration.sunsFury": "Sun's Fury",
+  "lacuna.configuration.title": "Lacuna Config",
+  "lacuna.configuration.township": "Townships",
+  "lacuna.configuration.wood": "Wood Families",
+  "lacuna.message.disabled": "This power is dormant on this world.",
+  "lacuna.message.feature_failed": "Something beyond comprehension went wrong; the power fades."
+}

@@ -1,0 +1,18 @@
+{
+  "itemGroup.lacuna": "Lacuna",
+  "lacuna.configuration.beam": "Lente Divina",
+  "lacuna.configuration.divineSight": "Vista Divina",
+  "lacuna.configuration.eclipser": "Eclissatore",
+  "lacuna.configuration.forgottenBiomes": "Biomi della Terra Dimenticata",
+  "lacuna.configuration.forgottenLand": "Terra Dimenticata",
+  "lacuna.configuration.gear": "Equipaggiamento",
+  "lacuna.configuration.general": "Generale",
+  "lacuna.configuration.items": "Oggetti utili",
+  "lacuna.configuration.mobs": "Creature",
+  "lacuna.configuration.sunsFury": "Furia del Sole",
+  "lacuna.configuration.title": "Configurazione di Lacuna",
+  "lacuna.configuration.township": "Borghi",
+  "lacuna.configuration.wood": "Famiglie di legno",
+  "lacuna.message.disabled": "Questo potere è sopito in questo mondo.",
+  "lacuna.message.feature_failed": "Qualcosa di incomprensibile è andato storto; il potere svanisce."
+}

@@ -1,0 +1,2 @@
+# Scripted console session, phase 1 (fresh world). One command per line, '@wait N' pauses N ticks.
+lacuna selftest

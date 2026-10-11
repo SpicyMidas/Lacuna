@@ -1,0 +1,28 @@
+# gradle
+build/
+.gradle/
+out/
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+# runs
+run/
+run-data/
+runs/
+repo/
+logs/
+# datagen cache
+src/generated/resources/.cache/
+# python
+__pycache__/
+*.pyc
+.venv/
+# smoke test workspace
+tools/.smoke/
