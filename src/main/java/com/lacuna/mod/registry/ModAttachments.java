@@ -1,6 +1,7 @@
 package com.lacuna.mod.registry;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.chrono.HarmfulEffectLog;
 import com.lacuna.mod.eclipse.ShadowWalkState;
 import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
@@ -31,6 +32,10 @@ public final class ModAttachments {
     /** Shadow Walk: game mode to restore, end time, dash origin (survives logout/crash). */
     public static final Supplier<AttachmentType<ShadowWalkState>> SHADOW_WALK = ATTACHMENTS.register("shadow_walk",
             () -> AttachmentType.builder(() -> ShadowWalkState.NONE).serialize(ShadowWalkState.CODEC, ShadowWalkState::active).build());
+
+    /** When harmful effects were applied (Pocket Watch clears those of the last 10 s). */
+    public static final Supplier<AttachmentType<HarmfulEffectLog>> HARMFUL_EFFECTS = ATTACHMENTS.register("harmful_effects",
+            () -> AttachmentType.builder(() -> HarmfulEffectLog.EMPTY).serialize(HarmfulEffectLog.CODEC, l -> !l.applied().isEmpty()).build());
 
     private ModAttachments() {}
 }

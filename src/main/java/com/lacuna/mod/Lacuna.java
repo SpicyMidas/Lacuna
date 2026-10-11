@@ -3,6 +3,14 @@ package com.lacuna.mod;
 import com.lacuna.mod.banish.BanishEvents;
 import com.lacuna.mod.command.LacunaCommands;
 import com.lacuna.mod.eclipse.EclipseEvents;
+import com.lacuna.mod.chrono.ChronoshardWatchItem;
+import com.lacuna.mod.flute.DeathMemory;
+import com.lacuna.mod.lantern.NullLanternItem;
+import com.lacuna.mod.mirror.MirrorOfRecursionItem;
+import com.lacuna.mod.orrery.OrreryBlock;
+import com.lacuna.mod.registry.ModEntities;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import com.lacuna.mod.debug.SmokeRunner;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.registry.ModRegistries;
@@ -32,6 +40,20 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(Lacuna::onServerStopped);
         BanishEvents.register(NeoForge.EVENT_BUS);
         EclipseEvents.register(NeoForge.EVENT_BUS);
+        modBus.addListener(ModEntities::onAttributes);
+
+        // M6 utility items
+        NeoForge.EVENT_BUS.addListener((MobEffectEvent.Added e) -> {
+            if (e.getEntity() instanceof ServerPlayer player && e.getEffectInstance() != null) {
+                ChronoshardWatchItem.recordHarmful(player, e.getEffectInstance().getEffect());
+            }
+        });
+        NeoForge.EVENT_BUS.addListener(MirrorOfRecursionItem::onProjectileImpact);
+        NeoForge.EVENT_BUS.addListener(NullLanternItem::onChangeTarget);
+        NeoForge.EVENT_BUS.addListener(NullLanternItem::onSpawnCheck);
+        NeoForge.EVENT_BUS.addListener(DeathMemory::onDeath);
+        NeoForge.EVENT_BUS.addListener(DeathMemory::onServerStopped);
+        AnvilRepairs.add(ModItems.WHISPERBONE_FLUTE, ModItems.ECHO_FRAGMENT, Balance.FLUTE_REPAIR_PER_FRAGMENT);
 
         AnvilRepairs.add(ModItems.DIVINE_MAGNIFYING_GLASS, ModItems.DIVINE_GLASS_SHARD, Balance.BEAM_REPAIR_PER_SHARD);
         AnvilRepairs.add(ModItems.ARRIVAL_SHARD, () -> net.minecraft.world.item.Items.ENDER_PEARL, Balance.SHARD_REPAIR_PER_PEARL);
@@ -49,5 +71,6 @@ public final class Lacuna {
     private static void onServerStopped(ServerStoppedEvent event) {
         // Volatile, session-scoped state must not leak into the next world (spec section 3, "Data").
         SafeRun.resetAll();
+        OrreryBlock.clearVolatile();
     }
 }

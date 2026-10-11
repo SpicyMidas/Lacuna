@@ -1,0 +1,24 @@
+{
+  "category": "tools",
+  "key": {
+    "D": {
+      "item": "lacuna:divine_glass_shard"
+    },
+    "L": {
+      "item": "minecraft:soul_lantern"
+    },
+    "U": {
+      "item": "lacuna:umbral_iron_ingot"
+    }
+  },
+  "pattern": [
+    " U ",
+    "ULU",
+    " D "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:null_lantern"
+  },
+  "type": "minecraft:crafting_shaped"
+}

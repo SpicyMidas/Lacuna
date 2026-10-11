@@ -1,6 +1,7 @@
 package com.lacuna.mod.registry;
 
 import com.lacuna.mod.block.MuralBlock;
+import com.lacuna.mod.orrery.OrreryBlock;
 import com.lacuna.mod.pearl.ArrivalAnchorBlock;
 import java.util.function.Supplier;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -72,6 +73,11 @@ public final class ModBlocks {
     public static final DeferredBlock<ArrivalAnchorBlock> ARRIVAL_ANCHOR = blockNoItem("arrival_anchor", () -> new ArrivalAnchorBlock(
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(1.5F, 1200.0F).noOcclusion().noLootTable()
                     .lightLevel(s -> 6).sound(SoundType.AMETHYST).pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
+
+    // ------------------------------------------------------------------ M6 orrery
+    public static final DeferredBlock<OrreryBlock> ORRERY_OF_THRESHOLDS = block("orrery_of_thresholds", () -> new OrreryBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(2.0F, 6.0F).noOcclusion().lightLevel(s -> 4)
+                    .sound(SoundType.METAL).requiresCorrectToolForDrops()));
 
     private ModBlocks() {}
 

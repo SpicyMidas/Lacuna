@@ -3,6 +3,10 @@ package com.lacuna.mod.registry;
 import com.lacuna.mod.Balance;
 import com.lacuna.mod.banish.TotemOfBanishingItem;
 import com.lacuna.mod.beam.DivineMagnifyingGlassItem;
+import com.lacuna.mod.chrono.ChronoshardWatchItem;
+import com.lacuna.mod.flute.WhisperboneFluteItem;
+import com.lacuna.mod.lantern.NullLanternItem;
+import com.lacuna.mod.mirror.MirrorOfRecursionItem;
 import com.lacuna.mod.eclipse.EclipseCharge;
 import com.lacuna.mod.eclipse.EclipserItem;
 import com.lacuna.mod.pearl.ArrivalShardItem;
@@ -70,6 +74,18 @@ public final class ModItems {
             new Item.Properties().durability(Balance.ARRIVAL_SHARD_DURABILITY).rarity(Rarity.RARE));
     public static final DeferredItem<DepartureShardItem> DEPARTURE_SHARD = item("departure_shard", DepartureShardItem::new,
             new Item.Properties().durability(Balance.DEPARTURE_SHARD_DURABILITY).rarity(Rarity.RARE));
+
+    // ------------------------------------------------------------------ M6 utility items
+    public static final DeferredItem<ChronoshardWatchItem> CHRONOSHARD_POCKET_WATCH = item("chronoshard_pocket_watch",
+            ChronoshardWatchItem::new, new Item.Properties().durability(Balance.WATCH_DURABILITY).rarity(Rarity.RARE));
+    public static final DeferredItem<Item> CHRONAL_SHARD = item("chronal_shard", Item::new, new Item.Properties().rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<MirrorOfRecursionItem> MIRROR_OF_RECURSION = item("mirror_of_recursion",
+            MirrorOfRecursionItem::new, new Item.Properties().durability(Balance.MIRROR_DURABILITY).rarity(Rarity.RARE));
+    public static final DeferredItem<NullLanternItem> NULL_LANTERN = item("null_lantern", NullLanternItem::new,
+            new Item.Properties().durability(Balance.LANTERN_DURABILITY).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<WhisperboneFluteItem> WHISPERBONE_FLUTE = item("whisperbone_flute", WhisperboneFluteItem::new,
+            new Item.Properties().durability(Balance.FLUTE_DURABILITY).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> ECHO_FRAGMENT = item("echo_fragment", Item::new, new Item.Properties());
 
     private ModItems() {}
 

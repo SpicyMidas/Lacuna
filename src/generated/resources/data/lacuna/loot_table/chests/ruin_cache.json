@@ -142,12 +142,17 @@
       "entries": [
         {
           "type": "minecraft:empty",
-          "weight": 985
+          "weight": 975
         },
         {
           "name": "lacuna:solar_flare_fragment",
           "type": "minecraft:item",
           "weight": 15
+        },
+        {
+          "name": "lacuna:chronal_shard",
+          "type": "minecraft:item",
+          "weight": 10
         }
       ],
       "rolls": 1.0

@@ -99,3 +99,23 @@ All `/lacuna` commands need permission level 2.
       nothing answers.", no cooldown/durability spent, tooltip shows "Cracked".
 - [ ] Anchor in the Nether, Departure from the overworld: refused. Inside the Forgotten Land: refused.
 - [ ] Restart the server/world: an existing link still works.
+
+## M6 — Utility items
+```
+/give @s lacuna:chronoshard_pocket_watch
+/give @s lacuna:chronal_shard 5
+/give @s lacuna:mirror_of_recursion
+/give @s lacuna:null_lantern
+/give @s lacuna:whisperbone_flute
+/give @s lacuna:orrery_of_thresholds
+/summon skeleton ~8 ~ ~
+```
+- [ ] Watch: carry it 20 s+ (first snapshot is immediate), walk away, wait ≥ 20 s, use it: back where you were,
+      reverse-portal particles; tooltip counts moments and shards. Shard in off hand + use: inserts it.
+- [ ] Mirror: hold use facing a skeleton: arrows bounce back at it; sneak + use fires a stored echo; the 4th use of
+      the same echo shatters.
+- [ ] Lantern in off hand at night: zombies 4–16 blocks away ignore you; hit one and it attacks; no new monsters
+      spawn close by.
+- [ ] Flute: kill 2 cows nearby, play the flute: 2 translucent Echoes appear and fight what you hit; after 10 s
+      they fade and drop Echo Fragments. With no recent deaths: "The bones stay silent."
+- [ ] Orrery: right click shows coordinates ÷12 and (after M10) the direction to an obelisk / bell tower.

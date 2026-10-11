@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lacuna:item/mirror_of_recursion"
+  }
+}

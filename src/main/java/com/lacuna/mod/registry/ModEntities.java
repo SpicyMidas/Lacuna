@@ -1,12 +1,14 @@
 package com.lacuna.mod.registry;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.flute.EchoEntity;
 import com.lacuna.mod.pearl.ArrivalShardEntity;
 import com.lacuna.mod.solar.SolarRayEntity;
 import com.lacuna.mod.solar.SunsFuryEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -26,5 +28,15 @@ public final class ModEntities {
             () -> EntityType.Builder.<ArrivalShardEntity>of(ArrivalShardEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10).build("arrival_shard"));
 
+    // ------------------------------------------------------------------ M6
+    public static final DeferredHolder<EntityType<?>, EntityType<EchoEntity>> ECHO = ENTITIES.register("echo",
+            () -> EntityType.Builder.<EchoEntity>of(EchoEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F).clientTrackingRange(8).noSave().build("echo"));
+
     private ModEntities() {}
+
+    /** Mod bus: attribute tables for every living Lacuna entity. */
+    public static void onAttributes(EntityAttributeCreationEvent event) {
+        event.put(ECHO.get(), EchoEntity.createAttributes().build());
+    }
 }

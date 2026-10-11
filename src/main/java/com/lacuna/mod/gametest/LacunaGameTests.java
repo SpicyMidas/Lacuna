@@ -4,6 +4,9 @@ import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.banish.BanishmentManager;
 import com.lacuna.mod.beam.BeamHandler;
 import com.lacuna.mod.eclipse.EclipserItem;
+import com.lacuna.mod.flute.DeathMemory;
+import com.lacuna.mod.flute.EchoEntity;
+import com.lacuna.mod.registry.ModEntities;
 import com.lacuna.mod.pearl.PearlLink;
 import com.lacuna.mod.pearl.PearlLinks;
 import com.lacuna.mod.registry.ModDimensions;
@@ -194,5 +197,24 @@ public final class LacunaGameTests {
         check(helper, PearlLinks.resolve(helper.getLevel().getServer(), ModDimensions.FORGOTTEN_LAND, link).isEmpty(),
                 "no Forgotten Land crossings");
         helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ M6
+    @GameTest(template = PLATFORM)
+    public static void fluteRemembersRecentDeaths(GameTestHelper helper) {
+        Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, CENTER);
+        zombie.kill();
+        helper.runAfterDelay(2, () -> {
+            var deaths = DeathMemory.take(helper.getLevel(), net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(CENTER)), 3);
+            check(helper, deaths.size() == 1, "one recent death expected, got " + deaths.size());
+            EchoEntity echo = ModEntities.ECHO.get().create(helper.getLevel());
+            check(helper, echo != null, "echo entity type must create an instance");
+            echo.setup(null, deaths.get(0).maxHealth(), deaths.get(0).attack());
+            check(helper, echo.getMaxHealth() <= 20.0F && echo.getMaxHealth() >= 1.0F, "echo health is capped at 20");
+            echo.discard();
+            check(helper, DeathMemory.take(helper.getLevel(), net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(CENTER)), 3).isEmpty(),
+                    "a death can only be called once");
+            helper.succeed();
+        });
     }
 }

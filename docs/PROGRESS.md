@@ -199,3 +199,35 @@ Built:
   the same SavedData pattern as banishment records (covered by the smoke test's banished pig).
 
 Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.
+
+## M6 — Utility items
+
+Built:
+- Chronoshard Pocket Watch (12 durability, recipe `.R. / GCG / .D.`): snapshot {dimension, position, view,
+  health, food, saturation, game time} every 2400 ticks while anywhere in the inventory (first one immediately),
+  ring of 3 (component `lacuna:watch_snapshots`); right click rewinds to the newest snapshot ≥ 400 ticks old in the
+  current dimension only (safe spot, health = max(now, then), food/saturation restored, fire cleared, harmful
+  effects applied in the last 10 s removed — tracked in the `harmful_effects` player attachment), consumes it and
+  newer ones, 1 durability. Chronal shards inserted from the other hand (component, max 5) → cooldown
+  6000 − 600·shards. Repair: gold ingot (25 %, not specified in spec).
+- Mirror of Recursion (20 durability, `QDQ / DGD / QDQ`): BLOCK use animation; `ProjectileImpactEvent` on a player
+  raising it: projectiles in `lacuna:reflectable` (minus `lacuna:unreflectable`) coming from the front 180° are
+  cancelled and sent back toward their shooter with the player as owner (arrows become non-pickable), 1 durability;
+  up to 3 echoes stored (component `lacuna:mirror_stored`); sneak + use re-fires the oldest at
+  0.85^(reuse+1) speed (arrows also scale base damage); an echo already used 3 times shatters instead.
+  Repair: divine glass shard (25 %, not specified in spec).
+- Null Lantern (300 durability, `.U. / ULU / .D.`): held in either hand, hostile mobs (not bosses) between 3 and
+  16 blocks cannot target the holder unless hurt by them in the last 5 s (`LivingChangeTargetEvent` + a 1 Hz sweep
+  that drops existing targets); natural monster spawns within 24 blocks fail (`MobSpawnEvent.PositionCheck`);
+  1 durability per 200 ticks held. Repair: umbral iron ingot.
+- Whisperbone Flute (40 durability, `.B. / BEB / .B.`, goat-horn animation/sound, 1200 cooldown) + Echo mob:
+  volatile per-dimension ring buffer (64) of non-player non-boss deaths; up to 3 deaths within 20 blocks and
+  1200 ticks become Echoes (translucent zombie-model humanoid, health ≤ 20, attack ≤ 6, speed 0.3, 200 ticks,
+  fights what the owner hits / is hit by, immune to the owner, no loot/XP, `noSave`), each leaving an
+  `echo_fragment` on expiry (+20 flute repair at an anvil). No deaths: "The bones stay silent." with no cost.
+- Orrery of Thresholds (`DKD / RCR / SSS`): static pedestal-and-rings model; right click (5 s per player) shows the
+  ÷12/×12 translation and the direction + distance to the nearest `lacuna:orrery_targets` structure within
+  `orreryRadiusChunks` (one search per second server-wide); inside the Forgotten Land only the translation.
+- GameTest: deaths are remembered once and turn into capped Echoes.
+
+Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.

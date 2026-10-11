@@ -1,0 +1,27 @@
+{
+  "category": "tools",
+  "key": {
+    "C": {
+      "item": "minecraft:clock"
+    },
+    "D": {
+      "item": "lacuna:divine_glass_shard"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "R": {
+      "item": "lacuna:ruby"
+    }
+  },
+  "pattern": [
+    " R ",
+    "GCG",
+    " D "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:chronoshard_pocket_watch"
+  },
+  "type": "minecraft:crafting_shaped"
+}

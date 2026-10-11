@@ -34,5 +34,6 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.SUNS_FURY.get(), ctx -> new ThrownItemRenderer<>(ctx, 1.25F, true));
         event.registerEntityRenderer(ModEntities.SOLAR_RAY.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.ARRIVAL_SHARD.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(ModEntities.ECHO.get(), EchoRenderer::new);
     }
 }
