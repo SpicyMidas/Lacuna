@@ -56,3 +56,16 @@ All `/lacuna` commands need permission level 2.
 - [ ] Ruins: cannot be mined in survival/adventure, can be broken in creative; memory shrines show mural blocks;
       paintings menu offers the five Memory Murals.
 - [ ] Anvil: totem + ruby repairs 25 %; totem + totem gives no result.
+
+## M3 — Divine Magnifying Glass
+```
+/give @s lacuna:divine_magnifying_glass
+/give @s lacuna:divine_glass_shard 8
+/time set noon
+/summon zombie ~5 ~ ~
+```
+- [ ] Hold right click: a yellow dust ray up to 24 blocks; zombie takes damage and burns; you walk at normal speed.
+- [ ] At night the ray is white and weaker; with your head underwater it is blue, short, with bubbles and no fire.
+- [ ] Aim at grass/wood: fire appears next to the face; at snow/ice: it melts; at water: steam puffs + hiss.
+- [ ] Durability drops by 1 per second of beam; anvil + shards repairs 60 each; it cannot be enchanted.
+- [ ] Inside the Forgotten Land the ray is yellow (counts as day).

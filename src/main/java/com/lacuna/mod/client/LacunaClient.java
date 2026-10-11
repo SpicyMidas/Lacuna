@@ -20,5 +20,6 @@ public final class LacunaClient {
         NeoForge.EVENT_BUS.addListener(DivineSight::onClientTick);
         NeoForge.EVENT_BUS.addListener(OutlineRenderer::onRenderLevel);
         NeoForge.EVENT_BUS.addListener(OutlineRenderer::onLogout);
+        NeoForge.EVENT_BUS.addListener(MagnifierInput::onMovementInput);
     }
 }

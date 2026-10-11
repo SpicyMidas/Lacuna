@@ -2,6 +2,7 @@ package com.lacuna.mod.registry;
 
 import com.lacuna.mod.Balance;
 import com.lacuna.mod.banish.TotemOfBanishingItem;
+import com.lacuna.mod.beam.DivineMagnifyingGlassItem;
 import java.util.function.Function;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoeItem;
@@ -33,6 +34,10 @@ public final class ModItems {
             new Item.Properties().attributes(ShovelItem.createAttributes(ModTiers.RUBY, 1.5F, -3.0F)));
     public static final DeferredItem<HoeItem> RUBY_HOE = item("ruby_hoe", p -> new HoeItem(ModTiers.RUBY, p),
             new Item.Properties().attributes(HoeItem.createAttributes(ModTiers.RUBY, -3.0F, 0.0F)));
+
+    // ------------------------------------------------------------------ M3 divine magnifying glass
+    public static final DeferredItem<DivineMagnifyingGlassItem> DIVINE_MAGNIFYING_GLASS = item("divine_magnifying_glass",
+            DivineMagnifyingGlassItem::new, new Item.Properties().durability(Balance.GLASS_DURABILITY).rarity(Rarity.UNCOMMON));
 
     private ModItems() {}
 

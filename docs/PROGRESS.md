@@ -120,3 +120,26 @@ Deviations / interpretations:
 
 Gates: 3 ✔ (now also checks dimension/biome/feature/structure references and chest loot tables in NBT),
 4 (logic) ✔, 1/2/5/6 not runnable here.
+
+## M3 — Divine Magnifying Glass
+
+Built:
+- `divine_magnifying_glass` (500 durability, 1 per 20 beam ticks, use duration 72000, BOW animation, 10-tick
+  cooldown on release, repaired at an anvil with Divine Glass Shards +60 each through `AnvilRepairs`, not
+  enchantable, item+item merge disabled). Recipe `.G. / GDG / .S.`.
+- Server beam each use tick: block clip (COLLIDER) up to 24 blocks (×0.5 underwater), entity hit along it,
+  3.0 damage every 5 ticks (12/s) with damage type `lacuna:solar_beam` (in `minecraft:is_fire`, armor applies),
+  4 s fire. `BeamMath` (unit-tested): day ×1 yellow, underwater ×0.4 / range ×0.5 blue no ignition (+bubbles),
+  night ×0.5 white, both ×0.2 blue; Forgotten Land counts as day; dimensions without sky count as night.
+- Block effects every 10 ticks (not underwater, `mayInteract` + `mayBuild`, config `beam.affectsBlocks`): fire
+  next to flammable faces (`BaseFireBlock.canBePlacedAt`), melts snow/ice (ice → water unless ultrawarm or
+  `lacuna:not_meltable`), primes TNT, large smoke. Water hit: cloud + poof + extinguish sound every 5 ticks,
+  optional `beam.evaporateWater` removes flowing water.
+- Dust particle ray (one per block, every 2 ticks, max 24).
+- No movement slowdown while channelling: client `MovementInputUpdateEvent` pre-scales input by 5 to cancel the
+  vanilla ×0.2 that follows the event.
+- All 7 Lacuna damage types (`solar_beam`, `eclipse`, `echo_strike`, `solar_ray`, `pyrrhic_bolt`,
+  `gravemaw_wave`, `reflection_touch`) with death messages (en + it).
+- GameTest: beam pulse damages a zombie in front of a mock player.
+
+Gates: 3 ✔, 4 (logic, now 15 tests) ✔, 1/2/5/6 not runnable here.

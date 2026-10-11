@@ -2,6 +2,7 @@ package com.lacuna.mod.gametest;
 
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.banish.BanishmentManager;
+import com.lacuna.mod.beam.BeamHandler;
 import com.lacuna.mod.registry.ModDimensions;
 import com.lacuna.mod.registry.ModBlocks;
 import com.lacuna.mod.registry.ModItems;
@@ -14,6 +15,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Pig;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.PushReaction;
@@ -107,6 +111,20 @@ public final class LacunaGameTests {
         check(helper, back != null && back.level().dimension() == Level.OVERWORLD, "pig should be back in the overworld");
         check(helper, BanishmentManager.recordOf(back).isEmpty(), "record must be removed after return");
         back.discard();
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ M3
+    @GameTest(template = PLATFORM)
+    public static void beamDamagesTarget(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        BlockPos from = helper.absolutePos(new BlockPos(1, 1, 4));
+        player.moveTo(from.getX() + 0.5, from.getY(), from.getZ() + 0.5, -90.0F, 0.0F); // looking east (+x)
+        Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(5, 1, 4));
+        float before = zombie.getHealth();
+        BeamHandler.tick(helper.getLevel(), player, new ItemStack(ModItems.DIVINE_MAGNIFYING_GLASS.get()), 5);
+        check(helper, zombie.getHealth() < before, "beam should damage the zombie (" + before + " -> " + zombie.getHealth() + ")");
+        zombie.discard();
         helper.succeed();
     }
 }
