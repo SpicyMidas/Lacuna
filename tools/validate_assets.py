@@ -415,6 +415,8 @@ def main() -> int:
             if rl(sp)[0] == MODID and sp not in pools:
                 err(f"structure {key}: unknown start_pool {sp}")
 
+    check_worldgen(ids, tag_files)
+
     # lang values sanity
     for k, v in (lang or {}).items():
         if not isinstance(v, str) or not v.strip():
@@ -435,6 +437,79 @@ def main() -> int:
           f"{len(ids['block'])} blocks, {len(ids['item'])} items, {len(ids['entity'])} entities, "
           f"{len(textures)} textures, {len(models)} models")
     return 1 if errors else 0
+
+
+def exists(kind: str, ref: str) -> bool:
+    """kind is a data folder such as 'worldgen/placed_feature'; vanilla ids come from the 1.21.1 index."""
+    n, p = rl(ref)
+    if n == "minecraft":
+        return p in set(VANILLA.get(kind, []))
+    return f"{n}:{p}" in all_files(kind, ".json")
+
+
+def check_worldgen(ids, tag_files) -> None:
+    for key, path in all_files("dimension", ".json").items():
+        if rl(key)[0] != MODID:
+            continue
+        d = load_json(path) or {}
+        if not exists("dimension_type", d.get("type", "")):
+            err(f"dimension {key}: unknown dimension_type {d.get('type')}")
+        gen = d.get("generator", {})
+        if gen.get("settings") and not exists("worldgen/noise_settings", gen["settings"]):
+            err(f"dimension {key}: unknown noise settings {gen['settings']}")
+        for b in gen.get("biome_source", {}).get("biomes", []):
+            if not exists("worldgen/biome", b["biome"]):
+                err(f"dimension {key}: unknown biome {b['biome']}")
+    for key, path in all_files("worldgen/biome", ".json").items():
+        d = load_json(path) or {}
+        for step in d.get("features", []):
+            for f in step:
+                if not exists("worldgen/placed_feature", f):
+                    err(f"biome {key}: unknown placed feature {f}")
+        for group in d.get("spawners", {}).values():
+            for sp in group:
+                if not entity_known(sp["type"], ids):
+                    err(f"biome {key}: unknown spawn entity {sp['type']}")
+        if len(d.get("features", [])) != 11:
+            err(f"biome {key}: features must have 11 decoration steps")
+    for key, path in all_files("worldgen/placed_feature", ".json").items():
+        d = load_json(path) or {}
+        f = d.get("feature")
+        if isinstance(f, str) and not exists("worldgen/configured_feature", f):
+            err(f"placed feature {key}: unknown configured feature {f}")
+    for key, path in all_files("worldgen/structure_set", ".json").items():
+        d = load_json(path) or {}
+        for st in d.get("structures", []):
+            if not exists("worldgen/structure", st["structure"]):
+                err(f"structure set {key}: unknown structure {st['structure']}")
+    for key, path in all_files("worldgen/structure", ".json").items():
+        d = load_json(path) or {}
+        b = d.get("biomes", "")
+        if isinstance(b, str) and b.startswith("#") and not tag_known("worldgen/biome", b[1:], tag_files["worldgen/biome"]):
+            err(f"structure {key}: unknown biome tag {b}")
+    for key, path in all_files("neoforge/biome_modifier", ".json").items():
+        d = load_json(path) or {}
+        feats = d.get("features")
+        for f in ([feats] if isinstance(feats, str) else feats or []):
+            if not exists("worldgen/placed_feature", f):
+                err(f"biome modifier {key}: unknown placed feature {f}")
+        b = d.get("biomes")
+        if isinstance(b, str) and b.startswith("#") and not tag_known("worldgen/biome", b[1:], tag_files["worldgen/biome"]):
+            err(f"biome modifier {key}: unknown biome tag {b}")
+        for sp in d.get("spawners", []) if isinstance(d.get("spawners"), list) else ([d["spawners"]] if "spawners" in d else []):
+            if not entity_known(sp["type"], ids):
+                err(f"biome modifier {key}: unknown entity {sp['type']}")
+    for key, path in all_files("painting_variant", ".json").items():
+        d = load_json(path) or {}
+        a = d.get("asset_id", "")
+        n, p = rl(a)
+        if n == MODID and f"{n}:painting/{p}" not in all_files("textures", ".png"):
+            err(f"painting {key}: missing texture painting/{p}")
+        tex = all_files("textures", ".png").get(f"{n}:painting/{p}")
+        if tex:
+            im = Image.open(tex)
+            if im.size != (16 * d.get("width", 1), 16 * d.get("height", 1)):
+                err(f"painting {key}: texture size {im.size} does not match {d.get('width')}x{d.get('height')} blocks")
 
 
 def check_structures(structures: Dict[str, str], ids) -> None:
@@ -478,8 +553,14 @@ def check_structures(structures: Dict[str, str], ids) -> None:
                             err(f"structure {key}: block {name} has invalid property {pk}={pv}")
             else:
                 err(f"structure {key}: foreign block {name}")
+        loot_tables = all_files("loot_table", ".json")
         n = len(palette)
         for b in root.get("blocks", []):
+            if "nbt" in b and "LootTable" in b["nbt"]:
+                lt = str(b["nbt"]["LootTable"])
+                ln, lp = rl(lt)
+                if ln == MODID and f"{ln}:{lp}" not in loot_tables:
+                    err(f"structure {key}: chest loot table {lt} does not exist")
             st = int(b["state"])
             if st < 0 or st >= n:
                 err(f"structure {key}: block state index {st} out of palette range {n}")

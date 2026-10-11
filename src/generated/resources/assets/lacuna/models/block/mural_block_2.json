@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "lacuna:block/mural_block_2",
+    "side": "lacuna:block/ruin_stone_bricks",
+    "top": "lacuna:block/ruin_stone_bricks"
+  }
+}

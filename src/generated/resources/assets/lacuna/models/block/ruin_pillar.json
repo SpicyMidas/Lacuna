@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "lacuna:block/ruin_pillar_top",
+    "side": "lacuna:block/ruin_pillar"
+  }
+}

@@ -34,5 +34,116 @@
    "true",
    "false"
   ]
+ },
+ "mural_block_1": {
+  "facing": [
+   "north",
+   "south",
+   "west",
+   "east"
+  ]
+ },
+ "mural_block_2": {
+  "facing": [
+   "north",
+   "south",
+   "west",
+   "east"
+  ]
+ },
+ "mural_block_3": {
+  "facing": [
+   "north",
+   "south",
+   "west",
+   "east"
+  ]
+ },
+ "mural_block_4": {
+  "facing": [
+   "north",
+   "south",
+   "west",
+   "east"
+  ]
+ },
+ "mural_block_5": {
+  "facing": [
+   "north",
+   "south",
+   "west",
+   "east"
+  ]
+ },
+ "ruin_pillar": {
+  "axis": [
+   "x",
+   "y",
+   "z"
+  ]
+ },
+ "ruin_slab": {
+  "type": [
+   "top",
+   "bottom",
+   "double"
+  ],
+  "waterlogged": [
+   "true",
+   "false"
+  ]
+ },
+ "ruin_stairs": {
+  "facing": [
+   "north",
+   "south",
+   "west",
+   "east"
+  ],
+  "half": [
+   "top",
+   "bottom"
+  ],
+  "shape": [
+   "straight",
+   "inner_left",
+   "inner_right",
+   "outer_left",
+   "outer_right"
+  ],
+  "waterlogged": [
+   "true",
+   "false"
+  ]
+ },
+ "ruin_wall": {
+  "east": [
+   "none",
+   "low",
+   "tall"
+  ],
+  "north": [
+   "none",
+   "low",
+   "tall"
+  ],
+  "south": [
+   "none",
+   "low",
+   "tall"
+  ],
+  "up": [
+   "true",
+   "false"
+  ],
+  "waterlogged": [
+   "true",
+   "false"
+  ],
+  "west": [
+   "none",
+   "low",
+   "tall"
+  ]
  }
 }

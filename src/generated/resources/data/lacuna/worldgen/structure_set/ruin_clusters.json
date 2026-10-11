@@ -1,0 +1,18 @@
+{
+  "placement": {
+    "salt": 902114877,
+    "separation": 3,
+    "spacing": 7,
+    "type": "minecraft:random_spread"
+  },
+  "structures": [
+    {
+      "structure": "lacuna:broken_arch",
+      "weight": 1
+    },
+    {
+      "structure": "lacuna:fallen_colonnade",
+      "weight": 1
+    }
+  ]
+}

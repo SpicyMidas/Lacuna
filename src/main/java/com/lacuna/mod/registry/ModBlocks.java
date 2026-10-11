@@ -1,5 +1,6 @@
 package com.lacuna.mod.registry;
 
+import com.lacuna.mod.block.MuralBlock;
 import java.util.function.Supplier;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.AmethystClusterBlock;
@@ -7,9 +8,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.TransparentBlock;
+import net.minecraft.world.level.block.WallBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -35,7 +41,34 @@ public final class ModBlocks {
             7.0F, 3.0F, BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).forceSolidOn().noOcclusion()
                     .sound(SoundType.AMETHYST_CLUSTER).strength(1.5F).lightLevel(s -> 5).pushReaction(PushReaction.DESTROY)));
 
+    // ------------------------------------------------------------------ M2 forgotten land ruins (unbreakable in survival)
+    public static final DeferredBlock<Block> RUIN_STONE = block("ruin_stone", () -> new Block(ruinProps()));
+    public static final DeferredBlock<Block> RUIN_STONE_BRICKS = block("ruin_stone_bricks", () -> new Block(ruinProps()));
+    public static final DeferredBlock<Block> CRACKED_RUIN_STONE_BRICKS = block("cracked_ruin_stone_bricks", () -> new Block(ruinProps()));
+    public static final DeferredBlock<RotatedPillarBlock> RUIN_PILLAR = block("ruin_pillar", () -> new RotatedPillarBlock(ruinProps()));
+    public static final DeferredBlock<Block> CHISELED_RUIN_GLYPH = block("chiseled_ruin_glyph", () -> new Block(ruinProps()));
+    public static final DeferredBlock<SlabBlock> RUIN_SLAB = block("ruin_slab", () -> new SlabBlock(ruinProps()));
+    public static final DeferredBlock<StairBlock> RUIN_STAIRS = block("ruin_stairs", () -> new StairBlock(
+            RUIN_STONE_BRICKS.get().defaultBlockState(), ruinProps()));
+    public static final DeferredBlock<WallBlock> RUIN_WALL = block("ruin_wall", () -> new WallBlock(ruinProps().forceSolidOn()));
+    public static final DeferredBlock<MuralBlock> MURAL_BLOCK_1 = block("mural_block_1", () -> new MuralBlock(ruinProps()));
+    public static final DeferredBlock<MuralBlock> MURAL_BLOCK_2 = block("mural_block_2", () -> new MuralBlock(ruinProps()));
+    public static final DeferredBlock<MuralBlock> MURAL_BLOCK_3 = block("mural_block_3", () -> new MuralBlock(ruinProps()));
+    public static final DeferredBlock<MuralBlock> MURAL_BLOCK_4 = block("mural_block_4", () -> new MuralBlock(ruinProps()));
+    public static final DeferredBlock<MuralBlock> MURAL_BLOCK_5 = block("mural_block_5", () -> new MuralBlock(ruinProps()));
+
     private ModBlocks() {}
+
+    /** destroyTime -1 (unbreakable in survival/adventure, creative can still break), immovable, blast-proof. */
+    private static BlockBehaviour.Properties ruinProps() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.CLAY)
+                .instrument(NoteBlockInstrument.BASEDRUM)
+                .strength(-1.0F, 3600000.0F)
+                .pushReaction(PushReaction.BLOCK)
+                .isValidSpawn(Blocks::never)
+                .sound(SoundType.DEEPSLATE_BRICKS);
+    }
 
     static void init() {
         // class-loading this holder registers every block above

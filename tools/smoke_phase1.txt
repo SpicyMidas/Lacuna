@@ -1,2 +1,19 @@
 # Scripted console session, phase 1 (fresh world). One command per line, '@wait N' pauses N ticks.
 lacuna selftest
+# --- M2: Forgotten Land generation (16x16 = 256 chunks) and ruin structures
+execute in lacuna:forgotten_land run forceload add 0 0 255 255
+@wait 400
+execute in lacuna:forgotten_land run place structure lacuna:broken_arch 16 80 16
+execute in lacuna:forgotten_land run place structure lacuna:fallen_colonnade 48 80 16
+execute in lacuna:forgotten_land run place structure lacuna:ruined_hall 80 80 16
+execute in lacuna:forgotten_land run place structure lacuna:sunken_plaza 112 80 16
+execute in lacuna:forgotten_land run place structure lacuna:memory_shrine 144 80 16
+execute in lacuna:forgotten_land run place structure lacuna:obelisk_ruin 176 80 16
+execute in lacuna:forgotten_land run locate structure #lacuna:forgotten_ruins
+execute in lacuna:forgotten_land run forceload remove all
+# --- M2: banishment round trip of a named pig (record must survive the restart)
+summon minecraft:pig 8 120 8 {CustomName:'"smoke_pig"',NoAI:1b}
+@wait 5
+lacuna banish @e[type=minecraft:pig,name=smoke_pig]
+@wait 40
+save-all flush

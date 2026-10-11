@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "lacuna:block/ruin_slab"
+    },
+    "type=double": {
+      "model": "lacuna:block/ruin_stone_bricks"
+    },
+    "type=top": {
+      "model": "lacuna:block/ruin_slab_top"
+    }
+  }
+}

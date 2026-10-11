@@ -14,7 +14,7 @@ public final class ModCreativeTabs {
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> LACUNA = TABS.register("lacuna", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.lacuna"))
-            .icon(() -> new ItemStack(ModItems.RUBY.get()))
+            .icon(() -> new ItemStack(ModItems.TOTEM_OF_BANISHING.get()))
             .displayItems((params, output) -> ModRegistries.ITEMS.getEntries().forEach(holder -> output.accept(holder.get())))
             .build());
 

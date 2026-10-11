@@ -1,0 +1,26 @@
+{
+  "placement": {
+    "salt": 1847261933,
+    "separation": 6,
+    "spacing": 14,
+    "type": "minecraft:random_spread"
+  },
+  "structures": [
+    {
+      "structure": "lacuna:ruined_hall",
+      "weight": 1
+    },
+    {
+      "structure": "lacuna:sunken_plaza",
+      "weight": 1
+    },
+    {
+      "structure": "lacuna:memory_shrine",
+      "weight": 1
+    },
+    {
+      "structure": "lacuna:obelisk_ruin",
+      "weight": 1
+    }
+  ]
+}

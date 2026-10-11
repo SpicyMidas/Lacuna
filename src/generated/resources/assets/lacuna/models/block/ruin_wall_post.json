@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_wall_post",
+  "textures": {
+    "wall": "lacuna:block/ruin_stone_bricks"
+  }
+}

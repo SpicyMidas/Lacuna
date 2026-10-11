@@ -52,12 +52,22 @@ class Gen:
         self.block_props: Dict[str, Dict[str, List[str]]] = {}
         self.items: List[str] = []
         self.blocks: List[str] = []
+        self.shared: Dict[str, Any] = {}
+        self.finalizers: List[Any] = []
 
     # ------------------------------------------------------------------------------------- raw output
     def put(self, rel: str, data: Any) -> None:
         if rel in self.files and self.files[rel] != data:
             raise ValueError(f"conflicting definitions for {rel}")
         self.files[rel] = data
+
+    def override(self, rel: str, data: Any) -> None:
+        """Replaces a file written by an earlier milestone module (e.g. the dimension gaining biomes)."""
+        self.files[rel] = data
+
+    def finalizer(self, fn) -> None:
+        """Runs fn(g) after every content module (for tables that several milestones extend)."""
+        self.finalizers.append(fn)
 
     def asset(self, sub: str, data: Any) -> None:
         self.put(f"assets/{MODID}/{sub}.json", data)
@@ -396,6 +406,8 @@ class Gen:
 
     # ------------------------------------------------------------------------------------- output
     def write(self) -> None:
+        for fn in self.finalizers:
+            fn(self)
         for (kind, tag), values in sorted(self.tags.items()):
             tns, tpath = tag.split(":", 1)
             self.put(f"data/{tns}/tags/{kind}/{tpath}.json", {"values": values})

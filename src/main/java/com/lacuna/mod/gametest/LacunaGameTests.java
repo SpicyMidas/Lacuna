@@ -1,6 +1,8 @@
 package com.lacuna.mod.gametest;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.banish.BanishmentManager;
+import com.lacuna.mod.registry.ModDimensions;
 import com.lacuna.mod.registry.ModBlocks;
 import com.lacuna.mod.registry.ModItems;
 import java.util.List;
@@ -9,7 +11,12 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -68,6 +75,38 @@ public final class LacunaGameTests {
         List<ItemStack> result = drops(helper, CENTER, new ItemStack(Items.IRON_PICKAXE));
         int shards = result.stream().filter(s -> s.is(ModItems.DIVINE_GLASS_SHARD.get())).mapToInt(ItemStack::getCount).sum();
         check(helper, shards >= 2 && shards <= 4, "cluster should drop 2-4 shards, got " + shards);
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ M2
+    @GameTest(template = PLATFORM)
+    public static void ruinBlocksAreUnbreakable(GameTestHelper helper) {
+        for (Block block : List.of(ModBlocks.RUIN_STONE.get(), ModBlocks.RUIN_STONE_BRICKS.get(), ModBlocks.RUIN_PILLAR.get(),
+                ModBlocks.RUIN_WALL.get(), ModBlocks.MURAL_BLOCK_1.get())) {
+            helper.setBlock(CENTER, block);
+            BlockPos abs = helper.absolutePos(CENTER);
+            BlockState state = helper.getLevel().getBlockState(abs);
+            check(helper, state.getDestroySpeed(helper.getLevel(), abs) < 0, block + " must be unbreakable");
+            check(helper, block.getExplosionResistance() >= 3_600_000.0F, block + " must be blast proof");
+            check(helper, state.getPistonPushReaction() == PushReaction.BLOCK, block + " must not be pushable");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM, timeoutTicks = 400)
+    public static void banishAndReturnPig(GameTestHelper helper) {
+        if (ModDimensions.forgottenLand(helper.getLevel().getServer()) == null) {
+            helper.fail("forgotten land dimension missing");
+            return;
+        }
+        Pig pig = helper.spawn(EntityType.PIG, CENTER);
+        Entity banished = BanishmentManager.banish(pig);
+        check(helper, banished != null && ModDimensions.isForgottenLand(banished.level()), "pig should be in the Forgotten Land");
+        check(helper, BanishmentManager.recordOf(banished).isPresent(), "a banishment record must exist");
+        Entity back = BanishmentManager.returnEntity(banished);
+        check(helper, back != null && back.level().dimension() == Level.OVERWORLD, "pig should be back in the overworld");
+        check(helper, BanishmentManager.recordOf(back).isEmpty(), "record must be removed after return");
+        back.discard();
         helper.succeed();
     }
 }

@@ -1,2 +1,6 @@
 # Phase 2: restart on the same world, then verify persisted state.
 lacuna selftest
+execute in lacuna:forgotten_land run forceload add -16 -16 16 16
+@wait 100
+execute in lacuna:forgotten_land run lacuna return @e[type=minecraft:pig,name=smoke_pig]
+execute in lacuna:forgotten_land run forceload remove all

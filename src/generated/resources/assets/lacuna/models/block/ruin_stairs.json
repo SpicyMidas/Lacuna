@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "lacuna:block/ruin_stone_bricks",
+    "side": "lacuna:block/ruin_stone_bricks",
+    "top": "lacuna:block/ruin_stone_bricks"
+  }
+}
