@@ -57,6 +57,16 @@ public final class ModBlocks {
     public static final DeferredBlock<MuralBlock> MURAL_BLOCK_4 = block("mural_block_4", () -> new MuralBlock(ruinProps()));
     public static final DeferredBlock<MuralBlock> MURAL_BLOCK_5 = block("mural_block_5", () -> new MuralBlock(ruinProps()));
 
+    // ------------------------------------------------------------------ M4 umbral iron
+    public static final DeferredBlock<Block> UMBRAL_IRON_ORE = block("umbral_iron_ore", () -> new Block(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_ORE).strength(4.0F, 3.0F)));
+    public static final DeferredBlock<Block> DEEPSLATE_UMBRAL_IRON_ORE = block("deepslate_umbral_iron_ore", () -> new Block(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_IRON_ORE).strength(5.5F, 3.0F)));
+    public static final DeferredBlock<Block> UMBRAL_IRON_BLOCK = block("umbral_iron_block", () -> new Block(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).mapColor(MapColor.COLOR_BLUE)));
+    public static final DeferredBlock<Block> RAW_UMBRAL_IRON_BLOCK = block("raw_umbral_iron_block", () -> new Block(
+            BlockBehaviour.Properties.ofFullCopy(Blocks.RAW_IRON_BLOCK).mapColor(MapColor.COLOR_BLUE)));
+
     private ModBlocks() {}
 
     /** destroyTime -1 (unbreakable in survival/adventure, creative can still break), immovable, blast-proof. */

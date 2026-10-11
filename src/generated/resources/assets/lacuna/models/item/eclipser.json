@@ -1,0 +1,26 @@
+{
+  "overrides": [
+    {
+      "model": "lacuna:item/eclipser_charge_1",
+      "predicate": {
+        "lacuna:charge": 0.01
+      }
+    },
+    {
+      "model": "lacuna:item/eclipser_charge_2",
+      "predicate": {
+        "lacuna:charge": 0.34
+      }
+    },
+    {
+      "model": "lacuna:item/eclipser_charge_3",
+      "predicate": {
+        "lacuna:charge": 0.67
+      }
+    }
+  ],
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "lacuna:item/eclipser"
+  }
+}

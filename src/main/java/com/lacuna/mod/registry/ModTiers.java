@@ -12,5 +12,14 @@ public final class ModTiers {
             Balance.RUBY_TOOL_SPEED, Balance.RUBY_TOOL_DAMAGE_BONUS, Balance.RUBY_TOOL_ENCHANTABILITY,
             () -> Ingredient.of(ModItems.RUBY.get()));
 
+    /** Umbral Iron: iron mining level, 900 uses, speed 6.5, enchantability 12 (tool set in M7). */
+    public static final Tier UMBRAL = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.UMBRAL_TOOL_DURABILITY,
+            Balance.UMBRAL_TOOL_SPEED, Balance.UMBRAL_TOOL_DAMAGE_BONUS, Balance.UMBRAL_TOOL_ENCHANTABILITY,
+            () -> Ingredient.of(ModItems.UMBRAL_IRON_INGOT.get()));
+
+    /** Eclipser: its own tier so TieredItem uses the Eclipser's 250 durability; repaired with Umbral Iron. */
+    public static final Tier ECLIPSER = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.ECLIPSER_DURABILITY,
+            Balance.UMBRAL_TOOL_SPEED, 0.0F, 10, () -> Ingredient.of(ModItems.UMBRAL_IRON_INGOT.get()));
+
     private ModTiers() {}
 }

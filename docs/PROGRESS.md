@@ -143,3 +143,36 @@ Built:
 - GameTest: beam pulse damages a zombie in front of a mock player.
 
 Gates: 3 ✔, 4 (logic, now 15 tests) ✔, 1/2/5/6 not runnable here.
+
+## M4 — Umbral Iron, Eclipser + Shadow Walk, Solar Flare, Sun's Fury
+
+Built:
+- Umbral Iron: ores (stone hardness 4.0, deepslate 5.5 — deepslate value not in spec, vanilla +1.5 convention),
+  raw/ingot/nugget, storage + raw blocks, recipes (smelt/blast, 9⇄1), ore worldgen Y −64..0, size 6, 3/chunk.
+  `UMBRAL` tier (iron level, 900 uses, 6.5 speed, ench. 12) for the M7 tool set.
+- Eclipser (`SwordItem` with its own tier so durability is 250, total damage 7, speed 1.6, repair with umbral
+  ingots, only Unbreaking via `supportsEnchantment`/`isPrimaryItemFor`). Charge in data component
+  `lacuna:eclipse_charge` {charge, last_hit}: +10 per hit at most every 5 ticks, reset on any damage taken
+  (`LivingDamageEvent.Post`), −2/s after 8 s idle, action bar `Eclipse N%`, 4 textures via predicate
+  `lacuna:charge` (0 / 1–33 / 34–66 / 67–100), no re-equip bob on charge changes.
+- Dash (charge ≥ 20): consumes all charge, distance `4 + 0.1·charge` (≤ `dashMaxDistance`), damage
+  `6 + 0.14·charge` (≤ 20, type `lacuna:eclipse`) once to every living entity within 1.5 of the path, durability
+  `5 + 15·charge/100`, cooldown 400. Stops before solid blocks unless Shadow Walk is enabled.
+- Shadow Walk: spectator mode for `40 + 80·charge/100` ticks with `lacuna:shadow_walk` effect icon; previous mode
+  in a serializable attachment; restored on expiry/timer, milk (effect removed), death, logout, login, dimension
+  change, server stopping; never overrides a mode an operator changed; stuck players moved to the nearest safe
+  spot within 16 blocks, else the dash origin; mob targets cleared and new targeting cancelled; cross-dimension
+  spectator teleports are cancelled while active.
+- Solar Flare Fragment (1.5 % per ruin-cache roll; merchant/labyrinth sources come with M10), Solar Flare, Sun's
+  Fury (single use, consumed unless creative, fizzles inside the Forgotten Land and is kept). Thrown entity (speed
+  2.5, gravity 0.03, 10 s fuse, `ThrownItemRenderer`, discarded if reloaded from disk). Detonation: overworld time
+  → next noon + clear weather, then a `SolarRayEntity` (noSave, `NoopRenderer`): flash + 60 ticks of particles
+  (8 packets/tick), 5 damage every 5 ticks + 10 s fire within radius 7, block job sorted in outward rings,
+  ≤ `blockChangesPerTick` (400) per tick and ≤ 12000 per use, hardness ≤ 50, skips bedrock, fluids and
+  `lacuna:solar_immune`, only with `mobGriefing` and `mayInteract`, loaded chunks/world border/build height only.
+
+Deviations:
+- Shadow Walk duration follows the formula `40 + 80 × charge/100` (56 ticks at charge 20; the prose says 2 s).
+- Same-dimension spectator "teleport to player" cannot be blocked without Mixins; documented limitation.
+
+Gates: 3 ✔, 4 (logic, 21 tests) ✔, 1/2/5/6 not runnable here.

@@ -142,7 +142,12 @@
       "entries": [
         {
           "type": "minecraft:empty",
-          "weight": 1000
+          "weight": 985
+        },
+        {
+          "name": "lacuna:solar_flare_fragment",
+          "type": "minecraft:item",
+          "weight": 15
         }
       ],
       "rolls": 1.0

@@ -22,5 +22,8 @@ public final class ModRegistries {
         ITEMS.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
         ModAttachments.ATTACHMENTS.register(modBus);
+        ModComponents.COMPONENTS.register(modBus);
+        ModEffects.EFFECTS.register(modBus);
+        ModEntities.ENTITIES.register(modBus);
     }
 }

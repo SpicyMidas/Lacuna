@@ -1,6 +1,8 @@
 {
   "values": [
     "lacuna:ruby_ore",
-    "lacuna:deepslate_ruby_ore"
+    "lacuna:deepslate_ruby_ore",
+    "lacuna:umbral_iron_ore",
+    "lacuna:deepslate_umbral_iron_ore"
   ]
 }

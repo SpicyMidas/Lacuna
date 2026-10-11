@@ -1,0 +1,13 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lacuna:umbral_iron_ingot"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "lacuna:umbral_iron_nugget"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

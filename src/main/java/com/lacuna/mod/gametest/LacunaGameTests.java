@@ -3,6 +3,7 @@ package com.lacuna.mod.gametest;
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.banish.BanishmentManager;
 import com.lacuna.mod.beam.BeamHandler;
+import com.lacuna.mod.eclipse.EclipserItem;
 import com.lacuna.mod.registry.ModDimensions;
 import com.lacuna.mod.registry.ModBlocks;
 import com.lacuna.mod.registry.ModItems;
@@ -124,6 +125,23 @@ public final class LacunaGameTests {
         float before = zombie.getHealth();
         BeamHandler.tick(helper.getLevel(), player, new ItemStack(ModItems.DIVINE_MAGNIFYING_GLASS.get()), 5);
         check(helper, zombie.getHealth() < before, "beam should damage the zombie (" + before + " -> " + zombie.getHealth() + ")");
+        zombie.discard();
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ M4
+    @GameTest(template = PLATFORM)
+    public static void eclipserChargesOnHitAndResetsOnDamage(GameTestHelper helper) {
+        Player player = helper.makeMockPlayer(GameType.SURVIVAL);
+        ItemStack sword = new ItemStack(ModItems.ECLIPSER.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, sword);
+        Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, CENTER);
+        sword.getItem().hurtEnemy(sword, zombie, player);
+        check(helper, EclipserItem.charge(sword) == 10, "one hit should give 10 charge, got " + EclipserItem.charge(sword));
+        sword.getItem().hurtEnemy(sword, zombie, player);
+        check(helper, EclipserItem.charge(sword) == 10, "a second hit in the same tick must not add charge");
+        EclipserItem.resetOnDamage(player);
+        check(helper, EclipserItem.charge(sword) == 0, "taking damage resets the charge");
         zombie.discard();
         helper.succeed();
     }

@@ -69,3 +69,19 @@ All `/lacuna` commands need permission level 2.
 - [ ] Aim at grass/wood: fire appears next to the face; at snow/ice: it melts; at water: steam puffs + hiss.
 - [ ] Durability drops by 1 per second of beam; anvil + shards repairs 60 each; it cannot be enchanted.
 - [ ] Inside the Forgotten Land the ray is yellow (counts as day).
+
+## M4 — Umbral Iron, Eclipser, Sun's Fury
+```
+/give @s lacuna:eclipser
+/give @s lacuna:umbral_iron_ingot 8
+/give @s lacuna:suns_fury
+/give @s lacuna:solar_flare_fragment 4
+/summon zombie ~4 ~ ~
+/gamerule mobGriefing true
+```
+- [ ] Eclipser looks like the black thorn blade with the red ribbon guard; hits raise `Eclipse 10%…100%` and the
+      texture turns redder (white-hot core at ≥ 67 %); getting hurt resets to 0; idle 8 s decays 2 %/s.
+- [ ] Right click at ≥ 20 %: dash through mobs (damage), you become a spectator-like shadow for 2.8–6 s, then
+      your mode returns; ending inside a wall moves you out. Log out mid-walk and back in: survival restored.
+- [ ] Sun's Fury: throw it in the overworld: time jumps to noon, a golden column burns mobs and carves a crater
+      (radius 6) over ~1 s; with `mobGriefing false` only damage. In the Forgotten Land it fizzles and is kept.

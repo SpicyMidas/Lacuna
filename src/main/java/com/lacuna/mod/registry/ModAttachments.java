@@ -1,6 +1,7 @@
 package com.lacuna.mod.registry;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.eclipse.ShadowWalkState;
 import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -26,6 +27,10 @@ public final class ModAttachments {
     /** ... and the game time until which only the owner may pick the relic up. */
     public static final Supplier<AttachmentType<Long>> RELIC_OWNER_UNTIL = ATTACHMENTS.register("relic_owner_until",
             () -> AttachmentType.builder(() -> 0L).serialize(Codec.LONG, v -> v != 0L).build());
+
+    /** Shadow Walk: game mode to restore, end time, dash origin (survives logout/crash). */
+    public static final Supplier<AttachmentType<ShadowWalkState>> SHADOW_WALK = ATTACHMENTS.register("shadow_walk",
+            () -> AttachmentType.builder(() -> ShadowWalkState.NONE).serialize(ShadowWalkState.CODEC, ShadowWalkState::active).build());
 
     private ModAttachments() {}
 }

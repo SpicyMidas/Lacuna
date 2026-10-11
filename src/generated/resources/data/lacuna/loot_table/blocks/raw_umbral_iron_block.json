@@ -1,0 +1,21 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "name": "lacuna:raw_umbral_iron_block",
+          "type": "minecraft:item"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "lacuna:blocks/raw_umbral_iron_block",
+  "type": "minecraft:block"
+}

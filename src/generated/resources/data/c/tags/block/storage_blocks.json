@@ -1,6 +1,8 @@
 {
   "values": [
     "#c:storage_blocks/ruby",
-    "#c:storage_blocks/raw_ruby"
+    "#c:storage_blocks/raw_ruby",
+    "#c:storage_blocks/umbral_iron",
+    "#c:storage_blocks/raw_umbral_iron"
   ]
 }

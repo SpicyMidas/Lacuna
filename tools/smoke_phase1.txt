@@ -16,4 +16,10 @@ summon minecraft:pig 8 120 8 {CustomName:'"smoke_pig"',NoAI:1b}
 @wait 5
 lacuna banish @e[type=minecraft:pig,name=smoke_pig]
 @wait 40
+# --- M4: Sun's Fury solar ray destruction job (budgeted) far from everything else
+forceload add 400 400 416 416
+@wait 40
+summon lacuna:solar_ray 408 90 408
+@wait 120
+forceload remove 400 400 416 416
 save-all flush

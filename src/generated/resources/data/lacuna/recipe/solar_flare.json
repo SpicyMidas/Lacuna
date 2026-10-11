@@ -1,0 +1,21 @@
+{
+  "category": "misc",
+  "key": {
+    "D": {
+      "item": "lacuna:divine_glass"
+    },
+    "F": {
+      "item": "lacuna:solar_flare_fragment"
+    }
+  },
+  "pattern": [
+    " F ",
+    "FDF",
+    " F "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:solar_flare"
+  },
+  "type": "minecraft:crafting_shaped"
+}

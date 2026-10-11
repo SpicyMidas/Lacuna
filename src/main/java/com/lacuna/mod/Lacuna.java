@@ -2,6 +2,7 @@ package com.lacuna.mod;
 
 import com.lacuna.mod.banish.BanishEvents;
 import com.lacuna.mod.command.LacunaCommands;
+import com.lacuna.mod.eclipse.EclipseEvents;
 import com.lacuna.mod.debug.SmokeRunner;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.registry.ModRegistries;
@@ -30,6 +31,7 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(LacunaCommands::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(Lacuna::onServerStopped);
         BanishEvents.register(NeoForge.EVENT_BUS);
+        EclipseEvents.register(NeoForge.EVENT_BUS);
 
         AnvilRepairs.add(ModItems.DIVINE_MAGNIFYING_GLASS, ModItems.DIVINE_GLASS_SHARD, Balance.BEAM_REPAIR_PER_SHARD);
         NeoForge.EVENT_BUS.addListener(AnvilRepairs::onAnvilUpdate);

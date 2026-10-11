@@ -3,6 +3,13 @@ package com.lacuna.mod.registry;
 import com.lacuna.mod.Balance;
 import com.lacuna.mod.banish.TotemOfBanishingItem;
 import com.lacuna.mod.beam.DivineMagnifyingGlassItem;
+import com.lacuna.mod.eclipse.EclipseCharge;
+import com.lacuna.mod.eclipse.EclipserItem;
+import com.lacuna.mod.solar.SunsFuryItem;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import java.util.function.Function;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.HoeItem;
@@ -39,7 +46,33 @@ public final class ModItems {
     public static final DeferredItem<DivineMagnifyingGlassItem> DIVINE_MAGNIFYING_GLASS = item("divine_magnifying_glass",
             DivineMagnifyingGlassItem::new, new Item.Properties().durability(Balance.GLASS_DURABILITY).rarity(Rarity.UNCOMMON));
 
+    // ------------------------------------------------------------------ M4 umbral iron, eclipser, solar flare
+    public static final DeferredItem<Item> RAW_UMBRAL_IRON = item("raw_umbral_iron", Item::new, new Item.Properties());
+    public static final DeferredItem<Item> UMBRAL_IRON_INGOT = item("umbral_iron_ingot", Item::new, new Item.Properties());
+    public static final DeferredItem<Item> UMBRAL_IRON_NUGGET = item("umbral_iron_nugget", Item::new, new Item.Properties());
+    // components are attached inside the factory: it runs at registration time, after data components exist
+    public static final DeferredItem<EclipserItem> ECLIPSER = item("eclipser",
+            p -> new EclipserItem(ModTiers.ECLIPSER, p.component(ModComponents.ECLIPSE_CHARGE.get(), EclipseCharge.EMPTY)),
+            new Item.Properties().rarity(Rarity.EPIC).attributes(weapon(Balance.ECLIPSER_ATTACK_DAMAGE, Balance.ECLIPSER_ATTACK_SPEED)));
+    public static final DeferredItem<Item> SOLAR_FLARE_FRAGMENT = item("solar_flare_fragment", Item::new,
+            new Item.Properties().rarity(Rarity.RARE));
+    public static final DeferredItem<Item> SOLAR_FLARE = item("solar_flare", Item::new, new Item.Properties().rarity(Rarity.RARE));
+    public static final DeferredItem<SunsFuryItem> SUNS_FURY = item("suns_fury", SunsFuryItem::new,
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant());
+
     private ModItems() {}
+
+    /**
+     * Main-hand attack attributes for a weapon with the given TOTAL damage (player base 1 included) and attack speed.
+     */
+    public static ItemAttributeModifiers weapon(double totalDamage, double attackSpeed) {
+        return ItemAttributeModifiers.builder()
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, totalDamage - 1.0,
+                        AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, attackSpeed - 4.0,
+                        AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
+    }
 
     static void init() {
         // class-loading this holder registers every item above

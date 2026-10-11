@@ -1,0 +1,24 @@
+{
+  "category": "equipment",
+  "key": {
+    "R": {
+      "item": "lacuna:ruby"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "U": {
+      "item": "lacuna:umbral_iron_ingot"
+    }
+  },
+  "pattern": [
+    " U ",
+    "RUR",
+    " S "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:eclipser"
+  },
+  "type": "minecraft:crafting_shaped"
+}

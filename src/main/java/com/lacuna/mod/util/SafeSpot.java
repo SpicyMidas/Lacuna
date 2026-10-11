@@ -54,6 +54,14 @@ public final class SafeSpot {
         return spiral(level, spawnSurface).orElse(spawnSurface);
     }
 
+    /** The position itself if safe, else the nearest safe spot within 16 blocks / +-24 (loaded chunks only). */
+    public static Optional<BlockPos> findNear(ServerLevel level, BlockPos pos) {
+        if (isSafe(level, pos)) {
+            return Optional.of(pos);
+        }
+        return spiral(level, pos);
+    }
+
     public static BlockPos surface(ServerLevel level, BlockPos pos) {
         if (!level.hasChunkAt(pos)) {
             return pos;
