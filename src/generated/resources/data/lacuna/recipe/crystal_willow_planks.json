@@ -1,0 +1,13 @@
+{
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "lacuna:crystal_willow_logs"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "lacuna:crystal_willow_planks"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

@@ -1,0 +1,16 @@
+{
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "lacuna:echo_birch_planks"
+    }
+  },
+  "pattern": [
+    "###"
+  ],
+  "result": {
+    "count": 6,
+    "id": "lacuna:echo_birch_slab"
+  },
+  "type": "minecraft:crafting_shaped"
+}

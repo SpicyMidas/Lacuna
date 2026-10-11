@@ -1,0 +1,28 @@
+{
+  "values": {
+    "lacuna:cindervine_leaves": {
+      "chance": 0.3
+    },
+    "lacuna:cindervine_sapling": {
+      "chance": 0.3
+    },
+    "lacuna:crystal_willow_leaves": {
+      "chance": 0.3
+    },
+    "lacuna:crystal_willow_sapling": {
+      "chance": 0.3
+    },
+    "lacuna:echo_birch_leaves": {
+      "chance": 0.3
+    },
+    "lacuna:echo_birch_sapling": {
+      "chance": 0.3
+    },
+    "lacuna:tidebloom_leaves": {
+      "chance": 0.3
+    },
+    "lacuna:tidebloom_sapling": {
+      "chance": 0.3
+    }
+  }
+}

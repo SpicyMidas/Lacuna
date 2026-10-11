@@ -1,0 +1,13 @@
+{
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "lacuna:echo_birch_planks"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:echo_birch_button"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

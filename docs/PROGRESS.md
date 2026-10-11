@@ -260,3 +260,34 @@ Built:
 Deviations: Zenithite ore is split into stone and deepslate variants (spec: "(stone/deepslate)").
 
 Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.
+
+## M8 — Four wood families
+
+Built:
+- Cindervine, Crystal Willow, Tidebloom (mangrove) and Echo Birch, each with log, stripped log, wood, stripped wood,
+  planks, stairs, slab, fence, fence gate, door, trapdoor, pressure plate, button, leaves, sapling, potted
+  sapling (60 blocks, registered explicitly in `ModWoodBlocks`). `BlockSetType`/`WoodType` per family are
+  created in the `WoodFamily` enum initialiser (before any block supplier runs).
+- Stripping with an axe through NeoForge's `neoforge:strippables` data map (log → stripped log, wood → stripped
+  wood). Flammability via `FireBlock#setFlammable` in common setup (vanilla values; Cindervine excluded:
+  fire-proof, items fire resistant, not in `logs_that_burn`). Fuel: planks/logs through the vanilla tags in
+  NeoForge's furnace fuel data map; Cindervine planks 400 ticks (item override + data map), Ember 1600 ticks.
+  Compost 30 % for saplings and leaves (`neoforge:compostables`). Flower pots wired with `addPlant`.
+- Leaves: vanilla `LeavesBlock` decay/persistence, loot = vanilla oak-style (5 % sapling with Fortune table, 2 %
+  sticks) plus 5 % `ember` (Cindervine, which also smoulders with small flames/smoke) and 5 %
+  `crystal_willow_shard` (4 shards → glass).
+- Trees: datapack tree features cloned from vanilla templates: Cindervine (acacia forking trunk), Crystal Willow
+  (cherry trunk, glassy translucent leaves, `lacuna:hanging_strands` tree decorator placing
+  `crystal_willow_strands` that only survive attached from above), Tidebloom (vanilla mangrove trunk + root placer
+  with `tidebloom_roots`; roots splash on break and have a 1 % random-tick chance to spawn a cod/salmon in adjacent
+  water if < 3 fish nearby), Echo Birch (birch shape, custom amethyst-chime `SoundType`; paired saplings within 4
+  blocks / Y ±1 grow together and get a persistent-leaf bridge between canopies).
+- Worldgen via biome modifiers (rarity 1/24–1/40): Echo Birch in birch forests, Cindervine in savanna/badlands/
+  windswept, Crystal Willow in cherry groves/meadows, Tidebloom in swamps/mangrove swamps/rivers. FL biome groves
+  arrive with M10.
+- Heartwood Bow recipe (`.PS / PRS / .PS`) and repair tag `lacuna:heartwood_bow_repair` (Echo Birch planks).
+- GameTests: stripping for every family, placed leaves persistence, Cindervine plank burn time.
+
+Deviations: no signs, hanging signs or boats (spec: optional in M12).
+
+Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.

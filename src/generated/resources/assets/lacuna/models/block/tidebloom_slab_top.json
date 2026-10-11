@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "lacuna:block/tidebloom_planks",
+    "side": "lacuna:block/tidebloom_planks",
+    "top": "lacuna:block/tidebloom_planks"
+  }
+}

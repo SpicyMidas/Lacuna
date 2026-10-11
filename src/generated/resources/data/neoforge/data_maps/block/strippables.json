@@ -1,0 +1,28 @@
+{
+  "values": {
+    "lacuna:cindervine_log": {
+      "stripped_block": "lacuna:stripped_cindervine_log"
+    },
+    "lacuna:cindervine_wood": {
+      "stripped_block": "lacuna:stripped_cindervine_wood"
+    },
+    "lacuna:crystal_willow_log": {
+      "stripped_block": "lacuna:stripped_crystal_willow_log"
+    },
+    "lacuna:crystal_willow_wood": {
+      "stripped_block": "lacuna:stripped_crystal_willow_wood"
+    },
+    "lacuna:echo_birch_log": {
+      "stripped_block": "lacuna:stripped_echo_birch_log"
+    },
+    "lacuna:echo_birch_wood": {
+      "stripped_block": "lacuna:stripped_echo_birch_wood"
+    },
+    "lacuna:tidebloom_log": {
+      "stripped_block": "lacuna:stripped_tidebloom_log"
+    },
+    "lacuna:tidebloom_wood": {
+      "stripped_block": "lacuna:stripped_tidebloom_wood"
+    }
+  }
+}

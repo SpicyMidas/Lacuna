@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button",
+  "textures": {
+    "texture": "lacuna:block/tidebloom_planks"
+  }
+}

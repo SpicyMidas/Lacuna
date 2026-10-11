@@ -1,0 +1,17 @@
+{
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "lacuna:tidebloom_log"
+    }
+  },
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "result": {
+    "count": 3,
+    "id": "lacuna:tidebloom_wood"
+  },
+  "type": "minecraft:crafting_shaped"
+}

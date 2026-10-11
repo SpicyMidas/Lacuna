@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "lacuna:block/cindervine_slab"
+    },
+    "type=double": {
+      "model": "lacuna:block/cindervine_planks"
+    },
+    "type=top": {
+      "model": "lacuna:block/cindervine_slab_top"
+    }
+  }
+}

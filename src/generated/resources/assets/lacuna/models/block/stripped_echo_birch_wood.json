@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "lacuna:block/stripped_echo_birch_log",
+    "side": "lacuna:block/stripped_echo_birch_log"
+  }
+}

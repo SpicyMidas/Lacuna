@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "lacuna:block/cindervine_planks",
+    "side": "lacuna:block/cindervine_planks",
+    "top": "lacuna:block/cindervine_planks"
+  }
+}

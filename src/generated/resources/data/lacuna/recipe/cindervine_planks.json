@@ -1,0 +1,13 @@
+{
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "lacuna:cindervine_logs"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "lacuna:cindervine_planks"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

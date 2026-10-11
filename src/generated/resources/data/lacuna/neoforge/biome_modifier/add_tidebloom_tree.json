@@ -1,0 +1,6 @@
+{
+  "biomes": "#lacuna:has_tree/tidebloom",
+  "features": "lacuna:tidebloom_tree",
+  "step": "vegetal_decoration",
+  "type": "neoforge:add_features"
+}

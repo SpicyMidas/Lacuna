@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "lacuna:block/tidebloom_slab"
+    },
+    "type=double": {
+      "model": "lacuna:block/tidebloom_planks"
+    },
+    "type=top": {
+      "model": "lacuna:block/tidebloom_slab_top"
+    }
+  }
+}

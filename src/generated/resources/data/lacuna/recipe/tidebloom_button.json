@@ -1,0 +1,13 @@
+{
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "lacuna:tidebloom_planks"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:tidebloom_button"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

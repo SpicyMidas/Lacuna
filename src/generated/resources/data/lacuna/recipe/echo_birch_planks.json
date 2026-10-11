@@ -1,0 +1,13 @@
+{
+  "category": "building",
+  "ingredients": [
+    {
+      "tag": "lacuna:echo_birch_logs"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "lacuna:echo_birch_planks"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

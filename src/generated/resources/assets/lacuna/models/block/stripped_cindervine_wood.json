@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "lacuna:block/stripped_cindervine_log",
+    "side": "lacuna:block/stripped_cindervine_log"
+  }
+}

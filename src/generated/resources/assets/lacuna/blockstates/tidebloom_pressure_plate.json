@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "lacuna:block/tidebloom_pressure_plate"
+    },
+    "powered=true": {
+      "model": "lacuna:block/tidebloom_pressure_plate_down"
+    }
+  }
+}

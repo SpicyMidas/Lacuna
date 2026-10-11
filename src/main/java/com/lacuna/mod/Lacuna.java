@@ -10,6 +10,8 @@ import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
 import com.lacuna.mod.orrery.OrreryBlock;
 import com.lacuna.mod.registry.ModEntities;
+import com.lacuna.mod.wood.WoodSetup;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import com.lacuna.mod.debug.SmokeRunner;
@@ -42,6 +44,7 @@ public final class Lacuna {
         BanishEvents.register(NeoForge.EVENT_BUS);
         EclipseEvents.register(NeoForge.EVENT_BUS);
         modBus.addListener(ModEntities::onAttributes);
+        modBus.addListener((FMLCommonSetupEvent e) -> e.enqueueWork(WoodSetup::setup));
 
         // M6 utility items
         NeoForge.EVENT_BUS.addListener((MobEffectEvent.Added e) -> {

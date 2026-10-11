@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "lacuna:block/tidebloom_log",
+    "side": "lacuna:block/tidebloom_log"
+  }
+}

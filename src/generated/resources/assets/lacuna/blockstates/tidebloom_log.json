@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "lacuna:block/tidebloom_log_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "lacuna:block/tidebloom_log"
+    },
+    "axis=z": {
+      "model": "lacuna:block/tidebloom_log_horizontal",
+      "x": 90
+    }
+  }
+}

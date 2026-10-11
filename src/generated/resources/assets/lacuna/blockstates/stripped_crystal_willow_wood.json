@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "lacuna:block/stripped_crystal_willow_wood_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "lacuna:block/stripped_crystal_willow_wood"
+    },
+    "axis=z": {
+      "model": "lacuna:block/stripped_crystal_willow_wood_horizontal",
+      "x": 90
+    }
+  }
+}

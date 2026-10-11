@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/leaves",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "all": "lacuna:block/crystal_willow_leaves"
+  }
+}

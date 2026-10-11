@@ -7,6 +7,9 @@ import com.lacuna.mod.eclipse.EclipserItem;
 import com.lacuna.mod.flute.DeathMemory;
 import com.lacuna.mod.flute.EchoEntity;
 import com.lacuna.mod.registry.ModEntities;
+import com.lacuna.mod.registry.ModWoodBlocks;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import com.lacuna.mod.pearl.PearlLink;
 import com.lacuna.mod.pearl.PearlLinks;
 import com.lacuna.mod.registry.ModDimensions;
@@ -232,6 +235,35 @@ public final class LacunaGameTests {
         }
         check(helper, new ItemStack(ModItems.GRAVEMAW_GREATSWORD.get()).getMaxDamage() == 700, "Gravemaw durability 700");
         check(helper, new ItemStack(ModItems.ECLIPSER.get()).getMaxDamage() == 250, "Eclipser durability 250");
+        helper.succeed();
+    }
+
+    // ------------------------------------------------------------------ M8 (one stripping check per family)
+    private static void checkStrip(GameTestHelper helper, DeferredBlock<? extends Block> from, DeferredBlock<? extends Block> to) {
+        var strip = from.getData(NeoForgeDataMaps.STRIPPABLES);
+        check(helper, strip != null && strip.strippedBlock() == to.get(), from.getId() + " must strip to " + to.getId());
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void woodFamiliesStripWithAxe(GameTestHelper helper) {
+        checkStrip(helper, ModWoodBlocks.CINDERVINE_LOG, ModWoodBlocks.STRIPPED_CINDERVINE_LOG);
+        checkStrip(helper, ModWoodBlocks.CINDERVINE_WOOD, ModWoodBlocks.STRIPPED_CINDERVINE_WOOD);
+        checkStrip(helper, ModWoodBlocks.CRYSTAL_WILLOW_LOG, ModWoodBlocks.STRIPPED_CRYSTAL_WILLOW_LOG);
+        checkStrip(helper, ModWoodBlocks.CRYSTAL_WILLOW_WOOD, ModWoodBlocks.STRIPPED_CRYSTAL_WILLOW_WOOD);
+        checkStrip(helper, ModWoodBlocks.TIDEBLOOM_LOG, ModWoodBlocks.STRIPPED_TIDEBLOOM_LOG);
+        checkStrip(helper, ModWoodBlocks.TIDEBLOOM_WOOD, ModWoodBlocks.STRIPPED_TIDEBLOOM_WOOD);
+        checkStrip(helper, ModWoodBlocks.ECHO_BIRCH_LOG, ModWoodBlocks.STRIPPED_ECHO_BIRCH_LOG);
+        checkStrip(helper, ModWoodBlocks.ECHO_BIRCH_WOOD, ModWoodBlocks.STRIPPED_ECHO_BIRCH_WOOD);
+        helper.succeed();
+    }
+
+    @GameTest(template = PLATFORM)
+    public static void woodLeavesArePersistentWhenPlaced(GameTestHelper helper) {
+        BlockState placed = ModWoodBlocks.ECHO_BIRCH_LEAVES.get().defaultBlockState()
+                .setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
+        helper.setBlock(CENTER, placed);
+        check(helper, helper.getBlockState(CENTER).getValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT), "persistent leaves stay");
+        check(helper, new ItemStack(ModWoodBlocks.CINDERVINE_PLANKS.get()).getBurnTime(null) == 400, "cindervine planks burn 400 ticks");
         helper.succeed();
     }
 }

@@ -1,0 +1,6 @@
+{
+  "biomes": "#lacuna:has_tree/cindervine",
+  "features": "lacuna:cindervine_tree",
+  "step": "vegetal_decoration",
+  "type": "neoforge:add_features"
+}

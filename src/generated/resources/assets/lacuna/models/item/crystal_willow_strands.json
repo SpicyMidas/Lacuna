@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lacuna:block/crystal_willow_strands"
+  }
+}

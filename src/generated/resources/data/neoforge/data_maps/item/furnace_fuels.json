@@ -1,0 +1,10 @@
+{
+  "values": {
+    "lacuna:cindervine_planks": {
+      "burn_time": 400
+    },
+    "lacuna:ember": {
+      "burn_time": 1600
+    }
+  }
+}

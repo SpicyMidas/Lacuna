@@ -1,0 +1,13 @@
+{
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "lacuna:cindervine_planks"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:cindervine_button"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

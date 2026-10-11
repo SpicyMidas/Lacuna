@@ -1,0 +1,16 @@
+{
+  "category": "redstone",
+  "key": {
+    "#": {
+      "item": "lacuna:echo_birch_planks"
+    }
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:echo_birch_pressure_plate"
+  },
+  "type": "minecraft:crafting_shaped"
+}

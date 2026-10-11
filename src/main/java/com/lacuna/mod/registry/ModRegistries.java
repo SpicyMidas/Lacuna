@@ -17,6 +17,7 @@ public final class ModRegistries {
 
     public static void register(IEventBus modBus) {
         ModBlocks.init();
+        ModWoodBlocks.init();
         ModItems.init();
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
@@ -27,5 +28,7 @@ public final class ModRegistries {
         ModEntities.ENTITIES.register(modBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modBus);
         ModArmorMaterials.ARMOR_MATERIALS.register(modBus);
+        ModFeatures.TREE_DECORATORS.register(modBus);
+        ModFeatures.FEATURES.register(modBus);
     }
 }

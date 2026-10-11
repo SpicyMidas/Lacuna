@@ -143,3 +143,21 @@ All `/lacuna` commands need permission level 2.
 - [ ] Echo Dagger: each hit is followed by a second, weaker hit half a second later.
 - [ ] Scepter: costs 1 heart per shot, the flame bolt curves toward hostiles; refused at ≤ 2 hearts.
 - [ ] Enchanting table/anvil: only Unbreaking applies to the special weapons.
+
+## M8 — Wood families
+```
+/give @s lacuna:echo_birch_sapling 2
+/give @s lacuna:cindervine_log 8
+/give @s lacuna:crystal_willow_sapling
+/give @s lacuna:tidebloom_sapling
+/give @s minecraft:bone_meal 32
+/locate biome minecraft:birch_forest
+```
+- [ ] Every family block (log/wood/planks/stairs/slab/fence/gate/door/trapdoor/plate/button/leaves/sapling/pot)
+      renders and drops itself; doors/trapdoors open with the wood sounds; buttons and plates emit redstone.
+- [ ] Axe right click strips logs and wood of all four families.
+- [ ] Bone meal grows each sapling: Cindervine (gnarled, glowing ember bark, smouldering leaves), Crystal Willow
+      (glassy leaves with hanging strands), Tidebloom (mangrove roots, splash on break), Echo Birch (chime sounds).
+- [ ] Two Echo Birch saplings 3 blocks apart grow together and get a bridge of leaves.
+- [ ] Cindervine logs do not burn in fire or lava; planks smelt 2 items in a furnace (400 ticks); Embers burn long.
+- [ ] Leaves decay after logs are removed; placed leaves do not.

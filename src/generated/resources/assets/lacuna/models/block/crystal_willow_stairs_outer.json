@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "bottom": "lacuna:block/crystal_willow_planks",
+    "side": "lacuna:block/crystal_willow_planks",
+    "top": "lacuna:block/crystal_willow_planks"
+  }
+}

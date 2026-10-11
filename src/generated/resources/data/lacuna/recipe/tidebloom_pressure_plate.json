@@ -1,0 +1,16 @@
+{
+  "category": "redstone",
+  "key": {
+    "#": {
+      "item": "lacuna:tidebloom_planks"
+    }
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:tidebloom_pressure_plate"
+  },
+  "type": "minecraft:crafting_shaped"
+}

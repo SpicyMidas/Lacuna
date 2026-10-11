@@ -101,6 +101,7 @@ REG_PATTERN = re.compile(r"\b(?:block|blockNoItem|item|entity|effect|sound|tab|b
 def java_ids() -> Dict[str, Set[str]]:
     kinds = {
         "ModBlocks.java": "block",
+        "ModWoodBlocks.java": "block",
         "ModItems.java": "item",
         "ModEntities.java": "entity",
         "ModEffects.java": "effect",
@@ -110,6 +111,7 @@ def java_ids() -> Dict[str, Set[str]]:
     }
     out: Dict[str, Set[str]] = {v: set() for v in kinds.values()}
     out["block_item"] = set()
+    out.setdefault("poi", set())
     reg = os.path.join(JAVA, "registry")
     for fname, kind in kinds.items():
         path = os.path.join(reg, fname)

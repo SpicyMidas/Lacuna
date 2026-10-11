@@ -133,6 +133,10 @@ public final class ModItems {
     public static final DeferredItem<PyrrhicScepterItem> PYRRHIC_SCEPTER = item("pyrrhic_scepter", PyrrhicScepterItem::new,
             new Item.Properties().durability(Balance.SCEPTER_DURABILITY).rarity(Rarity.RARE));
 
+    // ------------------------------------------------------------------ M8 wood extras
+    public static final DeferredItem<Item> EMBER = item("ember", Item::new, new Item.Properties().fireResistant());
+    public static final DeferredItem<Item> CRYSTAL_WILLOW_SHARD = item("crystal_willow_shard", Item::new, new Item.Properties());
+
     private ModItems() {}
 
     /**

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "lacuna:block/echo_birch_slab"
+    },
+    "type=double": {
+      "model": "lacuna:block/echo_birch_planks"
+    },
+    "type=top": {
+      "model": "lacuna:block/echo_birch_slab_top"
+    }
+  }
+}
