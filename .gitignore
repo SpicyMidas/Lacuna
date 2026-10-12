@@ -26,3 +26,5 @@ __pycache__/
 .venv/
 # smoke test workspace
 tools/.smoke/
+# agent worktrees
+.claude/
