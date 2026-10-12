@@ -23,6 +23,29 @@ ART_MODULES = ["m01_ruby_glass", "m02_forgotten_land", "m03_magnifier", "m04_ecl
                "m06_utility", "m07_gear", "m08_wood", "m09_mobs", "m10_biomes_structures", "m11_townships"]
 
 
+HAND = os.path.join(HERE, "art", "hand")
+
+
+def apply_hand_drawn() -> int:
+    """Copy tools/art/hand/** over the generated textures byte for byte (never re-encoded)."""
+    count = 0
+    for root, _dirs, files in os.walk(HAND):
+        for f in sorted(files):
+            if not (f.endswith(".png") or f.endswith(".png.mcmeta")):
+                continue
+            src = os.path.join(root, f)
+            rel = os.path.relpath(src, HAND)
+            dst = os.path.join(texlib.TEXTURES, rel)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copyfile(src, dst)
+            if f.endswith(".png"):
+                count += 1
+                key = rel[:-4].replace(os.sep, "/")
+                if key not in texlib.WRITTEN:
+                    texlib.WRITTEN.append(key)
+    return count
+
+
 def main(argv) -> int:
     preview = None
     if "--preview" in argv:
@@ -37,8 +60,10 @@ def main(argv) -> int:
         before = len(texlib.WRITTEN)
         module.paint()
         painted.append((name, len(texlib.WRITTEN) - before))
+    hand = apply_hand_drawn()
     for name, n in painted:
         print(f"  {name}: {n} textures")
+    print(f"  hand-drawn overrides (copied verbatim): {hand}")
     print(f"gen_textures: wrote {len(texlib.WRITTEN)} textures")
     if preview:
         from PIL import Image

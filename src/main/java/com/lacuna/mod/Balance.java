@@ -66,7 +66,7 @@ public final class Balance {
     public static final int BEAM_PARTICLE_INTERVAL = 2;
     public static final int BEAM_MAX_PARTICLES = 24;
 
-    // ---------------------------------------------------------------- umbral iron / eclipser (M4)
+    // ---------------------------------------------------------------- umbral steel / eclipser (M4)
     public static final int ECLIPSER_DURABILITY = 250;
     public static final int ECLIPSER_ATTACK_DAMAGE = 7; // including base 1
     public static final float ECLIPSER_ATTACK_SPEED = 1.6F;

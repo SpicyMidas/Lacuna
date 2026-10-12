@@ -16,7 +16,7 @@ class MerchantPricingTest {
         assertEquals("iron", MerchantPricing.familyOf("deepslate_iron_ore"));
         assertEquals("gold", MerchantPricing.familyOf("nether_gold_ore"));
         assertEquals("quartz", MerchantPricing.familyOf("nether_quartz_ore"));
-        assertEquals("umbral_iron", MerchantPricing.familyOf("deepslate_umbral_iron_ore"));
+        assertEquals("umbral_steel", MerchantPricing.familyOf("deepslate_umbral_steel_ore"));
         assertEquals("ruby", MerchantPricing.familyOf("ruby_ore"));
         assertNull(MerchantPricing.familyOf("ancient_debris"));
     }

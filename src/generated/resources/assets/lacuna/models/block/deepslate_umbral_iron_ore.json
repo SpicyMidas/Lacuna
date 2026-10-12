@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "lacuna:block/deepslate_umbral_iron_ore"
-  }
-}

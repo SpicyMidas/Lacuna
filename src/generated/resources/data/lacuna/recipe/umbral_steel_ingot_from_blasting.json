@@ -1,0 +1,12 @@
+{
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 0.7,
+  "ingredient": {
+    "item": "lacuna:raw_umbral_steel"
+  },
+  "result": {
+    "id": "lacuna:umbral_steel_ingot"
+  },
+  "type": "minecraft:blasting"
+}

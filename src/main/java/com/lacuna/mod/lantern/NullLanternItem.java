@@ -110,7 +110,7 @@ public class NullLanternItem extends Item {
 
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(ModItems.UMBRAL_IRON_INGOT.get());
+        return repairCandidate.is(ModItems.UMBRAL_STEEL_INGOT.get());
     }
 
     @Override

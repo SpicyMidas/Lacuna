@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "lacuna:block/raw_umbral_steel_block"
+  }
+}

@@ -39,7 +39,7 @@ public final class Guilds {
     public static final int JOIN_COST = 20;
 
     /** item, min, max, reward min, reward max per guild. */
-    private static final Object[][] SMITHS = {{"minecraft:iron_ingot", 12, 24, 6, 10}, {"lacuna:umbral_iron_ingot", 4, 8, 8, 14},
+    private static final Object[][] SMITHS = {{"minecraft:iron_ingot", 12, 24, 6, 10}, {"lacuna:umbral_steel_ingot", 4, 8, 8, 14},
             {"minecraft:coal", 32, 64, 4, 8}};
     private static final Object[][] GEMCUTTERS = {{"lacuna:ruby", 4, 8, 8, 12}, {"minecraft:lapis_lazuli", 16, 32, 5, 8},
             {"lacuna:divine_glass_shard", 6, 12, 8, 12}};
@@ -175,11 +175,11 @@ public final class Guilds {
         }
         return switch (guild) {
             case SMITHS -> switch (tier * 2 + slot) {
-                case 2 -> sell(ModItems.UMBRAL_IRON_INGOT.get(), 1, 6, 8);
+                case 2 -> sell(ModItems.UMBRAL_STEEL_INGOT.get(), 1, 6, 8);
                 case 3 -> sell(ModItems.REPAIR_KIT.get(), 1, 4, 8);
                 case 4 -> sell(Items.IRON_INGOT, 4, 3, 12);
                 case 5 -> sell(ModItems.REPAIR_KIT.get(), 3, 10, 4);
-                case 6 -> sell(ModItems.UMBRAL_IRON_PICKAXE.get(), 1, 20, 2);
+                case 6 -> sell(ModItems.UMBRAL_STEEL_PICKAXE.get(), 1, 20, 2);
                 default -> null;
             };
             case GEMCUTTERS -> switch (tier * 2 + slot) {

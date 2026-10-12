@@ -36,12 +36,12 @@ public final class MerchantPricing {
         FAMILIES.put("diamond", new Object[] {"minecraft:diamond", 1});
         FAMILIES.put("quartz", new Object[] {"minecraft:quartz", 12});
         FAMILIES.put("ruby", new Object[] {"lacuna:raw_ruby", 3});
-        FAMILIES.put("umbral_iron", new Object[] {"lacuna:raw_umbral_iron", 3});
+        FAMILIES.put("umbral_steel", new Object[] {"lacuna:raw_umbral_steel", 3});
         FAMILIES.put("zenithite", new Object[] {"lacuna:zenithite_shard", 4});
         INGOTS.put("minecraft:iron_ingot", 5);
         INGOTS.put("minecraft:gold_ingot", 3);
         INGOTS.put("minecraft:copper_ingot", 10);
-        INGOTS.put("lacuna:umbral_iron_ingot", 2);
+        INGOTS.put("lacuna:umbral_steel_ingot", 2);
         INGOTS.put("lacuna:ruby", 2);
     }
 
@@ -50,10 +50,10 @@ public final class MerchantPricing {
     /** Ore family of a block id path ("deepslate_iron_ore" -> "iron"), or null if it is not a known family. */
     public static String familyOf(String blockPath) {
         if (blockPath.contains("umbral")) {
-            return "umbral_iron";
+            return "umbral_steel";
         }
         for (String family : FAMILIES.keySet()) {
-            if (!family.equals("umbral_iron") && blockPath.contains(family)) {
+            if (!family.equals("umbral_steel") && blockPath.contains(family)) {
                 return family;
             }
         }

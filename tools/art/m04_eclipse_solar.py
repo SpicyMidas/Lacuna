@@ -1,4 +1,4 @@
-"""M4 textures: Umbral Iron family, Eclipser (4 charge states), Solar Flare family, Sun's Fury, Shadow Walk icon.
+"""M4 textures: Umbral Steel family, Eclipser (4 charge states), Solar Flare family, Sun's Fury, Shadow Walk icon.
 
 The Eclipser is inspired by the provided 32x32 reference: a black thorn-blade with hooked barbs, a soft shadow
 aura, a red ribbon crossguard flowing down-right and a black pommel with a red gem, redrawn at the vanilla 16x16.
@@ -182,17 +182,17 @@ def umbral_ore(base, name):
 
 
 def paint():
-    save(umbral_ore(stone_base(), "umbral_iron_ore"), "block/umbral_iron_ore")
-    save(umbral_ore(deepslate_base(), "deepslate_umbral_iron_ore"), "block/deepslate_umbral_iron_ore")
-    blk = metal_block(ramp("#161927", "#242A42", "#343B5E", "#444B73", "#6A72A0"), "umbral_iron_block")
+    save(umbral_ore(stone_base(), "umbral_steel_ore"), "block/umbral_steel_ore")
+    save(umbral_ore(deepslate_base(), "deepslate_umbral_steel_ore"), "block/deepslate_umbral_steel_ore")
+    blk = metal_block(ramp("#161927", "#242A42", "#343B5E", "#444B73", "#6A72A0"), "umbral_steel_block")
     px = blk.load()
     for (x, y) in ((4, 6), (5, 7), (11, 10), (10, 11), (9, 2)):
         px[x, y] = VEIN[1]
-    save(blk, "block/umbral_iron_block")
-    save(raw_block(UMBRAL_RAW, "raw_umbral_iron_block"), "block/raw_umbral_iron_block")
-    save(ingot(UMBRAL_METAL), "item/umbral_iron_ingot")
-    save(nugget(UMBRAL_METAL), "item/umbral_iron_nugget")
-    save(raw_chunk(UMBRAL_RAW, "raw_umbral_iron"), "item/raw_umbral_iron")
+    save(blk, "block/umbral_steel_block")
+    save(raw_block(UMBRAL_RAW, "raw_umbral_steel_block"), "block/raw_umbral_steel_block")
+    save(ingot(UMBRAL_METAL), "item/umbral_steel_ingot")
+    save(nugget(UMBRAL_METAL), "item/umbral_steel_nugget")
+    save(raw_chunk(UMBRAL_RAW, "raw_umbral_steel"), "item/raw_umbral_steel")
     save(eclipser(0), "item/eclipser")
     for stage in (1, 2, 3):
         save(eclipser(stage), f"item/eclipser_charge_{stage}")

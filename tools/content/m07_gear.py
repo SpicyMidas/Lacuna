@@ -48,18 +48,18 @@ def starlace(g):
 
 
 def umbral_tools(g):
-    names = {"sword": ("Umbral Iron Sword", "Spada di ferro umbrale"), "pickaxe": ("Umbral Iron Pickaxe", "Piccone di ferro umbrale"),
-             "axe": ("Umbral Iron Axe", "Ascia di ferro umbrale"), "shovel": ("Umbral Iron Shovel", "Pala di ferro umbrale"),
-             "hoe": ("Umbral Iron Hoe", "Zappa di ferro umbrale")}
+    names = {"sword": ("Umbral Steel Sword", "Spada di acciaio umbrale"), "pickaxe": ("Umbral Steel Pickaxe", "Piccone di acciaio umbrale"),
+             "axe": ("Umbral Steel Axe", "Ascia di acciaio umbrale"), "shovel": ("Umbral Steel Shovel", "Pala di acciaio umbrale"),
+             "hoe": ("Umbral Steel Hoe", "Zappa di acciaio umbrale")}
     for tool, (en, it) in names.items():
-        iid = f"umbral_iron_{tool}"
+        iid = f"umbral_steel_{tool}"
         g.item(iid, en, it, model="handheld")
-        g.shaped(iid, TOOLS[tool], {"R": "lacuna:umbral_iron_ingot", "S": "minecraft:stick"}, f"lacuna:{iid}",
-                 category="equipment", unlock="lacuna:umbral_iron_ingot")
+        g.shaped(iid, TOOLS[tool], {"R": "lacuna:umbral_steel_ingot", "S": "minecraft:stick"}, f"lacuna:{iid}",
+                 category="equipment", unlock="lacuna:umbral_steel_ingot")
         g.tag("item", f"minecraft:{tool}s", mod(iid))
         g.tag("item", "lacuna:umbral_gear", mod(iid))
     g.tag("item", "lacuna:umbral_gear", mod("eclipser"), mod("gravemaw_greatsword"))
-    g.tag("item", "lacuna:drawn_weapons", mod("umbral_iron_sword"), mod("umbral_iron_axe"), mod("ruby_sword"), mod("ruby_axe"),
+    g.tag("item", "lacuna:drawn_weapons", mod("umbral_steel_sword"), mod("umbral_steel_axe"), mod("ruby_sword"), mod("ruby_axe"),
           mod("gravemaw_greatsword"), mod("tidecaller_sickle"), mod("echo_dagger"), mod("heartwood_bow"),
           "minecraft:wooden_sword", "minecraft:stone_sword", "minecraft:iron_sword", "minecraft:golden_sword",
           "minecraft:diamond_sword", "minecraft:netherite_sword", "minecraft:bow", "minecraft:crossbow", "minecraft:trident",
@@ -98,8 +98,8 @@ def weapons(g):
     g.name("lacuna.scepter.too_weak", "You are too weak to pay the price.", "Sei troppo debole per pagarne il prezzo.")
 
     g.shaped("gravemaw_greatsword", ["UUU", "URU", " S "],
-             {"U": "lacuna:umbral_iron_ingot", "R": "lacuna:ruby", "S": "minecraft:stick"},
-             "lacuna:gravemaw_greatsword", category="equipment", unlock="lacuna:umbral_iron_ingot")
+             {"U": "lacuna:umbral_steel_ingot", "R": "lacuna:ruby", "S": "minecraft:stick"},
+             "lacuna:gravemaw_greatsword", category="equipment", unlock="lacuna:umbral_steel_ingot")
     g.shaped("tidecaller_sickle", [" PP", " SP", "S  "], {"P": "minecraft:prismarine_shard", "S": "minecraft:stick"},
              "lacuna:tidecaller_sickle", category="equipment", unlock="minecraft:prismarine_shard")
     g.shaped("echo_dagger", [" E ", " D ", " S "],

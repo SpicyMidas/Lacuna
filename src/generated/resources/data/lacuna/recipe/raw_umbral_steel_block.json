@@ -1,0 +1,18 @@
+{
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "lacuna:raw_umbral_steel"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:raw_umbral_steel_block"
+  },
+  "type": "minecraft:crafting_shaped"
+}

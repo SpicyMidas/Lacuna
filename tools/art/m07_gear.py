@@ -190,7 +190,7 @@ def paint():
     save(weave(64, 32, layer1, "starlace_layer_1"), "models/armor/starlace_layer_1")
     save(weave(64, 32, layer2, "starlace_layer_2"), "models/armor/starlace_layer_2")
     for kind in ("sword", "pickaxe", "axe", "shovel", "hoe"):
-        save(tool(kind, UMBRAL_TOOL), f"item/umbral_iron_{kind}")
+        save(tool(kind, UMBRAL_TOOL), f"item/umbral_steel_{kind}")
     gpal = {"o": c("#12131C"), "h": c("#6A72A0"), "l": c("#444B73"), "m": c("#2E3350"), "R": c("#D6143F"), "r": c("#FF5C7A"),
             "a": STICK["a"], "b": STICK["b"], "c": STICK["c"]}
     save(from_ascii(GREATSWORD, gpal), "item/gravemaw_greatsword")

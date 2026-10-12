@@ -70,10 +70,10 @@ All `/lacuna` commands need permission level 2.
 - [ ] Durability drops by 1 per second of beam; anvil + shards repairs 60 each; it cannot be enchanted.
 - [ ] Inside the Forgotten Land the ray is yellow (counts as day).
 
-## M4 — Umbral Iron, Eclipser, Sun's Fury
+## M4 — Umbral Steel, Eclipser, Sun's Fury
 ```
 /give @s lacuna:eclipser
-/give @s lacuna:umbral_iron_ingot 8
+/give @s lacuna:umbral_steel_ingot 8
 /give @s lacuna:suns_fury
 /give @s lacuna:solar_flare_fragment 4
 /summon zombie ~4 ~ ~
@@ -124,7 +124,7 @@ All `/lacuna` commands need permission level 2.
 ```
 /give @s lacuna:starlace_boots
 /give @s lacuna:starlace_chestplate
-/give @s lacuna:umbral_iron_sword
+/give @s lacuna:umbral_steel_sword
 /give @s lacuna:gravemaw_greatsword
 /give @s lacuna:tidecaller_sickle
 /give @s lacuna:heartwood_bow

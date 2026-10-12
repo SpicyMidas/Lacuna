@@ -29,12 +29,12 @@ public final class ModCreativeTabs {
             ModItems.MIRROR_OF_RECURSION, ModItems.NULL_LANTERN, ModItems.WHISPERBONE_FLUTE, ModBlocks.ORRERY_OF_THRESHOLDS,
             // special weapons, tools, armour
             ModItems.GRAVEMAW_GREATSWORD, ModItems.TIDECALLER_SICKLE, ModItems.HEARTWOOD_BOW, ModItems.ECHO_DAGGER, ModItems.PYRRHIC_SCEPTER,
-            ModItems.UMBRAL_IRON_SWORD, ModItems.UMBRAL_IRON_PICKAXE, ModItems.UMBRAL_IRON_AXE, ModItems.UMBRAL_IRON_SHOVEL, ModItems.UMBRAL_IRON_HOE,
+            ModItems.UMBRAL_STEEL_SWORD, ModItems.UMBRAL_STEEL_PICKAXE, ModItems.UMBRAL_STEEL_AXE, ModItems.UMBRAL_STEEL_SHOVEL, ModItems.UMBRAL_STEEL_HOE,
             ModItems.RUBY_SWORD, ModItems.RUBY_PICKAXE, ModItems.RUBY_AXE, ModItems.RUBY_SHOVEL, ModItems.RUBY_HOE,
             ModItems.STARLACE_HELMET, ModItems.STARLACE_CHESTPLATE, ModItems.STARLACE_LEGGINGS, ModItems.STARLACE_BOOTS,
             // materials
-            ModItems.RUBY, ModItems.RAW_RUBY, ModItems.DIVINE_GLASS_SHARD, ModItems.RAW_UMBRAL_IRON, ModItems.UMBRAL_IRON_INGOT,
-            ModItems.UMBRAL_IRON_NUGGET, ModItems.ZENITHITE_SHARD, ModItems.STARLACE_CLOTH, ModItems.SOLAR_FLARE_FRAGMENT, ModItems.SOLAR_FLARE,
+            ModItems.RUBY, ModItems.RAW_RUBY, ModItems.DIVINE_GLASS_SHARD, ModItems.RAW_UMBRAL_STEEL, ModItems.UMBRAL_STEEL_INGOT,
+            ModItems.UMBRAL_STEEL_NUGGET, ModItems.ZENITHITE_SHARD, ModItems.STARLACE_CLOTH, ModItems.SOLAR_FLARE_FRAGMENT, ModItems.SOLAR_FLARE,
             ModItems.CHRONAL_SHARD, ModItems.ECHO_FRAGMENT, ModItems.EMBER, ModItems.CRYSTAL_WILLOW_SHARD, ModItems.SILK_DUST, ModItems.CLOCKWORK_GEAR,
             // townships and creatures
             ModItems.TOWNSHIP_COIN, ModItems.GUILD_CONTRACT, ModItems.REPAIR_KIT, ModItems.CLOCKWORK_DECOY,

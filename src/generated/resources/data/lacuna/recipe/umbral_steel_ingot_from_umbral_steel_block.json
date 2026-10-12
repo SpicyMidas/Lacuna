@@ -1,0 +1,13 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lacuna:umbral_steel_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "lacuna:umbral_steel_ingot"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

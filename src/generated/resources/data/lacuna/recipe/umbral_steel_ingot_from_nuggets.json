@@ -1,0 +1,18 @@
+{
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "lacuna:umbral_steel_nugget"
+    }
+  },
+  "pattern": [
+    "###",
+    "###",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:umbral_steel_ingot"
+  },
+  "type": "minecraft:crafting_shaped"
+}

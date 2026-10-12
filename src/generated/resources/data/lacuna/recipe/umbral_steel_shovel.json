@@ -1,0 +1,21 @@
+{
+  "category": "equipment",
+  "key": {
+    "R": {
+      "item": "lacuna:umbral_steel_ingot"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "R",
+    "S",
+    "S"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:umbral_steel_shovel"
+  },
+  "type": "minecraft:crafting_shaped"
+}

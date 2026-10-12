@@ -1,6 +1,0 @@
-{
-  "biomes": "#minecraft:is_overworld",
-  "features": "lacuna:ore_umbral_iron",
-  "step": "underground_ores",
-  "type": "neoforge:add_features"
-}

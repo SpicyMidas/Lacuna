@@ -64,7 +64,7 @@ def advancements(g):
 TIPS = {
     "ruby": ("A gem the mountains cried.", "Una gemma pianta dalle montagne."),
     "divine_glass_shard": ("Still warm with old light.", "Ancora calda di luce antica."),
-    "umbral_iron_ingot": ("Heavier in the dark.", "Più pesante al buio."),
+    "umbral_steel_ingot": ("Heavier in the dark.", "Più pesante al buio."),
     "zenithite_shard": ("Found only where waterfalls run upward.", "Si trova solo dove le cascate salgono."),
     "chronal_shard": ("It ticks when nobody listens.", "Ticchetta quando nessuno ascolta."),
     "echo_fragment": ("A memory that refused to fade.", "Un ricordo che ha rifiutato di svanire."),

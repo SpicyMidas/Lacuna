@@ -59,8 +59,8 @@ def items(g):
              {"Q": "minecraft:amethyst_shard", "D": "lacuna:divine_glass_shard", "G": "minecraft:gold_ingot"},
              "lacuna:mirror_of_recursion", category="equipment", unlock="lacuna:divine_glass_shard")
     g.shaped("null_lantern", [" U ", "ULU", " D "],
-             {"U": "lacuna:umbral_iron_ingot", "L": "minecraft:soul_lantern", "D": "lacuna:divine_glass_shard"},
-             "lacuna:null_lantern", category="tools", unlock="lacuna:umbral_iron_ingot")
+             {"U": "lacuna:umbral_steel_ingot", "L": "minecraft:soul_lantern", "D": "lacuna:divine_glass_shard"},
+             "lacuna:null_lantern", category="tools", unlock="lacuna:umbral_steel_ingot")
     g.shaped("whisperbone_flute", [" B ", "BEB", " B "], {"B": "minecraft:bone", "E": "minecraft:echo_shard"},
              "lacuna:whisperbone_flute", category="tools", unlock="minecraft:echo_shard")
     g.shared["ruin_cache_rare"].append(wg.loot_entry("lacuna:chronal_shard", 10))

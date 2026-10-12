@@ -17,7 +17,7 @@ with laws, a council, a currency and guilds. No dependencies besides NeoForge; E
    Falls** (floating islands with zenithite, upward springs), **Whispering Marsh** (fog, spore mushrooms, moths and
    gloomcrawlers), **Clockwork Dunes** (buried watches, slow time, clockwork hounds). Find the **Mirror Labyrinth**
    and beat your own Reflection for its hoard.
-4. Back home: the **Divine Magnifying Glass** (a beam of focused sunlight), **Umbral Iron** and the **Eclipser**,
+4. Back home: the **Divine Magnifying Glass** (a beam of focused sunlight), **Umbral Steel** and the **Eclipser**,
    **Sun's Fury**, the **Fractured Pearl** (two linked teleport shards), the **Chronoshard Pocket Watch**, **Mirror of
    Recursion**, **Null Lantern**, **Whisperbone Flute** and the **Orrery of Thresholds**, which points to Obelisks
    and Sunken Bell Towers.

@@ -62,10 +62,10 @@ public final class ModItems {
     public static final DeferredItem<DivineMagnifyingGlassItem> DIVINE_MAGNIFYING_GLASS = item("divine_magnifying_glass",
             DivineMagnifyingGlassItem::new, new Item.Properties().durability(Balance.GLASS_DURABILITY).rarity(Rarity.UNCOMMON));
 
-    // ------------------------------------------------------------------ M4 umbral iron, eclipser, solar flare
-    public static final DeferredItem<Item> RAW_UMBRAL_IRON = item("raw_umbral_iron", Item::new, new Item.Properties());
-    public static final DeferredItem<Item> UMBRAL_IRON_INGOT = item("umbral_iron_ingot", Item::new, new Item.Properties());
-    public static final DeferredItem<Item> UMBRAL_IRON_NUGGET = item("umbral_iron_nugget", Item::new, new Item.Properties());
+    // ------------------------------------------------------------------ M4 umbral steel, eclipser, solar flare
+    public static final DeferredItem<Item> RAW_UMBRAL_STEEL = item("raw_umbral_steel", Item::new, new Item.Properties());
+    public static final DeferredItem<Item> UMBRAL_STEEL_INGOT = item("umbral_steel_ingot", Item::new, new Item.Properties());
+    public static final DeferredItem<Item> UMBRAL_STEEL_NUGGET = item("umbral_steel_nugget", Item::new, new Item.Properties());
     // components are attached inside the factory: it runs at registration time, after data components exist
     public static final DeferredItem<EclipserItem> ECLIPSER = item("eclipser",
             p -> new EclipserItem(ModTiers.ECLIPSER, p.component(ModComponents.ECLIPSE_CHARGE.get(), EclipseCharge.EMPTY)),
@@ -112,15 +112,15 @@ public final class ModItems {
             p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.BOOTS, p),
             new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
 
-    public static final DeferredItem<SwordItem> UMBRAL_IRON_SWORD = item("umbral_iron_sword", p -> new SwordItem(ModTiers.UMBRAL, p),
+    public static final DeferredItem<SwordItem> UMBRAL_STEEL_SWORD = item("umbral_steel_sword", p -> new SwordItem(ModTiers.UMBRAL, p),
             new Item.Properties().attributes(SwordItem.createAttributes(ModTiers.UMBRAL, 3, -2.4F)));
-    public static final DeferredItem<PickaxeItem> UMBRAL_IRON_PICKAXE = item("umbral_iron_pickaxe", p -> new PickaxeItem(ModTiers.UMBRAL, p),
+    public static final DeferredItem<PickaxeItem> UMBRAL_STEEL_PICKAXE = item("umbral_steel_pickaxe", p -> new PickaxeItem(ModTiers.UMBRAL, p),
             new Item.Properties().attributes(PickaxeItem.createAttributes(ModTiers.UMBRAL, 1.0F, -2.8F)));
-    public static final DeferredItem<AxeItem> UMBRAL_IRON_AXE = item("umbral_iron_axe", p -> new AxeItem(ModTiers.UMBRAL, p),
+    public static final DeferredItem<AxeItem> UMBRAL_STEEL_AXE = item("umbral_steel_axe", p -> new AxeItem(ModTiers.UMBRAL, p),
             new Item.Properties().attributes(AxeItem.createAttributes(ModTiers.UMBRAL, 5.5F, -3.05F)));
-    public static final DeferredItem<ShovelItem> UMBRAL_IRON_SHOVEL = item("umbral_iron_shovel", p -> new ShovelItem(ModTiers.UMBRAL, p),
+    public static final DeferredItem<ShovelItem> UMBRAL_STEEL_SHOVEL = item("umbral_steel_shovel", p -> new ShovelItem(ModTiers.UMBRAL, p),
             new Item.Properties().attributes(ShovelItem.createAttributes(ModTiers.UMBRAL, 1.5F, -3.0F)));
-    public static final DeferredItem<HoeItem> UMBRAL_IRON_HOE = item("umbral_iron_hoe", p -> new HoeItem(ModTiers.UMBRAL, p),
+    public static final DeferredItem<HoeItem> UMBRAL_STEEL_HOE = item("umbral_steel_hoe", p -> new HoeItem(ModTiers.UMBRAL, p),
             new Item.Properties().attributes(HoeItem.createAttributes(ModTiers.UMBRAL, -2.5F, -1.0F)));
 
     public static final DeferredItem<GravemawGreatswordItem> GRAVEMAW_GREATSWORD = item("gravemaw_greatsword",

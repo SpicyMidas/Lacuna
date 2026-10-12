@@ -80,7 +80,7 @@ def loot(g):
     entity_loot(g, "lantern_moth", [pool([{"type": "minecraft:item", "name": "lacuna:silk_dust", "functions": count(0.0, 2.0)}])])
     entity_loot(g, "gloomcrawler", [
         pool([{"type": "minecraft:item", "name": "minecraft:string", "functions": count(0.0, 2.0)}]),
-        pool([{"type": "minecraft:item", "name": "lacuna:umbral_iron_nugget"}], conditions=rare(0.05)),
+        pool([{"type": "minecraft:item", "name": "lacuna:umbral_steel_nugget"}], conditions=rare(0.05)),
     ])
     entity_loot(g, "clockwork_hound", [
         pool([{"type": "minecraft:item", "name": "lacuna:clockwork_gear", "functions": count(1.0, 3.0)}]),
