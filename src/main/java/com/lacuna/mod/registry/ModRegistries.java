@@ -32,5 +32,6 @@ public final class ModRegistries {
         ModVillagers.POI_TYPES.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
         ModFeatures.FEATURES.register(modBus);
+        ModParticles.PARTICLES.register(modBus);
     }
 }

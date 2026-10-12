@@ -15,5 +15,10 @@ public final class LacunaNetwork {
                 com.lacuna.mod.client.ClientPayloads.reveal(payload);
             }
         });
+        registrar.playToClient(FxPayload.TYPE, FxPayload.STREAM_CODEC, (payload, context) -> {
+            if (FMLEnvironment.dist.isClient()) {
+                com.lacuna.mod.client.fx.FxHandlers.handle(payload);
+            }
+        });
     }
 }

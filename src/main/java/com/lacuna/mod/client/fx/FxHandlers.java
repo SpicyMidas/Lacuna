@@ -1,0 +1,33 @@
+package com.lacuna.mod.client.fx;
+
+import com.lacuna.mod.network.FxPayload;
+import com.lacuna.mod.util.SafeRun;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+import net.minecraft.client.Minecraft;
+
+/** Dispatches {@link FxPayload}s to the client effect registered for their {@code kind}. */
+public final class FxHandlers {
+    private static final Map<String, Consumer<FxPayload>> HANDLERS = new HashMap<>();
+
+    private FxHandlers() {}
+
+    public static void register(String kind, Consumer<FxPayload> handler) {
+        HANDLERS.put(kind, handler);
+    }
+
+    public static void handle(FxPayload payload) {
+        Consumer<FxPayload> handler = HANDLERS.get(payload.kind());
+        if (handler == null || Minecraft.getInstance().level == null) {
+            return;
+        }
+        SafeRun.run("fx_" + payload.kind(), () -> handler.accept(payload));
+    }
+
+    /** Called once from the client entry point: every feature registers its effect kinds here. */
+    public static void bootstrap() {
+        // feature effect registrations (one line per feature)
+        DebugFx.register();
+    }
+}

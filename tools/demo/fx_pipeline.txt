@@ -1,0 +1,25 @@
+# Effect framework check: shader beam + flare + ring, and every Lacuna particle type, at dusk and at night.
+world lacuna_demo flat
+wait 60
+hud off
+cmd time set 13000
+look 0 15
+wait 40
+fx debug ~-3 ~8 ~12 ~3 ~0.1 ~10
+particle lacuna:light_mote ~-2 ~1.5 ~6 30
+particle lacuna:solar_glint ~-1 ~1.5 ~6 20
+particle lacuna:crimson_spark ~0 ~1.5 ~6 30
+particle lacuna:shadow_mote ~1 ~1.5 ~6 20
+particle lacuna:umbral_slash ~2 ~1.5 ~6 6
+particle lacuna:umbral_shard ~3 ~1.5 ~6 20
+particle lacuna:mist ~0 ~1 ~9 6
+wait 5
+shot fx_pipeline_dusk
+cmd time set 18000
+wait 5
+fx debug ~-3 ~8 ~12 ~3 ~0.1 ~10
+particle lacuna:light_mote ~-2 ~1.5 ~6 30
+particle lacuna:umbral_slash ~2 ~1.5 ~6 6
+wait 5
+shot fx_pipeline_night
+quit

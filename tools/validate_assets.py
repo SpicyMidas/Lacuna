@@ -36,6 +36,9 @@ SIZE_RULES = [
     (re.compile(r"^textures/entity/"), {(64, 32), (64, 64), (128, 64), (32, 32)}),
     (re.compile(r"^textures/mob_effect/"), {(18, 18)}),
     (re.compile(r"^textures/gui/"), None),
+    # Revision 2 effects: particle sprites and render-effect masks
+    (re.compile(r"^textures/particle/"), {(8, 8), (32, 32)}),
+    (re.compile(r"^textures/effect/"), {(32, 32), (64, 64), (16, 64), (32, 128)}),
     # hand-drawn high-resolution items/blocks (tools/art/hand), e.g. the 32x32 Gravemaw Greatsword
     (re.compile(r"^textures/(item|block)/"), {(32, 32)}),
 ]

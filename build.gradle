@@ -35,6 +35,8 @@ neoForge {
             if (project.hasProperty('quickPlay')) {
                 programArguments.addAll('--quickPlaySingleplayer', project.property('quickPlay').toString())
             }
+            // ./gradlew runClient -PclientDemo=<script> runs a scripted screenshot session (client/debug/ClientDemo)
+            systemProperty 'lacuna.clientDemo', (project.findProperty('clientDemo') ?: '').toString()
         }
 
         server {

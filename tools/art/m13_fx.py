@@ -1,0 +1,221 @@
+"""Revision 2 effect textures: particle sprites (textures/particle/) and render-effect masks (textures/effect/).
+
+Particles are drawn smooth (soft alpha falloff) rather than as hard pixel art: most of them are rendered with
+additive blending, so their alpha ramp is what makes them read as light.
+"""
+import math
+
+from texlib import new, rng, save
+
+
+def _soft(img, cx, cy, radius, color, power=2.0, core=0.0, core_color=None):
+    px = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            d = math.hypot(x + 0.5 - cx, y + 0.5 - cy) / radius
+            if d >= 1.0:
+                continue
+            a = (1.0 - d) ** power
+            r, g, b = color[:3]
+            if core_color is not None and d < core:
+                t = 1.0 - d / core
+                r = int(r + (core_color[0] - r) * t)
+                g = int(g + (core_color[1] - g) * t)
+                b = int(b + (core_color[2] - b) * t)
+            alpha = int(round(255 * a * color[3] / 255))
+            old = px[x, y]
+            if alpha > old[3]:
+                px[x, y] = (r, g, b, alpha)
+
+
+def light_mote():
+    img = new(16, 16)
+    _soft(img, 8, 8, 8, (255, 214, 140, 255), power=1.8, core=0.45, core_color=(255, 255, 240))
+    save(img, "particle/light_mote")
+
+
+def solar_glint():
+    for frame, (arm, glow) in enumerate(((7.5, 5.5), (5.0, 4.0))):
+        img = new(16, 16)
+        px = img.load()
+        _soft(img, 8, 8, glow, (255, 220, 120, 255), power=1.5, core=0.6, core_color=(255, 255, 235))
+        for y in range(16):
+            for x in range(16):
+                dx, dy = abs(x + 0.5 - 8), abs(y + 0.5 - 8)
+                ray = max(0.0, 1.0 - min(dx, dy) / 0.9) * max(0.0, 1.0 - max(dx, dy) / arm)
+                a = int(255 * min(1.0, ray * 1.2))
+                if a > px[x, y][3]:
+                    px[x, y] = (255, 246, 210, a)
+        save(img, f"particle/solar_glint_{frame}")
+
+
+def crimson_spark():
+    for frame, (radius, core) in enumerate(((4.5, 0.55), (3.0, 0.4))):
+        img = new(16, 16)
+        _soft(img, 8, 8, radius, (255, 60, 40, 255), power=1.4, core=core, core_color=(255, 235, 200))
+        save(img, f"particle/crimson_spark_{frame}")
+
+
+def shadow_mote():
+    r = rng("shadow_mote")
+    for frame, radius in enumerate((7.5, 6.5, 5.0, 3.5)):
+        img = new(16, 16)
+        px = img.load()
+        for y in range(16):
+            for x in range(16):
+                n = 0.85 + 0.3 * r.random()
+                d = math.hypot(x + 0.5 - 8, y + 0.5 - 8) / (radius * n)
+                if d >= 1.0:
+                    continue
+                a = int(235 * (1.0 - d) ** 1.2)
+                # deep violet-black with a faint crimson cast at the rim
+                rim = max(0.0, d - 0.6) / 0.4
+                px[x, y] = (int(18 + 60 * rim), int(8 + 4 * rim), int(26 + 10 * rim), a)
+        save(img, f"particle/shadow_mote_{frame}")
+
+
+def _crescent(img, cx, cy, r_out, r_in, offset, start, end, body, rim, rim_w):
+    """A crescent: the outer disc minus an inner disc shifted by `offset`, drawn between two angles."""
+    px = img.load()
+    for y in range(img.height):
+        for x in range(img.width):
+            fx, fy = x + 0.5 - cx, y + 0.5 - cy
+            d_out = math.hypot(fx, fy)
+            d_in = math.hypot(fx - offset, fy + offset * 0.35)
+            if d_out > r_out or d_in < r_in:
+                continue
+            ang = math.degrees(math.atan2(fy, fx)) % 360
+            if not (start <= ang <= end):
+                continue
+            edge = min(r_out - d_out, d_in - r_in)
+            taper = min(ang - start, end - ang) / 30.0
+            if taper < 1.0 and edge > taper * 3.0:
+                continue
+            col = rim if edge < rim_w else body
+            a = int(col[3] * min(1.0, 0.35 + taper))
+            px[x, y] = (col[0], col[1], col[2], a)
+
+
+def umbral_slash():
+    body = (8, 6, 12, 245)
+    rim = (226, 32, 48, 255)
+    for frame, (start, end, alpha) in enumerate(((60, 200, 1.0), (30, 250, 1.0), (40, 240, 0.55))):
+        img = new(32, 32)
+        _crescent(img, 16, 16, 15, 12.5, 4.0, start, end, (body[0], body[1], body[2], int(body[3] * alpha)),
+                  (rim[0], rim[1], rim[2], int(rim[3] * alpha)), 1.1)
+        save(img, f"particle/umbral_slash_{frame}")
+
+
+def umbral_shard():
+    shapes = [
+        [(7, 2), (11, 7), (8, 14), (4, 9)],
+        [(4, 4), (12, 3), (10, 12)],
+        [(8, 1), (13, 9), (6, 13), (3, 6)],
+    ]
+    for frame, poly in enumerate(shapes):
+        img = new(16, 16)
+        px = img.load()
+        for y in range(16):
+            for x in range(16):
+                if _inside(poly, x + 0.5, y + 0.5):
+                    edge = _edge_distance(poly, x + 0.5, y + 0.5)
+                    px[x, y] = (150, 90, 210, 255) if edge < 1.0 else (44, 22, 66, 255)
+        save(img, f"particle/umbral_shard_{frame}")
+
+
+def mist():
+    r = rng("mist")
+    for frame in range(3):
+        img = new(32, 32)
+        px = img.load()
+        blobs = [(16 + r.uniform(-5, 5), 16 + r.uniform(-3, 3), r.uniform(10, 15)) for _ in range(5)]
+        for y in range(32):
+            for x in range(32):
+                a = 0.0
+                for bx, by, br in blobs:
+                    d = math.hypot(x + 0.5 - bx, (y + 0.5 - by) * 1.4) / br
+                    if d < 1.0:
+                        a = max(a, (1.0 - d) ** 2)
+                if a > 0:
+                    px[x, y] = (196, 206, 218, int(170 * a))
+        save(img, f"particle/mist_{frame}")
+
+
+def _inside(poly, x, y):
+    inside = False
+    n = len(poly)
+    for i in range(n):
+        x1, y1 = poly[i]
+        x2, y2 = poly[(i + 1) % n]
+        if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1:
+            inside = not inside
+    return inside
+
+
+def _edge_distance(poly, x, y):
+    best = 99.0
+    n = len(poly)
+    for i in range(n):
+        x1, y1 = poly[i]
+        x2, y2 = poly[(i + 1) % n]
+        dx, dy = x2 - x1, y2 - y1
+        t = max(0.0, min(1.0, ((x - x1) * dx + (y - y1) * dy) / (dx * dx + dy * dy)))
+        best = min(best, math.hypot(x - (x1 + t * dx), y - (y1 + t * dy)))
+    return best
+
+
+def effect_masks():
+    """Soft masks sampled by the effect render types (white RGB, alpha carries the shape)."""
+    # radial glow: used for halos, flares and impact blooms
+    img = new(32, 32)
+    _soft(img, 16, 16, 16, (255, 255, 255, 255), power=2.2)
+    save(img, "effect/glow")
+    # beam cross-section: bright centre line fading to the edges (u across the beam, v along it)
+    img = new(32, 32)
+    px = img.load()
+    for y in range(32):
+        for x in range(32):
+            d = abs(x + 0.5 - 16) / 16.0
+            a = max(0.0, 1.0 - d) ** 1.6
+            px[x, y] = (255, 255, 255, int(255 * a))
+    save(img, "effect/beam")
+    # ring: thin bright circle for shockwaves and target markers
+    img = new(64, 64)
+    px = img.load()
+    for y in range(64):
+        for x in range(64):
+            d = math.hypot(x + 0.5 - 32, y + 0.5 - 32)
+            a = max(0.0, 1.0 - abs(d - 28) / 3.5)
+            if a > 0:
+                px[x, y] = (255, 255, 255, int(255 * a ** 1.5))
+    save(img, "effect/ring")
+    # slash: a crescent mask (white) used for large rendered sword arcs
+    img = new(64, 64)
+    _crescent(img, 32, 32, 31, 26, 8.0, 20, 270, (255, 255, 255, 255), (255, 255, 255, 255), 0.0)
+    save(img, "effect/slash")
+
+
+def paint():
+    light_mote()
+    solar_glint()
+    crimson_spark()
+    shadow_mote()
+    umbral_slash()
+    umbral_shard()
+    mist()
+    effect_masks()
+    vignette()
+
+
+def vignette():
+    """Screen-edge vignette (ScreenFx): transparent centre, opaque corners; tinted at draw time."""
+    img = new(64, 64)
+    px = img.load()
+    for y in range(64):
+        for x in range(64):
+            dx = (x + 0.5 - 32) / 32.0
+            dy = (y + 0.5 - 32) / 32.0
+            d = math.sqrt(dx * dx * 0.8 + dy * dy)
+            a = max(0.0, min(1.0, (d - 0.45) / 0.75))
+            px[x, y] = (255, 255, 255, int(255 * a ** 1.6))
+    save(img, "effect/vignette")

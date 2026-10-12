@@ -20,6 +20,9 @@ public final class ClientSetup {
     public static void register(IEventBus modBus) {
         modBus.addListener(ClientSetup::onClientSetup);
         modBus.addListener(ClientSetup::onRegisterRenderers);
+        modBus.addListener(com.lacuna.mod.client.fx.FxShaders::onRegisterShaders);
+        modBus.addListener(com.lacuna.mod.client.fx.FxParticles::register);
+        modBus.addListener(com.lacuna.mod.client.fx.ScreenFx::registerLayer);
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {

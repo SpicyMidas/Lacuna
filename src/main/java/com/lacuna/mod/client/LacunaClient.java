@@ -26,5 +26,14 @@ public final class LacunaClient {
         NeoForge.EVENT_BUS.addListener(MarshAtmosphere::onFog);
         NeoForge.EVENT_BUS.addListener(MarshAtmosphere::onPlaySound);
         NeoForge.EVENT_BUS.addListener(GenericTooltips::onTooltip);
+        // Revision 2 effect framework (client/fx)
+        NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.fx.FxManager::onClientTick);
+        NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.fx.FxManager::onRenderLevel);
+        NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.fx.FxManager::onLogout);
+        NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.fx.ScreenFx::onClientTick);
+        NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.fx.ScreenFx::onCameraAngles);
+        NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.fx.ScreenFx::onLogout);
+        com.lacuna.mod.client.fx.FxHandlers.bootstrap();
+        com.lacuna.mod.client.debug.ClientDemo.register(NeoForge.EVENT_BUS);
     }
 }

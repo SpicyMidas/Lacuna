@@ -1,0 +1,37 @@
+package com.lacuna.mod.registry;
+
+import com.lacuna.mod.Lacuna;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.Registries;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+/**
+ * Lacuna particle types. Sprites live in {@code textures/particle/} (tools/art/m13_fx.py), sprite lists in
+ * {@code particles/*.json} (tools/content/m13_fx.py); the client providers are in {@code client/fx/FxParticles}.
+ */
+public final class ModParticles {
+    public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(Registries.PARTICLE_TYPE, Lacuna.MODID);
+
+    /** Soft warm light orb, additive, drifts and fades. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> LIGHT_MOTE = simple("light_mote");
+    /** Four-point golden star glint, additive, short. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SOLAR_GLINT = simple("solar_glint");
+    /** Hot red spark with gravity, additive. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CRIMSON_SPARK = simple("crimson_spark");
+    /** Black-violet smoke puff that shrinks away. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SHADOW_MOTE = simple("shadow_mote");
+    /** Black crescent sword slash with a crimson rim. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> UMBRAL_SLASH = simple("umbral_slash");
+    /** Dark violet shard fragment with gravity. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> UMBRAL_SHARD = simple("umbral_shard");
+    /** Large, very faint drifting fog wisp (Forgotten Land). */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MIST = simple("mist");
+
+    private ModParticles() {}
+
+    private static DeferredHolder<ParticleType<?>, SimpleParticleType> simple(String name) {
+        return PARTICLES.register(name, () -> new SimpleParticleType(false));
+    }
+}

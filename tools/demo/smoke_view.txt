@@ -1,0 +1,13 @@
+# Minimal client check: create a flat world, look around, take two screenshots, quit.
+world lacuna_demo flat
+wait 100
+hud off
+cmd time set noon
+look 0 10
+wait 60
+shot demo_flat_noon
+cmd give @s lacuna:gravemaw_greatsword
+hud on
+wait 20
+shot demo_hud
+quit
