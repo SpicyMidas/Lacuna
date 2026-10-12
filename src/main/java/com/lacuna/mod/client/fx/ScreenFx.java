@@ -52,6 +52,9 @@ public final class ScreenFx {
     private ScreenFx() {}
 
     private static float scale() {
+        if (!com.lacuna.mod.client.LacunaClientConfig.get(com.lacuna.mod.client.LacunaClientConfig.SCREEN_EFFECTS)) {
+            return 0.0F;
+        }
         return Minecraft.getInstance().options.screenEffectScale().get().floatValue();
     }
 
@@ -137,7 +140,11 @@ public final class ScreenFx {
         }
         SafeRun.run(FEATURE, () -> {
             float partial = delta.getGameTimeDeltaPartialTick(false);
-            float s = Math.max(0.25F, scale());
+            float s = scale();
+            if (s <= 0.0F) {
+                return;
+            }
+            s = Math.max(0.25F, s);
             int w = g.guiWidth();
             int h = g.guiHeight();
             for (Overlay o : OVERLAYS.values()) {

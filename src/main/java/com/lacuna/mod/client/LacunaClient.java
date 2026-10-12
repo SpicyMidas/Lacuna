@@ -16,6 +16,7 @@ import net.neoforged.neoforge.common.NeoForge;
 public final class LacunaClient {
     public LacunaClient(IEventBus modBus, ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        container.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, LacunaClientConfig.SPEC);
         ClientSetup.register(modBus);
 
         NeoForge.EVENT_BUS.addListener(DivineSight::onClientTick);
