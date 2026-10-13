@@ -13,6 +13,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
 
 /**
  * Client wiring of the solar effects (Sun's Fury and the Divine Magnifying Glass): shaders, the sun flare in the
@@ -30,6 +31,7 @@ public final class SolarClient {
         forgeBus.addListener(SolarClient::onRenderLevel);
         forgeBus.addListener(SolarClient::onFogColor);
         forgeBus.addListener(SolarClient::onLogout);
+        HandPose.register(forgeBus);
     }
 
     /** {@code lacuna:throwing}: Sun's Fury swaps to its raised, drawn-back model while it is being charged. */
@@ -66,19 +68,22 @@ public final class SolarClient {
             }
             SafeRun.run(FEATURE, () -> {
                 RenderSystem.defaultBlendFunc();
-                MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
+                MultiBufferSource.BufferSource buffers = SolarBuffers.get();
                 FxRenderContext ctx = new FxRenderContext(event.getPoseStack(), event.getCamera(), event.getCamera().getPosition(),
                         event.getPartialTick().getGameTimeDeltaPartialTick(false), buffers, mc.level);
-                SolarVisuals.render(ctx);
-                MagnifierBeams.render(ctx);
-                SpearCharge.render(ctx);
-                buffers.endBatch();
-                RenderSystem.defaultBlendFunc();
+                try {
+                    SolarVisuals.render(ctx);
+                    MagnifierBeams.render(ctx);
+                    SpearCharge.render(ctx);
+                } finally {
+                    buffers.endBatch();
+                    RenderSystem.defaultBlendFunc();
+                }
             }, SolarVisuals::clear);
         }
     }
 
-    private static void onFogColor(net.neoforged.neoforge.client.event.ViewportEvent.ComputeFogColor event) {
+    private static void onFogColor(ViewportEvent.ComputeFogColor event) {
         if (!SafeRun.isDisabled(FEATURE)) {
             SafeRun.run(FEATURE, () -> SolarSky.onFogColor(event));
         }

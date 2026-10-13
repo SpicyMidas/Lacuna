@@ -20,7 +20,7 @@ public final class SolarFx {
         double distance = cam.distanceTo(payload.a());
         float flash = (float) SolarMath.attenuation(distance, 24.0, 240.0);
         if (flash > 0.0F) {
-            ScreenFx.flash(0xFFF4D8, 0.9F * flash, 28);
+            ScreenFx.flash(0xFFF4D8, 0.75F * flash, 20);
         }
         float shake = (float) SolarMath.attenuation(distance, 10.0, 150.0);
         if (shake > 0.0F) {

@@ -31,7 +31,7 @@ import org.apache.commons.io.FileUtils;
  * Script lines: {@code world <name> flat|normal [seed]}, {@code wait <ticks>}, {@code cmd <command>},
  * {@code shot <name>}, {@code hud on|off}, {@code look <yaw> <pitch>}, {@code use on|off}, {@code attack},
  * {@code sneak on|off}, {@code forward on|off}, {@code select <0-8>}, {@code camera first|back|front},
- * {@code log <text>}, {@code quit},
+ * {@code log <text>}, {@code clearchat}, {@code quit},
  * {@code fx <kind> x y z [x2 y2 z2] [p0 p1 p2]} (client effect handler, ~ offsets allowed),
  * {@code particle <id> x y z [count]}.
  * Blank lines and lines starting with # are ignored. Screenshots land in run/screenshots/.
@@ -129,6 +129,7 @@ public final class ClientDemo {
                 case "attack" -> KeyMapping.click(mc.options.keyAttack.getKey());
                 case "select" -> mc.player.getInventory().selected = Integer.parseInt(arg.trim());
                 case "log" -> Lacuna.LOGGER.info("[DEMO] {}", arg);
+                case "clearchat" -> mc.gui.getChat().clearMessages(false);
                 case "fx" -> spawnFx(mc, arg.trim().split(" "));
                 case "particle" -> {
                     // particle <id> <x> <y> <z> [count]: client-side burst of a registered particle type

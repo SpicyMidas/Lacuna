@@ -43,8 +43,19 @@ public class SunsFuryRenderer extends EntityRenderer<SunsFuryEntity> {
         this.shadowRadius = 0.0F;
     }
 
+    /**
+     * Like vanilla thrown items: during its first ticks the spear is still at the thrower's eyes, where the model and
+     * its light would fill their screen.
+     */
+    static boolean tooCloseToShow(SunsFuryEntity spear, Vec3 camera) {
+        return !spear.isFocusing() && spear.tickCount < 4 && spear.position().distanceToSqr(camera) < 3.5 * 3.5;
+    }
+
     @Override
     public void render(SunsFuryEntity spear, float yaw, float partialTick, PoseStack pose, MultiBufferSource buffers, int light) {
+        if (tooCloseToShow(spear, entityRenderDispatcher.camera.getPosition())) {
+            return;
+        }
         SafeRun.run(SolarClient.FEATURE, () -> {
             if (stack.isEmpty()) {
                 // no enchantment glint on the flying spear: its own gold should read, lit by its light

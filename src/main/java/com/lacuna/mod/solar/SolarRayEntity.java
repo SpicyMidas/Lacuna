@@ -50,6 +50,7 @@ public class SolarRayEntity extends Entity {
     private int cursor;
     private int changes;
     private boolean dryRun;
+    private boolean sparesBlocks;
 
     public SolarRayEntity(EntityType<? extends SolarRayEntity> type, Level level) {
         super(type, level);
@@ -63,6 +64,11 @@ public class SolarRayEntity extends Entity {
     /** GameTest hook: no damage, no block destruction (the visuals and sounds still play). */
     public void setDryRun(boolean dryRun) {
         this.dryRun = dryRun;
+    }
+
+    /** GameTest hook: the strike still burns creatures but leaves every block alone. */
+    public void setSparesBlocks(boolean sparesBlocks) {
+        this.sparesBlocks = sparesBlocks;
     }
 
     /** Records the game time the strike started (synced, so clients agree on the column's age). */
@@ -113,7 +119,7 @@ public class SolarRayEntity extends Entity {
             server.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8F, 0.6F);
             server.playSound(null, getX(), getY(), getZ(), SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 3.0F, 0.8F);
             LacunaFx.send(server, position(), 256.0, FxPayload.at("solar_strike", position()));
-            job = dryRun ? List.of() : buildJob(server);
+            job = dryRun || sparesBlocks ? List.of() : buildJob(server);
         }
         SolarMath.RayPhase phase = SolarMath.rayPhase(tickCount, Balance.SOLAR_RAY_TICKS, Balance.SOLAR_FADE_TICKS);
         if (phase == SolarMath.RayPhase.STRIKE) {
@@ -153,14 +159,22 @@ public class SolarRayEntity extends Entity {
             }
             level().addAlwaysVisibleParticle(ParticleTypes.FLASH, true, getX(), getY() + 1.0, getZ(), 0, 0, 0);
         }
-        int motes = strike ? 7 : (int) (10 * intensity);
+        // strike: motes boil up around the foot of the pillar; fade: the pillar dissolves into motes along its height
+        int motes = strike ? 7 : (int) (22 * intensity) + 2;
         for (int i = 0; i < motes; i++) {
             double a = random.nextDouble() * Math.PI * 2.0;
-            double r = strike ? 0.8 + random.nextDouble() * 4.5 : random.nextDouble() * 3.0;
-            double y = strike ? getY() + random.nextDouble() * 6.0 : getY() + random.nextDouble() * 70.0;
-            double up = strike ? 0.25 + random.nextDouble() * 0.6 : 0.02 + random.nextDouble() * 0.05;
+            double r = strike ? 0.8 + random.nextDouble() * 4.5 : random.nextDouble() * 3.5;
+            double y = strike ? getY() + random.nextDouble() * 6.0 : getY() + random.nextDouble() * 90.0;
+            double up = strike ? 0.25 + random.nextDouble() * 0.6 : 0.01 + random.nextDouble() * 0.05;
+            double out = strike ? 0.03 : 0.05 + random.nextDouble() * 0.06;
             level().addAlwaysVisibleParticle(ModParticles.LIGHT_MOTE.get(), true, getX() + Math.cos(a) * r, y, getZ() + Math.sin(a) * r,
-                    Math.cos(a) * 0.03, up, Math.sin(a) * 0.03);
+                    Math.cos(a) * out, up, Math.sin(a) * out);
+        }
+        if (strike && age > 16 && tickCount % 4 == 0) {
+            double a = random.nextDouble() * Math.PI * 2.0;
+            double r = 4.0 + random.nextDouble() * 3.0;
+            level().addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, true, getX() + Math.cos(a) * r, getY() + 0.2,
+                    getZ() + Math.sin(a) * r, 0.0, 0.07, 0.0);
         }
         if (strike) {
             for (int i = 0; i < 2; i++) {
@@ -259,7 +273,8 @@ public class SolarRayEntity extends Entity {
 
     @Override
     public AABB getBoundingBoxForCulling() {
-        return new AABB(getX() - 28, getY() - 12, getZ() - 28, getX() + 28, getY() + 420, getZ() + 28);
+        // haze 64 wide (swelling at the impact), shockwaves up to 48 out, the sky aperture 70 wide at 190 up
+        return new AABB(getX() - 72, getY() - 12, getZ() - 72, getX() + 72, getY() + 420, getZ() + 72);
     }
 
     @Override

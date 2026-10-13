@@ -109,11 +109,6 @@ public class SunsFuryItem extends Item {
     }
 
     @Override
-    public boolean isFoil(ItemStack stack) {
-        return true;
-    }
-
-    @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.lacuna.suns_fury.lore").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("item.lacuna.suns_fury.use").withStyle(ChatFormatting.GOLD));

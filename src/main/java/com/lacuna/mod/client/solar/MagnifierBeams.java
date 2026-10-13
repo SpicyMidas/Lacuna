@@ -9,27 +9,28 @@ import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.registry.ModParticles;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 /**
  * The Divine Magnifying Glass beam, drawn by every client for every player using a glass: the ray is recomputed each
  * frame with the server's rules ({@link BeamTrace}: range 24, solid-block clip, first living entity, water surface,
- * x0.5 underwater) and the server's colours (day yellow, night white, underwater blue). Shimmering shader core and
- * halo from the lens (offset to the held item in first person, from the hand otherwise) to the hit point, a lens flare,
- * and an impact glow with sparks and smoke (bubbles underwater). Purely visual: damage stays on the server.
+ * x0.5 underwater) and the server's colours (day yellow, night white, underwater blue). Sunlight gathered by the lens
+ * converges from the lens (found exactly on the drawn item in first person, {@link HandPose}; at the raised hand
+ * otherwise) onto a white-hot point: a shimmering shader cone and core, a lens flare at the glass, and a starburst
+ * with sparks and smoke (bubbles underwater) where it burns. Purely visual: damage stays on the server.
  */
 public final class MagnifierBeams {
     private static final double MAX_DISTANCE = 128.0;
+    /** Sprite pixel at the centre of the lens of the glass texture. */
+    private static final float LENS_X = 9.5F;
+    private static final float LENS_Y = 6.0F;
 
     private MagnifierBeams() {}
 
@@ -39,6 +40,10 @@ public final class MagnifierBeams {
 
     static boolean enabled() {
         return LacunaConfig.get(LacunaConfig.BEAM_ENABLED);
+    }
+
+    static boolean firstPerson(Minecraft mc, Player player) {
+        return player == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson();
     }
 
     // ------------------------------------------------------------------ per frame
@@ -54,27 +59,10 @@ public final class MagnifierBeams {
                 continue;
             }
             BeamTrace trace = BeamTrace.of(ctx.level(), player, player.getEyePosition(pt), player.getViewVector(pt), pt);
-            boolean firstPerson = player == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson();
-            Vec3 lens = firstPerson ? firstPersonLens(player, ctx.camera()) : handLens(player, pt);
-            draw(ctx, player, trace, lens, firstPerson);
+            boolean first = firstPerson(mc, player) && player instanceof LocalPlayer;
+            Vec3 lens = first ? HandPose.bowPixel((LocalPlayer) player, ctx.camera(), pt, LENS_X, LENS_Y) : handLens(player, pt);
+            draw(ctx, player, trace, lens, first);
         }
-    }
-
-    private static int side(Player player) {
-        HumanoidArm arm = player.getUsedItemHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
-        return arm == HumanoidArm.RIGHT ? 1 : -1;
-    }
-
-    /** Where the lens of the held glass appears on screen in first person (bow-style raised pose). */
-    static Vec3 firstPersonLens(Player player, Camera camera) {
-        Vector3f look = camera.getLookVector();
-        Vector3f up = camera.getUpVector();
-        Vector3f left = camera.getLeftVector();
-        int side = side(player);
-        return camera.getPosition()
-                .add(look.x() * 0.62, look.y() * 0.62, look.z() * 0.62)
-                .add(-left.x() * 0.2 * side, -left.y() * 0.2 * side, -left.z() * 0.2 * side)
-                .add(-up.x() * 0.16, -up.y() * 0.16, -up.z() * 0.16);
     }
 
     /** Third person and other players: the glass held out in the raised hand, in front of the shoulder. */
@@ -82,7 +70,7 @@ public final class MagnifierBeams {
         float bodyYaw = Mth.rotLerp(pt, player.yBodyRotO, player.yBodyRot) * Mth.DEG_TO_RAD;
         Vec3 right = new Vec3(-Mth.cos(bodyYaw), 0.0, -Mth.sin(bodyYaw));
         Vec3 look = player.getViewVector(pt);
-        Vec3 shoulder = player.getEyePosition(pt).add(0.0, -0.32, 0.0).add(right.scale(0.36 * side(player)));
+        Vec3 shoulder = player.getEyePosition(pt).add(0.0, -0.32, 0.0).add(right.scale(0.36 * HandPose.side(player)));
         return shoulder.add(look.scale(0.85));
     }
 
@@ -95,20 +83,28 @@ public final class MagnifierBeams {
         float len = (float) lens.distanceTo(trace.stop());
         float t = ctx.time(player.tickCount);
         float shimmer = 0.9F + 0.1F * Mth.sin(t * 1.9F) * Mth.sin(t * 0.7F + 1.0F);
-        float w = firstPerson ? 0.7F : 1.0F;
+        // the lens is about as wide as the cone where it starts (much closer to the eye in first person)
+        float lensWidth = firstPerson ? 0.2F : 0.42F;
 
+        // a faint covering veil keeps the colour readable against a bright daytime sky
+        VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
+        FxDraw.ribbon(pose, over, a, b, lensWidth * 1.2F, 0.3F, FxDraw.argb(0.16F * shimmer, rgb), FxDraw.argb(0.22F * shimmer, rgb),
+                0.0F, len);
+        // the converging cone of gathered light, its body and the white-hot core
         VertexConsumer beam = ctx.buffers().getBuffer(FxRenderTypes.beam());
-        FxDraw.ribbon(pose, beam, a, b, 0.12F * w, 0.6F, FxDraw.argb(0.3F * shimmer, rgb), FxDraw.argb(0.38F * shimmer, rgb), 0.0F, len);
-        FxDraw.ribbon(pose, beam, a, b, 0.06F * w, 0.26F, FxDraw.argb(0.85F, rgb), FxDraw.argb(0.85F * shimmer, rgb), 0.0F, len);
-        FxDraw.ribbon(pose, beam, a, b, 0.025F * w, 0.09F, FxDraw.argb(1.0F, hot), FxDraw.argb(1.0F, hot), 0.0F, len);
+        FxDraw.ribbon(pose, beam, a, b, lensWidth, 0.2F, FxDraw.argb(0.35F * shimmer, rgb), FxDraw.argb(0.55F * shimmer, rgb), 0.0F, len);
+        FxDraw.ribbon(pose, beam, a, b, lensWidth * 0.45F, 0.1F, FxDraw.argb(0.8F, rgb), FxDraw.argb(0.95F * shimmer, rgb), 0.0F, len);
+        FxDraw.ribbon(pose, beam, a, b, firstPerson ? 0.018F : 0.03F, 0.045F, FxDraw.argb(1.0F, hot), FxDraw.argb(1.0F, hot), 0.0F, len);
 
         VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
-        FxDraw.billboard(pose, glow, ctx.camera(), a, (firstPerson ? 0.09F : 0.3F) * (0.95F + 0.1F * shimmer), t * 0.05F,
-                FxDraw.argb(0.95F, hot));
+        FxDraw.billboard(pose, glow, ctx.camera(), a, (firstPerson ? 0.08F : 0.3F) * (0.95F + 0.1F * shimmer), t * 0.05F,
+                FxDraw.argb(0.9F, hot));
         if (trace.hitsSomething()) {
-            Vec3 hit = ctx.rel(trace.stop().subtract(trace.look().scale(0.05)));
-            FxDraw.billboard(pose, glow, ctx.camera(), hit, 0.5F + 0.08F * Mth.sin(t * 2.3F), -t * 0.04F, FxDraw.argb(1.0F, hot));
-            FxDraw.billboard(pose, glow, ctx.camera(), hit, 1.3F, t * 0.02F, FxDraw.argb(0.35F * shimmer, rgb));
+            Vec3 hit = ctx.rel(trace.stop().subtract(trace.look().scale(0.06)));
+            VertexConsumer flare = ctx.buffers().getBuffer(SolarRenderTypes.flare());
+            FxDraw.billboard(pose, flare, ctx.camera(), hit, 1.1F + 0.12F * Mth.sin(t * 2.3F), t * 0.03F, FxDraw.argb(0.9F * shimmer, rgb));
+            glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
+            FxDraw.billboard(pose, glow, ctx.camera(), hit, 0.45F + 0.06F * Mth.sin(t * 3.1F), -t * 0.04F, FxDraw.argb(1.0F, hot));
         }
     }
 
@@ -136,10 +132,17 @@ public final class MagnifierBeams {
             BeamTrace trace = BeamTrace.of(level, player, player.getEyePosition(), player.getViewVector(1.0F), 1.0F);
             Vec3 hit = trace.stop().subtract(trace.look().scale(0.08));
             if (trace.beam().underwater()) {
-                level.addParticle(ParticleTypes.BUBBLE, hit.x, hit.y, hit.z, (random.nextDouble() - 0.5) * 0.1, 0.05, (random.nextDouble() - 0.5) * 0.1);
-                double f = random.nextDouble();
-                Vec3 on = trace.eye().add(trace.stop().subtract(trace.eye()).scale(f));
-                level.addParticle(ParticleTypes.BUBBLE, on.x, on.y, on.z, 0.0, 0.04, 0.0);
+                if (trace.hitsSomething()) {
+                    level.addParticle(ParticleTypes.BUBBLE, hit.x, hit.y, hit.z, (random.nextDouble() - 0.5) * 0.1, 0.05,
+                            (random.nextDouble() - 0.5) * 0.1);
+                }
+                // bubbles stream along the beam, never right in front of the eyes
+                double length = trace.stop().distanceTo(trace.eye());
+                if (length > 2.5 && player.tickCount % 2 == 0) {
+                    double along = 2.0 + random.nextDouble() * (length - 2.0);
+                    Vec3 on = trace.eye().add(trace.look().scale(along));
+                    level.addParticle(ParticleTypes.BUBBLE, on.x, on.y - 0.1, on.z, 0.0, 0.04, 0.0);
+                }
                 continue;
             }
             if (!trace.hitsSomething() || trace.waterHit() != null) {
@@ -153,9 +156,9 @@ public final class MagnifierBeams {
                 level.addParticle(ParticleTypes.SMALL_FLAME, hit.x, hit.y, hit.z, (random.nextDouble() - 0.5) * 0.08,
                         random.nextDouble() * 0.08, (random.nextDouble() - 0.5) * 0.08);
             }
-            if (random.nextFloat() < 0.4F) {
-                level.addParticle(ModParticles.LIGHT_MOTE.get(), hit.x, hit.y, hit.z, (random.nextDouble() - 0.5) * 0.1,
-                        random.nextDouble() * 0.08, (random.nextDouble() - 0.5) * 0.1);
+            if (random.nextFloat() < 0.5F) {
+                level.addParticle(ModParticles.LIGHT_MOTE.get(), hit.x, hit.y, hit.z, (random.nextDouble() - 0.5) * 0.12,
+                        random.nextDouble() * 0.1, (random.nextDouble() - 0.5) * 0.12);
             }
         }
     }

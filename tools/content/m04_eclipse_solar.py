@@ -88,13 +88,17 @@ def eclipser(g):
 
 
 # Hand transforms of the drawn-back Sun's Fury (vanilla applies the trident's SPEAR use animation and raised-arm pose
-# on top). Solved for the diagonal 16 px sprite: third person = raised over the throwing shoulder, tip forward and up;
-# first person = held low on the throwing side, tip pointing forward toward the crosshair.
+# on top). Solved for the diagonal 16 px sprite: third person = raised over the throwing shoulder, tip forward and up
+# (35 degrees); first person = shaft from the lower corner of the throwing side, tip forward toward the crosshair (the
+# client replays the same numbers in client/solar/HandPose to start the light at the spear head). The left-hand
+# entries equal the right-hand ones on purpose: ItemTransform mirrors them, so the left hand is a true mirror image.
+_SF_THIRD = {"rotation": [-170, -90, 20], "translation": [0.49, -2.34, -4.17], "scale": [1.2, 1.2, 1.2]}
+_SF_FIRST = {"rotation": [-175, 58.6, 216.5], "translation": [5.36, 4.45, -9.84], "scale": [0.85, 0.85, 0.85]}
 SUNS_FURY_THROWING_DISPLAY = {
-    "thirdperson_righthand": {"rotation": [-170, -90, 20], "translation": [0.49, -2.34, -4.17], "scale": [1.2, 1.2, 1.2]},
-    "thirdperson_lefthand": {"rotation": [-170, 90, -20], "translation": [0.49, -2.34, -4.17], "scale": [1.2, 1.2, 1.2]},
-    "firstperson_righthand": {"rotation": [20, -45, 80], "translation": [2.63, 2.26, -10.43], "scale": [1.1, 1.1, 1.1]},
-    "firstperson_lefthand": {"rotation": [20, 45, -80], "translation": [2.63, 2.26, -10.43], "scale": [1.1, 1.1, 1.1]},
+    "thirdperson_righthand": _SF_THIRD,
+    "thirdperson_lefthand": _SF_THIRD,
+    "firstperson_righthand": _SF_FIRST,
+    "firstperson_lefthand": _SF_FIRST,
 }
 
 

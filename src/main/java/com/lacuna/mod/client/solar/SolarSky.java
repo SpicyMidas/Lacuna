@@ -128,8 +128,10 @@ public final class SolarSky {
         if (b <= 0.003F || !skyVisible(mc, event.getCamera())) {
             return;
         }
-        event.setRed(Mth.lerp(0.35F * b, event.getRed(), 1.0F));
-        event.setGreen(Mth.lerp(0.3F * b, event.getGreen(), 0.86F));
-        event.setBlue(Mth.lerp(0.25F * b, event.getBlue(), 0.58F));
+        // by night a warm horizon would only look muddy: the warming follows the daylight
+        float w = b * (0.35F + 0.65F * SolarVisuals.daylight(mc.level, (float) event.getPartialTick()));
+        event.setRed(Mth.lerp(0.35F * w, event.getRed(), 1.0F));
+        event.setGreen(Mth.lerp(0.3F * w, event.getGreen(), 0.86F));
+        event.setBlue(Mth.lerp(0.25F * w, event.getBlue(), 0.58F));
     }
 }
