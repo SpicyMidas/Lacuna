@@ -26,6 +26,8 @@ public final class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> UMBRAL_SLASH = simple("umbral_slash");
     /** Dark violet shard fragment with gravity. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> UMBRAL_SHARD = simple("umbral_shard");
+    /** Small violet glowing wisp (umbral energy), additive. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> UMBRAL_WISP = simple("umbral_wisp");
     /** Large, very faint drifting fog wisp (Forgotten Land). */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MIST = simple("mist");
 

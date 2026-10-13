@@ -67,7 +67,13 @@ def umbral_tools(g):
 
 
 def weapons(g):
-    g.item("gravemaw_greatsword", "Gravemaw Greatsword", "Spadone Fauce-di-tomba", model="handheld")
+    # 32x32 hand-drawn texture; the display transforms make it a real two-hander in the hands (GUI stays normal)
+    g.item("gravemaw_greatsword", "Gravemaw Greatsword", "Spadone Fauce-di-tomba", model="handheld", extra={"display": {
+        "thirdperson_righthand": {"rotation": [0, -90, 55], "translation": [0, 8.5, 1.25], "scale": [1.55, 1.55, 1.55]},
+        "thirdperson_lefthand": {"rotation": [0, 90, -55], "translation": [0, 8.5, 1.25], "scale": [1.55, 1.55, 1.55]},
+        "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.6, 1.13], "scale": [0.85, 0.85, 0.85]},
+        "firstperson_lefthand": {"rotation": [0, 90, -25], "translation": [1.13, 3.6, 1.13], "scale": [0.85, 0.85, 0.85]},
+        "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.6, 0.6, 0.6]}}})
     g.item("tidecaller_sickle", "Tidecaller Sickle", "Falcetto Richiamamaree", model="handheld")
     pulling = [{"predicate": {"pulling": 1}, "model": "lacuna:item/heartwood_bow_pulling_0"},
                {"predicate": {"pulling": 1, "pull": 0.65}, "model": "lacuna:item/heartwood_bow_pulling_1"},

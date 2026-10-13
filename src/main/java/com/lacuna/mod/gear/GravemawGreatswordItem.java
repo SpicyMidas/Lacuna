@@ -2,12 +2,14 @@ package com.lacuna.mod.gear;
 
 import com.lacuna.mod.Balance;
 import com.lacuna.mod.LacunaConfig;
+import com.lacuna.mod.fx.LacunaFx;
+import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModDamageTypes;
+import com.lacuna.mod.registry.ModParticles;
 import com.lacuna.mod.util.SafeRun;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -60,7 +62,44 @@ public class GravemawGreatswordItem extends SwordItem {
         double moved = Math.hypot(entity.getX() - entity.xo, entity.getZ() - entity.zo);
         if (moved > Balance.GRAVEMAW_STILL_EPSILON) {
             entity.stopUsingItem(); // moving cancels the charge (releaseUsing is not called)
+            if (level instanceof ServerLevel server) {
+                // the gathered shadow scatters
+                server.sendParticles(ModParticles.SHADOW_MOTE.get(), entity.getX(), entity.getY() + 1.0, entity.getZ(), 10, 0.5, 0.6, 0.5, 0.03);
+                server.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 0.6F);
+            }
+            return;
         }
+        if (!(level instanceof ServerLevel server)) {
+            return;
+        }
+        int charge = getUseDuration(stack, entity) - remaining;
+        float f = Math.min(1.0F, charge / (float) Balance.GRAVEMAW_MAX_CHARGE);
+        if (charge % 5 == 0 && charge <= Balance.GRAVEMAW_MAX_CHARGE) {
+            // a hum that rises with the charge
+            server.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS,
+                    0.5F + 0.4F * f, 0.5F + 1.1F * f);
+        }
+        if (charge == Balance.GRAVEMAW_MIN_CHARGE) {
+            server.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.2F, 0.7F);
+            LacunaFx.send(server, entity.position(), FxPayload.at("gravemaw_ready", entity.position()).withEntity(entity.getId()));
+        } else if (charge == Balance.GRAVEMAW_MAX_CHARGE) {
+            server.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.RESPAWN_ANCHOR_CHARGE, SoundSource.PLAYERS, 0.9F, 0.8F);
+            LacunaFx.send(server, entity.position(), FxPayload.at("gravemaw_ready", entity.position()).withEntity(entity.getId())
+                    .withParams(1.0F, 0.0F, 0.0F));
+        }
+    }
+
+    @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (attacker.level() instanceof ServerLevel server) {
+            // heavy blade: a dark slash and a low thud on every melee hit
+            server.sendParticles(ModParticles.UMBRAL_SLASH.get(), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(),
+                    1, 0.0, 0.0, 0.0, 0.0);
+            server.sendParticles(ModParticles.UMBRAL_SHARD.get(), target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(),
+                    6, 0.25, 0.3, 0.25, 0.12);
+            server.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 1.0F, 0.55F);
+        }
+        return super.hurtEnemy(stack, target, attacker);
     }
 
     @Override
@@ -87,17 +126,17 @@ public class GravemawGreatswordItem extends SwordItem {
             }
             if (target.hurt(ModDamageTypes.source(level, ModDamageTypes.GRAVEMAW_WAVE, player), damage)) {
                 target.knockback(1.0, -facing.x, -facing.z);
+                Vec3 c = target.position().add(0, target.getBbHeight() * 0.5, 0);
+                level.sendParticles(ModParticles.CRIMSON_SPARK.get(), c.x, c.y, c.z, 10, 0.2, 0.3, 0.2, 0.25);
+                level.sendParticles(ModParticles.UMBRAL_SHARD.get(), c.x, c.y, c.z, 8, 0.3, 0.4, 0.3, 0.2);
             }
         }
-        for (double d : new double[] {2.5, 5.0, 7.5}) {
-            for (int i = -2; i <= 2; i++) {
-                double angle = Math.toRadians(Balance.GRAVEMAW_ARC_DEGREES * i / 2.0);
-                Vec3 dir = new Vec3(facing.x * Math.cos(angle) - facing.z * Math.sin(angle), 0,
-                        facing.x * Math.sin(angle) + facing.z * Math.cos(angle));
-                Vec3 p = origin.add(dir.scale(d));
-                level.sendParticles(ParticleTypes.SWEEP_ATTACK, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-            }
-        }
+        // the wave itself is drawn by the clients (GravemawFx): a curved wall of umbral energy sweeping 8 blocks out
+        float strength = (charge - Balance.GRAVEMAW_MIN_CHARGE) / (float) (Balance.GRAVEMAW_MAX_CHARGE - Balance.GRAVEMAW_MIN_CHARGE);
+        LacunaFx.send(level, player.position(), FxPayload.line("gravemaw_wave", player.position(), player.position().add(facing))
+                .withEntity(player.getId()).withParams(strength, (float) range, (float) Balance.GRAVEMAW_ARC_DEGREES));
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.MACE_SMASH_GROUND_HEAVY, SoundSource.PLAYERS, 1.0F, 0.7F);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WARDEN_ATTACK_IMPACT, SoundSource.PLAYERS, 0.8F, 0.6F);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 0.5F);
         stack.hurtAndBreak(3, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
         player.getCooldowns().addCooldown(this, Balance.GRAVEMAW_COOLDOWN);

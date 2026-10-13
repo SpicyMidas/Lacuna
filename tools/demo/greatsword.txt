@@ -1,0 +1,27 @@
+world lacuna_demo flat
+wait 40
+cmd time set noon
+cmd give @s lacuna:gravemaw_greatsword
+cmd summon zombie ~3 ~ ~5 {NoAI:1b}
+look 0 10
+select 0
+wait 20
+clearchat
+hud on
+shot gs_first
+camera back
+wait 5
+shot gs_third_back
+camera front
+wait 5
+shot gs_third_front
+camera back
+use on
+wait 45
+shot gs_charged_back
+use off
+wait 3
+shot gs_wave_3
+wait 2
+shot gs_wave_5
+quit

@@ -8,6 +8,7 @@ PARTICLES = {
     "umbral_slash": ["umbral_slash_0", "umbral_slash_1", "umbral_slash_2"],
     "umbral_shard": ["umbral_shard_0", "umbral_shard_1", "umbral_shard_2"],
     "mist": ["mist_0", "mist_1", "mist_2"],
+    "umbral_wisp": ["light_mote"],
 }
 
 
