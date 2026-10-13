@@ -1,0 +1,20 @@
+# Sun's Fury in flight, seen from the side (night and day): the spear model, its head flare and the comet trail.
+world lacuna_flight flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd time set 18000
+look 0 3
+wait 20
+cmd summon lacuna:suns_fury ~-14 ~3 ~12 {Motion:[1.6d,0.1d,0.0d]}
+wait 7
+shot solar_flight_side_night
+cmd kill @e[type=lacuna:suns_fury]
+cmd time set 6000
+wait 20
+cmd summon lacuna:suns_fury ~-14 ~3 ~12 {Motion:[1.6d,0.1d,0.0d]}
+wait 7
+shot solar_flight_side_day
+cmd kill @e[type=lacuna:suns_fury]
+wait 5
+quit

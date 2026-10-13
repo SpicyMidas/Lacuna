@@ -1,0 +1,86 @@
+# Sun's Fury, full sequence: trident hold pose (first person and two third-person cameras), a spear flying across the
+# view, then the real throw at night: focus (sun sweeps to noon, light converges, reticle shrinks), strike column,
+# fade. Finally a night strike (summoned column with the daylight frozen at midnight).
+world lacuna_solar flat
+wait 60
+hud off
+cmd time set 18000
+cmd gamerule sendCommandFeedback false
+cmd give @s lacuna:suns_fury
+select 0
+look 0 3
+wait 30
+# --- hold pose
+use on
+wait 30
+hud on
+clearchat
+wait 2
+shot solar_hold_first
+hud off
+camera front
+wait 3
+shot solar_hold_front
+camera back
+wait 3
+shot solar_hold_back
+camera first
+use off
+wait 4
+# --- a spear flying across the view (side view of the comet trail), removed before it lands
+cmd kill @e[type=lacuna:suns_fury]
+cmd give @s lacuna:suns_fury
+look 0 3
+cmd summon lacuna:suns_fury ~-14 ~3 ~12 {Motion:[1.6d,0.1d,0.0d]}
+wait 7
+shot solar_flight_side
+cmd kill @e[type=lacuna:suns_fury]
+wait 10
+# --- the real throw: the spear lands ~17 blocks ahead
+use on
+wait 26
+use off
+wait 5
+shot solar_flight
+wait 8
+cmd tp @s ~ ~ ~-12 0 -10
+wait 4
+shot solar_focus_early
+wait 28
+shot solar_focus_mid
+look -90 -28
+wait 2
+shot solar_focus_mid_sky
+look 0 -10
+wait 26
+shot solar_focus_late
+look 0 -70
+wait 2
+shot solar_focus_late_sky
+look 0 -10
+wait 24
+shot solar_strike_a
+wait 12
+shot solar_strike_b
+cmd tp @s ~ ~10 ~-50 0 -16
+wait 8
+shot solar_strike_far
+wait 22
+shot solar_fade
+wait 8
+shot solar_fade_b
+wait 20
+shot solar_after
+# --- night strike, seen from 36 blocks
+cmd time set 18000
+cmd tp @s ~ ~ ~40 0 -12
+wait 20
+cmd summon lacuna:solar_ray ~ ~ ~36
+wait 4
+shot solar_night_strike_a
+wait 24
+shot solar_night_strike_b
+wait 40
+shot solar_night_fade
+wait 10
+quit

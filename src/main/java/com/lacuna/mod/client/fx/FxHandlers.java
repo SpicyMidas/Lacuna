@@ -29,5 +29,6 @@ public final class FxHandlers {
     public static void bootstrap() {
         // feature effect registrations (one line per feature)
         DebugFx.register();
+        com.lacuna.mod.client.solar.SolarFx.register();
     }
 }

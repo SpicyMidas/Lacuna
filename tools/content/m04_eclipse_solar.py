@@ -87,13 +87,36 @@ def eclipser(g):
     g.name("effect.lacuna.shadow_walk", "Shadow Walk", "Passo d'ombra")
 
 
+# Hand transforms of the drawn-back Sun's Fury (vanilla applies the trident's SPEAR use animation and raised-arm pose
+# on top). Solved for the diagonal 16 px sprite: third person = raised over the throwing shoulder, tip forward and up
+# (35 degrees); first person = shaft from the lower corner of the throwing side, tip forward toward the crosshair (the
+# client replays the same numbers in client/solar/HandPose to start the light at the spear head). The left-hand
+# entries equal the right-hand ones on purpose: ItemTransform mirrors them, so the left hand is a true mirror image.
+_SF_THIRD = {"rotation": [-170, -90, 20], "translation": [0.49, -2.34, -4.17], "scale": [1.2, 1.2, 1.2]}
+_SF_FIRST = {"rotation": [-175, 58.6, 216.5], "translation": [5.36, 4.45, -9.84], "scale": [0.85, 0.85, 0.85]}
+SUNS_FURY_THROWING_DISPLAY = {
+    "thirdperson_righthand": _SF_THIRD,
+    "thirdperson_lefthand": _SF_THIRD,
+    "firstperson_righthand": _SF_FIRST,
+    "firstperson_lefthand": _SF_FIRST,
+}
+
+
 def solar(g):
     g.item("solar_flare_fragment", "Solar Flare Fragment", "Frammento di brillamento solare")
     g.item("solar_flare", "Solar Flare", "Brillamento solare")
-    g.item("suns_fury", "Sun's Fury", "Furia del Sole", model="handheld")
+    # thrown like a trident: while it is drawn back (predicate lacuna:throwing, registered in client/solar) the
+    # spear swaps to a model whose hand transforms hold it raised over the shoulder, tip forward
+    g.item("suns_fury", "Sun's Fury", "Furia del Sole", model="handheld",
+           overrides=[{"predicate": {"lacuna:throwing": 1}, "model": "lacuna:item/suns_fury_throwing"}])
+    g.item_model("suns_fury_throwing", {
+        "parent": "minecraft:item/handheld",
+        "textures": {"layer0": "lacuna:item/suns_fury"},
+        "display": SUNS_FURY_THROWING_DISPLAY,
+    })
     g.name("item.lacuna.suns_fury.lore", "A noon that was never allowed to end.", "Un mezzogiorno a cui non fu mai permesso di finire.")
-    g.name("item.lacuna.suns_fury.use", "Use: throw. Single use. Burns everything near the impact.",
-           "Usa: lancia. Monouso. Brucia tutto vicino all'impatto.")
+    g.name("item.lacuna.suns_fury.use", "Use: hold to draw back, release to throw. Single use. The sun answers where it lands.",
+           "Usa: tieni premuto per caricare, rilascia per lanciare. Monouso. Il sole risponde dove si pianta.")
     g.name("lacuna.suns_fury.fizzles", "The sun cannot reach the Forgotten Land.", "Il sole non raggiunge la Terra Dimenticata.")
     g.name("entity.lacuna.suns_fury", "Sun's Fury", "Furia del Sole")
     g.name("entity.lacuna.solar_ray", "Solar Ray", "Raggio solare")

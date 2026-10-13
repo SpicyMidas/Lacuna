@@ -63,8 +63,6 @@ public final class Balance {
     public static final int BEAM_VAPOR_INTERVAL = 5;
     public static final int BEAM_RELEASE_COOLDOWN = 10;
     public static final int BEAM_REPAIR_PER_SHARD = 60;
-    public static final int BEAM_PARTICLE_INTERVAL = 2;
-    public static final int BEAM_MAX_PARTICLES = 24;
 
     // ---------------------------------------------------------------- umbral steel / eclipser (M4)
     public static final int ECLIPSER_DURABILITY = 250;
@@ -93,6 +91,15 @@ public final class Balance {
     public static final float SUNS_FURY_SPEED = 2.5F;
     public static final double SUNS_FURY_GRAVITY = 0.03;
     public static final int SUNS_FURY_FUSE = 200;
+    /** Trident-style throw: minimum draw (ticks) and the draw at which the full speed is reached. */
+    public static final int SUNS_FURY_MIN_CHARGE = 10;
+    public static final int SUNS_FURY_FULL_CHARGE = 25;
+    /** Impact damage when the spear itself hits a creature (a trident deals 8). */
+    public static final float SUNS_FURY_IMPACT_DAMAGE = 8.0F;
+    /** Focus phase between landing and the strike: the sun climbs to noon and the light converges. */
+    public static final int SUNS_FURY_FOCUS_TICKS = 100;
+    /** Fade phase after the strike: purely visual. */
+    public static final int SOLAR_FADE_TICKS = 20;
     public static final int SOLAR_RAY_TICKS = 60;
     public static final double SOLAR_RAY_DAMAGE_RADIUS = 7.0;
     public static final float SOLAR_RAY_DAMAGE = 5.0F;

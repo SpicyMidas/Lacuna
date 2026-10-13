@@ -1,4 +1,12 @@
 {
+  "overrides": [
+    {
+      "model": "lacuna:item/suns_fury_throwing",
+      "predicate": {
+        "lacuna:throwing": 1
+      }
+    }
+  ],
   "parent": "minecraft:item/handheld",
   "textures": {
     "layer0": "lacuna:item/suns_fury"

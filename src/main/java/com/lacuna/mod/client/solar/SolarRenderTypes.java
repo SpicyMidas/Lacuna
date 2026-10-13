@@ -1,0 +1,177 @@
+package com.lacuna.mod.client.solar;
+
+import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.FxShaders;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import java.io.IOException;
+import java.util.function.Consumer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Solar shaders and render types. Three dedicated GPU core shaders ({@code assets/lacuna/shaders/core/}):
+ * <ul>
+ *   <li>{@code lacuna:solar_column}: pillars and shafts of sunlight (white-hot core, sliding golden striations,
+ *       descending light bands, rippling edges, shimmering halo); u across a camera-facing ribbon, v = blocks along.</li>
+ *   <li>{@code lacuna:solar_corona}: the blazing sun with turning crowns of rays, and impact flares.</li>
+ *   <li>{@code lacuna:solar_ring}: smooth procedural marks on flat quads: the focus reticle, shockwaves, light pools
+ *       and thin rings ({@link #RETICLE}, {@link #SHOCKWAVE}, {@link #POOL}, {@link #THIN} select the mode via u).</li>
+ * </ul>
+ * All output premultiplied colour, blended two ways: <b>additive</b> (light piles up into white-hot cores) and
+ * <b>over</b> ({@code ONE, ONE_MINUS_SRC_ALPHA}: the light also covers what is behind it, which keeps the gold visible
+ * against a bright daytime sky instead of washing out to white). Like {@link FxShaders}, a shader that fails to load
+ * is logged and replaced by the framework's beam / glow / textured types.
+ */
+public final class SolarRenderTypes {
+    /** {@code solar_ring} modes: pass {@code mode * 2} as the u offset of the quad (u = offset + 0..1). */
+    public static final int RETICLE = 0;
+    public static final int SHOCKWAVE = 1;
+    public static final int POOL = 2;
+    public static final int THIN = 3;
+
+    @Nullable
+    private static ShaderInstance column;
+    @Nullable
+    private static ShaderInstance corona;
+    @Nullable
+    private static ShaderInstance ring;
+
+    /** Premultiplied "over": src + dst * (1 - src.a). */
+    private static final RenderStateShard.TransparencyStateShard OVER = new RenderStateShard.TransparencyStateShard("lacuna_premultiplied_over",
+            () -> {
+                RenderSystem.enableBlend();
+                RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                        GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            },
+            () -> {
+                RenderSystem.disableBlend();
+                RenderSystem.defaultBlendFunc();
+            });
+
+    private static final RenderStateShard.ShaderStateShard COLUMN_SHADER = new RenderStateShard.ShaderStateShard(() -> column);
+    private static final RenderStateShard.ShaderStateShard CORONA_SHADER = new RenderStateShard.ShaderStateShard(() -> corona);
+    private static final RenderStateShard.ShaderStateShard RING_SHADER = new RenderStateShard.ShaderStateShard(() -> ring);
+    private static final RenderStateShard.ShaderStateShard GLOW_SHADER = new RenderStateShard.ShaderStateShard(FxShaders::glow);
+    private static final RenderStateShard.ShaderStateShard POS_TEX_COLOR =
+            new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader);
+
+    // world space: after particles, depth-tested, particle target (correct under Fabulous)
+    private static final RenderType COLUMN_ADD = create("lacuna_solar_column", COLUMN_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
+            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    private static final RenderType COLUMN_OVER = create("lacuna_solar_column_over", COLUMN_SHADER, OVER,
+            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    private static final RenderType FLARE_ADD = create("lacuna_solar_flare", CORONA_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
+            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    private static final RenderType RING_ADD = create("lacuna_solar_ring", RING_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
+            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    private static final RenderType RING_OVER = create("lacuna_solar_ring_over", RING_SHADER, OVER,
+            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    private static final RenderType GLOW_OVER = create("lacuna_solar_glow_over", GLOW_SHADER, OVER,
+            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    // sky: right after the sky into the main target, no depth (terrain drawn later covers it)
+    private static final RenderType SKY_CORONA = create("lacuna_sky_corona", CORONA_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
+            RenderStateShard.NO_DEPTH_TEST, false, null);
+    private static final RenderType SKY_GLOW = create("lacuna_sky_glow", GLOW_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
+            RenderStateShard.NO_DEPTH_TEST, false, null);
+    private static final RenderType SKY_GLOW_OVER = create("lacuna_sky_glow_over", GLOW_SHADER, OVER,
+            RenderStateShard.NO_DEPTH_TEST, false, null);
+    private static final RenderType SKY_GLOW_TEXTURED = create("lacuna_sky_glow_textured", POS_TEX_COLOR,
+            RenderStateShard.LIGHTNING_TRANSPARENCY, RenderStateShard.NO_DEPTH_TEST, false, FxRenderTypes.GLOW);
+
+    private SolarRenderTypes() {}
+
+    private static RenderType create(String name, RenderStateShard.ShaderStateShard shader, RenderStateShard.TransparencyStateShard blend,
+                                     RenderStateShard.DepthTestStateShard depth, boolean particleTarget, @Nullable ResourceLocation texture) {
+        RenderType.CompositeState.CompositeStateBuilder b = RenderType.CompositeState.builder()
+                .setShaderState(shader)
+                .setTransparencyState(blend)
+                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                .setCullState(RenderStateShard.NO_CULL)
+                .setDepthTestState(depth);
+        if (particleTarget) {
+            b.setOutputState(RenderStateShard.PARTICLES_TARGET);
+        }
+        if (texture != null) {
+            b.setTextureState(new RenderStateShard.TextureStateShard(texture, true, false));
+        }
+        return RenderType.create(name, DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 1536, false, false,
+                b.createCompositeState(false));
+    }
+
+    public static void onRegisterShaders(RegisterShadersEvent event) {
+        register(event, "solar_column", s -> column = s, () -> column = null);
+        register(event, "solar_corona", s -> corona = s, () -> corona = null);
+        register(event, "solar_ring", s -> ring = s, () -> ring = null);
+    }
+
+    private static void register(RegisterShadersEvent event, String name, Consumer<ShaderInstance> onLoad, Runnable onFail) {
+        try {
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), Lacuna.id(name), DefaultVertexFormat.POSITION_TEX_COLOR),
+                    onLoad);
+        } catch (IOException | RuntimeException e) {
+            onFail.run();
+            Lacuna.LOGGER.warn("Lacuna {} shader unavailable, using the framework fallback: {}", name, e.toString());
+        }
+    }
+
+    /**
+     * Every world-space render type the solar effects use (as currently resolved, fallbacks included), in drawing
+     * order: the covering layers first, then the light that adds on top of them.
+     */
+    static java.util.List<RenderType> drawOrder() {
+        return java.util.List.of(columnOver(), ringOver(), glowOver(), ring(), column(), FxRenderTypes.beam(), FxRenderTypes.glowShader(),
+                flare());
+    }
+
+    /** Additive column light (u across, v = blocks along; colour = tint, alpha = intensity), or the beam fallback. */
+    public static RenderType column() {
+        return column != null ? COLUMN_ADD : FxRenderTypes.beam();
+    }
+
+    /** Column light that also covers the background (keeps its colour on a bright sky). */
+    public static RenderType columnOver() {
+        return column != null ? COLUMN_OVER : FxRenderTypes.beam();
+    }
+
+    /** Additive starburst flare (u,v 0..1 over a billboard): the corona shader in world space, or the glow fallback. */
+    public static RenderType flare() {
+        return corona != null ? FLARE_ADD : FxRenderTypes.glowShader();
+    }
+
+    /** Additive procedural ring marks (u = mode * 2 + 0..1, v 0..1), or the textured ring. */
+    public static RenderType ring() {
+        return ring != null ? RING_ADD : FxRenderTypes.additive(FxRenderTypes.RING);
+    }
+
+    /** Ring marks that also cover the background (light pools on bright ground). */
+    public static RenderType ringOver() {
+        return ring != null ? RING_OVER : FxRenderTypes.additive(FxRenderTypes.GLOW);
+    }
+
+    /** Soft round glow that covers the background (u,v 0..1). */
+    public static RenderType glowOver() {
+        return FxShaders.glow() != null ? GLOW_OVER : FxRenderTypes.glowShader();
+    }
+
+    /** Sun corona in the sky (u,v 0..1 over the quad), with glow-shader and textured fallbacks. */
+    public static RenderType skyCorona() {
+        if (corona != null) {
+            return SKY_CORONA;
+        }
+        return FxShaders.glow() != null ? SKY_GLOW : SKY_GLOW_TEXTURED;
+    }
+
+    /** Large warm wash around the sun that tints the sky instead of bleaching it. */
+    public static RenderType skyWash() {
+        return FxShaders.glow() != null ? SKY_GLOW_OVER : SKY_GLOW_TEXTURED;
+    }
+}
