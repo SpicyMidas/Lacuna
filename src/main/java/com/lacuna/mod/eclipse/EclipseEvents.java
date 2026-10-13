@@ -13,6 +13,11 @@ public final class EclipseEvents {
                 EclipserItem.resetOnDamage(e.getEntity());
             }
         });
+        bus.addListener(EclipseDash::onPlayerTick);
+        bus.addListener(EclipseDash::onDeath);
+        bus.addListener(EclipseDash::onLogout);
+        bus.addListener(EclipseDash::onChangedDimension);
+        bus.addListener(EclipseDash::onServerStopping);
         bus.addListener(ShadowWalk::onPlayerTick);
         bus.addListener(ShadowWalk::onEffectExpired);
         bus.addListener(ShadowWalk::onEffectRemoved);

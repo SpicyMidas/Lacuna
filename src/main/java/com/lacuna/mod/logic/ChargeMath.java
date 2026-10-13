@@ -40,6 +40,11 @@ public final class ChargeMath {
         return Math.min(max, 4.0 + 0.10 * clamp(charge));
     }
 
+    /** Duration of the dash movement in ticks: 5 for short dashes up to 7 for the longest ones. */
+    public static int dashTicks(double distance) {
+        return 5 + (int) Math.max(0, Math.min(2, Math.round((distance - 4.0) / 5.0)));
+    }
+
     public static float dashDamage(int charge) {
         return (float) Math.min(20.0, 6.0 + 0.14 * clamp(charge));
     }

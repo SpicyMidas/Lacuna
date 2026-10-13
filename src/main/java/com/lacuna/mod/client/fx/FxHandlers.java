@@ -30,5 +30,6 @@ public final class FxHandlers {
         // feature effect registrations (one line per feature)
         DebugFx.register();
         com.lacuna.mod.client.solar.SolarFx.register();
+        com.lacuna.mod.client.eclipse.EclipseFx.register();
     }
 }

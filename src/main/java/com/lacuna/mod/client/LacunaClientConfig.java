@@ -29,6 +29,16 @@ public final class LacunaClientConfig {
         B.pop();
     }
 
+    // ---------------------------------------------------------------- eclipser (dash effects)
+    public static final ModConfigSpec.BooleanValue ECLIPSE_AFTERIMAGES;
+
+    static {
+        B.push("eclipser");
+        ECLIPSE_AFTERIMAGES = B.comment("Dark afterimages of the dashing player along the Eclipser dash.")
+                .define("afterimages", true);
+        B.pop();
+    }
+
     public static final ModConfigSpec SPEC = B.build();
 
     private LacunaClientConfig() {}
