@@ -8,7 +8,7 @@ load after registration; they live in `Balance`.
 |---|---|---|---|
 | general | blockChangesPerTick | 400 | Max block changes per tick for long jobs (Sun's Fury) |
 | general | debugLogging | false | Extra logging |
-| divineSight | enabled / range / maxBoxes | true / 12 / 128 | Client X-ray through Divine Glass |
+| divineSight | enabled / range / maxBoxes | true / 12 / 128 | Divine Sight through Divine Glass (range/maxBoxes: outline mode) |
 | forgottenLand | enabled | true | Totem of Banishing, timers, dimension rules |
 | forgottenLand | scale | 12.0 | 1 Forgotten Land block = 12 overworld blocks |
 | forgottenLand | timerTicks | 7200 | Base banishment duration (6 min) |
@@ -32,3 +32,10 @@ load after registration; they live in `Balance`.
 | forgottenBiomes | marshFog, dunesSlowCrops, updraftSprings, mirrorLabyrinth, lastMerchant, sunkenBell | true | |
 | forgottenBiomes | lastMerchantIntervalTicks | 72000 | ~3 in-game days |
 | township | enabled, laws, council, currency, guilds | true | Townships and their subsystems |
+
+## Client (`config/lacuna-client.toml`)
+
+| Section | Key | Default | Meaning |
+|---|---|---|---|
+| divineSight | mode | XRAY | XRAY: Divine Glass is a window onto a void showing only ores, containers, spawners and mobs; OUTLINE: coloured boxes through walls (automatic fallback when the stencil buffer is unavailable or the window fails) |
+| divineSight | xrayRange / xrayMaxBlocks | 28 / 1024 | X-ray window: target search radius around the camera, max target blocks drawn |
