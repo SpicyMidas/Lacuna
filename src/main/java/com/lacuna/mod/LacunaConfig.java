@@ -99,7 +99,7 @@ public final class LacunaConfig {
         B.pop();
 
         B.push("divineSight");
-        DIVINE_SIGHT_ENABLED = B.comment("Client-side X-ray outlines through Divine Glass.").define("enabled", true);
+        DIVINE_SIGHT_ENABLED = B.comment("Client-side Divine Sight through Divine Glass (X-ray window or outlines: see the client config).").define("enabled", true);
         DIVINE_SIGHT_RANGE = B.defineInRange("range", Balance.DIVINE_SIGHT_RANGE, 2, 32);
         DIVINE_SIGHT_MAX_BOXES = B.defineInRange("maxBoxes", Balance.DIVINE_SIGHT_MAX_BOXES, 1, 512);
         B.pop();

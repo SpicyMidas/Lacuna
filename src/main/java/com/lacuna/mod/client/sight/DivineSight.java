@@ -21,9 +21,10 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 /**
- * Divine Sight (spec M1): when the camera ray passes through Divine Glass within 6 blocks, targets behind the
- * glass inside a 50 degree cone get outlines drawn through walls. Client-only, throttled and bounded; any failure
- * disables the feature for the session (SafeRun).
+ * Divine Sight (spec M1), outline mode: when the camera ray passes through Divine Glass within 6 blocks, targets
+ * behind the glass inside a 50 degree cone get outlines drawn through walls. Client-only, throttled and bounded; any
+ * failure disables the feature for the session (SafeRun). The default X-ray window mode lives in {@link DivineXray};
+ * this mode is used when the client config picks it or when the window is unavailable (no stencil, or it failed).
  */
 public final class DivineSight {
     public static final String FEATURE = "divine_sight";
@@ -31,8 +32,8 @@ public final class DivineSight {
     private static final int ORE_COLOR = 0xFFD23C;
     private static final int CONTAINER_COLOR = 0xFFFFFF;
     private static final int SPAWNER_COLOR = 0xB06BFF;
-    private static final int HOSTILE_COLOR = 0xFF4040;
-    private static final int PASSIVE_COLOR = 0x40FF60;
+    static final int HOSTILE_COLOR = 0xFF4040;
+    static final int PASSIVE_COLOR = 0x40FF60;
     private static final double SAMPLE_STEP = 0.8;
 
     private static int ticker;
@@ -40,7 +41,8 @@ public final class DivineSight {
     private DivineSight() {}
 
     public static void onClientTick(ClientTickEvent.Post event) {
-        if (!LacunaConfig.get(LacunaConfig.DIVINE_SIGHT_ENABLED) || SafeRun.isDisabled(FEATURE)) {
+        if (!LacunaConfig.get(LacunaConfig.DIVINE_SIGHT_ENABLED) || SafeRun.isDisabled(FEATURE) || DivineXray.isActive()) {
+            // disabled, or the X-ray window (DivineXray) replaces the outlines
             OutlineRenderer.clear(SET_KEY);
             return;
         }
@@ -153,7 +155,7 @@ public final class DivineSight {
         return -1;
     }
 
-    private static int colorFor(BlockState state) {
+    static int colorFor(BlockState state) {
         if (state.is(ModTags.Blocks.C_ORES)) {
             return ORE_COLOR;
         }

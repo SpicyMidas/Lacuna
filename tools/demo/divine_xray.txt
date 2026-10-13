@@ -1,0 +1,40 @@
+# Divine Glass X-ray window: a stone hill with ores, a chest, a spawner, a zombie and a cow behind a 3x3 window of
+# divine glass plus two panes; seen from the front and at an angle by day, then the same view without the glass.
+world lacuna_xray flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd gamerule doDaylightCycle false
+cmd time set 6000
+cmd fill ~-7 ~-1 ~4 ~7 ~7 ~15 minecraft:stone
+cmd fill ~-2 ~0 ~7 ~2 ~3 ~11 minecraft:air
+cmd setblock ~-2 ~2 ~6 minecraft:diamond_ore
+cmd setblock ~2 ~1 ~5 minecraft:gold_ore
+cmd setblock ~0 ~4 ~6 minecraft:iron_ore
+cmd setblock ~1 ~3 ~13 minecraft:emerald_ore
+cmd setblock ~-1 ~1 ~13 lacuna:ruby_ore
+cmd setblock ~4 ~2 ~8 minecraft:redstone_ore
+cmd setblock ~-1 ~0 ~8 minecraft:chest[facing=north]
+cmd setblock ~2 ~0 ~10 minecraft:spawner
+cmd summon minecraft:zombie ~0.5 ~0 ~9.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}
+cmd summon minecraft:cow ~-1.5 ~0 ~10.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[150f,0f]}
+cmd fill ~-1 ~1 ~4 ~1 ~3 ~4 lacuna:divine_glass
+cmd fill ~3 ~1 ~4 ~4 ~1 ~4 lacuna:divine_glass_pane
+look 0 8
+wait 60
+shot xray_front
+cmd tp @s ~-4 ~ ~1 -28 6
+wait 40
+shot xray_angle
+cmd tp @s ~4 ~ ~-1 0 8
+wait 5
+cmd tp @s ~3.5 ~ ~1 0 4
+wait 40
+shot xray_pane
+cmd tp @s ~-3.5 ~ ~-1 0 8
+cmd fill ~-1 ~1 ~4 ~1 ~3 ~4 minecraft:air
+cmd fill ~3 ~1 ~4 ~4 ~1 ~4 minecraft:air
+wait 40
+shot xray_noglass
+quit
