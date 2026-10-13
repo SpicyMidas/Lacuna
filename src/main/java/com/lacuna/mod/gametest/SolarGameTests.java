@@ -13,11 +13,11 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -31,17 +31,21 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 @GameTestHolder(Lacuna.MODID)
 @PrefixGameTestTemplate(false)
 public final class SolarGameTests {
+    /** The platform's stone floor is at relative y = 1 (the structure block sits one layer below the template). */
+    static final BlockPos FLOOR = new BlockPos(4, 1, 4);
+    static final BlockPos ON_FLOOR = FLOOR.above();
+
     private SolarGameTests() {}
 
     private static AABB around(GameTestHelper helper, double radius) {
-        return new AABB(helper.absolutePos(LacunaGameTests.CENTER)).inflate(radius);
+        return new AABB(helper.absolutePos(ON_FLOOR)).inflate(radius);
     }
 
     @GameTest(template = LacunaGameTests.PLATFORM)
     public static void sunsFuryThrowsLikeATrident(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
-        BlockPos at = helper.absolutePos(LacunaGameTests.CENTER);
+        BlockPos at = helper.absolutePos(ON_FLOOR);
         player.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0.0F, -10.0F);
         ItemStack stack = new ItemStack(ModItems.SUNS_FURY.get());
         int duration = stack.getUseDuration(player);
@@ -77,10 +81,11 @@ public final class SolarGameTests {
         level.setDayTime(start);
         long target = SolarMath.nextNoon(start);
 
-        Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(6, 1, 4));
-        float health = zombie.getHealth();
+        // a pig: unlike a zombie it does not burn by itself once the sun is up
+        Pig pig = helper.spawnWithNoFreeWill(EntityType.PIG, new BlockPos(6, 2, 4));
+        float health = pig.getHealth();
         SunsFuryEntity spear = new SunsFuryEntity(ModEntities.SUNS_FURY.get(), level);
-        BlockPos at = helper.absolutePos(LacunaGameTests.CENTER);
+        BlockPos at = helper.absolutePos(ON_FLOOR);
         spear.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
         spear.setDryRun(true);
         level.addFreshEntity(spear);
@@ -95,7 +100,7 @@ public final class SolarGameTests {
             }
             last[0] = time;
             if (!spear.isRemoved()) {
-                if (zombie.getHealth() < health || zombie.isOnFire()) {
+                if (pig.getHealth() < health || pig.isOnFire()) {
                     helper.fail("nothing may be harmed during the focus phase");
                 }
             } else if (struck[0] < 0) {
@@ -111,24 +116,26 @@ public final class SolarGameTests {
                     "the day count moves on to the next day");
             LacunaGameTests.check(helper, !level.getEntitiesOfClass(SolarRayEntity.class, around(helper, 4)).isEmpty(),
                     "the focus ends in a strike");
-            zombie.discard();
+            pig.discard();
         });
     }
 
     @GameTest(template = LacunaGameTests.PLATFORM, timeoutTicks = 100)
     public static void solarStrikeBurnsCreatures(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(6, 1, 4));
-        float health = zombie.getHealth();
+        Pig pig = helper.spawnWithNoFreeWill(EntityType.PIG, new BlockPos(6, 2, 4));
+        float health = pig.getHealth();
         SolarRayEntity ray = new SolarRayEntity(ModEntities.SOLAR_RAY.get(), level);
-        BlockPos at = helper.absolutePos(LacunaGameTests.CENTER);
+        BlockPos at = helper.absolutePos(ON_FLOOR);
         ray.setPos(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
         ray.setSparesBlocks(true);
+        BlockPos floorPos = helper.absolutePos(FLOOR);
+        BlockState floor = level.getBlockState(floorPos);
         level.addFreshEntity(ray);
         helper.succeedWhen(() -> {
-            LacunaGameTests.check(helper, zombie.getHealth() < health && zombie.isOnFire(), "the strike burns creatures in its radius");
-            LacunaGameTests.check(helper, helper.getBlockState(new BlockPos(4, 0, 4)).is(Blocks.STONE), "blocks were spared");
-            zombie.discard();
+            LacunaGameTests.check(helper, pig.getHealth() < health && pig.isOnFire(), "the strike burns creatures in its radius");
+            LacunaGameTests.check(helper, !floor.isAir() && level.getBlockState(floorPos) == floor, "blocks were spared");
+            pig.discard();
             ray.discard();
         });
     }

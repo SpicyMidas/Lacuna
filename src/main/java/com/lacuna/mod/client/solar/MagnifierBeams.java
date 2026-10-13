@@ -88,12 +88,12 @@ public final class MagnifierBeams {
 
         // a faint covering veil keeps the colour readable against a bright daytime sky
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
-        FxDraw.ribbon(pose, over, a, b, lensWidth * 1.2F, 0.3F, FxDraw.argb(0.16F * shimmer, rgb), FxDraw.argb(0.22F * shimmer, rgb),
+        FxDraw.ribbon(pose, over, a, b, lensWidth * 1.2F, 0.45F, FxDraw.argb(0.16F * shimmer, rgb), FxDraw.argb(0.22F * shimmer, rgb),
                 0.0F, len);
-        // the converging cone of gathered light, its body and the white-hot core
+        // the cone of gathered light, its body and the white-hot core
         VertexConsumer beam = ctx.buffers().getBuffer(FxRenderTypes.beam());
-        FxDraw.ribbon(pose, beam, a, b, lensWidth, 0.2F, FxDraw.argb(0.35F * shimmer, rgb), FxDraw.argb(0.55F * shimmer, rgb), 0.0F, len);
-        FxDraw.ribbon(pose, beam, a, b, lensWidth * 0.45F, 0.1F, FxDraw.argb(0.8F, rgb), FxDraw.argb(0.95F * shimmer, rgb), 0.0F, len);
+        FxDraw.ribbon(pose, beam, a, b, lensWidth, 0.3F, FxDraw.argb(0.35F * shimmer, rgb), FxDraw.argb(0.55F * shimmer, rgb), 0.0F, len);
+        FxDraw.ribbon(pose, beam, a, b, lensWidth * 0.45F, 0.12F, FxDraw.argb(0.8F, rgb), FxDraw.argb(0.95F * shimmer, rgb), 0.0F, len);
         FxDraw.ribbon(pose, beam, a, b, firstPerson ? 0.018F : 0.03F, 0.045F, FxDraw.argb(1.0F, hot), FxDraw.argb(1.0F, hot), 0.0F, len);
 
         VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
@@ -141,7 +141,9 @@ public final class MagnifierBeams {
                 if (length > 2.5 && player.tickCount % 2 == 0) {
                     double along = 2.0 + random.nextDouble() * (length - 2.0);
                     Vec3 on = trace.eye().add(trace.look().scale(along));
-                    level.addParticle(ParticleTypes.BUBBLE, on.x, on.y - 0.1, on.z, 0.0, 0.04, 0.0);
+                    if (on.distanceToSqr(cam) > 9.0) {
+                        level.addParticle(ParticleTypes.BUBBLE, on.x, on.y - 0.1, on.z, 0.0, 0.04, 0.0);
+                    }
                 }
                 continue;
             }
