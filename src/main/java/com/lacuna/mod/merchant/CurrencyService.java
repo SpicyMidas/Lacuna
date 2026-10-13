@@ -6,7 +6,7 @@ import net.minecraft.world.item.Items;
 
 /**
  * The single currency switch (spec M10/M11c): every Lacuna trade asks this service for its currency item. Until the
- * township coin exists it is the emerald; M11c installs the coin with {@link #install}.
+ * village coin is installed (M11c, see {@link #install}) it is the emerald.
  */
 public final class CurrencyService {
     private static volatile Supplier<Item> currency = () -> Items.EMERALD;

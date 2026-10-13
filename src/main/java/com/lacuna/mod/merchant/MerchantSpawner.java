@@ -77,7 +77,7 @@ public final class MerchantSpawner {
             LastMerchant merchant = ModEntities.LAST_MERCHANT.get().spawn(level, pos, MobSpawnType.EVENT);
             if (merchant != null) {
                 merchant.setDespawnDelay(Balance.MERCHANT_LIFETIME);
-                merchant.setPriceIndex(SafeRun.call("townships", () -> com.lacuna.mod.township.CaravanEffect.indexNear(level, pos), 1.0));
+                merchant.setPriceIndex(SafeRun.call(com.lacuna.mod.village.VillageService.FEATURE, () -> com.lacuna.mod.village.CaravanEffect.indexNear(level, pos), 1.0));
                 merchant.setWanderTarget(player.blockPosition());
                 merchant.restrictTo(player.blockPosition(), 16);
                 return merchant;

@@ -16,7 +16,7 @@ def build(g):
         ("wood", "Wood Families", "Famiglie di legno"),
         ("mobs", "Mobs", "Creature"),
         ("forgottenBiomes", "Forgotten Land Biomes", "Biomi della Terra Dimenticata"),
-        ("township", "Townships", "Borghi"),
+        ("villages", "Villages", "Villaggi"),
     ]:
         g.name(f"lacuna.configuration.{section}", en, it)
     g.name("lacuna.message.disabled", "This power is dormant on this world.", "Questo potere è sopito in questo mondo.")

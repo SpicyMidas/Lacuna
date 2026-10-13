@@ -55,21 +55,40 @@ class ReputationMathTest {
 
     @Test
     void lawsAreTwoDistinctAndDeterministic() {
-        boolean[] seen = new boolean[TownshipLaws.COUNT];
+        boolean[] seen = new boolean[VillageLaws.COUNT];
         for (long seed = -500; seed < 500; seed++) {
-            int[] laws = TownshipLaws.choose(seed);
+            int[] laws = VillageLaws.choose(seed);
             assertEquals(2, laws.length);
             assertNotEquals(laws[0], laws[1]);
             assertTrue(laws[0] >= 0 && laws[0] < 4 && laws[1] >= 0 && laws[1] < 4);
-            assertEquals(laws[0], TownshipLaws.choose(seed)[0]);
+            assertEquals(laws[0], VillageLaws.choose(seed)[0]);
             seen[laws[0]] = true;
             seen[laws[1]] = true;
         }
         for (boolean s : seen) {
             assertTrue(s);
         }
-        assertTrue(TownshipLaws.isDawn(24000 * 3 + 100));
-        assertTrue(TownshipLaws.gatesOpen(23500));
-        assertTrue(!TownshipLaws.gatesOpen(13000));
+        assertTrue(VillageLaws.isDawn(24000 * 3 + 100));
+        assertTrue(!VillageLaws.isDawn(6000));
+    }
+
+    @Test
+    void curfewRunsFromDuskToDawnForStrangersOnly() {
+        assertTrue(!VillageLaws.isCurfew(12999));
+        assertTrue(VillageLaws.isCurfew(13000));
+        assertTrue(VillageLaws.isCurfew(24000 * 5 + 18000));
+        assertTrue(VillageLaws.isCurfew(22999));
+        assertTrue(!VillageLaws.isCurfew(23000));
+        assertTrue(!VillageLaws.isCurfew(1000));
+        assertTrue(VillageLaws.isStranger(9));
+        assertTrue(!VillageLaws.isStranger(10));
+    }
+
+    @Test
+    void villageSeedsDependOnWorldAndStart() {
+        long a = VillageLaws.villageSeed(42L, 1234L);
+        assertEquals(a, VillageLaws.villageSeed(42L, 1234L));
+        assertNotEquals(a, VillageLaws.villageSeed(43L, 1234L));
+        assertNotEquals(a, VillageLaws.villageSeed(42L, 1235L));
     }
 }

@@ -654,7 +654,14 @@ def check_jigsaws(structures: Dict[str, str], pools: Dict[str, str], ids) -> Non
         for j in found:
             pool = j["pool"]
             if pool != "minecraft:empty":
-                if pool not in pools:
+                pns, ppath = rl(pool)
+                if pns == "minecraft" and pool not in pools:
+                    # vanilla pool (e.g. minecraft:village/plains/villagers for the civic buildings' villagers)
+                    if ppath not in VANILLA.get("worldgen/template_pool", []):
+                        err(f"structure {key}: vanilla jigsaw pool {pool} does not exist")
+                    elif ppath.endswith("/villagers") and j["target"] != "minecraft:bottom":
+                        err(f"structure {key}: vanilla villager pools only offer minecraft:bottom, not {j['target']}")
+                elif pool not in pools:
                     err(f"structure {key}: jigsaw pool {pool} does not exist")
                 elif j["target"] not in pool_names.get(pool, set()):
                     err(f"structure {key}: no piece in {pool} has a connector named {j['target']}")

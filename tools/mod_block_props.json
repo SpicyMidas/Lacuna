@@ -681,24 +681,6 @@
    "z"
   ]
  },
- "township_gate": {
-  "axis": [
-   "x",
-   "z"
-  ],
-  "open": [
-   "true",
-   "false"
-  ]
- },
- "township_ledger": {
-  "facing": [
-   "north",
-   "east",
-   "south",
-   "west"
-  ]
- },
  "updraft_spring": {
   "range": [
    "1",
@@ -741,6 +723,14 @@
    "38",
    "39",
    "40"
+  ]
+ },
+ "village_ledger": {
+  "facing": [
+   "north",
+   "east",
+   "south",
+   "west"
   ]
  }
 }

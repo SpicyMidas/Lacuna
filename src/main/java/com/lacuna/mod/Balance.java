@@ -246,12 +246,10 @@ public final class Balance {
     public static final int MERCHANT_LIFETIME = 72000;
     public static final float MERCHANT_FRAGMENT_CHANCE = 0.08F;
 
-    // ---------------------------------------------------------------- townships (M11)
+    // ---------------------------------------------------------------- village civic system (M11)
     public static final int REP_MIN = -100;
     public static final int REP_MAX = 100;
-    public static final int TOWNSHIP_RADIUS = 64;
-    public static final int TOWNSHIP_LEDGER_INTERVAL = 100;
-    public static final int TOWNSHIP_MAX_VILLAGERS = 40;
+    public static final int VILLAGE_MAX_VILLAGERS = 40;
     public static final int COUNCIL_PERIOD_DAYS = 7;
     public static final int GUILD_FEE = 20;
     public static final int GUILD_MIN_REP = 10;

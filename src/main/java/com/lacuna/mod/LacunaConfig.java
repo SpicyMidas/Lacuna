@@ -80,12 +80,13 @@ public final class LacunaConfig {
     public static final ModConfigSpec.IntValue MERCHANT_SPAWN_INTERVAL;
     public static final ModConfigSpec.BooleanValue SUNKEN_BELL_ENABLED;
 
-    // ---------------------------------------------------------------- townships
-    public static final ModConfigSpec.BooleanValue TOWNSHIP_ENABLED;
-    public static final ModConfigSpec.BooleanValue TOWNSHIP_LAWS;
-    public static final ModConfigSpec.BooleanValue TOWNSHIP_COUNCIL;
-    public static final ModConfigSpec.BooleanValue TOWNSHIP_CURRENCY;
-    public static final ModConfigSpec.BooleanValue TOWNSHIP_GUILDS;
+    // ---------------------------------------------------------------- villages (civic system in vanilla villages)
+    public static final ModConfigSpec.BooleanValue VILLAGES_ENABLED;
+    public static final ModConfigSpec.BooleanValue VILLAGES_LAWS;
+    public static final ModConfigSpec.BooleanValue VILLAGES_COUNCIL;
+    public static final ModConfigSpec.BooleanValue VILLAGES_CURRENCY;
+    public static final ModConfigSpec.BooleanValue VILLAGES_GUILDS;
+    public static final ModConfigSpec.BooleanValue VILLAGES_CIVIC_BUILDINGS;
 
     public static final ModConfigSpec SPEC;
 
@@ -175,12 +176,15 @@ public final class LacunaConfig {
         SUNKEN_BELL_ENABLED = B.define("sunkenBell", true);
         B.pop();
 
-        B.push("township");
-        TOWNSHIP_ENABLED = B.define("enabled", true);
-        TOWNSHIP_LAWS = B.define("laws", true);
-        TOWNSHIP_COUNCIL = B.define("council", true);
-        TOWNSHIP_CURRENCY = B.define("currency", true);
-        TOWNSHIP_GUILDS = B.define("guilds", true);
+        B.push("villages");
+        VILLAGES_ENABLED = B.comment("Civic system in vanilla villages: reputation, laws, council, coins, guilds, schools.")
+                .define("enabled", true);
+        VILLAGES_LAWS = B.define("laws", true);
+        VILLAGES_COUNCIL = B.define("council", true);
+        VILLAGES_CURRENCY = B.define("currency", true);
+        VILLAGES_GUILDS = B.define("guilds", true);
+        VILLAGES_CIVIC_BUILDINGS = B.comment("Add the village hall, mint, guild hall and schoolhouse to newly generated vanilla villages.")
+                .define("civicBuildings", true);
         B.pop();
 
         SPEC = B.build();

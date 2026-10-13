@@ -54,11 +54,9 @@ def advancements(g):
         en=("A Piece of the Sun", "Throw Sun's Fury."), it=("Un pezzo di sole", "Scaglia la Furia del Sole."))
     adv(g, "link_pearl", "lacuna:fractured_pearl", code(), "root",
         en=("Two Halves", "Split a Fractured Pearl into its linked shards."), it=("Due metà", "Dividi una perla fratturata nelle sue schegge collegate."))
-    adv(g, "find_township", "lacuna:township_ledger",
-        {"found": {"trigger": "minecraft:location", "conditions": {"player": [
-            {"condition": "minecraft:entity_properties", "entity": "this",
-             "predicate": {"location": {"structures": "#lacuna:townships"}}}]}}}, "root",
-        en=("Civilization", "Walk into a Township."), it=("Civiltà", "Entra in un borgo."))
+    adv(g, "village_friend", "lacuna:village_ledger", code(), "root",
+        en=("A Friend of the Village", "Become Friendly with a village: trade, defend it, ring its bell at dawn."),
+        it=("Amico del villaggio", "Diventa Amichevole con un villaggio: commercia, difendilo, suona la sua campana all'alba."))
 
 
 TIPS = {
@@ -73,14 +71,15 @@ TIPS = {
     "silk_dust": ("Right click a surface to leave a fading glow.", "Clic destro su una superficie per lasciare un bagliore che svanisce."),
     "clockwork_gear": ("Still turning, a little.", "Gira ancora, un poco."),
     "clockwork_decoy": ("Throw it: monsters chase the mannequin for 15 s.", "Lancialo: i mostri inseguono il manichino per 15 s."),
-    "township_coin": ("Minted from what the land gave up.", "Coniata da ciò che la terra ha ceduto."),
+    "village_coin": ("Minted from what the land gave up.", "Coniata da ciò che la terra ha ceduto."),
     "updraft_spring": ("Lifts whatever stands above it.", "Solleva qualunque cosa vi stia sopra."),
     "spore_mushroom": ("Makes nearby creatures glow.", "Fa brillare le creature vicine."),
     "obelisk_inscription": ("The names move when you look away.", "I nomi si muovono quando distogli lo sguardo."),
     "sunken_bell": ("Ring it to hear the ores answer.", "Suonala per sentire rispondere i minerali."),
-    "township_ledger": ("Right click: township standing, laws and policy.", "Clic destro: posizione nel borgo, leggi e politica."),
+    "village_ledger": ("Right click: your standing, the laws and the policy of the village. Placed outside villages, it founds one.",
+                       "Clic destro: posizione, leggi e politica del villaggio. Piazzato fuori dai villaggi, ne fonda uno."),
     "guild_board": ("Join a guild or take a contract.", "Iscriviti a una gilda o prendi un contratto."),
-    "judge_bench": ("Pay fines with township coins.", "Paga le multe con le monete del borgo."),
+    "judge_bench": ("Pay fines with village coins.", "Paga le multe con le monete del villaggio."),
     "mint_press": ("A Coiner's workplace.", "Il posto di lavoro del coniatore."),
     "school_desk": ("Villagers learn faster near it.", "Vicino ad esso i villici imparano più in fretta."),
 }

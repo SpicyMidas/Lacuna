@@ -1,0 +1,29 @@
+{
+  "values": [
+    "lacuna:village_ledger",
+    "lacuna:council_table",
+    "lacuna:judge_bench",
+    "lacuna:guild_board",
+    "lacuna:school_desk",
+    "lacuna:mint_press",
+    "#minecraft:doors",
+    "#minecraft:beds",
+    "minecraft:bell",
+    "minecraft:blast_furnace",
+    "minecraft:smoker",
+    "minecraft:cartography_table",
+    "minecraft:brewing_stand",
+    "minecraft:composter",
+    "minecraft:barrel",
+    "minecraft:fletching_table",
+    "minecraft:cauldron",
+    "minecraft:water_cauldron",
+    "minecraft:lava_cauldron",
+    "minecraft:powder_snow_cauldron",
+    "minecraft:lectern",
+    "minecraft:stonecutter",
+    "minecraft:loom",
+    "minecraft:smithing_table",
+    "minecraft:grindstone"
+  ]
+}

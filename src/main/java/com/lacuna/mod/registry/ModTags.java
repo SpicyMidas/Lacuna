@@ -17,7 +17,7 @@ public final class ModTags {
         public static final TagKey<Block> RUIN_BLOCKS = tag("ruin_blocks");
         public static final TagKey<Block> SOLAR_IMMUNE = tag("solar_immune");
         public static final TagKey<Block> NOT_MELTABLE = tag("not_meltable");
-        public static final TagKey<Block> TOWNSHIP_PROTECTED = tag("township_protected");
+        public static final TagKey<Block> VILLAGE_PROTECTED = tag("village_protected");
         public static final TagKey<Block> C_ORES = TagKey.create(Registries.BLOCK,
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c", "ores"));
 

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "lacuna:block/village_ledger",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/village_ledger"
+    },
+    "facing=south": {
+      "model": "lacuna:block/village_ledger",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "lacuna:block/village_ledger",
+      "y": 270
+    }
+  }
+}

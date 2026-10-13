@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-/** Township villager professions (spec 18.3/18.4) and their job-site POIs. */
+/** Village civic professions (spec 18.3/18.4: Coiner, Magistrate, Guildmaster) and their job-site POIs. */
 public final class ModVillagers {
     public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(Registries.POINT_OF_INTEREST_TYPE, Lacuna.MODID);
     public static final DeferredRegister<VillagerProfession> PROFESSIONS = DeferredRegister.create(Registries.VILLAGER_PROFESSION, Lacuna.MODID);

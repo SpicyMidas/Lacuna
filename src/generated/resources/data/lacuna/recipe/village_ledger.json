@@ -1,0 +1,19 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:lectern"
+    },
+    {
+      "item": "minecraft:writable_book"
+    },
+    {
+      "item": "minecraft:emerald"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:village_ledger"
+  },
+  "type": "minecraft:crafting_shapeless"
+}

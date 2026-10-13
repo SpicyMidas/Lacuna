@@ -3,8 +3,8 @@ package com.lacuna.mod.logic;
 import java.util.Random;
 
 /**
- * Township council (spec 18.3), pure and unit-tested: every 7 days one policy for 7 days, weighted by the average
- * reputation of nearby players over the week (higher → Free Market/Festival, lower → Austerity/Martial Law).
+ * Village council (spec 18.3), pure and unit-tested: every 7 days one policy for 7 days, weighted by the average
+ * reputation of players in the village over the week (higher → Free Market/Festival, lower → Austerity/Martial Law).
  * Also the coin-value rules.
  */
 public final class CouncilMath {

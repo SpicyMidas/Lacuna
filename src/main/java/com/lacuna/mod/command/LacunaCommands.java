@@ -2,8 +2,9 @@ package com.lacuna.mod.command;
 
 import com.lacuna.mod.banish.BanishmentManager;
 import com.lacuna.mod.mob.ScentTracker;
-import com.lacuna.mod.township.Township;
-import com.lacuna.mod.township.TownshipService;
+import com.lacuna.mod.village.VillageCommand;
+import com.lacuna.mod.village.VillageRecord;
+import com.lacuna.mod.village.VillageService;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -52,7 +53,7 @@ public final class LacunaCommands {
                                 .then(Commands.argument("value", IntegerArgumentType.integer(-100, 100))
                                         .executes(ctx -> repSet(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"),
                                                 IntegerArgumentType.getInteger(ctx, "value")))))))
-                .then(Commands.literal("township").then(Commands.literal("info").executes(ctx -> townshipInfo(ctx.getSource()))))
+                .then(VillageCommand.build())
                 .then(Commands.literal("scent").executes(ctx -> scent(ctx.getSource()))));
     }
 
@@ -130,48 +131,30 @@ public final class LacunaCommands {
         return trails.size();
     }
 
-    private static java.util.Optional<Township> townshipHere(CommandSourceStack source) {
-        return TownshipService.at(source.getLevel(), BlockPos.containing(source.getPosition()));
+    private static java.util.Optional<VillageRecord> villageHere(CommandSourceStack source) {
+        return VillageService.at(source.getLevel(), BlockPos.containing(source.getPosition()));
     }
 
     private static int repGet(CommandSourceStack source, ServerPlayer player) {
-        var t = TownshipService.at(source.getLevel(), player.blockPosition()).or(() -> townshipHere(source));
+        var t = VillageService.at(source.getLevel(), player.blockPosition()).or(() -> villageHere(source));
         if (t.isEmpty()) {
-            source.sendFailure(Component.literal("No township here."));
+            source.sendFailure(Component.literal("No village here."));
             return 0;
         }
         int rep = t.get().reputation(player.getUUID());
         source.sendSuccess(() -> Component.literal(player.getGameProfile().getName() + ": " + rep + " ("
-                + com.lacuna.mod.logic.ReputationMath.tier(rep) + ") in township " + t.get().id.toString().substring(0, 8)), false);
+                + com.lacuna.mod.logic.ReputationMath.tier(rep) + ") in village " + t.get().shortId()), false);
         return rep;
     }
 
     private static int repSet(CommandSourceStack source, ServerPlayer player, int value) {
-        var t = TownshipService.at(source.getLevel(), player.blockPosition()).or(() -> townshipHere(source));
+        var t = VillageService.at(source.getLevel(), player.blockPosition()).or(() -> villageHere(source));
         if (t.isEmpty()) {
-            source.sendFailure(Component.literal("No township here."));
+            source.sendFailure(Component.literal("No village here."));
             return 0;
         }
-        TownshipService.set(source.getLevel(), t.get(), player.getUUID(), value);
+        VillageService.set(source.getLevel(), t.get(), player.getUUID(), value);
         source.sendSuccess(() -> Component.literal("Reputation of " + player.getGameProfile().getName() + " set to " + value), true);
         return 1;
     }
-
-    private static int townshipInfo(CommandSourceStack source) {
-        var t = townshipHere(source);
-        if (t.isEmpty()) {
-            source.sendFailure(Component.literal("No township here (stand within 64 blocks of a loaded ledger)."));
-            return 0;
-        }
-        ServerPlayer player = source.getPlayer();
-        if (player != null) {
-            TownshipService.describe(source.getLevel(), t.get(), player);
-        } else {
-            Township tw = t.get();
-            source.sendSuccess(() -> Component.literal("Township " + tw.id + " at " + tw.center.toShortString() + ", laws " + tw.laws[0]
-                    + "/" + tw.laws[1] + ", policy " + tw.policy + ", coin " + tw.coinValue + ", price index " + tw.priceIndex), false);
-        }
-        return 1;
-    }
-
 }

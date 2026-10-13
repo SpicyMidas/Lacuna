@@ -16,7 +16,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
  * The single "Lacuna" creative tab (spec M12: curated order): relics first, then weapons and armour, materials,
- * township and mob items, then every block in registration order. Anything not listed is appended at the end, so a
+ * village and mob items, then every block in registration order. Anything not listed is appended at the end, so a
  * new registration can never be missing from the tab.
  */
 public final class ModCreativeTabs {
@@ -36,8 +36,8 @@ public final class ModCreativeTabs {
             ModItems.RUBY, ModItems.RAW_RUBY, ModItems.DIVINE_GLASS_SHARD, ModItems.RAW_UMBRAL_STEEL, ModItems.UMBRAL_STEEL_INGOT,
             ModItems.UMBRAL_STEEL_NUGGET, ModItems.ZENITHITE_SHARD, ModItems.STARLACE_CLOTH, ModItems.SOLAR_FLARE_FRAGMENT, ModItems.SOLAR_FLARE,
             ModItems.CHRONAL_SHARD, ModItems.ECHO_FRAGMENT, ModItems.EMBER, ModItems.CRYSTAL_WILLOW_SHARD, ModItems.SILK_DUST, ModItems.CLOCKWORK_GEAR,
-            // townships and creatures
-            ModItems.TOWNSHIP_COIN, ModItems.GUILD_CONTRACT, ModItems.REPAIR_KIT, ModItems.CLOCKWORK_DECOY,
+            // villages and creatures
+            ModItems.VILLAGE_COIN, ModBlocks.VILLAGE_LEDGER, ModItems.GUILD_CONTRACT, ModItems.REPAIR_KIT, ModItems.CLOCKWORK_DECOY,
             ModItems.LANTERN_MOTH_SPAWN_EGG, ModItems.GLOOMCRAWLER_SPAWN_EGG, ModItems.CLOCKWORK_HOUND_SPAWN_EGG, ModItems.LAST_MERCHANT_SPAWN_EGG);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> LACUNA = TABS.register("lacuna", () -> CreativeModeTab.builder()

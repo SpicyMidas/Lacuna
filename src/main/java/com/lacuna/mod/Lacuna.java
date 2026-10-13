@@ -51,9 +51,9 @@ public final class Lacuna {
         modBus.addListener(ModEntities::onSpawnPlacements);
         modBus.addListener(LacunaNetwork::register);
         modBus.addListener((FMLCommonSetupEvent e) -> e.enqueueWork(WoodSetup::setup));
-        // M11c: the township coin replaces the emerald placeholder while townships and their currency are enabled
-        com.lacuna.mod.merchant.CurrencyService.install(() -> LacunaConfig.get(LacunaConfig.TOWNSHIP_ENABLED)
-                && LacunaConfig.get(LacunaConfig.TOWNSHIP_CURRENCY) ? ModItems.TOWNSHIP_COIN.get() : net.minecraft.world.item.Items.EMERALD);
+        // M11c: the village coin replaces the emerald placeholder while the village civic system and its currency are enabled
+        com.lacuna.mod.merchant.CurrencyService.install(() -> LacunaConfig.get(LacunaConfig.VILLAGES_ENABLED)
+                && LacunaConfig.get(LacunaConfig.VILLAGES_CURRENCY) ? ModItems.VILLAGE_COIN.get() : net.minecraft.world.item.Items.EMERALD);
 
         // M6 utility items
         NeoForge.EVENT_BUS.addListener((MobEffectEvent.Added e) -> {
@@ -68,7 +68,7 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(DeathMemory::onServerStopped);
         GearEvents.register(NeoForge.EVENT_BUS);
         ForgottenBiomeEvents.register(NeoForge.EVENT_BUS);
-        com.lacuna.mod.township.TownshipEvents.register(NeoForge.EVENT_BUS);
+        com.lacuna.mod.village.VillageEvents.register(NeoForge.EVENT_BUS);
         NeoForge.EVENT_BUS.addListener(com.lacuna.mod.merchant.MerchantSpawner::onServerTick);
         // M9 volatile scent trails
         NeoForge.EVENT_BUS.addListener(ScentTracker::onServerTick);
@@ -96,6 +96,6 @@ public final class Lacuna {
         OrreryBlock.clearVolatile();
         SunkenBellBlock.clearVolatile();
         com.lacuna.mod.structure.LabyrinthHandler.clearVolatile();
-        com.lacuna.mod.township.TownshipEvents.clearVolatile();
+        com.lacuna.mod.village.VillageEvents.clearVolatile();
     }
 }
