@@ -1,0 +1,65 @@
+# Eclipser dash: third-person (front) shots mid-dash of the trail, slashes and afterimages, NoAI zombies cut on
+# the path, then a first-person dash and the Shadow Walk overlay that starts once the dash ends.
+world lacuna_eclipse flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd time set 6000
+cmd clear @s
+cmd give @s lacuna:eclipser[lacuna:eclipse_charge={charge:100,last_hit:0L}]
+select 0
+look -90 0
+cmd summon minecraft:husk ~6 ~ ~0.3 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f]}
+cmd summon minecraft:husk ~10 ~ ~-0.6 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f]}
+camera front
+wait 40
+use on
+use off
+shot eclipse_front_t2
+shot eclipse_front_t3
+shot eclipse_front_t4
+shot eclipse_front_t5
+shot eclipse_front_t6
+camera back
+look 0 25
+shot eclipse_side_fade
+wait 2
+shot eclipse_side_fade2
+camera first
+wait 6
+shot eclipse_shadow_walk_first
+wait 140
+cmd gamemode creative
+cmd tp @s ~-14 ~ ~
+cmd summon minecraft:husk ~7 ~ ~0.2 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f]}
+cmd clear @s
+cmd give @s lacuna:eclipser[lacuna:eclipse_charge={charge:100,last_hit:0L}]
+look -90 0
+wait 300
+camera back
+wait 10
+use on
+use off
+shot eclipse_back_t2
+shot eclipse_back_t3
+shot eclipse_back_t4
+wait 4
+camera first
+wait 30
+cmd tp @s ~-12 ~ ~
+cmd summon minecraft:husk ~6 ~ ~0.4 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f]}
+cmd clear @s
+cmd give @s lacuna:eclipser[lacuna:eclipse_charge={charge:100,last_hit:0L}]
+wait 400
+look -90 0
+use on
+use off
+shot eclipse_first_t2
+shot eclipse_first_t3
+shot eclipse_first_t4
+wait 2
+look 90 10
+shot eclipse_first_lookback
+wait 20
+quit

@@ -200,3 +200,63 @@ def paint():
     save(solar_flare(), "item/solar_flare")
     save(suns_fury(), "item/suns_fury")
     save(shadow_walk_icon(), "mob_effect/shadow_walk")
+    eclipse_fx_masks()
+
+
+def _smooth(e0: float, e1: float, x: float) -> float:
+    t = max(0.0, min(1.0, (x - e0) / (e1 - e0)))
+    return t * t * (3.0 - 2.0 * t)
+
+
+def eclipse_fx_masks():
+    """Eclipser dash masks (white RGB, alpha carries the shape; tinted at draw time by the client effects).
+
+    eclipse_slash: sword-trail cross-section, u across (0 = trailing side, 1 = cutting edge), v along the arc;
+    soft trailing falloff, hard bright cutting edge, fine streaks running along the stroke.
+    eclipse_streak: symmetric streaky ribbon core for the dash trail.
+    shadow_rim: screen-edge band (thin rim hugging the screen border) for the Shadow Walk overlay.
+    shadow_vignette: deep screen-edge darkness for the Shadow Walk overlay (opaque at the border).
+    """
+    r = rng("eclipse_fx_masks")
+    streaks = [0.62 + 0.38 * r.random() for _ in range(64)]
+    for i in range(1, 63):  # soften neighbouring columns a little so streaks read as fibres, not noise
+        streaks[i] = (streaks[i - 1] + 2 * streaks[i] + streaks[i + 1]) / 4.0
+    img = new(64, 64)
+    px = img.load()
+    for y in range(64):
+        fade = 0.85 + 0.15 * math.sin((y + 0.5) / 64.0 * math.pi)
+        for x in range(64):
+            u = (x + 0.5) / 64.0
+            body = _smooth(0.0, 0.5, u) * (1.0 - _smooth(0.93, 1.0, u))
+            a = body * (0.82 + 0.18 * streaks[x]) * fade
+            px[x, y] = (255, 255, 255, int(round(255 * max(0.0, min(1.0, a)))))
+    save(img, "effect/eclipse_slash")
+    img = new(64, 64)
+    px = img.load()
+    for y in range(64):
+        for x in range(64):
+            d = abs((x + 0.5) / 32.0 - 1.0)
+            a = max(0.0, 1.0 - d * d) ** 1.2 * (0.75 + 0.25 * streaks[(x * 7) % 64])
+            px[x, y] = (255, 255, 255, int(round(255 * max(0.0, min(1.0, a)))))
+    save(img, "effect/eclipse_streak")
+    img = new(64, 64)
+    px = img.load()
+    for y in range(64):
+        for x in range(64):
+            dx = abs((x + 0.5) / 32.0 - 1.0)
+            dy = abs((y + 0.5) / 32.0 - 1.0)
+            # rounded-rectangle distance to the border: 1 at the edge, falling off inwards
+            d = (dx ** 6 + dy ** 6) ** (1.0 / 6.0)
+            a = _smooth(0.84, 1.0, d) ** 1.6
+            px[x, y] = (255, 255, 255, int(round(255 * a)))
+    save(img, "effect/shadow_rim")
+    img = new(64, 64)
+    px = img.load()
+    for y in range(64):
+        for x in range(64):
+            dx = abs((x + 0.5) / 32.0 - 1.0)
+            dy = abs((y + 0.5) / 32.0 - 1.0)
+            d = (dx ** 4 + dy ** 4) ** 0.25
+            a = _smooth(0.3, 1.0, d) ** 1.1
+            px[x, y] = (255, 255, 255, int(round(255 * a)))
+    save(img, "effect/shadow_vignette")

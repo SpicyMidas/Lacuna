@@ -32,5 +32,6 @@ public final class FxHandlers {
         RiteFx.register();
         com.lacuna.mod.client.gear.GravemawFx.register();
         com.lacuna.mod.client.solar.SolarFx.register();
+        com.lacuna.mod.client.eclipse.EclipseFx.register();
     }
 }

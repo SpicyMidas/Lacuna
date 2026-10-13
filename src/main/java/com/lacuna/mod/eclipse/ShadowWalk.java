@@ -2,8 +2,11 @@ package com.lacuna.mod.eclipse;
 
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.LacunaConfig;
+import com.lacuna.mod.fx.LacunaFx;
+import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModAttachments;
 import com.lacuna.mod.registry.ModEffects;
+import com.lacuna.mod.registry.ModParticles;
 import com.lacuna.mod.util.SafeRun;
 import com.lacuna.mod.util.SafeSpot;
 import com.lacuna.mod.util.Teleporter;
@@ -12,6 +15,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.GameType;
@@ -26,12 +31,14 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
  * Shadow Walk (spec 11.2): the player is temporarily switched to SPECTATOR and switched back when the effect ends.
+ * It starts only once the Eclipser dash has finished moving the player ({@link EclipseDash}), never during it.
  * The previous mode lives in a serializable attachment, so it is restored on expiry, removal (milk), death,
  * logout/login, dimension change and server stop. An operator who changed the game mode meanwhile always wins.
  * After restoring, a player stuck in blocks is moved to the nearest safe spot within 16 blocks, else the dash origin.
  */
 public final class ShadowWalk {
     public static final String FEATURE = "shadow_walk";
+    private static final String FX_FEATURE = "shadow_walk_fx";
 
     private ShadowWalk() {}
 
@@ -89,6 +96,35 @@ public final class ShadowWalk {
             BlockPos target = SafeSpot.findNear(level, here).orElseGet(() -> SafeSpot.find(level, BlockPos.of(state.origin()), false));
             Teleporter.teleport(player, level, Vec3.atBottomCenterOf(target), player.getYRot(), player.getXRot());
         }
+        endBurst(player);
+    }
+
+    /** The shadows scatter when Shadow Walk ends (purely cosmetic, never allowed to break the restore). */
+    private static void endBurst(ServerPlayer player) {
+        SafeRun.run(FX_FEATURE, () -> {
+            ServerLevel level = player.serverLevel();
+            Vec3 pos = player.position();
+            LacunaFx.send(level, pos, FxPayload.at("shadow_walk_end", pos).withEntity(player.getId()));
+            level.playSound(null, pos.x, pos.y + 1.0, pos.z, SoundEvents.ILLUSIONER_MIRROR_MOVE, SoundSource.PLAYERS, 0.8F, 0.7F);
+            level.playSound(null, pos.x, pos.y + 1.0, pos.z, SoundEvents.SOUL_ESCAPE, SoundSource.PLAYERS, 1.0F, 0.6F);
+        });
+    }
+
+    /** Soft shadow motes drift around a shadow walker; sent to everyone but the walker (it would fog their view). */
+    private static void motes(ServerPlayer player) {
+        ServerLevel level = player.serverLevel();
+        if (level.getGameTime() % 2 != 0) {
+            return;
+        }
+        Vec3 c = player.position().add(0, player.getBbHeight() * 0.5, 0);
+        for (ServerPlayer other : level.players()) {
+            if (other != player && other.distanceToSqr(c) < 48 * 48) {
+                level.sendParticles(other, ModParticles.SHADOW_MOTE.get(), false, c.x, c.y, c.z, 2, 0.35, 0.6, 0.35, 0.01);
+                if (level.random.nextInt(3) == 0) {
+                    level.sendParticles(other, ModParticles.CRIMSON_SPARK.get(), false, c.x, c.y, c.z, 1, 0.3, 0.5, 0.3, 0.02);
+                }
+            }
+        }
     }
 
     private static void restoreQuietly(ServerPlayer player) {
@@ -113,6 +149,8 @@ public final class ShadowWalk {
         ShadowWalkState state = player.getData(ModAttachments.SHADOW_WALK);
         if (!state.active() || player.serverLevel().getGameTime() >= state.until() || !enabled()) {
             restoreQuietly(player);
+        } else if (!SafeRun.isDisabled(FX_FEATURE)) {
+            SafeRun.run(FX_FEATURE, () -> motes(player));
         }
     }
 
