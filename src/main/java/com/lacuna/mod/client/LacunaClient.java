@@ -20,6 +20,7 @@ public final class LacunaClient {
         ClientSetup.register(modBus);
 
         NeoForge.EVENT_BUS.addListener(DivineSight::onClientTick);
+        com.lacuna.mod.client.sight.DivineXray.register(NeoForge.EVENT_BUS);
         NeoForge.EVENT_BUS.addListener(OutlineRenderer::onRenderLevel);
         NeoForge.EVENT_BUS.addListener(OutlineRenderer::onLogout);
         NeoForge.EVENT_BUS.addListener(MagnifierInput::onMovementInput);

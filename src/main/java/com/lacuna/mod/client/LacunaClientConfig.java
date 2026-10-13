@@ -29,6 +29,25 @@ public final class LacunaClientConfig {
         B.pop();
     }
 
+    // ---------------------------------------------------------------- divine sight (Divine Glass X-ray window)
+    public enum SightMode { XRAY, OUTLINE }
+
+    public static final ModConfigSpec.EnumValue<SightMode> SIGHT_MODE;
+    public static final ModConfigSpec.IntValue XRAY_RANGE;
+    public static final ModConfigSpec.IntValue XRAY_MAX_BLOCKS;
+
+    static {
+        B.push("divineSight");
+        SIGHT_MODE = B.comment("XRAY: Divine Glass becomes a window onto a void where only ores, containers, spawners and mobs float.",
+                        "OUTLINE: the classic coloured boxes drawn through walls (also the automatic fallback).")
+                .defineEnum("mode", SightMode.XRAY);
+        XRAY_RANGE = B.comment("X-ray window: how far from the camera (blocks) targets are searched.")
+                .defineInRange("xrayRange", 28, 8, 48);
+        XRAY_MAX_BLOCKS = B.comment("X-ray window: maximum target blocks drawn (nearest first).")
+                .defineInRange("xrayMaxBlocks", 1024, 32, 4096);
+        B.pop();
+    }
+
     public static final ModConfigSpec SPEC = B.build();
 
     private LacunaClientConfig() {}
