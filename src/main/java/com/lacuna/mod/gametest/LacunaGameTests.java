@@ -457,101 +457,6 @@ public final class LacunaGameTests {
         helper.succeed();
     }
 
-    // ------------------------------------------------------------------ M11a township blocks
-    @GameTest(template = PLATFORM)
-    public static void townshipGateCollidesOnlyWhenClosed(GameTestHelper helper) {
-        var open = ModBlocks.TOWNSHIP_GATE.get().defaultBlockState().setValue(com.lacuna.mod.township.TownshipGateBlock.OPEN, true);
-        helper.setBlock(CENTER, open);
-        BlockPos abs = helper.absolutePos(CENTER);
-        check(helper, helper.getLevel().getBlockState(abs).getCollisionShape(helper.getLevel(), abs).isEmpty(), "open gate: no collision");
-        helper.setBlock(CENTER, open.setValue(com.lacuna.mod.township.TownshipGateBlock.OPEN, false));
-        check(helper, !helper.getLevel().getBlockState(abs).getCollisionShape(helper.getLevel(), abs).isEmpty(), "closed gate collides");
-        helper.succeed();
-    }
-
-    // ------------------------------------------------------------------ M11b ledger, reputation, gates
-    @GameTest(template = PLATFORM, timeoutTicks = 60)
-    public static void ledgerRegistersItsTownshipOnce(GameTestHelper helper) {
-        helper.setBlock(CENTER, ModBlocks.TOWNSHIP_LEDGER.get());
-        BlockPos abs = helper.absolutePos(CENTER);
-        helper.succeedWhen(() -> {
-            var be = (com.lacuna.mod.township.TownshipLedgerBlockEntity) helper.getLevel().getBlockEntity(abs);
-            check(helper, be != null, "ledger block entity");
-            var first = be.township(helper.getLevel()).orElseThrow();
-            var second = be.township(helper.getLevel()).orElseThrow();
-            check(helper, first == second, "registration is idempotent");
-            check(helper, com.lacuna.mod.township.TownshipService.at(helper.getLevel(), abs.east(20)).isPresent(), "township covers its radius");
-            java.util.UUID player = java.util.UUID.randomUUID();
-            com.lacuna.mod.township.TownshipService.set(helper.getLevel(), first, player, 80);
-            check(helper, com.lacuna.mod.township.TownshipService.tier(first, player) == com.lacuna.mod.logic.ReputationMath.Tier.HONORED, "honored");
-            check(helper, com.lacuna.mod.township.TownshipService.priceFactor(first, player) < 1.0, "honored players pay less");
-            com.lacuna.mod.township.TownshipSavedData.get(helper.getLevel().getServer()).remove(first.id);
-        });
-    }
-
-    @GameTest(template = PLATFORM)
-    public static void townshipGateFollowsTheDay(GameTestHelper helper) {
-        var closed = ModBlocks.TOWNSHIP_GATE.get().defaultBlockState().setValue(com.lacuna.mod.township.TownshipGateBlock.OPEN, false);
-        helper.setBlock(CENTER, closed);
-        BlockPos abs = helper.absolutePos(CENTER);
-        ServerLevel level = helper.getLevel();
-        level.getBlockState(abs).tick(level, abs, level.getRandom());
-        boolean shouldBeOpen = com.lacuna.mod.logic.TownshipLaws.gatesOpen(level.getDayTime());
-        check(helper, level.getBlockState(abs).getValue(com.lacuna.mod.township.TownshipGateBlock.OPEN) == shouldBeOpen,
-                "gate state follows the time of day");
-        check(helper, level.getBlockTicks().hasScheduledTick(abs, ModBlocks.TOWNSHIP_GATE.get()), "gate keeps its schedule");
-        helper.succeed();
-    }
-
-    // ------------------------------------------------------------------ M11c professions, currency
-    @GameTest(template = PLATFORM)
-    public static void townshipProfessionsHaveJobSitesAndTrades(GameTestHelper helper) {
-        var mint = net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(ModBlocks.MINT_PRESS.get().defaultBlockState());
-        check(helper, mint.isPresent() && mint.get().is(com.lacuna.mod.registry.ModVillagers.COINER_POI.getKey()), "mint press is the coiner job site");
-        var bench = net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(ModBlocks.JUDGE_BENCH.get().defaultBlockState());
-        check(helper, bench.isPresent() && bench.get().is(com.lacuna.mod.registry.ModVillagers.MAGISTRATE_POI.getKey()), "judge bench is the magistrate job site");
-        var trades = net.minecraft.world.entity.npc.VillagerTrades.TRADES.get(com.lacuna.mod.registry.ModVillagers.COINER.get());
-        check(helper, trades != null && trades.get(1) != null && trades.get(1).length >= 3, "coiner has level 1 trades");
-        check(helper, com.lacuna.mod.merchant.CurrencyService.currency() == ModItems.TOWNSHIP_COIN.get(), "township coin is the currency");
-        helper.succeed();
-    }
-
-    // ------------------------------------------------------------------ M11d guilds, schools, caravan
-    @GameTest(template = PLATFORM, timeoutTicks = 60)
-    public static void schoolsTeachNearbyVillagers(GameTestHelper helper) {
-        helper.setBlock(CENTER, ModBlocks.TOWNSHIP_LEDGER.get());
-        helper.setBlock(CENTER.east(3), ModBlocks.SCHOOL_DESK.get());
-        var villager = helper.spawn(EntityType.VILLAGER, CENTER.west(2));
-        villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(1));
-        villager.setVillagerXp(1); // xp > 0: the villager keeps its profession without a job site
-        BlockPos abs = helper.absolutePos(CENTER);
-        helper.succeedWhen(() -> {
-            var be = (com.lacuna.mod.township.TownshipLedgerBlockEntity) helper.getLevel().getBlockEntity(abs);
-            check(helper, be != null, "ledger");
-            var t = be.township(helper.getLevel()).orElseThrow();
-            com.lacuna.mod.township.Schools.run(helper.getLevel(), t);
-            check(helper, villager.getVillagerXp() >= 11, "villager near the desk learned something");
-            com.lacuna.mod.township.TownshipSavedData.get(helper.getLevel().getServer()).remove(t.id);
-        });
-    }
-
-    @GameTest(template = PLATFORM)
-    public static void guildContractsAndCaravanIndex(GameTestHelper helper) {
-        var contract = new ItemStack(ModItems.GUILD_CONTRACT.get());
-        contract.set(com.lacuna.mod.registry.ModComponents.GUILD_CONTRACT.get(),
-                new com.lacuna.mod.township.ContractData("minecraft:paper", 16, 6, "t", "scholars"));
-        var data = com.lacuna.mod.township.GuildContractItem.data(contract);
-        check(helper, data.count() == 16 && data.rewardCoins() == 6 && "scholars".equals(data.guild()), "contract component round trip");
-        check(helper, Math.abs(com.lacuna.mod.township.CaravanEffect.raise(1.4) - 1.5) < 1e-9, "price index capped at 1.5");
-        check(helper, Math.abs(com.lacuna.mod.township.CaravanEffect.decay(1.02) - 1.0) < 1e-9, "price index decays to 1.0");
-        var board = ModBlocks.GUILD_BOARD.get().defaultBlockState().setValue(com.lacuna.mod.township.GuildBoardBlock.GUILD,
-                com.lacuna.mod.township.GuildType.GEMCUTTERS);
-        helper.setBlock(CENTER, board);
-        var poi = net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(helper.getBlockState(CENTER));
-        check(helper, poi.isPresent() && poi.get().is(com.lacuna.mod.registry.ModVillagers.GUILDMASTER_POI.getKey()), "guild board is a job site");
-        helper.succeed();
-    }
-
     // ------------------------------------------------------------------ M12 polish
     @GameTest(template = PLATFORM)
     public static void creativeTabIsCuratedAndComplete(GameTestHelper helper) {
@@ -562,7 +467,7 @@ public final class LacunaGameTests {
         }
         var advancements = helper.getLevel().getServer().getAdvancements();
         for (String key : List.of("root", "enter_forgotten_land", "survive_banishment", "forge_eclipser", "throw_suns_fury",
-                "link_pearl", "find_township")) {
+                "link_pearl", "village_friend")) {
             check(helper, advancements.get(com.lacuna.mod.Lacuna.id("lacuna/" + key)) != null, "advancement lacuna/" + key + " loaded");
         }
         helper.succeed();

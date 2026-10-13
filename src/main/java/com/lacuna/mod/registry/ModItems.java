@@ -155,12 +155,12 @@ public final class ModItems {
     public static final DeferredItem<DeferredSpawnEggItem> LAST_MERCHANT_SPAWN_EGG = item("last_merchant_spawn_egg",
             p -> new DeferredSpawnEggItem(ModEntities.LAST_MERCHANT, 0x3B4A6B, 0xC9A869, p), new Item.Properties());
 
-    // ------------------------------------------------------------------ M11 townships
-    public static final DeferredItem<Item> TOWNSHIP_COIN = item("township_coin", Item::new, new Item.Properties());
-    public static final DeferredItem<com.lacuna.mod.township.GuildContractItem> GUILD_CONTRACT = item("guild_contract",
-            com.lacuna.mod.township.GuildContractItem::new, new Item.Properties().stacksTo(1));
-    public static final DeferredItem<com.lacuna.mod.township.RepairKitItem> REPAIR_KIT = item("repair_kit",
-            com.lacuna.mod.township.RepairKitItem::new, new Item.Properties().stacksTo(16));
+    // ------------------------------------------------------------------ M11 village civic system
+    public static final DeferredItem<Item> VILLAGE_COIN = item("village_coin", Item::new, new Item.Properties());
+    public static final DeferredItem<com.lacuna.mod.village.GuildContractItem> GUILD_CONTRACT = item("guild_contract",
+            com.lacuna.mod.village.GuildContractItem::new, new Item.Properties().stacksTo(1));
+    public static final DeferredItem<com.lacuna.mod.village.RepairKitItem> REPAIR_KIT = item("repair_kit",
+            com.lacuna.mod.village.RepairKitItem::new, new Item.Properties().stacksTo(16));
 
     private ModItems() {}
 

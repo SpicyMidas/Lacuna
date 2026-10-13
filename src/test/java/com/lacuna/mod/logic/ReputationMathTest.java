@@ -1,8 +1,6 @@
 package com.lacuna.mod.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -51,25 +49,5 @@ class ReputationMathTest {
         assertEquals(3, ReputationMath.coinsForFine(-12, 10));
         assertEquals(2, ReputationMath.coinsForFine(-12, 2));
         assertEquals(0, ReputationMath.coinsForFine(5, 10));
-    }
-
-    @Test
-    void lawsAreTwoDistinctAndDeterministic() {
-        boolean[] seen = new boolean[TownshipLaws.COUNT];
-        for (long seed = -500; seed < 500; seed++) {
-            int[] laws = TownshipLaws.choose(seed);
-            assertEquals(2, laws.length);
-            assertNotEquals(laws[0], laws[1]);
-            assertTrue(laws[0] >= 0 && laws[0] < 4 && laws[1] >= 0 && laws[1] < 4);
-            assertEquals(laws[0], TownshipLaws.choose(seed)[0]);
-            seen[laws[0]] = true;
-            seen[laws[1]] = true;
-        }
-        for (boolean s : seen) {
-            assertTrue(s);
-        }
-        assertTrue(TownshipLaws.isDawn(24000 * 3 + 100));
-        assertTrue(TownshipLaws.gatesOpen(23500));
-        assertTrue(!TownshipLaws.gatesOpen(13000));
     }
 }

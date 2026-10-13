@@ -27,7 +27,7 @@ ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, "src", "generated", "resources", "data", "lacuna", "structure")
 DATA_VERSION = 3955
 
-MODULES = ["m02_forgotten_land", "m10_biomes_structures", "m11_townships", "m00_gametest"]
+MODULES = ["m02_forgotten_land", "m10_biomes_structures", "m11_villages", "m00_gametest"]
 
 Pos = Tuple[int, int, int]
 
@@ -49,7 +49,7 @@ class Template:
         self.blocks: Dict[Pos, Tuple[Tuple[str, Tuple[Tuple[str, str], ...]], Optional[dict]]] = {}
         self.entities: List[Tuple[Tuple[float, float, float], Pos, dict]] = []
         self.r = rng(name)
-        self.strict = name.startswith("township/")  # township pieces must never lose blocks silently
+        self.strict = name.startswith("village/")  # civic village pieces must never lose blocks silently
 
     # ------------------------------------------------------------------------------------- editing
     def inside(self, x: int, y: int, z: int) -> bool:
@@ -98,11 +98,12 @@ class Template:
                  {"id": "minecraft:barrel", "LootTable": loot_table})
 
     def jigsaw(self, x: int, y: int, z: int, orientation: str, name: str, target: str, pool: str,
-               final_state: str = "minecraft:air", joint: str = "rollable") -> None:
+               final_state: str = "minecraft:air", joint: str = "rollable", selection_priority: int = 0) -> None:
+        """selection_priority: a piece tries its jigsaws in descending priority (ties in random order)."""
         self.set(x, y, z, "jigsaw", {"orientation": orientation},
                  {"id": "minecraft:jigsaw", "name": name, "target": target, "pool": pool,
                   "final_state": final_state, "joint": joint,
-                  "placement_priority": 0, "selection_priority": 0})
+                  "placement_priority": 0, "selection_priority": selection_priority})
 
     def sign(self, x: int, y: int, z: int, lines: List[str], wood: str = "oak", rotation: int = 0,
              wall_facing: Optional[str] = None) -> None:

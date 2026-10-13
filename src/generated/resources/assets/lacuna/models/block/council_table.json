@@ -67,7 +67,7 @@
   ],
   "parent": "minecraft:block/block",
   "textures": {
-    "leg": "lacuna:block/township_ledger_side",
+    "leg": "lacuna:block/village_ledger_side",
     "particle": "lacuna:block/council_table",
     "top": "lacuna:block/council_table"
   }

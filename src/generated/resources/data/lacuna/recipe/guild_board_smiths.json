@@ -1,0 +1,30 @@
+{
+  "category": "misc",
+  "key": {
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "B": {
+      "item": "minecraft:gray_banner"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
+  },
+  "pattern": [
+    "/P/",
+    "PBP",
+    "/P/"
+  ],
+  "result": {
+    "components": {
+      "minecraft:block_state": {
+        "guild": "smiths"
+      },
+      "minecraft:item_name": "{\"translate\":\"item.lacuna.guild_board.smiths\"}"
+    },
+    "count": 1,
+    "id": "lacuna:guild_board"
+  },
+  "type": "minecraft:crafting_shaped"
+}

@@ -6,11 +6,10 @@ import com.lacuna.mod.fl.SporeMushroomBlock;
 import com.lacuna.mod.fl.UpdraftSpringBlock;
 import com.lacuna.mod.mob.SilkDustGlowBlock;
 import com.lacuna.mod.structure.LabyrinthTriggerBlock;
-import com.lacuna.mod.township.CivicBlock;
-import com.lacuna.mod.township.GuildBoardBlock;
-import com.lacuna.mod.township.JudgeBenchBlock;
-import com.lacuna.mod.township.TownshipGateBlock;
-import com.lacuna.mod.township.TownshipLedgerBlock;
+import com.lacuna.mod.village.CivicBlock;
+import com.lacuna.mod.village.GuildBoardBlock;
+import com.lacuna.mod.village.JudgeBenchBlock;
+import com.lacuna.mod.village.VillageLedgerBlock;
 import net.minecraft.world.phys.shapes.Shapes;
 import com.lacuna.mod.structure.ObeliskInscriptionBlock;
 import com.lacuna.mod.structure.SunkenBellBlock;
@@ -145,12 +144,9 @@ public final class ModBlocks {
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(-1.0F, 3600000.0F).noCollission()
                     .noLootTable().lightLevel(s -> 6).sound(SoundType.AMETHYST).pushReaction(PushReaction.BLOCK)));
 
-    // ------------------------------------------------------------------ M11 townships
-    public static final DeferredBlock<TownshipLedgerBlock> TOWNSHIP_LEDGER = block("township_ledger", () -> new TownshipLedgerBlock(
+    // ------------------------------------------------------------------ M11 village civic system
+    public static final DeferredBlock<VillageLedgerBlock> VILLAGE_LEDGER = block("village_ledger", () -> new VillageLedgerBlock(
             civicProps(MapColor.WOOD, SoundType.WOOD)));
-    public static final DeferredBlock<TownshipGateBlock> TOWNSHIP_GATE = block("township_gate", () -> new TownshipGateBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.0F, 1200.0F).sound(SoundType.CHAIN).noOcclusion()
-                    .randomTicks().pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
     public static final DeferredBlock<CivicBlock> COUNCIL_TABLE = block("council_table", () -> new CivicBlock(
             civicProps(MapColor.WOOD, SoundType.WOOD), Shapes.or(Block.box(0, 12, 0, 16, 16, 16), Block.box(6, 0, 6, 10, 12, 10))));
     public static final DeferredBlock<JudgeBenchBlock> JUDGE_BENCH = block("judge_bench", () -> new JudgeBenchBlock(

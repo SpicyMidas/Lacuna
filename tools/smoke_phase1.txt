@@ -39,13 +39,13 @@ place structure lacuna:sunken_bell_tower 628 40 628
 locate structure #lacuna:orrery_targets
 summon lacuna:last_merchant 612 90 612
 forceload remove 600 600 640 640
-# --- M11a: one township from the start piece (all variants: tools/smoke_townships.txt)
+# --- villages: a vanilla village (civic square / civic houses are injected into the vanilla pools)
 forceload add 1800 1800 1959 1959
 forceload add 1960 1800 2119 1959
 forceload add 1800 1960 1959 2119
 forceload add 1960 1960 2119 2119
 @wait 1200
-place structure lacuna:township_plains 1960 80 1960
-locate structure #lacuna:townships
+place structure minecraft:village_plains 1960 80 1960
+locate structure #minecraft:village
 forceload remove all
 save-all flush

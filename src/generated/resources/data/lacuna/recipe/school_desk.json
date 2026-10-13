@@ -1,0 +1,23 @@
+{
+  "category": "misc",
+  "key": {
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "B": {
+      "item": "minecraft:book"
+    },
+    "S": {
+      "tag": "minecraft:wooden_slabs"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "/B/"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:school_desk"
+  },
+  "type": "minecraft:crafting_shaped"
+}

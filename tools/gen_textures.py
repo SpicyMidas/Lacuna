@@ -20,7 +20,7 @@ sys.path.insert(0, HERE)
 import texlib  # noqa: E402
 
 ART_MODULES = ["m01_ruby_glass", "m02_forgotten_land", "m03_magnifier", "m04_eclipse_solar", "m05_pearl",
-               "m06_utility", "m07_gear", "m08_wood", "m09_mobs", "m10_biomes_structures", "m11_townships", "m13_fx"]
+               "m06_utility", "m07_gear", "m08_wood", "m09_mobs", "m10_biomes_structures", "m11_villages", "m13_fx"]
 
 
 HAND = os.path.join(HERE, "art", "hand")

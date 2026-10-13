@@ -1,0 +1,24 @@
+{
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone"
+    }
+  },
+  "pattern": [
+    "III",
+    " P ",
+    "SSS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:mint_press"
+  },
+  "type": "minecraft:crafting_shaped"
+}

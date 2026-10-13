@@ -10,7 +10,7 @@ import java.util.Random;
 /**
  * Last Merchant stock (spec M10), pure and unit-tested. The merchant buys raw ores/ingots for currency and sells
  * divine glass shards, rubies, chronal shards and echo shards. The ore families the nearest player mined most get
- * buy offers, and the top one an extra "bulk buy". Sell prices scale with a township price index (M11d).
+ * buy offers, and the top one an extra "bulk buy". Sell prices scale with the nearest village's price index (M11d).
  */
 public final class MerchantPricing {
     /** An offer: {@code costItem x costCount (+ cost2) -> result x resultCount}, ids are "namespace:path". */

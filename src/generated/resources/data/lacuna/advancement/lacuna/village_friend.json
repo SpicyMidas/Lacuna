@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.village_friend.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:village_ledger"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.village_friend.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "code"
+    ]
+  ]
+}

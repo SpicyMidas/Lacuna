@@ -41,9 +41,9 @@ public final class ModComponents {
             COMPONENTS.registerComponentType("tide_charges",
                     b -> b.persistent(Codec.intRange(0, 3)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.lacuna.mod.township.ContractData>> GUILD_CONTRACT =
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.lacuna.mod.village.ContractData>> GUILD_CONTRACT =
             COMPONENTS.registerComponentType("guild_contract",
-                    b -> b.persistent(com.lacuna.mod.township.ContractData.CODEC).networkSynchronized(com.lacuna.mod.township.ContractData.STREAM_CODEC));
+                    b -> b.persistent(com.lacuna.mod.village.ContractData.CODEC).networkSynchronized(com.lacuna.mod.village.ContractData.STREAM_CODEC));
 
     private ModComponents() {}
 }

@@ -1,7 +1,7 @@
 package com.lacuna.mod.logic;
 
 /**
- * Township reputation (spec 18.2), pure and unit-tested: range −100..100, five tiers, price multiplier, and daily
+ * Village reputation (spec 18.2), pure and unit-tested: range −100..100, five tiers, price multiplier, and daily
  * caps per kind of change.
  */
 public final class ReputationMath {
