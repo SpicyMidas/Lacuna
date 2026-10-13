@@ -1,0 +1,30 @@
+{
+  "category": "misc",
+  "key": {
+    "/": {
+      "item": "minecraft:stick"
+    },
+    "B": {
+      "item": "minecraft:purple_banner"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    }
+  },
+  "pattern": [
+    "/P/",
+    "PBP",
+    "/P/"
+  ],
+  "result": {
+    "components": {
+      "minecraft:block_state": {
+        "guild": "scholars"
+      },
+      "minecraft:item_name": "{\"translate\":\"item.lacuna.guild_board.scholars\"}"
+    },
+    "count": 1,
+    "id": "lacuna:guild_board"
+  },
+  "type": "minecraft:crafting_shaped"
+}

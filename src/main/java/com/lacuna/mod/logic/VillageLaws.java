@@ -50,4 +50,18 @@ public final class VillageLaws {
     public static boolean isStranger(int reputation) {
         return reputation < STRANGER_BELOW;
     }
+
+    /** What ringing a village bell does (spec 18.2). */
+    public enum Bell { NOTHING, DAWN_BONUS, ANNOYED, LAW_BROKEN }
+
+    /** More than 3 rings a day annoy the village; otherwise a ring at dawn pleases it, and outside dawn breaks law 4. */
+    public static Bell bell(int ringsToday, long dayTime, boolean bellLaw) {
+        if (ringsToday > 3) {
+            return Bell.ANNOYED;
+        }
+        if (isDawn(dayTime)) {
+            return Bell.DAWN_BONUS;
+        }
+        return bellLaw ? Bell.LAW_BROKEN : Bell.NOTHING;
+    }
 }

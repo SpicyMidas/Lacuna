@@ -9,6 +9,15 @@
       ],
       "entries": [
         {
+          "functions": [
+            {
+              "block": "lacuna:guild_board",
+              "function": "minecraft:copy_state",
+              "properties": [
+                "guild"
+              ]
+            }
+          ],
           "name": "lacuna:guild_board",
           "type": "minecraft:item"
         }

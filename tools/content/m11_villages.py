@@ -1,7 +1,7 @@
 """M11 (revision 2): the civic system runs in vanilla villages. Civic blocks, the village coin and ledger, the mint's
 loot, the protected-block tag and every civic message. The civic buildings themselves are structure templates
 (tools/structures/m11_villages.py) appended to the vanilla village house pools at server start (VillagePools.java)."""
-from gen_resources import mod
+from gen_resources import loot_self, mod
 from content import worldgen as wg
 
 HORIZONTAL = {"north": 0, "east": 90, "south": 180, "west": 270}
@@ -69,6 +69,27 @@ def civic_blocks(g):
     # a ledger placed outside every village founds a player village around itself
     g.shapeless("village_ledger", ["minecraft:lectern", "minecraft:writable_book", "minecraft:emerald"], mod("village_ledger"),
                 category="misc")
+    # the job sites are craftable like vanilla ones, so every village (not only those with civic buildings) can get a
+    # Coiner, a Magistrate or a Guildmaster: an unemployed villager claims the block
+    g.shaped("mint_press", ["III", " P ", "SSS"], {"I": "minecraft:iron_ingot", "P": "minecraft:piston",
+                                                  "S": "minecraft:smooth_stone"}, mod("mint_press"))
+    g.shaped("judge_bench", ["SBS", "PPP", "P P"], {"S": "#minecraft:wooden_slabs", "B": "minecraft:book",
+                                                    "P": "#minecraft:planks"}, mod("judge_bench"), unlock="minecraft:book")
+    g.shaped("school_desk", ["SSS", "/B/"], {"S": "#minecraft:wooden_slabs", "/": "minecraft:stick", "B": "minecraft:book"},
+             mod("school_desk"), unlock="minecraft:book")
+    g.shaped("council_table", ["CCC", "SSS", " L "], {"C": "#minecraft:wool_carpets", "S": "#minecraft:wooden_slabs",
+                                                      "L": "#minecraft:logs"}, mod("council_table"), unlock="minecraft:stick")
+    for guild, banner in (("smiths", "gray"), ("gemcutters", "red"), ("scholars", "purple")):
+        # the board takes its guild from the banner (the colours of the guild hall's banners)
+        rid = f"guild_board_{guild}"
+        g.data(f"recipe/{rid}", {"type": "minecraft:crafting_shaped", "category": "misc",
+                                 "key": {"/": {"item": "minecraft:stick"}, "B": {"item": f"minecraft:{banner}_banner"},
+                                         "P": {"item": "minecraft:paper"}},
+                                 "pattern": ["/P/", "PBP", "/P/"],
+                                 "result": {"count": 1, "id": mod("guild_board"), "components": {
+                                     "minecraft:block_state": {"guild": guild},
+                                     "minecraft:item_name": '{"translate":"item.lacuna.guild_board.%s"}' % guild}}})
+        g.unlock(rid, f"minecraft:{banner}_banner", "misc")
     # the mint's strongbox (opening it while a villager watches costs reputation, like any village container)
     g.data("loot_table/chests/village_mint", {"type": "minecraft:chest", "random_sequence": mod("chests/village_mint"), "pools": [
         {"rolls": {"type": "minecraft:uniform", "min": 2.0, "max": 4.0}, "bonus_rolls": 0.0, "entries": [
@@ -84,10 +105,12 @@ def civic_blocks(g):
 
 
 def civic_pools(g):
-    """One single-building pool per civic building: the civic square's jigsaws attach exactly that building."""
+    """One single-piece pool per civic piece: the civic square's jigsaws attach exactly that building, and operators
+    can place any piece with its streets and villagers, e.g. /place jigsaw lacuna:village/plains/civic_square
+    minecraft:street 7 ~ ~ ~ or /place jigsaw lacuna:village/desert/mint minecraft:building_entrance 2 ~ ~ ~."""
     for v in STYLES:
         processors = "minecraft:mossify_10_percent" if v in MOSSY else "minecraft:empty"
-        for b in CIVIC_BUILDINGS:
+        for b in CIVIC_BUILDINGS + ("civic_square",):
             g.data(f"worldgen/template_pool/village/{v}/{b}", wg.pool([mod(f"village/{v}/{b}")], processors=processors))
 
 
@@ -172,13 +195,22 @@ def guild_board(g):
             variants[f"facing={f},guild={guild}"] = v
     g.asset("blockstates/guild_board", {"variants": variants})
     g.block_item_parent("guild_board", "lacuna:block/guild_board_smiths")
-    g.loot("guild_board", "self")
+    loot = loot_self("guild_board")  # the dropped board keeps its guild
+    loot["pools"][0]["entries"][0]["functions"] = [{"function": "minecraft:copy_state", "block": mod("guild_board"),
+                                                     "properties": ["guild"]}]
+    g.loot("guild_board", loot)
     g.props("guild_board", facing=list(HORIZONTAL), guild=list(GUILDS))
+
+
+BOARD_NAMES = {"smiths": ("Smiths' Guild Board", "Bacheca della Gilda dei fabbri"),
+               "gemcutters": ("Gemcutters' Guild Board", "Bacheca della Gilda dei tagliagemme"),
+               "scholars": ("Scholars' Guild Board", "Bacheca della Gilda degli studiosi")}
 
 
 def guilds(g):
     for k, (en, it) in GUILDS.items():
         g.name(f"lacuna.guild.{k}", en, it)
+        g.name(f"item.lacuna.guild_board.{k}", *BOARD_NAMES[k])
     g.item("guild_contract", "Guild Contract", "Contratto di gilda")
     g.item("repair_kit", "Repair Kit", "Kit di riparazione")
     msgs = {

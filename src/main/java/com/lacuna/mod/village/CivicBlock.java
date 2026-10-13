@@ -13,7 +13,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * VillageRecord civic furniture with a horizontal facing and a custom shape (council table, judge bench, guild board,
+ * Village civic furniture with a horizontal facing and a custom shape (council table, judge bench, guild board,
  * school desk, mint press, ledger). Subclasses add behaviour in M11b-d.
  */
 public class CivicBlock extends HorizontalDirectionalBlock {

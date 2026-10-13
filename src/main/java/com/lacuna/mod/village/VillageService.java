@@ -149,6 +149,21 @@ public final class VillageService {
         return Optional.empty();
     }
 
+    /** Does a vanilla village structure reference the loaded chunk at {@code pos} (whether or not its record exists)? */
+    static boolean inVillageChunk(ServerLevel level, BlockPos pos) {
+        LevelChunk chunk = level.getChunkSource().getChunkNow(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()));
+        if (chunk == null) {
+            return false;
+        }
+        Set<Structure> villages = villageStructures(level);
+        for (Map.Entry<Structure, LongSet> entry : chunk.getAllReferences().entrySet()) {
+            if (villages.contains(entry.getKey()) && !entry.getValue().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** The record of a vanilla village structure start (created on first use, idempotent). */
     public static VillageRecord register(ServerLevel level, StructureStart start) {
         VillageSavedData data = VillageSavedData.get(level.getServer());
@@ -219,7 +234,8 @@ public final class VillageService {
             return Optional.empty();
         }
         Optional<VillageRecord> existing = at(level, ledger);
-        if (existing.isPresent()) {
+        if (existing.isPresent() || inVillageChunk(level, ledger)) {
+            // inside a vanilla village whose centre is not loaded yet: never found a second village on top of it
             return existing;
         }
         VillageSavedData data = VillageSavedData.get(level.getServer());

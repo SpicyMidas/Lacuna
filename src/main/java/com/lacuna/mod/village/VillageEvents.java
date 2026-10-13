@@ -178,22 +178,28 @@ public final class VillageEvents {
         BlockPos pos = event.getPos();
         BlockState state = event.getState();
         run(() -> VillageService.at(level, pos).ifPresent(t -> {
-            boolean founder = t.isFounder(p.getUUID());
-            if (state.is(ModTags.Blocks.VILLAGE_PROTECTED) && !founder) {
+            if (t.isFounder(p.getUUID())) {
+                return; // a founder may rebuild their own village
+            }
+            if (state.is(ModTags.Blocks.VILLAGE_PROTECTED)) {
                 VillageService.change(level, t, p, ReputationMath.Change.BREAK_PROTECTED, 1);
             }
-            if (lawsEnabled() && t.hasLaw(VillageLaws.NO_BREAKING) && !founder) {
+            boolean crop = state.getBlock() instanceof CropBlock;
+            if (crop) {
+                // the gardens rule: mature crops on the village farmland belong to the village unless Honored
+                if (((CropBlock) state.getBlock()).isMaxAge(state) && level.getBlockState(pos.below()).is(Blocks.FARMLAND)
+                        && VillageService.tier(t, p.getUUID()) != ReputationMath.Tier.HONORED) {
+                    VillageService.change(level, t, p, ReputationMath.Change.HARVEST, 1);
+                }
+            } else if (lawsEnabled() && t.hasLaw(VillageLaws.NO_BREAKING)) {
                 VillageService.change(level, t, p, ReputationMath.Change.BREAK_INSIDE_LAW, 1);
-            }
-            if (state.getBlock() instanceof CropBlock crop && crop.isMaxAge(state) && level.getBlockState(pos.below()).is(Blocks.FARMLAND)
-                    && VillageService.tier(t, p.getUUID()) != ReputationMath.Tier.HONORED && !founder) {
-                VillageService.change(level, t, p, ReputationMath.Change.HARVEST, 1);
             }
         }));
     }
 
     private static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (!(event.getEntity() instanceof ServerPlayer p) || !(event.getLevel() instanceof ServerLevel level)) {
+        if (!(event.getEntity() instanceof ServerPlayer p) || !(event.getLevel() instanceof ServerLevel level)
+                || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND) {
             return;
         }
         BlockPos pos = event.getPos();
@@ -215,15 +221,17 @@ public final class VillageEvents {
 
     /** Ringing a village bell: +2 once per day at dawn, −5 after more than 3 rings a day, −3 outside dawn under law 4. */
     static void bell(ServerLevel level, VillageRecord t, ServerPlayer p) {
+        if (p.isCreative() || p.isSpectator()) {
+            return;
+        }
         VillageRecord.Daily daily = t.daily(p.getUUID(), VillageService.day(level));
         daily.bellRings++;
-        boolean dawn = VillageLaws.isDawn(level.getDayTime());
-        if (daily.bellRings > 3) {
-            VillageService.change(level, t, p, ReputationMath.Change.BELL_ANNOYED, 1);
-        } else if (dawn) {
-            VillageService.change(level, t, p, ReputationMath.Change.BELL_DAWN, 1);
-        } else if (lawsEnabled() && t.hasLaw(VillageLaws.BELL_AT_DAWN)) {
-            VillageService.change(level, t, p, ReputationMath.Change.BELL_LAW, 1);
+        boolean law = lawsEnabled() && t.hasLaw(VillageLaws.BELL_AT_DAWN);
+        switch (VillageLaws.bell(daily.bellRings, level.getDayTime(), law)) {
+            case ANNOYED -> VillageService.change(level, t, p, ReputationMath.Change.BELL_ANNOYED, 1);
+            case DAWN_BONUS -> VillageService.change(level, t, p, ReputationMath.Change.BELL_DAWN, 1);
+            case LAW_BROKEN -> VillageService.change(level, t, p, ReputationMath.Change.BELL_LAW, 1);
+            case NOTHING -> { }
         }
         VillageSavedData.get(level.getServer()).touch();
     }
@@ -261,7 +269,7 @@ public final class VillageEvents {
     }
 
     /** Applies the village price factor (and the coin value to coin trades) as special-price differences. */
-    static void adjustPrices(VillageRecord t, UUID player, Iterable<MerchantOffer> offers) {
+    public static void adjustPrices(VillageRecord t, UUID player, Iterable<MerchantOffer> offers) {
         double factor = VillageService.priceFactor(t, player);
         for (MerchantOffer offer : offers) {
             int base = offer.getBaseCostA().getCount();

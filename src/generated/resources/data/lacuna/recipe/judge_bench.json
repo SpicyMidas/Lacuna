@@ -1,0 +1,24 @@
+{
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:book"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "S": {
+      "tag": "minecraft:wooden_slabs"
+    }
+  },
+  "pattern": [
+    "SBS",
+    "PPP",
+    "P P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:judge_bench"
+  },
+  "type": "minecraft:crafting_shaped"
+}

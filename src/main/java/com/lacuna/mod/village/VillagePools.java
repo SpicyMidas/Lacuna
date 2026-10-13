@@ -60,6 +60,7 @@ public final class VillagePools {
         });
     }
 
+    /** Template (and single-element pool) id of a civic piece: {@code lacuna:village/<type>/<building>}. */
     public static ResourceLocation template(String type, String building) {
         return Lacuna.id("village/" + type + "/" + building);
     }
@@ -117,6 +118,7 @@ public final class VillagePools {
             raw.add(Pair.of(element, Math.min(left, MAX_RAW_WEIGHT)));
         }
         pool.rawTemplates = raw;
+        pool.maxSize = Integer.MIN_VALUE; // the tallest-piece cache is recomputed with the new elements
     }
 
     /** How many weighted entries of the template {@code location} a pool holds. */
