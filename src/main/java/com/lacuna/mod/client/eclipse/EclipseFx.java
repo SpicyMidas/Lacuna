@@ -273,7 +273,8 @@ public final class EclipseFx {
 
         @Override
         public void render(FxRenderContext ctx) {
-            float t = ctx.time(age);
+            // the dasher starts moving on the tick after the payload: lag the timeline by one tick to stay on it
+            float t = Math.max(0.0F, ctx.time(age) - 1.0F);
             float head = Mth.clamp(t / ticks, 0.0F, 1.0F);
             PoseStack.Pose pose = ctx.pose().last();
 
@@ -302,7 +303,7 @@ public final class EclipseFx {
         /** Camera-facing ribbon from the start to the head of the dash; the tail fades and thins over 15 ticks. */
         private void renderTrail(FxRenderContext ctx, PoseStack.Pose pose, float t, float head, boolean glow) {
             int m = Math.max(4, (int) Math.ceil(length * 1.5));
-            VertexConsumer vc = ctx.buffers().getBuffer(glow ? FxRenderTypes.beam() : FxRenderTypes.shade(STREAK));
+            VertexConsumer vc = ctx.buffers().getBuffer(glow ? FxRenderTypes.additive(FxRenderTypes.BEAM) : FxRenderTypes.shade(STREAK));
             Vec3 prev = null;
             float prevW = 0.0F;
             int prevC = 0;
@@ -316,7 +317,7 @@ public final class EclipseFx {
                 Vec3 world = at(f).add(0, CHEST, 0);
                 a *= nearFade(ctx, world, 0.7, 2.0);
                 float w = (glow ? 1.75F : 0.95F) * (0.3F + 0.7F * (1.0F - life)) * (i == 0 ? 0.35F : 1.0F);
-                int color = glow ? FxDraw.argb(0.85F * a, CRIMSON) : FxDraw.argb(0.93F * a, BLACK);
+                int color = glow ? FxDraw.argb(0.9F * a, CRIMSON) : FxDraw.argb(a, BLACK);
                 Vec3 p = ctx.rel(world);
                 double v = f * length;
                 if (prev != null && (((prevC >>> 24) | (color >>> 24)) != 0)) {
@@ -334,11 +335,7 @@ public final class EclipseFx {
 
         /** pass 0: crimson glow, 1: black blade body, 2: crimson cutting edge and hot core. */
         private void renderSlashes(FxRenderContext ctx, PoseStack.Pose pose, float t, int pass) {
-            VertexConsumer vc = ctx.buffers().getBuffer(switch (pass) {
-                case 0 -> FxRenderTypes.beam();
-                case 1 -> FxRenderTypes.shade(SLASH_MASK);
-                default -> FxRenderTypes.additive(FxRenderTypes.BEAM);
-            });
+            VertexConsumer vc = ctx.buffers().getBuffer(pass == 1 ? FxRenderTypes.shade(SLASH_MASK) : FxRenderTypes.additive(FxRenderTypes.BEAM));
             for (float[] s : slashes) {
                 float born = s[0] * ticks + 0.3F;
                 float life = (t - born) / SLASH_LIFE;
@@ -353,18 +350,18 @@ public final class EclipseFx {
                 Vec3 e1 = side.scale(Mth.cos(s[1])).add(up.scale(Mth.sin(s[1])));
                 Vec3 n = dir.cross(e1).normalize();
                 Vec3 e2 = dir.scale(Mth.cos(s[2])).add(n.scale(Mth.sin(s[2]))).normalize().scale(s[3]);
-                float r = (1.7F + 0.9F * power) * (1.0F + 0.14F * life);
-                float w = 0.7F + 0.5F * power;
+                float r = (1.5F + 0.8F * power) * (1.0F + 0.14F * life);
+                float w = 0.75F + 0.5F * power;
                 Vec3 c = ctx.rel(c0.subtract(e1.scale(r * 0.62F)));
                 float a0 = -1.4F;
                 float a1 = 1.4F;
                 float drawn = Mth.lerp(Mth.clamp((t - born) / 2.2F, 0.0F, 1.0F), a0, a1);
                 switch (pass) {
-                    case 0 -> band(pose, vc, c, e1, e2, r, a0, drawn, w, -1.9F, 2.1F, 20, FxDraw.argb(0.6F * alpha, CRIMSON));
-                    case 1 -> band(pose, vc, c, e1, e2, r, a0, drawn, w, -1.0F, 1.0F, 24, FxDraw.argb(0.96F * alpha, BLACK));
+                    case 0 -> band(pose, vc, c, e1, e2, r, a0, drawn, w, 0.3F, 2.0F, 20, FxDraw.argb(0.55F * alpha, CRIMSON));
+                    case 1 -> band(pose, vc, c, e1, e2, r, a0, drawn, w, -1.0F, 1.0F, 24, FxDraw.argb(alpha, BLACK));
                     default -> {
-                        band(pose, vc, c, e1, e2, r, a0, drawn, w, 0.35F, 1.08F, 24, FxDraw.argb(alpha, CRIMSON_HOT));
-                        band(pose, vc, c, e1, e2, r, a0, drawn, w, 0.8F, 1.0F, 24, FxDraw.argb(0.9F * alpha, HOT_CORE));
+                        band(pose, vc, c, e1, e2, r, a0, drawn, w, 0.55F, 1.1F, 24, FxDraw.argb(alpha, CRIMSON_HOT));
+                        band(pose, vc, c, e1, e2, r, a0, drawn, w, 0.86F, 1.0F, 24, FxDraw.argb(0.8F * alpha, HOT_CORE));
                     }
                 }
             }
@@ -464,11 +461,7 @@ public final class EclipseFx {
                         size * (1.0F + 0.5F * k), 0.0F, FxDraw.argb(0.9F * (1.0F - k), CRIMSON));
             }
             for (int pass = 0; pass < 3; pass++) {
-                VertexConsumer vc = ctx.buffers().getBuffer(switch (pass) {
-                    case 0 -> FxRenderTypes.beam();
-                    case 1 -> FxRenderTypes.shade(SLASH_MASK);
-                    default -> FxRenderTypes.additive(FxRenderTypes.BEAM);
-                });
+                VertexConsumer vc = ctx.buffers().getBuffer(pass == 1 ? FxRenderTypes.shade(SLASH_MASK) : FxRenderTypes.additive(FxRenderTypes.BEAM));
                 for (int stroke = 0; stroke < 2; stroke++) {
                     float theta = (stroke == 0 ? Mth.PI * 0.25F : -Mth.PI * 0.25F) + roll;
                     Vec3 tan = left.scale(Mth.cos(theta)).add(upv.scale(Mth.sin(theta)));
@@ -483,11 +476,11 @@ public final class EclipseFx {
                     }
                     float w = 0.42F * size;
                     switch (pass) {
-                        case 0 -> band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, -2.0F, 2.2F, 14, FxDraw.argb(0.55F * alpha, CRIMSON));
-                        case 1 -> band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, -1.0F, 1.0F, 16, FxDraw.argb(0.97F * alpha, BLACK));
+                        case 0 -> band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, 0.3F, 2.2F, 14, FxDraw.argb(0.55F * alpha, CRIMSON));
+                        case 1 -> band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, -1.0F, 1.0F, 16, FxDraw.argb(alpha, BLACK));
                         default -> {
-                            band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, 0.35F, 1.1F, 16, FxDraw.argb(alpha, CRIMSON_HOT));
-                            band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, 0.8F, 1.0F, 16, FxDraw.argb(0.95F * alpha, HOT_CORE));
+                            band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, 0.55F, 1.12F, 16, FxDraw.argb(alpha, CRIMSON_HOT));
+                            band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, 0.86F, 1.0F, 16, FxDraw.argb(0.85F * alpha, HOT_CORE));
                         }
                     }
                 }

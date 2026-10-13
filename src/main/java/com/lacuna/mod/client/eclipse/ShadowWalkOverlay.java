@@ -18,7 +18,7 @@ import net.minecraft.util.Mth;
  * Distortion Effects slider and the Lacuna screen-effects toggle.
  */
 final class ShadowWalkOverlay {
-    private static final ResourceLocation VIGNETTE = Lacuna.id("textures/effect/vignette.png");
+    private static final ResourceLocation VIGNETTE = Lacuna.id("textures/effect/shadow_vignette.png");
     private static final ResourceLocation RIM = Lacuna.id("textures/effect/shadow_rim.png");
     private static float current;
     private static float previous;
@@ -59,14 +59,17 @@ final class ShadowWalkOverlay {
         }
         int w = g.guiWidth();
         int h = g.guiHeight();
-        g.fill(0, 0, w, h, FxDraw.argb(0.18F * a, 0x0A0410));
+        g.fill(0, 0, w, h, FxDraw.argb(0.22F * a, 0x0A0410));
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(0.02F, 0.0F, 0.035F, Mth.clamp(0.92F * a, 0.0F, 1.0F));
+        RenderSystem.setShaderColor(0.015F, 0.0F, 0.03F, Mth.clamp(0.95F * a, 0.0F, 1.0F));
         g.blit(VIGNETTE, 0, 0, 0, 0.0F, 0.0F, w, h, w, h);
-        float pulse = 0.78F + 0.22F * Mth.sin((time + partial) * 0.18F);
+        // crimson rim hugging the border: a deep alpha-blended band plus a faint additive glow so it smoulders
+        float pulse = 0.75F + 0.25F * Mth.sin((time + partial) * 0.18F);
+        RenderSystem.setShaderColor(0.55F, 0.03F, 0.11F, Mth.clamp(0.9F * a * pulse, 0.0F, 1.0F));
+        g.blit(RIM, 0, 0, 0, 0.0F, 0.0F, w, h, w, h);
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
-        RenderSystem.setShaderColor(0.75F, 0.07F, 0.18F, Mth.clamp(0.9F * a * pulse, 0.0F, 1.0F));
+        RenderSystem.setShaderColor(0.7F, 0.05F, 0.15F, Mth.clamp(0.35F * a * pulse, 0.0F, 1.0F));
         g.blit(RIM, 0, 0, 0, 0.0F, 0.0F, w, h, w, h);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.defaultBlendFunc();

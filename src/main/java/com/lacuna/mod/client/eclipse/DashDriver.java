@@ -12,8 +12,9 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 /**
  * Moves the local player along an Eclipser dash sent by the server: every tick its velocity is set to reach the next
  * point of the path (closed loop, so lag or a small obstacle never accumulates error), movement input is ignored,
- * and normal collision still applies (the path itself was checked on the server). One extra tick then removes the
- * dash momentum so the player stops on the end point. The server finishes the dash for a client that never moves.
+ * and normal collision still applies (the path itself was checked on the server). Right after the final step the
+ * dash momentum is dropped so the player stops on the end point. The server finishes the dash for a client that
+ * never moves.
  */
 final class DashDriver {
     private static boolean active;
@@ -69,29 +70,42 @@ final class DashDriver {
         }
     }
 
-    static void onPlayerTickPre(PlayerTickEvent.Pre event) {
-        if (!active) {
-            return;
-        }
+    private static LocalPlayer driven(Object entity) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (player == null || event.getEntity() != player) {
+        return player != null && entity == player ? player : null;
+    }
+
+    /** Before the player moves: aim this tick's velocity at the next point of the path. */
+    static void onPlayerTickPre(PlayerTickEvent.Pre event) {
+        LocalPlayer player = driven(event.getEntity());
+        if (!active || player == null) {
             return;
         }
-        if (mc.level != level || !player.isAlive() || player.isSpectator() || player.isPassenger()) {
+        if (Minecraft.getInstance().level != level || !player.isAlive()) {
+            stop();
+            return;
+        }
+        if (player.isSpectator() || player.isPassenger()) {
+            player.setDeltaMovement(dir.scale(0.06));
             stop();
             return;
         }
         age++;
         player.resetFallDistance();
-        if (age > ticks) {
-            // the step before reached the end point: keep only a hint of momentum
-            player.setDeltaMovement(dir.scale(0.06));
-            stop();
+        Vec3 target = start.add(end.subtract(start).scale(Math.min(1.0, age / (double) ticks)));
+        player.setDeltaMovement(target.subtract(player.position()));
+    }
+
+    /** After the final step: drop the dash momentum at once so the player stops on the end point. */
+    static void onPlayerTickPost(PlayerTickEvent.Post event) {
+        LocalPlayer player = driven(event.getEntity());
+        if (!active || player == null || age < ticks) {
             return;
         }
-        Vec3 target = start.add(end.subtract(start).scale(age / (double) ticks));
-        player.setDeltaMovement(target.subtract(player.position()));
+        player.setDeltaMovement(dir.scale(0.06));
+        player.resetFallDistance();
+        stop();
     }
 
     /** No steering, jumping or sneaking while the dash carries the player. */

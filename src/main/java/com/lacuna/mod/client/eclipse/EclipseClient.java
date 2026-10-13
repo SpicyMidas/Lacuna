@@ -26,6 +26,7 @@ public final class EclipseClient {
     public static void register(IEventBus modBus, IEventBus forgeBus) {
         modBus.addListener(EclipseClient::onRegisterLayers);
         forgeBus.addListener(EclipseClient::onPlayerTickPre);
+        forgeBus.addListener(EclipseClient::onPlayerTickPost);
         forgeBus.addListener(EclipseClient::onMovementInput);
         forgeBus.addListener(EclipseClient::onClientTick);
         forgeBus.addListener(EclipseClient::onComputeFov);
@@ -40,6 +41,12 @@ public final class EclipseClient {
     private static void onPlayerTickPre(PlayerTickEvent.Pre event) {
         if (DashDriver.active() && event.getEntity().level().isClientSide()) {
             SafeRun.run(FEATURE, () -> DashDriver.onPlayerTickPre(event), DashDriver::stop);
+        }
+    }
+
+    private static void onPlayerTickPost(PlayerTickEvent.Post event) {
+        if (DashDriver.active() && event.getEntity().level().isClientSide()) {
+            SafeRun.run(FEATURE, () -> DashDriver.onPlayerTickPost(event), DashDriver::stop);
         }
     }
 
