@@ -1,0 +1,53 @@
+# Sun's Fury, full sequence at night: trident hold pose (3 cameras), throw, flight, focus (sun sweeps to noon,
+# light converges, ring shrinks), strike column, fade.
+world lacuna_solar flat
+wait 60
+hud off
+cmd time set 18000
+cmd give @s lacuna:suns_fury
+select 0
+look 0 8
+wait 30
+camera front
+use on
+wait 28
+shot solar_hold_front
+camera back
+wait 3
+shot solar_hold_back
+camera first
+wait 3
+shot solar_hold_first
+use off
+wait 2
+shot solar_flight
+wait 2
+shot solar_flight_b
+wait 12
+cmd tp @s ~ ~ ~-16 0 -12
+wait 6
+shot solar_focus_early
+wait 30
+shot solar_focus_mid
+look -90 -25
+wait 2
+shot solar_focus_mid_sky
+look 0 -12
+wait 30
+shot solar_focus_late
+look 0 -75
+wait 2
+shot solar_focus_late_sky
+look 0 -12
+wait 18
+shot solar_strike_a
+wait 22
+shot solar_strike_b
+cmd tp @s ~ ~6 ~-34 0 -20
+wait 10
+shot solar_strike_far
+wait 16
+shot solar_fade
+wait 30
+shot solar_after
+quit

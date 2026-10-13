@@ -19,6 +19,16 @@ public final class LacunaClientConfig {
         B.pop();
     }
 
+    // ---------------------------------------------------------------- solar (Sun's Fury, Divine Magnifying Glass)
+    public static final ModConfigSpec.BooleanValue SOLAR_SKY;
+
+    static {
+        B.push("solar");
+        SOLAR_SKY = B.comment("While Sun's Fury focuses or strikes, the sun flares in the sky and the fog warms.")
+                .define("sunFlare", true);
+        B.pop();
+    }
+
     public static final ModConfigSpec SPEC = B.build();
 
     private LacunaClientConfig() {}

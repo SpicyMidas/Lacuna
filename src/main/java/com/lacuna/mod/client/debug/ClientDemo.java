@@ -30,7 +30,8 @@ import org.apache.commons.io.FileUtils;
  * <p>
  * Script lines: {@code world <name> flat|normal [seed]}, {@code wait <ticks>}, {@code cmd <command>},
  * {@code shot <name>}, {@code hud on|off}, {@code look <yaw> <pitch>}, {@code use on|off}, {@code attack},
- * {@code sneak on|off}, {@code forward on|off}, {@code select <0-8>}, {@code log <text>}, {@code quit},
+ * {@code sneak on|off}, {@code forward on|off}, {@code select <0-8>}, {@code camera first|back|front},
+ * {@code log <text>}, {@code quit},
  * {@code fx <kind> x y z [x2 y2 z2] [p0 p1 p2]} (client effect handler, ~ offsets allowed),
  * {@code particle <id> x y z [count]}.
  * Blank lines and lines starting with # are ignored. Screenshots land in run/screenshots/.
@@ -120,6 +121,11 @@ public final class ClientDemo {
                 case "use" -> mc.options.keyUse.setDown(arg.trim().equals("on"));
                 case "sneak" -> mc.options.keyShift.setDown(arg.trim().equals("on"));
                 case "forward" -> mc.options.keyUp.setDown(arg.trim().equals("on"));
+                case "camera" -> mc.options.setCameraType(switch (arg.trim()) {
+                    case "back" -> net.minecraft.client.CameraType.THIRD_PERSON_BACK;
+                    case "front" -> net.minecraft.client.CameraType.THIRD_PERSON_FRONT;
+                    default -> net.minecraft.client.CameraType.FIRST_PERSON;
+                });
                 case "attack" -> KeyMapping.click(mc.options.keyAttack.getKey());
                 case "select" -> mc.player.getInventory().selected = Integer.parseInt(arg.trim());
                 case "log" -> Lacuna.LOGGER.info("[DEMO] {}", arg);

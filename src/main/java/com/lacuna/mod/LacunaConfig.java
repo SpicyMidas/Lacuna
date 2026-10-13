@@ -47,6 +47,7 @@ public final class LacunaConfig {
     public static final ModConfigSpec.IntValue SOLAR_DESTRUCTION_RADIUS;
     public static final ModConfigSpec.IntValue SOLAR_MAX_CHANGES_PER_USE;
     public static final ModConfigSpec.BooleanValue SOLAR_CHANGE_TIME;
+    public static final ModConfigSpec.IntValue SOLAR_FOCUS_TICKS;
 
     // ---------------------------------------------------------------- utility items
     public static final ModConfigSpec.BooleanValue PEARL_ENABLED;
@@ -136,6 +137,8 @@ public final class LacunaConfig {
         SOLAR_MAX_CHANGES_PER_USE = B.defineInRange("maxBlockChangesPerUse", Balance.SOLAR_MAX_CHANGES_PER_USE, 0, 100000);
         SOLAR_CHANGE_TIME = B.comment("Detonation in the overworld sets the time to the next noon and clears weather.")
                 .define("changeTime", true);
+        SOLAR_FOCUS_TICKS = B.comment("Ticks between the landing of Sun's Fury and the strike (the sun climbs to noon meanwhile).")
+                .defineInRange("focusTicks", Balance.SUNS_FURY_FOCUS_TICKS, 20, 600);
         B.pop();
 
         B.push("items");

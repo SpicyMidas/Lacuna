@@ -1,0 +1,76 @@
+{
+  "display": {
+    "firstperson_lefthand": {
+      "rotation": [
+        20,
+        45,
+        -80
+      ],
+      "scale": [
+        1.1,
+        1.1,
+        1.1
+      ],
+      "translation": [
+        2.63,
+        2.26,
+        -10.43
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        20,
+        -45,
+        80
+      ],
+      "scale": [
+        1.1,
+        1.1,
+        1.1
+      ],
+      "translation": [
+        2.63,
+        2.26,
+        -10.43
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        -170,
+        90,
+        -20
+      ],
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "translation": [
+        0.49,
+        -2.34,
+        -4.17
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        -170,
+        -90,
+        20
+      ],
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ],
+      "translation": [
+        0.49,
+        -2.34,
+        -4.17
+      ]
+    }
+  },
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "lacuna:item/suns_fury"
+  }
+}

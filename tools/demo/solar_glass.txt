@@ -1,0 +1,51 @@
+# Divine Magnifying Glass: client shader beam by day (yellow), by night (white) and underwater (blue), first person and
+# third person.
+world lacuna_glass flat
+wait 60
+hud off
+cmd time set 6000
+cmd give @s lacuna:divine_magnifying_glass
+select 0
+cmd fill ~-2 ~ ~7 ~2 ~2 ~7 minecraft:stone_bricks
+cmd setblock ~ ~ ~6 minecraft:oak_planks
+look 0 12
+wait 20
+hud on
+use on
+wait 12
+shot glass_day_first
+hud off
+camera back
+wait 4
+shot glass_day_back
+camera front
+wait 4
+shot glass_day_front
+camera first
+use off
+cmd time set 18000
+wait 15
+hud on
+use on
+wait 12
+shot glass_night_first
+hud off
+camera back
+wait 4
+shot glass_night_back
+camera first
+use off
+cmd time set 6000
+cmd fill ~-5 ~ ~-3 ~5 ~3 ~6 minecraft:water replace air
+wait 20
+hud on
+use on
+wait 12
+shot glass_underwater_first
+hud off
+camera back
+wait 4
+shot glass_underwater_back
+camera first
+use off
+quit

@@ -2,7 +2,11 @@ package com.lacuna.mod.solar;
 
 import com.lacuna.mod.Balance;
 import com.lacuna.mod.LacunaConfig;
+import com.lacuna.mod.fx.LacunaFx;
+import com.lacuna.mod.logic.SolarMath;
+import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModDamageTypes;
+import com.lacuna.mod.registry.ModParticles;
 import com.lacuna.mod.registry.ModTags;
 import com.lacuna.mod.util.SafeRun;
 import java.util.ArrayList;
@@ -10,9 +14,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -27,22 +32,24 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 /**
- * The solar column left by Sun's Fury: 60 ticks of light, 5 damage every 5 ticks + 10 s fire within radius 7, and a
- * budgeted block-destruction job (rings outward, <= 400 changes per tick, <= 12000 per use, only with mobGriefing
- * and mayInteract). Never saved: the job lives only in memory (entity type is noSave).
+ * The solar column that ends a Sun's Fury focus (spec 11.3): a {@link Balance#SOLAR_RAY_TICKS}-tick STRIKE — 5 damage every
+ * 5 ticks + 10 s fire within radius 7, and the budgeted block-destruction job (rings outward, <= 400 changes per tick,
+ * <= 12000 per use, only with mobGriefing and mayInteract) — then a {@link Balance#SOLAR_FADE_TICKS}-tick harmless FADE.
+ * The pillar of light, rings, flash and shake are drawn by the clients (client/solar). Never saved (entity type is
+ * noSave): the job lives only in memory.
  */
 public class SolarRayEntity extends Entity {
     public static final String FEATURE = "suns_fury";
-    private static final DustParticleOptions GOLD = new DustParticleOptions(new Vector3f(1.0F, 0.82F, 0.24F), 2.0F);
+    private static final EntityDataAccessor<Integer> DATA_START = SynchedEntityData.defineId(SolarRayEntity.class, EntityDataSerializers.INT);
 
     @Nullable
     private UUID owner;
     private List<BlockPos> job;
     private int cursor;
     private int changes;
+    private boolean dryRun;
 
     public SolarRayEntity(EntityType<? extends SolarRayEntity> type, Level level) {
         super(type, level);
@@ -53,8 +60,33 @@ public class SolarRayEntity extends Entity {
         this.owner = owner;
     }
 
+    /** GameTest hook: no damage, no block destruction (the visuals and sounds still play). */
+    public void setDryRun(boolean dryRun) {
+        this.dryRun = dryRun;
+    }
+
+    /** Records the game time the strike started (synced, so clients agree on the column's age). */
+    public void markStart(long gameTime) {
+        entityData.set(DATA_START, (int) gameTime);
+    }
+
+    /** Ticks since the strike started, with the partial tick (client and server). */
+    public double age(float partialTick) {
+        int start = entityData.get(DATA_START);
+        if (start == 0) {
+            return tickCount + partialTick;
+        }
+        return Math.max(0, (int) level().getGameTime() - start) + partialTick;
+    }
+
+    public SolarMath.RayPhase phase() {
+        return SolarMath.rayPhase((int) age(0.0F), Balance.SOLAR_RAY_TICKS, Balance.SOLAR_FADE_TICKS);
+    }
+
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {}
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_START, 0);
+    }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {}
@@ -65,47 +97,85 @@ public class SolarRayEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (!(level() instanceof ServerLevel server)) {
-            return;
+        if (level() instanceof ServerLevel server) {
+            SafeRun.run(FEATURE, () -> serverTick(server), this::discard);
+        } else {
+            clientParticles();
         }
-        SafeRun.run(FEATURE, () -> serverTick(server), this::discard);
     }
 
     private void serverTick(ServerLevel server) {
         if (tickCount == 1) {
-            server.sendParticles(ParticleTypes.FLASH, getX(), getY() + 1, getZ(), 1, 0, 0, 0, 0);
-            server.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.6F, 0.7F);
-            server.playSound(null, blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 0.8F, 1.2F);
-            job = buildJob(server);
+            if (entityData.get(DATA_START) == 0) {
+                markStart(server.getGameTime() - 1); // summoned directly (debug): starts now
+            }
+            server.playSound(null, getX(), getY(), getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 4.0F, 0.75F);
+            server.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8F, 0.6F);
+            server.playSound(null, getX(), getY(), getZ(), SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 3.0F, 0.8F);
+            LacunaFx.send(server, position(), 256.0, FxPayload.at("solar_strike", position()));
+            job = dryRun ? List.of() : buildJob(server);
         }
-        boolean rayActive = tickCount <= Balance.SOLAR_RAY_TICKS;
-        if (rayActive) {
-            column(server);
-            if (tickCount % Balance.SOLAR_RAY_DAMAGE_INTERVAL == 0) {
+        SolarMath.RayPhase phase = SolarMath.rayPhase(tickCount, Balance.SOLAR_RAY_TICKS, Balance.SOLAR_FADE_TICKS);
+        if (phase == SolarMath.RayPhase.STRIKE) {
+            if (!dryRun && tickCount % Balance.SOLAR_RAY_DAMAGE_INTERVAL == 0) {
                 burn(server);
             }
-        }
-        boolean jobActive = job != null && cursor < job.size() && changes < LacunaConfig.get(LacunaConfig.SOLAR_MAX_CHANGES_PER_USE);
-        if (jobActive) {
-            destroySome(server);
-        }
-        if (!rayActive && !jobActive) {
+            if (job != null && cursor < job.size() && changes < LacunaConfig.get(LacunaConfig.SOLAR_MAX_CHANGES_PER_USE)) {
+                destroySome(server);
+            }
+            if (tickCount % 10 == 5) {
+                server.playSound(null, getX(), getY(), getZ(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 2.5F, 0.5F);
+                server.playSound(null, getX(), getY(), getZ(), SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 2.0F, 2.0F);
+            }
+        } else if (phase == SolarMath.RayPhase.FADE) {
+            if (tickCount == Balance.SOLAR_RAY_TICKS + 1) {
+                server.playSound(null, getX(), getY(), getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 2.5F, 0.7F);
+            }
+        } else {
             discard();
         }
     }
 
-    private void column(ServerLevel server) {
-        double x = getX();
-        double z = getZ();
-        for (int i = 0; i < 8; i++) { // 8 particle packets per tick (budget 40)
-            double y = getY() + random.nextDouble() * Balance.SOLAR_RAY_HEIGHT;
-            server.sendParticles(ParticleTypes.END_ROD, x, y, z, 3, 1.0, 2.0, 1.0, 0.02);
-            if (i % 2 == 0) {
-                server.sendParticles(GOLD, x, y, z, 3, 1.0, 2.0, 1.0, 0.0);
+    /** Client: light motes pouring up the column, sparks at its foot, and the column dissolving into motes as it fades. */
+    private void clientParticles() {
+        double age = age(0.0F);
+        double intensity = SolarMath.columnIntensity(age, Balance.SOLAR_RAY_TICKS, Balance.SOLAR_FADE_TICKS);
+        if (intensity <= 0.0) {
+            return;
+        }
+        boolean strike = age <= Balance.SOLAR_RAY_TICKS;
+        if (age <= 2) {
+            for (int i = 0; i < 40; i++) {
+                double a = random.nextDouble() * Math.PI * 2.0;
+                double s = 0.4 + random.nextDouble() * 0.9;
+                level().addAlwaysVisibleParticle(ModParticles.SOLAR_GLINT.get(), true, getX(), getY() + 0.5, getZ(),
+                        Math.cos(a) * s, random.nextDouble() * 0.3, Math.sin(a) * s);
             }
-            if (i % 4 == 0) {
-                server.sendParticles(ParticleTypes.FLAME, x, getY() + random.nextDouble() * 6, z, 4, 1.5, 0.5, 1.5, 0.02);
+            level().addAlwaysVisibleParticle(ParticleTypes.FLASH, true, getX(), getY() + 1.0, getZ(), 0, 0, 0);
+        }
+        int motes = strike ? 7 : (int) (10 * intensity);
+        for (int i = 0; i < motes; i++) {
+            double a = random.nextDouble() * Math.PI * 2.0;
+            double r = strike ? 0.8 + random.nextDouble() * 4.5 : random.nextDouble() * 3.0;
+            double y = strike ? getY() + random.nextDouble() * 6.0 : getY() + random.nextDouble() * 70.0;
+            double up = strike ? 0.25 + random.nextDouble() * 0.6 : 0.02 + random.nextDouble() * 0.05;
+            level().addAlwaysVisibleParticle(ModParticles.LIGHT_MOTE.get(), true, getX() + Math.cos(a) * r, y, getZ() + Math.sin(a) * r,
+                    Math.cos(a) * 0.03, up, Math.sin(a) * 0.03);
+        }
+        if (strike) {
+            for (int i = 0; i < 2; i++) {
+                double a = random.nextDouble() * Math.PI * 2.0;
+                double r = random.nextDouble() * 7.0;
+                level().addAlwaysVisibleParticle(ModParticles.SOLAR_GLINT.get(), true, getX() + Math.cos(a) * r, getY() + 0.2,
+                        getZ() + Math.sin(a) * r, 0.0, 0.05, 0.0);
             }
+            if (tickCount % 2 == 0) {
+                level().addAlwaysVisibleParticle(ParticleTypes.LAVA, true, getX() + (random.nextDouble() - 0.5) * 6.0, getY() + 0.3,
+                        getZ() + (random.nextDouble() - 0.5) * 6.0, 0, 0, 0);
+            }
+        } else if (tickCount % 3 == 0) {
+            level().addAlwaysVisibleParticle(ParticleTypes.LARGE_SMOKE, true, getX() + (random.nextDouble() - 0.5) * 8.0, getY() + 0.5,
+                    getZ() + (random.nextDouble() - 0.5) * 8.0, 0.0, 0.06, 0.0);
         }
     }
 
@@ -183,6 +253,16 @@ public class SolarRayEntity extends Entity {
     }
 
     @Override
+    public boolean shouldRenderAtSqrDistance(double distanceSqr) {
+        return distanceSqr < 640.0 * 640.0;
+    }
+
+    @Override
+    public AABB getBoundingBoxForCulling() {
+        return new AABB(getX() - 28, getY() - 12, getZ() - 28, getX() + 28, getY() + 420, getZ() + 28);
+    }
+
+    @Override
     public boolean isPickable() {
         return false;
     }
@@ -190,5 +270,10 @@ public class SolarRayEntity extends Entity {
     @Override
     public boolean isPushable() {
         return false;
+    }
+
+    @Override
+    public boolean ignoreExplosion(net.minecraft.world.level.Explosion explosion) {
+        return true;
     }
 }

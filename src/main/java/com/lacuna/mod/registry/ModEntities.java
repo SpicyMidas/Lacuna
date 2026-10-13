@@ -29,10 +29,10 @@ public final class ModEntities {
     // ------------------------------------------------------------------ M4
     public static final DeferredHolder<EntityType<?>, EntityType<SunsFuryEntity>> SUNS_FURY = ENTITIES.register("suns_fury",
             () -> EntityType.Builder.<SunsFuryEntity>of(SunsFuryEntity::new, MobCategory.MISC)
-                    .sized(0.4F, 0.4F).clientTrackingRange(8).updateInterval(5).build("suns_fury"));
+                    .sized(0.5F, 0.5F).clientTrackingRange(16).updateInterval(2).fireImmune().noSave().build("suns_fury"));
     public static final DeferredHolder<EntityType<?>, EntityType<SolarRayEntity>> SOLAR_RAY = ENTITIES.register("solar_ray",
             () -> EntityType.Builder.<SolarRayEntity>of(SolarRayEntity::new, MobCategory.MISC)
-                    .sized(1.0F, 1.0F).clientTrackingRange(16).updateInterval(20).fireImmune().noSave().build("solar_ray"));
+                    .sized(1.0F, 1.0F).clientTrackingRange(20).updateInterval(20).fireImmune().noSave().build("solar_ray"));
 
     // ------------------------------------------------------------------ M5
     public static final DeferredHolder<EntityType<?>, EntityType<ArrivalShardEntity>> ARRIVAL_SHARD = ENTITIES.register("arrival_shard",
