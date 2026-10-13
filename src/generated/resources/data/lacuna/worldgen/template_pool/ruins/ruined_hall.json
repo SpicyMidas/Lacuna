@@ -4,7 +4,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:ruins/ruined_hall_1",
-        "processors": "minecraft:empty",
+        "processors": "lacuna:murals",
         "projection": "rigid"
       },
       "weight": 1
@@ -13,7 +13,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:ruins/ruined_hall_2",
-        "processors": "minecraft:empty",
+        "processors": "lacuna:murals",
         "projection": "rigid"
       },
       "weight": 1

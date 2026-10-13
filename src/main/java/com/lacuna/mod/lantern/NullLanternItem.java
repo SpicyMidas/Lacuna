@@ -21,12 +21,18 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.NeutralMob;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.monster.Creeper;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 
 /**
- * Null Lantern (spec M6): while held, hostile mobs within 16 blocks cannot target the holder (unless provoked in
- * the last 5 s or within 3 blocks) and natural hostile spawns within 24 blocks are blocked. 1 durability / 200 ticks.
+ * Null Lantern (spec M6, revised): while held in either hand, hostile and angered neutral mobs cannot target or hurt
+ * the holder at any distance unless the holder hurt them in the last 5 s; mobs already hunting the holder forget
+ * them (brain memories and anger included, creepers stop swelling) and natural hostile spawns within 24 blocks are
+ * blocked. Bosses ({@code lacuna:cannot_be_banished}) are unaffected. 1 durability / 200 ticks.
  */
 public class NullLanternItem extends Item {
     public static final String FEATURE = "null_lantern";
@@ -57,36 +63,88 @@ public class NullLanternItem extends Item {
         if (now % Balance.LANTERN_TICKS_PER_DURABILITY == 0) {
             stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
         }
-        if (now % 20 == 0 && level instanceof ServerLevel server) {
+        if (now % 5 == 0 && level instanceof ServerLevel server) {
             SafeRun.run(FEATURE, () -> {
-                double r = LacunaConfig.get(LacunaConfig.LANTERN_RADIUS);
-                for (Mob mob : server.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(r), m -> m.getTarget() == player)) {
-                    if (mob instanceof Enemy && shouldIgnore(mob, player)) {
-                        mob.setTarget(null);
-                    }
+                double r = Math.max(32.0, LacunaConfig.get(LacunaConfig.LANTERN_RADIUS));
+                for (Mob mob : server.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(r), m -> affects(m, player))) {
+                    forget(mob, player);
+                }
+                if (now % 10 == 0) {
+                    // a faint veil of shadow around the holder, so everyone can tell the lantern is working
+                    server.sendParticles(com.lacuna.mod.registry.ModParticles.SHADOW_MOTE.get(), player.getX(), player.getY() + 1.0,
+                            player.getZ(), 2, 0.45, 0.6, 0.45, 0.005);
                 }
             });
         }
     }
 
-    private static boolean shouldIgnore(Mob mob, Player player) {
-        if (mob.getType().is(ModTags.Entities.CANNOT_BE_BANISHED)) {
-            return false; // bosses are not affected
-        }
-        double dist = mob.distanceTo(player);
-        if (dist <= Balance.LANTERN_CLOSE_RANGE || dist > LacunaConfig.get(LacunaConfig.LANTERN_RADIUS)) {
+    /** Hostile mobs and neutral mobs that can turn on a player (golems keep guarding villages); never bosses. */
+    private static boolean isThreat(Mob mob) {
+        if (mob.getType().is(ModTags.Entities.CANNOT_BE_BANISHED) || mob instanceof net.minecraft.world.entity.animal.AbstractGolem) {
             return false;
         }
-        boolean provoked = mob.getLastHurtByMob() == player && mob.tickCount - mob.getLastHurtByMobTimestamp() < Balance.LANTERN_PROVOKE_TICKS;
-        return !provoked;
+        return mob instanceof Enemy || mob instanceof NeutralMob;
+    }
+
+    private static boolean provoked(Mob mob, Player player) {
+        return mob.getLastHurtByMob() == player && mob.tickCount - mob.getLastHurtByMobTimestamp() < Balance.LANTERN_PROVOKE_TICKS;
+    }
+
+    /** True when {@code mob} must leave {@code player} alone right now. */
+    private static boolean shouldIgnore(Mob mob, Player player) {
+        return isThreat(mob) && !provoked(mob, player);
+    }
+
+    private static boolean affects(Mob mob, Player player) {
+        if (!shouldIgnore(mob, player)) {
+            return false;
+        }
+        if (mob.getTarget() == player) {
+            return true;
+        }
+        if (mob instanceof NeutralMob neutral && player.getUUID().equals(neutral.getPersistentAngerTarget())) {
+            return true;
+        }
+        return mob.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).filter(t -> t == player).isPresent()
+                || mob.getBrain().getMemory(MemoryModuleType.ANGRY_AT).filter(id -> id.equals(player.getUUID())).isPresent();
+    }
+
+    /** Drops every way {@code mob} could be hunting {@code player}. */
+    private static void forget(Mob mob, Player player) {
+        if (mob.getTarget() == player) {
+            mob.setTarget(null);
+        }
+        if (mob.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).filter(t -> t == player).isPresent()) {
+            mob.getBrain().eraseMemory(MemoryModuleType.ATTACK_TARGET);
+        }
+        if (mob.getBrain().getMemory(MemoryModuleType.ANGRY_AT).filter(id -> id.equals(player.getUUID())).isPresent()) {
+            mob.getBrain().eraseMemory(MemoryModuleType.ANGRY_AT);
+        }
+        if (mob instanceof NeutralMob neutral && player.getUUID().equals(neutral.getPersistentAngerTarget())) {
+            neutral.stopBeingAngry();
+        }
+        if (mob instanceof Creeper creeper && creeper.getSwellDir() > 0) {
+            creeper.setSwellDir(-1);
+        }
     }
 
     public static void onChangeTarget(LivingChangeTargetEvent event) {
         if (!(event.getNewAboutToBeSetTarget() instanceof Player player) || !(event.getEntity() instanceof Mob mob)
-                || !(mob instanceof Enemy) || player.level().isClientSide() || !active() || !holds(player)) {
+                || player.level().isClientSide() || !active() || !holds(player)) {
             return;
         }
         if (shouldIgnore(mob, player)) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** Contact and melee damage (slimes, magma cubes, stray shots...) from unprovoked threats is cancelled too. */
+    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide() || !active() || !holds(player)) {
+            return;
+        }
+        Entity source = event.getSource().getEntity();
+        if (source instanceof Mob mob && shouldIgnore(mob, player)) {
             event.setCanceled(true);
         }
     }

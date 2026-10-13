@@ -64,6 +64,7 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(MirrorOfRecursionItem::onProjectileImpact);
         NeoForge.EVENT_BUS.addListener(NullLanternItem::onChangeTarget);
         NeoForge.EVENT_BUS.addListener(NullLanternItem::onSpawnCheck);
+        NeoForge.EVENT_BUS.addListener(NullLanternItem::onIncomingDamage);
         NeoForge.EVENT_BUS.addListener(DeathMemory::onDeath);
         NeoForge.EVENT_BUS.addListener(DeathMemory::onServerStopped);
         GearEvents.register(NeoForge.EVENT_BUS);

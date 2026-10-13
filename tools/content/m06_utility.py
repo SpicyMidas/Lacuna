@@ -34,8 +34,8 @@ def items(g):
         g.name(f"item.lacuna.{iid}.lore", en, it)
     g.name("item.lacuna.mirror_of_recursion.use", "Hold: reflect projectiles. Sneak + use: release a stored echo.",
            "Tieni premuto: rifletti i proiettili. Accovacciato + usa: rilascia un'eco.")
-    g.name("item.lacuna.null_lantern.use", "Held: hostile mobs lose interest in you.",
-           "In mano: le creature ostili perdono interesse per te.")
+    g.name("item.lacuna.null_lantern.use", "Held: hostile mobs ignore you and cannot hurt you, unless you strike first.",
+           "In mano: le creature ostili ti ignorano e non possono ferirti, a meno che non colpisca tu per primo.")
     g.name("item.lacuna.whisperbone_flute.use", "Use: call echoes of the recently fallen.", "Usa: richiama le eco dei caduti recenti.")
     for key, en, it in [
         ("lacuna.tooltip.cooldown", "Cooldown: %s s", "Ricarica: %s s"),

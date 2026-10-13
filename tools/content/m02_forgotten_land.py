@@ -126,12 +126,18 @@ def structures(g):
     sets = {}
     for name, (variants, set_name) in RUIN_STRUCTURES.items():
         locs = [mod(f"ruins/{name}_{i}") for i in range(1, variants + 1)]
-        g.data(f"worldgen/template_pool/ruins/{name}", wg.pool(locs))
+        g.data(f"worldgen/template_pool/ruins/{name}", wg.pool(locs, processors="lacuna:murals"))
         start_y = -3 if name == "sunken_plaza" else 0
         g.data(f"worldgen/structure/{name}", wg.jigsaw_structure(mod(f"ruins/{name}"), "#lacuna:has_structure/forgotten_ruins",
                                                                    start_y=start_y))
         sets.setdefault(set_name, []).append(mod(name))
-    g.data("worldgen/structure_set/forgotten_ruins", wg.structure_set(sets["forgotten_ruins"], 14, 6, 1847261933))
+    ruins_set = wg.structure_set(sets["forgotten_ruins"], 14, 6, 1847261933)
+    for entry in ruins_set["structures"]:
+        if entry["structure"] == mod("memory_shrine"):
+            entry["weight"] = 3  # the shrines carry the Memory Murals: make them the most common ruin
+    g.data("worldgen/structure_set/forgotten_ruins", ruins_set)
+    # hanging entities in templates need their TileX/Y/Z rewritten to world coordinates (structure/HangingEntityProcessor)
+    g.data("worldgen/processor_list/murals", {"processors": [{"processor_type": "lacuna:hanging_entities"}]})
     g.data("worldgen/structure_set/ruin_clusters", wg.structure_set(sets["ruin_clusters"], 7, 3, 902114877))
     g.tag("worldgen/structure", "lacuna:forgotten_ruins", *[mod(n) for n in RUIN_STRUCTURES])
 

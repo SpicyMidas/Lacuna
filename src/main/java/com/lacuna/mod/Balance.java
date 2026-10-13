@@ -143,7 +143,6 @@ public final class Balance {
     public static final int LANTERN_RADIUS = 16;
     public static final int LANTERN_SPAWN_RADIUS = 24;
     public static final int LANTERN_PROVOKE_TICKS = 100;
-    public static final double LANTERN_CLOSE_RANGE = 3.0;
     public static final int LANTERN_TICKS_PER_DURABILITY = 200;
 
     // ---------------------------------------------------------------- whisperbone flute (M6)

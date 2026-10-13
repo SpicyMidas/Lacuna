@@ -4,7 +4,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:ruins/memory_shrine_1",
-        "processors": "minecraft:empty",
+        "processors": "lacuna:murals",
         "projection": "rigid"
       },
       "weight": 1
@@ -13,7 +13,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:ruins/memory_shrine_2",
-        "processors": "minecraft:empty",
+        "processors": "lacuna:murals",
         "projection": "rigid"
       },
       "weight": 1

@@ -207,9 +207,9 @@ public final class LacunaGameTests {
     }
 
     @GameTest(template = PLATFORM)
-    public static void pearlRefusesOtherDimensions(GameTestHelper helper) {
+    public static void pearlCrossDimensionRules(GameTestHelper helper) {
         PearlLink link = lockPair(helper, new BlockPos(4, 0, 4));
-        check(helper, PearlLinks.resolve(helper.getLevel().getServer(), Level.NETHER, link).isEmpty(), "no cross-dimension travel");
+        check(helper, PearlLinks.resolve(helper.getLevel().getServer(), Level.NETHER, link).isPresent(), "travel across dimensions works");
         check(helper, PearlLinks.resolve(helper.getLevel().getServer(), ModDimensions.FORGOTTEN_LAND, link).isEmpty(),
                 "no Forgotten Land crossings");
         helper.succeed();

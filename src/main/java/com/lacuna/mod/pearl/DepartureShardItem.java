@@ -14,8 +14,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * Departure Shard (left half): right click teleports the user to the linked anchor in the same dimension.
- * Invalid / missing / other-dimension link: "The shard hums, but nothing answers." with no cost and no cooldown.
+ * Departure Shard (left half): right click teleports the user to the linked anchor, in any dimension and across
+ * dimensions. Invalid / missing link: "The shard hums, but nothing answers."; a jump into or out of the Forgotten Land:
+ * "The Forgotten Land swallows the call." Neither costs durability nor starts the cooldown.
  */
 public class DepartureShardItem extends ShardItem {
     public DepartureShardItem(Properties properties) {
@@ -31,6 +32,10 @@ public class DepartureShardItem extends ShardItem {
         }
         if (level.isClientSide() || !(player instanceof ServerPlayer serverPlayer)) {
             return InteractionResultHolder.success(stack);
+        }
+        if (PearlLinks.crossesForgottenLand(serverPlayer.server, serverPlayer.level().dimension(), link)) {
+            player.displayClientMessage(Component.translatable("lacuna.pearl.forgotten_refuses"), true);
+            return InteractionResultHolder.fail(stack);
         }
         Optional<PearlLinks.Target> target = PearlLinks.resolve(serverPlayer.server, serverPlayer.level().dimension(), link);
         if (target.isEmpty() || !PearlLinks.travel(serverPlayer, target.get())) {

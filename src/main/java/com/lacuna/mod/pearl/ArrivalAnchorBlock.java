@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ArrivalAnchorBlock extends Block implements EntityBlock {
     public static final MapCodec<ArrivalAnchorBlock> CODEC = simpleCodec(ArrivalAnchorBlock::new);
-    private static final VoxelShape SHAPE = Block.box(5.0, 4.0, 5.0, 11.0, 12.0, 11.0);
+    private static final VoxelShape SHAPE = Block.box(4.0, 4.0, 4.0, 12.0, 12.0, 12.0);
 
     public ArrivalAnchorBlock(Properties properties) {
         super(properties);

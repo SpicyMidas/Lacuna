@@ -109,17 +109,27 @@ public final class PearlLinks {
     /** Result of resolving a departure shard's link. */
     public record Target(ServerLevel level, BlockPos pos) {}
 
-    /** Validates the link: record exists, anchor block present with the same link, same dimension, no FL crossing. */
+    /**
+     * True when the shard would have to carry its user into or out of the Forgotten Land (the land lets nobody leave
+     * and its crossings belong to the Totem): such a jump is refused with its own message.
+     */
+    public static boolean crossesForgottenLand(MinecraftServer server, ResourceKey<Level> from, PearlLink link) {
+        return PearlLinkSavedData.get(server).get(link.id())
+                .map(a -> a.dimension() != from && (from == ModDimensions.FORGOTTEN_LAND || a.dimension() == ModDimensions.FORGOTTEN_LAND))
+                .orElse(false);
+    }
+
+    /**
+     * Validates the link: record exists and the anchor block is still there with the same link. Works in every
+     * dimension and across dimensions, except crossings into or out of the Forgotten Land.
+     */
     public static Optional<Target> resolve(MinecraftServer server, ResourceKey<Level> from, PearlLink link) {
         PearlLinkSavedData data = PearlLinkSavedData.get(server);
         Optional<PearlLinkSavedData.Anchor> anchor = data.get(link.id());
-        if (anchor.isEmpty()) {
+        if (anchor.isEmpty() || crossesForgottenLand(server, from, link)) {
             return Optional.empty();
         }
         PearlLinkSavedData.Anchor a = anchor.get();
-        if (a.dimension() != from || from == ModDimensions.FORGOTTEN_LAND) {
-            return Optional.empty(); // never across dimensions, never into/out of the Forgotten Land
-        }
         ServerLevel level = server.getLevel(a.dimension());
         if (level == null) {
             return Optional.empty();

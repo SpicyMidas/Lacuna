@@ -4,7 +4,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:ruins/broken_arch_1",
-        "processors": "minecraft:empty",
+        "processors": "lacuna:murals",
         "projection": "rigid"
       },
       "weight": 1
@@ -13,7 +13,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:ruins/broken_arch_2",
-        "processors": "minecraft:empty",
+        "processors": "lacuna:murals",
         "projection": "rigid"
       },
       "weight": 1
@@ -22,7 +22,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:ruins/broken_arch_3",
-        "processors": "minecraft:empty",
+        "processors": "lacuna:murals",
         "projection": "rigid"
       },
       "weight": 1

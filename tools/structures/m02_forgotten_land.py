@@ -28,6 +28,33 @@ def stairs(t, x, y, z, facing, half="bottom"):
     t.set(x, y, z, STAIRS, {"facing": facing, "half": half, "shape": "straight", "waterlogged": "false"})
 
 
+# 2D data values of Direction (Painting "facing" byte)
+FACING_2D = {"south": 0, "west": 1, "north": 2, "east": 3}
+# counter-clockwise direction of each facing: even-width paintings extend one block that way
+CCW = {"north": (-1, 0), "south": (1, 0), "east": (0, -1), "west": (0, 1)}
+BACK = {"north": (0, 1), "south": (0, -1), "east": (-1, 0), "west": (1, 0)}
+MURAL_SIZES = {"memory_dawn": (2, 2), "memory_spire": (3, 2), "memory_harvest": (2, 2), "memory_festival": (3, 2),
+               "memory_fall": (2, 2)}
+
+
+def mural(t, x, y, z, facing, variant):
+    """Hangs a Memory Mural painting whose anchor block is (x, y, z) (the air block in front of the wall), facing
+    away from the wall. Clears the painted area and makes every supporting wall block solid so the painting survives
+    (hanging entities pop off when their wall has holes). The lacuna:murals processor fixes TileX/Y/Z at placement."""
+    from nbtlib.tag import Byte
+    w, h = MURAL_SIZES[variant]
+    cx, cz = CCW[facing]
+    bx, bz = BACK[facing]
+    lo = -(w // 2) if w % 2 else 0
+    hi = w // 2
+    for k in range(lo, hi + 1):
+        for dy in range(h):
+            px, pz = x + cx * k, z + cz * k
+            t.set(px, y + dy, pz, "minecraft:air")
+            t.set(px + bx, y + dy, pz + bz, BRICK)
+    t.entity((x + 0.5, y + 0.5, z + 0.5), {"id": "minecraft:painting", "variant": L + variant, "facing": Byte(FACING_2D[facing])})
+
+
 def pillar(t, x, y0, y1, z):
     for y in range(y0, y1 + 1):
         t.set(x, y, z, PILLAR, {"axis": "y"})
@@ -121,6 +148,10 @@ def ruined_hall(Template, i):
     stairs(t, sx // 2 + 1, 1, sz - 3, "west")
     cluster(t, 1, 1, 1)
     cluster(t, sx - 2, 1, sz - 2)
+    # a Memory Mural above the altar, on the back wall
+    for x in range(sx // 2 - 1, sx // 2 + 2):
+        t.set(x, 1, sz - 1, BRICK)
+    mural(t, sx // 2, 2, sz - 2, "north", "memory_spire" if i == 1 else "memory_festival")
     t.save()
 
 
@@ -156,8 +187,6 @@ def sunken_plaza(Template, i):
 def memory_shrine(Template, i):
     s = 9
     t = Template(f"ruins/memory_shrine_{i}", s, 7, s)
-    murals = [L + f"mural_block_{k}" for k in range(1, 6)]
-    t.r.shuffle(murals)
     for x in range(s):
         for z in range(s):
             t.set(x, 0, z, BRICK)
@@ -172,13 +201,6 @@ def memory_shrine(Template, i):
     # entrance
     for y in range(1, 4):
         t.set(s // 2, y, 0, "minecraft:air")
-    # murals on the inner faces of the three other walls (facing into the room)
-    t.set(2, 2, s - 1, murals[0], {"facing": "north"})
-    t.set(s - 3, 2, s - 1, murals[1], {"facing": "north"})
-    t.set(0, 2, 3, murals[2], {"facing": "east"})
-    t.set(s - 1, 2, 5, murals[3], {"facing": "west"})
-    if i == 2:
-        t.set(0, 3, 5, murals[4], {"facing": "east"})
     # corner pillars, glyph altar, cache
     for (x, z) in ((1, 1), (s - 2, 1), (1, s - 2), (s - 2, s - 2)):
         pillar(t, x, 1, 4, z)
@@ -190,6 +212,12 @@ def memory_shrine(Template, i):
         for z in range(1, s - 1):
             if t.r.random() < 0.45:
                 slab(t, x, 6, z)
+    # Memory Murals (painting entities) on the three inner walls, placed last so nothing overwrites their wall
+    back, west, east = (("memory_spire", "memory_dawn", "memory_harvest") if i == 1
+                        else ("memory_festival", "memory_fall", "memory_dawn"))
+    mural(t, s // 2, 2, s - 2, "north", back)
+    mural(t, 1, 2, 4, "east", west)
+    mural(t, s - 2, 2, 3, "west", east)
     t.save()
 
 

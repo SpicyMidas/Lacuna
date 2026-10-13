@@ -1,8 +1,10 @@
 """M5: Fractured Pearl, Arrival/Departure shards, Arrival Anchor."""
 
-CRYSTAL_FACES = {d: {"uv": [5, 4, 11, 12], "texture": "#crystal"} for d in ("north", "south", "east", "west")}
-CRYSTAL_FACES["up"] = {"uv": [5, 5, 11, 11], "texture": "#crystal"}
-CRYSTAL_FACES["down"] = {"uv": [5, 5, 11, 11], "texture": "#crystal"}
+# the placed shard is a cube: an 8x8x8 translucent shell (whole texture on every face, square on square, never
+# stretched) around a 4x4x4 bright core
+SIDES = ("north", "south", "east", "west", "up", "down")
+SHELL_FACES = {d: {"uv": [0, 0, 16, 16], "texture": "#crystal"} for d in SIDES}
+CORE_FACES = {d: {"uv": [6, 6, 10, 10], "texture": "#crystal"} for d in SIDES}
 
 
 def build(g):
@@ -24,13 +26,14 @@ def build(g):
     g.name("lacuna.pearl.split", "The pearl splits into two halves.", "La perla si divide in due metà.")
     g.name("lacuna.pearl.crumbles", "The shard crumbles.", "La scheggia si sbriciola.")
     g.name("lacuna.pearl.nothing_answers", "The shard hums, but nothing answers.", "La scheggia vibra, ma nulla risponde.")
+    g.name("lacuna.pearl.forgotten_refuses", "The Forgotten Land swallows the call.", "La Terra Dimenticata inghiotte il richiamo.")
     g.name("entity.lacuna.arrival_shard", "Arrival Shard", "Scheggia d'arrivo")
 
     g.single("arrival_anchor", "Arrival Anchor", "Ancora d'arrivo",
              {"parent": "minecraft:block/block", "render_type": "minecraft:translucent",
               "textures": {"particle": "lacuna:block/arrival_anchor", "crystal": "lacuna:block/arrival_anchor"},
-              "elements": [{"from": [5, 4, 5], "to": [11, 12, 11],
-                            "rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8]}, "faces": CRYSTAL_FACES}]},
+              "elements": [{"from": [6, 6, 6], "to": [10, 10, 10], "faces": CORE_FACES},
+                           {"from": [4, 4, 4], "to": [12, 12, 12], "faces": SHELL_FACES}]},
              item=False, loot=None)
 
     g.shaped("fractured_pearl", ["DRD", "RPR", "DRD"],

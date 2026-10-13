@@ -33,5 +33,6 @@ public final class ModRegistries {
         ModVillagers.PROFESSIONS.register(modBus);
         ModFeatures.FEATURES.register(modBus);
         ModParticles.PARTICLES.register(modBus);
+        com.lacuna.mod.structure.HangingEntityProcessor.PROCESSORS.register(modBus);
     }
 }

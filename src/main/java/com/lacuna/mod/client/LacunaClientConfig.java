@@ -29,6 +29,21 @@ public final class LacunaClientConfig {
         B.pop();
     }
 
+    // ---------------------------------------------------------------- forgotten land atmosphere
+    public static final ModConfigSpec.IntValue FL_FOG_DISTANCE;
+    public static final ModConfigSpec.IntValue FL_MARSH_FOG_DISTANCE;
+    public static final ModConfigSpec.BooleanValue FL_MIST;
+
+    static {
+        B.push("forgottenLand");
+        FL_FOG_DISTANCE = B.comment("Fog far plane (blocks) everywhere in the Forgotten Land. Lower = thicker fog.")
+                .defineInRange("fogDistance", 24, 8, 512);
+        FL_MARSH_FOG_DISTANCE = B.comment("Fog far plane (blocks) in the Whispering Marsh.")
+                .defineInRange("marshFogDistance", 14, 6, 512);
+        FL_MIST = B.comment("Drifting mist wisps near the ground in the Forgotten Land.").define("mist", true);
+        B.pop();
+    }
+
     public static final ModConfigSpec SPEC = B.build();
 
     private LacunaClientConfig() {}
