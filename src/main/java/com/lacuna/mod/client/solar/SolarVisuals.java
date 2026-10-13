@@ -117,6 +117,28 @@ public final class SolarVisuals {
         vertex(vc, pose, b.subtract(sideB), 2.0F, vB, argbB);
     }
 
+    /**
+     * Camera-facing strip through camera-relative {@code points} (shared edges between segments, so no seams), with a
+     * width, ARGB colour and v per point; u runs {@code u0}..{@code u0 + 1} across ({@code u0 = 2}: soft sunbeam).
+     */
+    static void strip(PoseStack.Pose pose, VertexConsumer vc, List<Vec3> points, float[] width, int[] argb, float[] v, int u0) {
+        int n = points.size();
+        Vec3[] side = new Vec3[n];
+        for (int i = 0; i < n; i++) {
+            Vec3 tangent = points.get(Math.min(n - 1, i + 1)).subtract(points.get(Math.max(0, i - 1)));
+            if (tangent.lengthSqr() < 1.0E-8) {
+                tangent = new Vec3(0, 1, 0);
+            }
+            side[i] = facing(tangent, points.get(i)).scale(width[i] * 0.5);
+        }
+        for (int i = 0; i < n - 1; i++) {
+            vertex(vc, pose, points.get(i).subtract(side[i]), u0, v[i], argb[i]);
+            vertex(vc, pose, points.get(i).add(side[i]), u0 + 1.0F, v[i], argb[i]);
+            vertex(vc, pose, points.get(i + 1).add(side[i + 1]), u0 + 1.0F, v[i + 1], argb[i + 1]);
+            vertex(vc, pose, points.get(i + 1).subtract(side[i + 1]), u0, v[i + 1], argb[i + 1]);
+        }
+    }
+
     private static Vec3 facing(Vec3 dir, Vec3 at) {
         Vec3 s = dir.cross(at);
         if (s.lengthSqr() < 1.0E-8) {
@@ -134,36 +156,56 @@ public final class SolarVisuals {
         if (SunsFuryRenderer.tooCloseToShow(spear, ctx.cam())) {
             return;
         }
+        // the trail streams from the butt so the spear itself stays visible; the first trail points sit at the
+        // thrower's eyes: keep them off their screen
+        Vec3 dir = spear.pointing(pt);
+        Vec3 butt = head.subtract(dir.scale(0.8));
         List<Vec3> points = new ArrayList<>();
         for (Vec3 p : spear.trail) {
-            if (p.distanceToSqr(ctx.cam()) > 4.0) {
-                points.add(p); // the first trail points sit at the thrower's eyes: keep them off their screen
+            if (p.distanceToSqr(ctx.cam()) > 4.0 && p.subtract(butt).dot(dir) < -0.05) {
+                points.add(p);
             }
         }
-        Vec3 dir = spear.pointing(pt);
-        points.add(head.subtract(dir.scale(0.8))); // the trail streams from the butt, the spear itself stays visible
+        points.add(butt);
         int n = points.size();
         float t = ctx.time(spear.tickCount);
         if (n >= 2) {
-            VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
-            VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
-            float along = 0.0F;
-            for (int i = n - 1; i > 0; i--) {
-                Vec3 a = ctx.rel(points.get(i));
-                Vec3 b = ctx.rel(points.get(i - 1));
-                float ta = (float) i / (n - 1);
-                float tb = (float) (i - 1) / (n - 1);
-                float len = (float) points.get(i).distanceTo(points.get(i - 1));
-                FxDraw.ribbon(pose, over, a, b, 2.0F * ta + 0.1F, 2.0F * tb + 0.1F,
-                        FxDraw.argb(0.35F * ta, AMBER), FxDraw.argb(0.35F * tb * tb, AMBER), along, along + len);
-                sunbeam(pose, beam, a, b, 2.4F * ta + 0.1F, 2.4F * tb + 0.1F,
-                        FxDraw.argb(0.5F * ta, GOLD), FxDraw.argb(0.5F * tb * tb, GOLD), along, along + len);
-                FxDraw.ribbon(pose, beam, a, b, 1.1F * ta + 0.05F, 1.1F * tb + 0.05F,
-                        FxDraw.argb(0.85F * ta, GOLD), FxDraw.argb(0.85F * tb * tb, GOLD), along, along + len);
-                FxDraw.ribbon(pose, beam, a, b, 0.36F * ta + 0.02F, 0.36F * tb + 0.02F,
-                        FxDraw.argb(ta, WHITE), FxDraw.argb(tb * tb, WHITE), along, along + len);
-                along += len;
+            // one continuous strip per layer from the butt (index 0) to the tail: shared edges, no seams
+            List<Vec3> rel = new ArrayList<>(n);
+            float[] v = new float[n];
+            float[] k = new float[n];
+            for (int i = 0; i < n; i++) {
+                rel.add(ctx.rel(points.get(n - 1 - i)));
+                v[i] = i == 0 ? 0.0F : v[i - 1] + (float) rel.get(i).distanceTo(rel.get(i - 1));
+                k[i] = 1.0F - (float) i / (n - 1);
             }
+            float[] w = new float[n];
+            int[] c = new int[n];
+            VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
+            // the wide glow swells in just behind the spear instead of starting with a hard edge
+            for (int i = 0; i < n; i++) {
+                float wk = wake(k[i]);
+                w[i] = 2.2F * wk + 0.1F;
+                c[i] = FxDraw.argb(0.45F * wk * Math.min(1.0F, 1.6F * k[i]), AMBER);
+            }
+            strip(pose, over, rel, w, c, v, 0);
+            VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
+            for (int i = 0; i < n; i++) {
+                float wk = wake(k[i]);
+                w[i] = 2.6F * wk + 0.1F;
+                c[i] = FxDraw.argb(0.5F * wk * Math.min(1.0F, 1.6F * k[i]), GOLD);
+            }
+            strip(pose, beam, rel, w, c, v, 2);
+            for (int i = 0; i < n; i++) {
+                w[i] = 1.1F * k[i] + 0.05F;
+                c[i] = FxDraw.argb(0.85F * k[i] * k[i], GOLD);
+            }
+            strip(pose, beam, rel, w, c, v, 0);
+            for (int i = 0; i < n; i++) {
+                w[i] = 0.36F * k[i] + 0.02F;
+                c[i] = FxDraw.argb(k[i] * k[i], WHITE);
+            }
+            strip(pose, beam, rel, w, c, v, 0);
         }
         // the head of the spear blazes like a small sun
         Vec3 tip = ctx.rel(head.add(dir.scale(0.75)));
@@ -171,6 +213,12 @@ public final class SolarVisuals {
         FxDraw.billboard(pose, flare, ctx.camera(), tip, 1.15F + 0.12F * Mth.sin(t * 0.9F), t * 0.04F, FxDraw.argb(0.85F, GOLD));
         VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
         FxDraw.billboard(pose, glow, ctx.camera(), tip, 0.4F, -t * 0.05F, FxDraw.argb(0.9F, PALE));
+    }
+
+    /** Trail glow profile along the trail ({@code t} = 1 at the spear, 0 at the tail): swells in, then tapers away. */
+    private static float wake(float t) {
+        float s = 1.0F - t;
+        return t * (float) SolarMath.ease(s / 0.3);
     }
 
     // ------------------------------------------------------------------ focus
