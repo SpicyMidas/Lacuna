@@ -98,11 +98,12 @@ class Template:
                  {"id": "minecraft:barrel", "LootTable": loot_table})
 
     def jigsaw(self, x: int, y: int, z: int, orientation: str, name: str, target: str, pool: str,
-               final_state: str = "minecraft:air", joint: str = "rollable") -> None:
+               final_state: str = "minecraft:air", joint: str = "rollable", selection_priority: int = 0) -> None:
+        """selection_priority: a piece tries its jigsaws in descending priority (ties in random order)."""
         self.set(x, y, z, "jigsaw", {"orientation": orientation},
                  {"id": "minecraft:jigsaw", "name": name, "target": target, "pool": pool,
                   "final_state": final_state, "joint": joint,
-                  "placement_priority": 0, "selection_priority": 0})
+                  "placement_priority": 0, "selection_priority": selection_priority})
 
     def sign(self, x: int, y: int, z: int, lines: List[str], wood: str = "oak", rotation: int = 0,
              wall_facing: Optional[str] = None) -> None:

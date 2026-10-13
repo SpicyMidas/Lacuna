@@ -5,7 +5,7 @@
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:village/taiga/civic_square",
         "processors": "minecraft:mossify_10_percent",
-        "projection": "rigid"
+        "projection": "terrain_matching"
       },
       "weight": 1
     }

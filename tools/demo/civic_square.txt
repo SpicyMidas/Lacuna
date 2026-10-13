@@ -1,0 +1,57 @@
+# The civic square of every village style on flat ground: /place jigsaw grows a village from the square (its streets
+# come from the vanilla pools; /place jigsaw never adds houses along them, that needs real world generation), then a
+# top-down view and a three-quarter view of the plaza. With this seed the bell canopy lands at the positions below.
+world lacuna_civic flat civic
+wait 100
+hud off
+cmd time set 3000
+cmd gamemode spectator
+cmd place jigsaw lacuna:village/plains/civic_square minecraft:street 7 0 -60 0
+wait 300
+cmd tp @s 0 -18 0 0 90
+wait 200
+shot civic_plains_top
+cmd tp @s -5 -47 -18 facing 13 -58 0
+wait 200
+shot civic_plains
+cmd tp @s 400 -40 0
+wait 100
+cmd place jigsaw lacuna:village/desert/civic_square minecraft:street 7 400 -60 0
+wait 300
+cmd tp @s 400 -18 0 0 90
+wait 200
+shot civic_desert_top
+cmd tp @s 370 -47 -18 facing 388 -58 0
+wait 200
+shot civic_desert
+cmd tp @s 800 -40 0
+wait 100
+cmd place jigsaw lacuna:village/savanna/civic_square minecraft:street 7 800 -60 0
+wait 300
+cmd tp @s 800 -18 0 0 90
+wait 200
+shot civic_savanna_top
+cmd tp @s 782 -47 -5 facing 800 -58 13
+wait 200
+shot civic_savanna
+cmd tp @s 1200 -40 0
+wait 100
+cmd place jigsaw lacuna:village/taiga/civic_square minecraft:street 7 1200 -60 0
+wait 300
+cmd tp @s 1200 -18 0 0 90
+wait 200
+shot civic_taiga_top
+cmd tp @s 1182 -47 -5 facing 1200 -58 13
+wait 200
+shot civic_taiga
+cmd tp @s 1600 -40 0
+wait 100
+cmd place jigsaw lacuna:village/snowy/civic_square minecraft:street 7 1600 -60 0
+wait 300
+cmd tp @s 1600 -18 0 0 90
+wait 200
+shot civic_snowy_top
+cmd tp @s 1582 -47 -5 facing 1600 -58 13
+wait 200
+shot civic_snowy
+quit

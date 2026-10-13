@@ -5,7 +5,7 @@
         "element_type": "minecraft:single_pool_element",
         "location": "lacuna:village/snowy/civic_square",
         "processors": "minecraft:empty",
-        "projection": "rigid"
+        "projection": "terrain_matching"
       },
       "weight": 1
     }

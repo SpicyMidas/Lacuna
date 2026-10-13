@@ -186,6 +186,10 @@ public final class VillageGameTests {
             double share = squares / (double) centers.size();
             check(helper, Math.abs(share - VillagePools.SQUARE_SHARE) < 0.02, type + " civic square share " + share);
             check(helper, templates.get(VillagePools.template(type, VillagePools.SQUARE)).isPresent(), "civic square template " + type);
+            check(helper, templates.get(VillagePools.template(type, "civic_bell")).isPresent(), "bell canopy template " + type);
+            check(helper, pools.get(VillagePools.template(type, "civic_bell")) != null, "bell canopy pool " + type);
+            check(helper, centers.templates.stream().filter(e -> VillagePools.civicBuilding(e).isPresent())
+                    .allMatch(e -> e.getProjection() == StructureTemplatePool.Projection.TERRAIN_MATCHING), "the square follows the terrain");
             check(helper, centers.rawTemplates.stream().anyMatch(p -> VillagePools.civicBuilding(p.getFirst()).isPresent()),
                     "the raw element list (written by the pool codec) holds the square too");
         }
@@ -193,16 +197,19 @@ public final class VillageGameTests {
         helper.succeed();
     }
 
-    /** Generates (without placing) 24 villages of every style and counts the civic buildings in their pieces. */
+    /** Generates (without placing) 40 villages of every style and counts the civic buildings in their pieces. */
     @GameTest(template = PLATFORM, timeoutTicks = 400)
     public static void vanillaVillagesGetCivicBuildings(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        int samples = 24;
+        int samples = 40;
         StringBuilder report = new StringBuilder();
         for (String type : VillagePools.TYPES) {
             Map<String, Integer> villagesWith = new TreeMap<>();
             int allFour = 0;
             int valid = 0;
+            int duplicates = 0;
+            int plainWithSome = 0;
+            int plain = 0;
             for (int i = 0; i < samples; i++) {
                 StructureStart start = generateVillage(level, type, new ChunkPos(4000 + i * 37, -4000 - i * 23));
                 if (!start.isValid()) {
@@ -210,16 +217,31 @@ public final class VillageGameTests {
                 }
                 valid++;
                 Set<String> found = new HashSet<>();
+                Map<String, Integer> counts = new HashMap<>();
+                boolean canopy = false;
                 for (var piece : start.getPieces()) {
                     if (piece instanceof PoolElementStructurePiece pe) {
-                        VillagePools.civicBuilding(pe.getElement()).ifPresent(found::add);
+                        VillagePools.civicBuilding(pe.getElement()).ifPresent(b -> {
+                            found.add(b);
+                            counts.merge(b, 1, Integer::sum);
+                        });
+                        canopy |= VillagePools.location(pe.getElement()).filter(l -> l.getPath().endsWith("/civic_bell")).isPresent();
                     }
+                }
+                if (found.contains(VillagePools.SQUARE)) {
+                    check(helper, canopy, type + ": a civic square without its bell canopy at chunk " + start.getChunkPos());
                 }
                 found.forEach(b -> villagesWith.merge(b, 1, Integer::sum));
                 allFour += found.containsAll(VillagePools.BUILDINGS) ? 1 : 0;
+                duplicates += counts.values().stream().anyMatch(n -> n > 1) ? 1 : 0;
+                if (!found.contains(VillagePools.SQUARE)) {
+                    plain++;
+                    plainWithSome += found.isEmpty() ? 0 : 1;
+                }
             }
             report.append(type).append(": ").append(valid).append(" villages, ").append(villagesWith)
-                    .append(", all four buildings in ").append(allFour).append("; ");
+                    .append(", all four buildings in ").append(allFour).append(", a duplicate in ").append(duplicates)
+                    .append(", vanilla-centred ").append(plain).append(" (").append(plainWithSome).append(" with a civic building); ");
             check(helper, valid >= samples / 2, type + " villages generate");
             for (String building : VillagePools.BUILDINGS) {
                 check(helper, villagesWith.getOrDefault(building, 0) * 3 >= valid,

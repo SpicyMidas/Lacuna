@@ -13,10 +13,10 @@ Every building follows the vanilla house conventions (checked against the vanill
 Buildings: village_hall (ledger, council table, judge bench), mint (mint press, strongbox), guild_hall (one guild
 board under each guild banner) and schoolhouse (school desks, lectern, blackboard, bookshelves).
 
-civic_square: a town centre (appended to minecraft:village/<type>/town_centers) - a paved crossroads with the bell under
-a canopy, lamps, benches and flower beds; its four corner lots hold the four civic buildings, attached by jigsaws that
-point INTO the square's own bounding box (so they are placed inside it, never colliding with the streets), and four
-street exits continue the village outward like the vanilla town centres.
+civic_square: a town centre (appended to minecraft:village/<type>/town_centers): a terrain-following paved plaza with
+lamps, benches and flower beds, the bell under a rigid canopy (civic_bell) in the middle, the four civic buildings in a
+pinwheel around it (each a rigid piece at its own ground height, like the vanilla houses along a street) and four
+street exits that continue the village outward like the vanilla town centres.
 """
 
 L = "lacuna:"
@@ -53,7 +53,7 @@ SQUARES = {
                     post="acacia_fence", canopy="acacia_slab", flowers=("poppy", "dandelion", "orange_tulip", "allium")),
     "taiga": dict(ground="grass_block", path="dirt_path", curb="cobblestone", square="cobblestone", square2="mossy_cobblestone",
                   post="spruce_fence", canopy="spruce_slab", flowers=("fern", "sweet_berry_bush", "poppy", "lily_of_the_valley")),
-    "snowy": dict(ground="snow_block", path="dirt_path", curb="diorite", square="polished_diorite", square2="packed_ice",
+    "snowy": dict(ground="snow_block", path="dirt_path", curb="diorite", square="polished_diorite", square2="polished_andesite",
                   post="spruce_fence", canopy="spruce_slab", flowers=("blue_orchid", "lily_of_the_valley", "azure_bluet")),
 }
 
@@ -338,12 +338,20 @@ def schoolhouse(Template, v):
 
 
 # ============================================================================================ civic square (town centre)
-# 37 x 37 piece: crossroads bands x/z 15..21 (curbs on 15 and 21), the paved square 12..24 in the middle, four 15 x 15
-# corner lots for the buildings (each building keeps clear of the square's corner, where a flower bed and a lamp stand).
-SQ = 37
-SQ_C = 18
-SQ_H = 18         # tall enough to hold the buildings attached inside it
-LOTS = ((15, 6, "west", "village_hall"), (30, 15, "north", "guild_hall"), (15, 30, "west", "mint"), (30, 21, "south", "schoolhouse"))
+# A terrain-following plaza (projection terrain_matching, like the vanilla streets: its paving follows the ground and it
+# never carves terraces into hills). The rigid pieces around it are placed at the ground height of their own jigsaw:
+#   * the bell canopy in the middle (the village meeting point), attached by a minecraft:bottom jigsaw in the floor;
+#   * the four civic buildings in a pinwheel around the plaza, doors facing it, attached by building_entrance jigsaws on
+#     its edges with a higher selection priority than the streets, so they are placed first;
+#   * four street exits in the middle of the sides; each building keeps 6 blocks from the exits, so a 16-wide vanilla
+#     street piece always fits on one side of every exit (the pinwheel leaves that side free).
+SQ = 27
+SQ_C = SQ // 2
+SQ_OFF = 7         # building entrance offset from the side's middle
+SQ_H = 7          # the bell canopy (5 tall, standing on the plaza) must fit inside the plaza's box
+PINWHEEL = (("village_hall", SQ_C - SQ_OFF, 0, "north"), ("guild_hall", SQ - 1, SQ_C - SQ_OFF, "east"),
+            ("schoolhouse", SQ_C + SQ_OFF, SQ - 1, "south"), ("mint", 0, SQ_C + SQ_OFF, "west"))
+CANOPY = 7
 
 
 def post(t, x, y, z, name):
@@ -363,21 +371,51 @@ def civic_square(Template, v):
     def put(x, y, z, name, props=None, nbt=None):
         t.set(x, y, z, name if ":" in name else "minecraft:" + name, props, nbt)
 
-    # ground everywhere, the crossroads with curbs, the paved square in the middle
+    c = SQ_C
+    # ground: a path ring, a curb, the checkered paving and a ring of the second paving around the canopy
     for x in range(SQ):
         for z in range(SQ):
-            in_x, in_z = 15 <= x <= 21, 15 <= z <= 21
-            if 12 <= x <= 24 and 12 <= z <= 24:
-                put(x, 0, z, q["square"] if (x + z) % 2 else q["square2"])
-            elif in_x or in_z:
-                edge = (in_x and x in (15, 21)) or (in_z and z in (15, 21))
-                put(x, 0, z, q["curb"] if edge else q["path"])
+            ring = min(x, z, SQ - 1 - x, SQ - 1 - z)
+            d = max(abs(x - c), abs(z - c))
+            if ring <= 1:
+                block = q["path"]
+            elif ring == 2:
+                block = q["curb"]
+            elif d <= CANOPY // 2 + 2:
+                block = q["square2"]
             else:
-                put(x, 0, z, q["ground"])
-    # flower beds and lamps in the four corners of the square
-    for (x0, z0, lx, lz) in ((12, 12, 14, 14), (23, 12, 22, 14), (12, 23, 14, 22), (23, 23, 22, 22)):
-        for x in (x0, x0 + 1):
-            for z in (z0, z0 + 1):
+                block = q["square"] if (x + z) % 2 else q["square2"]
+            put(x, 0, z, block)
+    # paths from the four doors and the four exits to the middle stay plain path, so they read as streets
+    for (_, ex, ez, facing) in PINWHEEL:
+        dx, dz = {"north": (0, 1), "south": (0, -1), "west": (1, 0), "east": (-1, 0)}[facing]
+        x, z = ex, ez
+        for _ in range(4):
+            for w in (-1, 0, 1):
+                put(x + (w if dz else 0), 0, z + (w if dx else 0), q["path"])
+            x, z = x + dx, z + dz
+    for (x, z) in ((c, 0), (c, SQ - 1), (0, c), (SQ - 1, c)):
+        for i in range(4):
+            for w in (-1, 0, 1):
+                if z == 0:
+                    put(x + w, 0, i, q["path"])
+                elif z == SQ - 1:
+                    put(x + w, 0, SQ - 1 - i, q["path"])
+                elif x == 0:
+                    put(i, 0, z + w, q["path"])
+                else:
+                    put(SQ - 1 - i, 0, z + w, q["path"])
+    # flower beds in the four quarters, pinwheeled like the buildings so they never block a door or an exit path,
+    # each with a lamp post in the middle
+    for (x0, z0) in ((8, 4), (SQ - 7, 8), (SQ - 11, SQ - 7), (4, SQ - 11)):
+        for x in range(x0, x0 + 3):
+            for z in range(z0, z0 + 3):
+                if (x, z) == (x0 + 1, z0 + 1):
+                    put(x, 0, z, q["curb"])
+                    post(t, x, 1, z, q["post"])
+                    post(t, x, 2, z, q["post"])
+                    put(x, 3, z, "lantern", {"hanging": "false", "waterlogged": "false"})
+                    continue
                 if v == "desert":
                     put(x, 0, z, "sand")
                     if (x + z) % 2 == 0:
@@ -386,40 +424,54 @@ def civic_square(Template, v):
                     put(x, 0, z, "grass_block")
                     flower = r.choice(q["flowers"])
                     put(x, 1, z, flower, {"age": "1"} if flower == "sweet_berry_bush" else None)
-        post(t, lx, 1, lz, q["post"])
-        post(t, lx, 2, lz, q["post"])
-        put(lx, 3, lz, "lantern", {"hanging": "false", "waterlogged": "false"})
-    # canopy over the bell (the village meeting point): four posts, a slab roof, the bell hanging in the middle
-    for (x, z) in ((16, 16), (16, 20), (20, 16), (20, 20)):
-        for y in (1, 2, 3):
-            post(t, x, y, z, q["post"])
-    for x in range(15, 22):
-        for z in range(15, 22):
-            put(x, 4, z, q["canopy"], {"type": "bottom", "waterlogged": "false"})
-    for x in range(16, 21):
-        for z in range(16, 21):
-            if x in (16, 20) or z in (16, 20):
-                put(x, 5, z, q["canopy"], {"type": "bottom", "waterlogged": "false"})
-    put(SQ_C, 5, SQ_C, q["canopy"], {"type": "bottom", "waterlogged": "false"})
-    put(SQ_C, 3, SQ_C, "bell", {"attachment": "ceiling", "facing": "north", "powered": "false"}, {"id": "minecraft:bell"})
-    # benches facing the bell
+    # benches around the canopy, facing it
     bench = STYLES[v]["chair"]
-    for (x, z, facing) in ((13, 16, "west"), (13, 20, "west"), (23, 16, "east"), (23, 20, "east"),
-                           (16, 13, "north"), (20, 13, "north"), (16, 23, "south"), (20, 23, "south")):
+    k = CANOPY // 2 + 2
+    for (x, z, facing) in ((c - k, c - 2, "west"), (c - k, c + 2, "west"), (c + k, c - 2, "east"), (c + k, c + 2, "east"),
+                           (c - 2, c - k, "north"), (c + 2, c - k, "north"), (c - 2, c + k, "south"), (c + 2, c + k, "south")):
         put(x, 1, z, bench, {"facing": facing, "half": "bottom", "shape": "straight", "waterlogged": "false"})
+    floor = "minecraft:" + q["square2"]
+    # the bell canopy (meeting point) in the middle
+    t.jigsaw(c, 0, c, "up_north", "minecraft:bottom", "minecraft:bottom", f"lacuna:village/{v}/civic_bell", final_state=floor,
+             joint="rollable", selection_priority=2)
     # villagers, the village golem and cats like the vanilla town centres
-    floor = "minecraft:" + q["square"]
-    for (x, z, pool) in ((13, 18, f"minecraft:village/{v}/villagers"), (23, 18, f"minecraft:village/{v}/villagers"),
-                         (18, 13, "minecraft:village/common/iron_golem"), (18, 23, "minecraft:village/common/cats")):
+    for (x, z, pool) in ((c - k, c, f"minecraft:village/{v}/villagers"), (c + k, c, f"minecraft:village/{v}/villagers"),
+                         (c, c - k, "minecraft:village/common/iron_golem"), (c, c + k, "minecraft:village/common/cats")):
         t.jigsaw(x, 0, z, "up_north", "minecraft:bottom", "minecraft:bottom", pool, final_state=floor, joint="rollable")
-    # streets out of the four sides
-    for (x, z, facing) in ((SQ_C, 0, "north"), (SQ_C, SQ - 1, "south"), (0, SQ_C, "west"), (SQ - 1, SQ_C, "east")):
+    # the civic buildings first, then the streets out of the four sides
+    for (building, x, z, facing) in PINWHEEL:
+        t.jigsaw(x, 1, z, f"{facing}_up", "minecraft:building_entrance", "minecraft:building_entrance",
+                 f"lacuna:village/{v}/{building}", final_state="minecraft:structure_void", joint="aligned", selection_priority=1)
+    for (x, z, facing) in ((c, 0, "north"), (c, SQ - 1, "south"), (0, c, "west"), (SQ - 1, c, "east")):
         t.jigsaw(x, 1, z, f"{facing}_up", "minecraft:street", "minecraft:street", f"minecraft:village/{v}/streets",
                  final_state="minecraft:structure_void", joint="aligned")
-    # the civic buildings, attached inside the square's own box (jigsaws on the curbs pointing into each lot)
-    for (x, z, facing, building) in LOTS:
-        t.jigsaw(x, 1, z, f"{facing}_up", "minecraft:building_entrance", "minecraft:building_entrance",
-                 f"lacuna:village/{v}/{building}", final_state="minecraft:structure_void", joint="aligned")
+    t.save()
+
+
+def civic_bell(Template, v):
+    """The canopy over the village bell: four posts, a two-tier slab roof, the bell hanging from it. Rigid."""
+    t = Template(f"village/{v}/civic_bell", CANOPY, 5, CANOPY)
+    q = SQUARES[v]
+    m = CANOPY // 2
+    for (x, z) in ((1, 1), (1, CANOPY - 2), (CANOPY - 2, 1), (CANOPY - 2, CANOPY - 2)):
+        for y in (0, 1, 2):
+            post(t, x, y, z, q["post"])
+    for x in range(CANOPY):
+        for z in range(CANOPY):
+            t.set(x, 3, z, "minecraft:" + q["canopy"], {"type": "bottom", "waterlogged": "false"})
+            if x in (1, CANOPY - 2) and 1 <= z <= CANOPY - 2 or z in (1, CANOPY - 2) and 1 <= x <= CANOPY - 2:
+                t.set(x, 4, z, "minecraft:" + q["canopy"], {"type": "bottom", "waterlogged": "false"})
+    t.set(m, 4, m, "minecraft:" + q["canopy"], {"type": "bottom", "waterlogged": "false"})
+    t.set(m, 2, m, "minecraft:bell", {"attachment": "ceiling", "facing": "north", "powered": "false"}, {"id": "minecraft:bell"})
+    t.set(m, 1, m, "minecraft:air")
+    # clear the space under the roof (terrain and grass) except the posts
+    for x in range(CANOPY):
+        for z in range(CANOPY):
+            for y in (0, 1, 2):
+                if t.get(x, y, z) is None and (x, z) != (m, m):
+                    t.set(x, y, z, "minecraft:air")
+    t.jigsaw(m, 0, m, "down_south", "minecraft:bottom", "minecraft:bottom", "minecraft:empty", final_state="minecraft:air",
+             joint="rollable")
     t.save()
 
 
@@ -431,3 +483,4 @@ def build(Template):
         for fn in BUILDINGS:
             fn(Template, v)
         civic_square(Template, v)
+        civic_bell(Template, v)

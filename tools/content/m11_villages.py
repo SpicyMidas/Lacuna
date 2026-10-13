@@ -110,8 +110,11 @@ def civic_pools(g):
     minecraft:street 7 ~ ~ ~ or /place jigsaw lacuna:village/desert/mint minecraft:building_entrance 2 ~ ~ ~."""
     for v in STYLES:
         processors = "minecraft:mossify_10_percent" if v in MOSSY else "minecraft:empty"
-        for b in CIVIC_BUILDINGS + ("civic_square",):
+        for b in CIVIC_BUILDINGS + ("civic_bell",):
             g.data(f"worldgen/template_pool/village/{v}/{b}", wg.pool([mod(f"village/{v}/{b}")], processors=processors))
+        # the plaza follows the ground like the vanilla streets (VillagePools adds the same element to town_centers)
+        g.data(f"worldgen/template_pool/village/{v}/civic_square", wg.pool([mod(f"village/{v}/civic_square")],
+                                                                           processors=processors, projection="terrain_matching"))
 
 
 # ============================================================================================ 11b reputation, laws

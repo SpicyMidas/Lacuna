@@ -1,0 +1,32 @@
+# Civic buildings in a naturally generated vanilla village: /lacuna village visit finds the nearest village with the
+# building and teleports in front of it (the first visit scans and generates terrain: give it time).
+world lacuna_villages normal villages1
+wait 100
+hud off
+cmd time set 3000
+cmd gamemode spectator
+cmd lacuna village visit civic_square
+wait 700
+cmd tp @s ~ ~16 ~6
+wait 40
+look 180 38
+wait 200
+shot village_square
+cmd lacuna village visit village_hall
+wait 250
+shot village_hall
+cmd lacuna village visit mint
+wait 250
+shot village_mint
+cmd lacuna village visit guild_hall
+wait 250
+shot village_guild_hall
+cmd lacuna village visit schoolhouse
+wait 250
+shot village_schoolhouse
+cmd gamemode creative
+hud on
+cmd lacuna village
+wait 60
+shot village_info
+quit

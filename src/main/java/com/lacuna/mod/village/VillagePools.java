@@ -24,7 +24,8 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
  * every style, when a server is about to start (before any chunk is generated):
  * <ul>
  *   <li>the <b>civic square</b> joins the vanilla {@code minecraft:village/<type>/town_centers} pool so that about
- *       {@link #SQUARE_SHARE} of the villages grow around it; the square holds all four buildings in its corner lots;</li>
+ *       {@link #SQUARE_SHARE} of the villages grow around it: a terrain-following plaza with the bell canopy in the
+ *       middle and all four buildings around it (rigid pieces at their own ground height, placed before the streets);</li>
  *   <li>each building also joins {@code minecraft:village/<type>/houses} with a small weight, so the other villages
  *       sometimes get one along their streets.</li>
  * </ul>
@@ -38,10 +39,13 @@ public final class VillagePools {
     /** Share of new villages that start from the civic square (vanilla town centres keep the rest). */
     public static final double SQUARE_SHARE = 0.6;
     /**
-     * Weight of each civic building in a houses pool (vanilla houses weigh 1-5, the pools total 68-87). Kept low: the
-     * buildings are large and rarely fit between streets anyway, and the square already holds a full set.
+     * Weight of each civic building in a houses pool (vanilla houses weigh 1-5, the pools total 68-87). Kept at the
+     * minimum: the square already brings a full set, and measured over 200 generated villages (VillageGameTests) a
+     * weight of 2 gave a duplicate building to a third of the villages, 1 to about one in eight, while about one
+     * vanilla-centred village in five still gets a civic building along its streets. Every village can also get the
+     * professions from crafted job sites.
      */
-    public static final int HOUSE_WEIGHT = 2;
+    public static final int HOUSE_WEIGHT = 1;
     private static final int MAX_RAW_WEIGHT = 150; // the pool codec's limit per element entry
     private static final ResourceKey<StructureProcessorList> EMPTY = ResourceKey.create(Registries.PROCESSOR_LIST,
             ResourceLocation.withDefaultNamespace("empty"));
@@ -81,14 +85,15 @@ public final class VillagePools {
                     .orElseGet(() -> Holder.direct(new StructureProcessorList(List.of())));
             StructureTemplatePool centers = vanillaPool(pools, type, "town_centers");
             if (centers != null && count(centers, template(type, SQUARE)) == 0) {
-                add(centers, element(type, SQUARE, processor), squareWeight(centers.size(), SQUARE_SHARE));
+                add(centers, element(type, SQUARE, processor, StructureTemplatePool.Projection.TERRAIN_MATCHING),
+                        squareWeight(centers.size(), SQUARE_SHARE));
                 added++;
             }
             StructureTemplatePool houses = vanillaPool(pools, type, "houses");
             if (houses != null) {
                 for (String building : BUILDINGS) {
                     if (count(houses, template(type, building)) == 0) {
-                        add(houses, element(type, building, processor), HOUSE_WEIGHT);
+                        add(houses, element(type, building, processor, StructureTemplatePool.Projection.RIGID), HOUSE_WEIGHT);
                         added++;
                     }
                 }
@@ -105,8 +110,9 @@ public final class VillagePools {
         return pool;
     }
 
-    private static StructurePoolElement element(String type, String name, Holder<StructureProcessorList> processor) {
-        return StructurePoolElement.single(template(type, name).toString(), processor).apply(StructureTemplatePool.Projection.RIGID);
+    private static StructurePoolElement element(String type, String name, Holder<StructureProcessorList> processor,
+                                                StructureTemplatePool.Projection projection) {
+        return StructurePoolElement.single(template(type, name).toString(), processor).apply(projection);
     }
 
     private static void add(StructureTemplatePool pool, StructurePoolElement element, int weight) {

@@ -21,15 +21,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.StructureTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructureSets;
 import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 /**
@@ -39,14 +42,16 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  *       with its civic buildings;</li>
  *   <li>{@code /lacuna village locate} — finds the nearest vanilla village like /locate, registers its record and
  *       prints it (loads the start chunk to the structure-starts status, like /locate);</li>
- *   <li>{@code /lacuna village visit [building]} — like {@code locate}, then teleports the player 8 blocks in front of
- *       that village's civic building (the village hall unless another is named) or onto its plaza;</li>
+ *   <li>{@code /lacuna village visit [building]} — finds the nearest village with that civic building (the village
+ *       hall unless another is named) and teleports the player 8 blocks in front of its door; {@code plaza} visits the
+ *       nearest village of any kind;</li>
  *   <li>{@code /lacuna village list} — every known record.</li>
  * </ul>
  * Output lines start with "[village]" so smoke logs can be grepped.
  */
 public final class VillageCommand {
     private static final List<String> VISIT_TARGETS = List.of("village_hall", "mint", "guild_hall", "schoolhouse", "civic_square", "plaza");
+    private static final int VISIT_RINGS = 6;
 
     private VillageCommand() {}
 
@@ -116,10 +121,65 @@ public final class VillageCommand {
         return start;
     }
 
+    /**
+     * The nearest village whose pieces include {@code building}: scans the vanilla village placement grid in rings
+     * of regions around the source (each candidate chunk is computed to the structure-starts status only, like
+     * /locate), at most {@link #VISIT_RINGS} rings. Null when none is found.
+     */
+    private static StructureStart nearestWith(CommandSourceStack source, String building) {
+        ServerLevel level = source.getLevel();
+        var set = level.registryAccess().registryOrThrow(Registries.STRUCTURE_SET).get(BuiltinStructureSets.VILLAGES);
+        if (set == null || !(set.placement() instanceof RandomSpreadStructurePlacement spread)) {
+            return null;
+        }
+        var villages = VillageService.villageStructures(level);
+        long seed = level.getSeed();
+        BlockPos from = BlockPos.containing(source.getPosition());
+        int spacing = spread.spacing();
+        int rx0 = Math.floorDiv(from.getX() >> 4, spacing);
+        int rz0 = Math.floorDiv(from.getZ() >> 4, spacing);
+        for (int ring = 0; ring <= VISIT_RINGS; ring++) {
+            StructureStart best = null;
+            double bestDist = Double.MAX_VALUE;
+            for (int rx = rx0 - ring; rx <= rx0 + ring; rx++) {
+                for (int rz = rz0 - ring; rz <= rz0 + ring; rz++) {
+                    if (Math.max(Math.abs(rx - rx0), Math.abs(rz - rz0)) != ring) {
+                        continue;
+                    }
+                    ChunkPos candidate = spread.getPotentialStructureChunk(seed, rx * spacing, rz * spacing);
+                    ChunkAccess chunk = level.getChunk(candidate.x, candidate.z, ChunkStatus.STRUCTURE_STARTS);
+                    for (StructureStart start : chunk.getAllStarts().values()) {
+                        if (start.isValid() && villages.contains(start.getStructure()) && hasBuilding(start, building)) {
+                            double d = candidate.getMiddleBlockPosition(from.getY()).distSqr(from);
+                            if (d < bestDist) {
+                                bestDist = d;
+                                best = start;
+                            }
+                        }
+                    }
+                }
+            }
+            if (best != null) {
+                return best;
+            }
+        }
+        source.sendFailure(Component.literal("[village] no village with a " + building + " within " + VISIT_RINGS + " placement rings"));
+        return null;
+    }
+
+    private static boolean hasBuilding(StructureStart start, String building) {
+        for (StructurePiece piece : start.getPieces()) {
+            if (piece instanceof PoolElementStructurePiece pe && VillagePools.civicBuilding(pe.getElement()).filter(building::equals).isPresent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Teleports the player 8 blocks in front of a civic building's door (or 10 blocks south of the plaza), facing it. */
     private static int visit(CommandSourceStack source, String building) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        StructureStart start = nearestStart(source);
+        StructureStart start = building.equals("plaza") ? nearestStart(source) : nearestWith(source, building);
         if (start == null) {
             return 0;
         }
@@ -142,9 +202,15 @@ public final class VillageCommand {
             for (StructureTemplate.StructureBlockInfo jigsaw : pe.getElement().getShuffledJigsawBlocks(level.getStructureManager(),
                     pe.getPosition(), pe.getRotation(), RandomSource.create(0L))) {
                 if (jigsaw.nbt() != null && "minecraft:building_entrance".equals(jigsaw.nbt().getString("name"))) {
+                    // a three-quarter view from the street: 5 blocks out of the door, 7 along the street (away from
+                    // the plaza, so the view is not blocked by the building across the street), facing the door
+                    BlockPos door = jigsaw.pos();
                     Direction out = JigsawBlock.getFrontFacing(jigsaw.state());
-                    stand = jigsaw.pos().relative(out, 8);
-                    yaw = out.getOpposite().toYRot();
+                    BlockPos street = door.relative(out, 5);
+                    BlockPos a = street.relative(out.getClockWise(), 7);
+                    BlockPos b = street.relative(out.getCounterClockWise(), 7);
+                    stand = a.distSqr(record.plaza) >= b.distSqr(record.plaza) ? a : b;
+                    yaw = (float) (Math.atan2(door.getZ() - stand.getZ(), door.getX() - stand.getX()) * 180.0 / Math.PI) - 90.0F;
                     what = building;
                 }
             }
@@ -152,7 +218,9 @@ public final class VillageCommand {
                 break;
             }
         }
-        int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, stand.getX(), stand.getZ());
+        // generate/load the target chunk first: Level.getHeight answers the world bottom for unloaded chunks
+        int y = level.getChunk(stand.getX() >> 4, stand.getZ() >> 4)
+                .getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, stand.getX() & 15, stand.getZ() & 15) + 1;
         player.teleportTo(level, stand.getX() + 0.5, y, stand.getZ() + 0.5, yaw, 10.0F);
         String target = what;
         BlockPos at = new BlockPos(stand.getX(), y, stand.getZ());
