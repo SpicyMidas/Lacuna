@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.2.0 — revision 2 (player feedback)
+
+- **Textures:** the hand-drawn textures (ruby set, ores with animation, Umbral Steel set, Divine Magnifying Glass,
+  Eclipser charge states, 32x32 Gravemaw Greatsword) are used verbatim (`tools/art/hand/`).
+- **Umbral Iron is now Umbral Steel** (all ids, names, recipes, worldgen).
+- **Villages instead of Townships:** the Township structures are gone; reputation, laws (curfew instead of gates),
+  bell, council, coins, Coiner/Magistrate/Guildmaster, guilds, contracts, schools and the caravan effect now run in
+  vanilla villages, which grow a civic square (village hall, mint, guild hall, schoolhouse) or civic houses.
+- **Sun's Fury:** held and thrown like a trident; on landing a focus phase brightens the sun, sweeps night into noon
+  and concentrates light on the target ring before a shader column of light strikes. **Divine Magnifying Glass:**
+  shader beam drawn on every client from the lens.
+- **Eclipser:** a real dash with black sword slashes, trail and afterimages; Shadow Walk starts after the dash.
+- **Divine Glass:** true X-ray window - through the glass only ores, chests, spawners and mobs float in a void.
+- **Gravemaw Greatsword:** larger in the hands, umbral charge-up, visible crescent wave, heavy hits.
+- **Fractured Pearl:** the placed anchor is a cube; shards work in every dimension and across dimensions (never into
+  or out of the Forgotten Land).
+- **Null Lantern:** hostile mobs never target or hurt the holder unless provoked (no close-range exception).
+- **Forgotten Land:** much denser fog (client config) with mist; Memory Mural paintings hang in shrines and halls.
+- **Effects framework:** shader beams/flares, additive particles, screen shake/flash/tints (Distortion Effects
+  slider and a client toggle respected); vortex rifts for Totem crossings, golden rewind ring, blazing Pyrrhic bolt.
+
+
 ## 1.0.0 — first complete build (NeoForge 21.1.x, Minecraft 1.21.1)
 
 - **M0** Project, config, `SafeRun` crash shield, `/lacuna` debug commands, creative tab, Python asset pipeline.
