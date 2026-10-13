@@ -29,6 +29,7 @@ public final class FxHandlers {
     public static void bootstrap() {
         // feature effect registrations (one line per feature)
         DebugFx.register();
+        RiteFx.register();
         com.lacuna.mod.client.gear.GravemawFx.register();
         com.lacuna.mod.client.solar.SolarFx.register();
     }

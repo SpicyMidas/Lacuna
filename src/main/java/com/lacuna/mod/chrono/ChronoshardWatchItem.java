@@ -132,6 +132,7 @@ public class ChronoshardWatchItem extends Item {
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, from.x, from.y + 1, from.z, 40, 0.4, 0.8, 0.4, 0.05);
         Teleporter.teleport(player, level, dest, snap.yRot(), snap.xRot());
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, dest.x, dest.y + 1, dest.z, 40, 0.4, 0.8, 0.4, 0.05);
+        com.lacuna.mod.fx.LacunaFx.send(level, dest, com.lacuna.mod.network.FxPayload.line("rewind", dest, from));
         level.playSound(null, dest.x, dest.y, dest.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.0F, 0.5F);
 
         player.setHealth(Math.max(player.getHealth(), Math.min(player.getMaxHealth(), snap.health())));

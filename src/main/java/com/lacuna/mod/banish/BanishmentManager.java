@@ -220,7 +220,9 @@ public final class BanishmentManager {
 
     private static void effects(ServerLevel level, Vec3 pos) {
         level.sendParticles(ParticleTypes.REVERSE_PORTAL, pos.x, pos.y + 1.0, pos.z, 40, 0.5, 1.0, 0.5, 0.05);
+        com.lacuna.mod.fx.LacunaFx.send(level, pos, com.lacuna.mod.network.FxPayload.at("rift", pos).withColor(0xFFA8C4FF));
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 0.6F);
+        level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.7F, 0.6F);
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.PORTAL_TRAVEL, SoundSource.PLAYERS, 0.15F, 1.4F);
     }
 
