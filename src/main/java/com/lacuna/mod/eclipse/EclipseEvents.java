@@ -19,6 +19,7 @@ public final class EclipseEvents {
         bus.addListener(EclipseDash::onChangedDimension);
         bus.addListener(EclipseDash::onServerStopping);
         bus.addListener(ShadowWalk::onPlayerTick);
+        bus.addListener(ShadowWalk::onEffectAdded);
         bus.addListener(ShadowWalk::onEffectExpired);
         bus.addListener(ShadowWalk::onEffectRemoved);
         bus.addListener(ShadowWalk::onDeath);

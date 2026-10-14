@@ -24,6 +24,10 @@ def build(g):
     g.name("lacuna.pearl.unlinked", "Unlinked", "Non collegata")
     g.name("lacuna.pearl.cracked", "Cracked", "Incrinata")
     g.name("lacuna.pearl.split", "The pearl splits into two halves.", "La perla si divide in due metà.")
+    g.name("lacuna.pearl.split_inventory", "The pearl splits; a half went into your inventory (hotbar full).",
+           "La perla si divide; una metà è finita nell'inventario (barra piena).")
+    g.name("lacuna.pearl.split_ground", "The pearl splits; no room left, a half fell at your feet.",
+           "La perla si divide; nessuno spazio, una metà è caduta ai tuoi piedi.")
     g.name("lacuna.pearl.crumbles", "The shard crumbles.", "La scheggia si sbriciola.")
     g.name("lacuna.pearl.nothing_answers", "The shard hums, but nothing answers.", "La scheggia vibra, ma nulla risponde.")
     g.name("lacuna.pearl.forgotten_refuses", "The Forgotten Land swallows the call.", "La Terra Dimenticata inghiotte il richiamo.")

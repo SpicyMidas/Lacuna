@@ -30,8 +30,9 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 /**
- * Shadow Walk (spec 11.2): the player is temporarily switched to SPECTATOR and switched back when the effect ends.
- * It starts only once the Eclipser dash has finished moving the player ({@link EclipseDash}), never during it.
+ * Shadow Walk (spec 11.2): the Shadow Walk effect temporarily switches a player to SPECTATOR (a shadow that passes
+ * through walls, unseen and untargetable) and back when the effect ends - whether it comes from the Eclipser (which
+ * grants it only once its dash has finished moving the player, {@link EclipseDash}) or from /effect.
  * The previous mode lives in a serializable attachment, so it is restored on expiry, removal (milk), death,
  * logout/login, dimension change and server stop. An operator who changed the game mode meanwhile always wins.
  * After restoring, a player stuck in blocks is moved to the nearest safe spot within 16 blocks, else the dash origin.
@@ -50,26 +51,37 @@ public final class ShadowWalk {
         return player.hasData(ModAttachments.SHADOW_WALK) && player.getData(ModAttachments.SHADOW_WALK).active();
     }
 
+    /** Eclipser entry point: the walk starts where the dash ended and is carried by the effect from here on. */
     public static void begin(ServerPlayer player, int ticks, BlockPos origin) {
         SafeRun.run(FEATURE, () -> {
-            GameType current = player.gameMode.getGameModeForPlayer();
-            long until = player.serverLevel().getGameTime() + ticks;
-            if (isActive(player)) {
-                ShadowWalkState old = player.getData(ModAttachments.SHADOW_WALK);
-                player.setData(ModAttachments.SHADOW_WALK, new ShadowWalkState(old.previousMode(), Math.max(until, old.until()), old.origin()));
-            } else {
-                if (current == GameType.SPECTATOR) {
-                    return; // already a spectator (operator choice): nothing to do
-                }
-                player.setData(ModAttachments.SHADOW_WALK, new ShadowWalkState(current.getName(), until, origin.asLong()));
-                player.setGameMode(GameType.SPECTATOR);
+            if (!engage(player, player.serverLevel().getGameTime() + ticks, origin)) {
+                return;
             }
             player.addEffect(new MobEffectInstance(ModEffects.SHADOW_WALK, ticks, 0, false, false, true));
-            for (Mob mob : player.serverLevel().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(32.0),
-                    m -> m.getTarget() == player)) {
-                mob.setTarget(null);
-            }
         }, () -> restore(player));
+    }
+
+    /**
+     * Switches {@code player} into the shadow spectator state until game time {@code until} (or extends the current
+     * walk). Returns false when the player already is a spectator by an operator's choice, which is left alone.
+     */
+    private static boolean engage(ServerPlayer player, long until, BlockPos origin) {
+        if (isActive(player)) {
+            ShadowWalkState old = player.getData(ModAttachments.SHADOW_WALK);
+            player.setData(ModAttachments.SHADOW_WALK, new ShadowWalkState(old.previousMode(), Math.max(until, old.until()), old.origin()));
+        } else {
+            GameType current = player.gameMode.getGameModeForPlayer();
+            if (current == GameType.SPECTATOR) {
+                return false;
+            }
+            player.setData(ModAttachments.SHADOW_WALK, new ShadowWalkState(current.getName(), until, origin.asLong()));
+            player.setGameMode(GameType.SPECTATOR);
+        }
+        for (Mob mob : player.serverLevel().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(32.0),
+                m -> m.getTarget() == player)) {
+            mob.setTarget(null);
+        }
+        return true;
     }
 
     /** Restores the remembered game mode (if we are still the ones who set SPECTATOR) and frees a stuck player. */
@@ -152,6 +164,20 @@ public final class ShadowWalk {
         } else if (!SafeRun.isDisabled(FX_FEATURE)) {
             SafeRun.run(FX_FEATURE, () -> motes(player));
         }
+    }
+
+    /**
+     * The effect itself carries the walk: however it is given (the Eclipser, /effect, another mod), a player who gains
+     * Shadow Walk becomes a shadow spectator for exactly its duration (infinite effects last until removed).
+     */
+    public static void onEffectAdded(MobEffectEvent.Added event) {
+        MobEffectInstance effect = event.getEffectInstance();
+        if (!(event.getEntity() instanceof ServerPlayer player) || effect == null || !effect.getEffect().is(ModEffects.SHADOW_WALK.getKey())
+                || !enabled()) {
+            return;
+        }
+        long until = effect.isInfiniteDuration() ? Long.MAX_VALUE : player.serverLevel().getGameTime() + effect.getDuration();
+        SafeRun.run(FEATURE, () -> engage(player, until, player.blockPosition()), () -> restore(player));
     }
 
     public static void onEffectExpired(MobEffectEvent.Expired event) {

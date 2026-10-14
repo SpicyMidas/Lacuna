@@ -382,6 +382,8 @@
   "lacuna.pearl.linked": "Linked: %s",
   "lacuna.pearl.nothing_answers": "The shard hums, but nothing answers.",
   "lacuna.pearl.split": "The pearl splits into two halves.",
+  "lacuna.pearl.split_ground": "The pearl splits; no room left, a half fell at your feet.",
+  "lacuna.pearl.split_inventory": "The pearl splits; a half went into your inventory (hotbar full).",
   "lacuna.pearl.unlinked": "Unlinked",
   "lacuna.relic.name": "Unreadable Relic",
   "lacuna.relic.scattered": "Your belongings were scattered across the overworld near %s %s",
