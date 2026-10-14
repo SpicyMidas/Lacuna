@@ -246,8 +246,9 @@ Built:
   `isPrimaryItemFor`; added to `enchantable/durability`):
   Gravemaw Greatsword (700, 11 dmg, 0.8 speed; still-standing charge ≤ 40 ticks, release ≥ 20 → 8-block ±35°
   crescent, `10 + 0.3·charge`, knockback 1, sweep particles at 3 distances, 3 durability, cooldown 120; moving
-  > 0.05/tick cancels), Tidecaller Sickle (450, 4 dmg, 2.2 speed, prismarine repair; hook within 12 blocks pulls
-  the target in, 3 dmg, 2 durability, cooldown 100; Tide Charges in water/rain, max 3, heal 2 on the next hit),
+  > 0.05/tick cancels), Tidecaller Sickle (450, 4 dmg, 2.2 speed, prismarine repair; revision 3: use = Tidal Wave
+  rolling 14 blocks over the terrain, 4 dmg + carry, douses fire and quenches lava, cooldown 60; sneak + use at 3 Tide
+  Charges = Maelstrom whirlpool, 1.5 drown dmg/s for 5 s, closing geyser, cooldown 300; melee drenches, +3 in water/rain),
   Heartwood Bow (480; arrows tagged through `customArrow` + attachment apply `lacuna:rooted` 2 s, 4 s + pinned
   particles with a wall ≤ 1.5 blocks behind the target; green particles on blocks; recipe and repair material
   `#lacuna:heartwood_bow_repair` arrive with Echo Birch in M8), Echo Dagger (300, 3 dmg, 2.6 speed, echo shard

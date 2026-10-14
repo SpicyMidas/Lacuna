@@ -137,8 +137,11 @@ All `/lacuna` commands need permission level 2.
 - [ ] Umbral sword in a dark cave hits harder (+25 %) than in daylight.
 - [ ] Gravemaw: stand still, hold use ≥ 1 s, release: sweep particles in an arc, mobs in front take damage; moving
       cancels.
-- [ ] Sickle: right click a mob 10 blocks away: it is yanked toward you; in rain you gain Tide charges (tooltip)
-      and your next hit heals 1 heart.
+- [ ] Sickle: right click: a blue-green wave with a foam crest rolls ~14 blocks ahead over the ground, carries mobs
+      along (4 damage each), puts out fire and turns the lava it crosses into obsidian/cobblestone; it breaks against
+      tall walls. Hits in rain/water or standing in water fill Tide charges (action bar, tooltip).
+- [ ] Sickle: with 3 charges, sneak + right click a spot: a whirlpool drags mobs in and drowns them for 5 s, then a
+      geyser throws them high into the air. Melee hits slow the target; in rain they hit harder.
 - [ ] Heartwood Bow: the hit mob cannot move for 2 s (4 s if pinned against a wall, with particles).
 - [ ] Heartwood Bow: grasping roots burst around the hit mob's feet (6 s) and sprout a small patch where arrows hit the ground (10 s); mobs walking in are held; the roots wither and crumble, dropping nothing.
 - [ ] Umbral Steel Sword: every 3rd hit within 4 s detonates (black slash burst, +6 damage, heal 2, Slowness + Darkness). Axe: fully charged hits knock back and damage mobs around the target with a dark ring. Umbral tools mine 30% faster in darkness (light <= 7).

@@ -217,12 +217,30 @@ public final class Balance {
     public static final int SICKLE_DURABILITY = 450;
     public static final int SICKLE_DAMAGE = 4;
     public static final float SICKLE_SPEED = 2.2F;
-    public static final int SICKLE_COOLDOWN = 100;
-    public static final double SICKLE_RANGE = 12.0;
-    public static final double SICKLE_PULL = 1.2;
     public static final int SICKLE_MAX_TIDE = 3;
-    public static final float SICKLE_HOOK_DAMAGE = 3.0F;
-    public static final float SICKLE_TIDE_HEAL = 2.0F;
+    /** Tide charges trickle in while the wielder stands in water: one every this many ticks. */
+    public static final int SICKLE_TIDE_WATER_TICKS = 200;
+    /** Melee: bonus damage while the wielder is in water or rain; the target is drenched (Slowness I) for this long. */
+    public static final float SICKLE_TIDE_BONUS = 3.0F;
+    public static final int SICKLE_DRENCH_TICKS = 40;
+    /** Tidal Wave (use): a rolling wall of water. Front speed in blocks per tick (14 blocks in about one second). */
+    public static final int SICKLE_WAVE_COOLDOWN = 60;
+    public static final int SICKLE_WAVE_DURABILITY = 2;
+    public static final double SICKLE_WAVE_RANGE = 14.0;
+    public static final double SICKLE_WAVE_SPEED = 0.7;
+    public static final double SICKLE_WAVE_HALF_WIDTH = 2.5;
+    public static final double SICKLE_WAVE_HEIGHT = 2.5;
+    public static final float SICKLE_WAVE_DAMAGE = 4.0F;
+    /** Maelstrom (sneak + use at full tide): a whirlpool that drowns, then a geyser. */
+    public static final int SICKLE_MAELSTROM_COOLDOWN = 300;
+    public static final int SICKLE_MAELSTROM_DURABILITY = 5;
+    public static final double SICKLE_MAELSTROM_REACH = 24.0;
+    public static final double SICKLE_MAELSTROM_FALLBACK = 8.0;
+    public static final double SICKLE_MAELSTROM_RADIUS = 7.0;
+    public static final int SICKLE_MAELSTROM_TICKS = 100;
+    public static final float SICKLE_MAELSTROM_DAMAGE = 1.5F;
+    /** Upward speed of the closing geyser (about 6-8 blocks of rise). */
+    public static final double SICKLE_GEYSER_LAUNCH = 1.15;
 
     public static final int HEARTWOOD_DURABILITY = 480;
     public static final int ROOTED_TICKS = 40;
