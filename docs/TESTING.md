@@ -140,6 +140,8 @@ All `/lacuna` commands need permission level 2.
 - [ ] Sickle: right click a mob 10 blocks away: it is yanked toward you; in rain you gain Tide charges (tooltip)
       and your next hit heals 1 heart.
 - [ ] Heartwood Bow: the hit mob cannot move for 2 s (4 s if pinned against a wall, with particles).
+- [ ] Heartwood Bow: grasping roots burst around the hit mob's feet (6 s) and sprout a small patch where arrows hit the ground (10 s); mobs walking in are held; the roots wither and crumble, dropping nothing.
+- [ ] Umbral Steel Sword: every 3rd hit within 4 s detonates (black slash burst, +6 damage, heal 2, Slowness + Darkness). Axe: fully charged hits knock back and damage mobs around the target with a dark ring. Umbral tools mine 30% faster in darkness (light <= 7).
 - [ ] Echo Dagger: each hit is followed by a second, weaker hit half a second later.
 - [ ] Scepter: costs 1 heart per shot, the flame bolt curves toward hostiles; refused at ≤ 2 hearts.
 - [ ] Enchanting table/anvil: only Unbreaking applies to the special weapons.

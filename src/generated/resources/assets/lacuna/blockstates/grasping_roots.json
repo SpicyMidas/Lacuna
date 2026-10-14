@@ -1,0 +1,38 @@
+{
+  "variants": {
+    "withering=false": [
+      {
+        "model": "lacuna:block/grasping_roots"
+      },
+      {
+        "model": "lacuna:block/grasping_roots",
+        "y": 90
+      },
+      {
+        "model": "lacuna:block/grasping_roots",
+        "y": 180
+      },
+      {
+        "model": "lacuna:block/grasping_roots",
+        "y": 270
+      }
+    ],
+    "withering=true": [
+      {
+        "model": "lacuna:block/grasping_roots_withered"
+      },
+      {
+        "model": "lacuna:block/grasping_roots_withered",
+        "y": 90
+      },
+      {
+        "model": "lacuna:block/grasping_roots_withered",
+        "y": 180
+      },
+      {
+        "model": "lacuna:block/grasping_roots_withered",
+        "y": 270
+      }
+    ]
+  }
+}

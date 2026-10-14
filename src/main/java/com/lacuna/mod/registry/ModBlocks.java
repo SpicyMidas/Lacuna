@@ -1,6 +1,7 @@
 package com.lacuna.mod.registry;
 
 import com.lacuna.mod.fl.AshenSnowBlock;
+import com.lacuna.mod.gear.GraspingRootsBlock;
 import com.lacuna.mod.fl.FlatDecorBlock;
 import com.lacuna.mod.fl.SporeMushroomBlock;
 import com.lacuna.mod.fl.UpdraftSpringBlock;
@@ -101,6 +102,12 @@ public final class ModBlocks {
             UniformInt.of(2, 5), BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_LAPIS_ORE).mapColor(MapColor.COLOR_LIGHT_BLUE)));
     public static final DeferredBlock<Block> ZENITHITE_BLOCK = block("zenithite_block", () -> new Block(
             BlockBehaviour.Properties.ofFullCopy(Blocks.AMETHYST_BLOCK).mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(s -> 3)));
+
+    // ------------------------------------------------------------------ M7 heartwood bow: temporary grasping roots (no item)
+    public static final DeferredBlock<GraspingRootsBlock> GRASPING_ROOTS = blockNoItem("grasping_roots", () -> new GraspingRootsBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.DIRT).noCollission().instabreak().noOcclusion().noLootTable()
+                    .sound(SoundType.HANGING_ROOTS).replaceable().randomTicks().ignitedByLava().pushReaction(PushReaction.DESTROY)
+                    .isValidSpawn(Blocks::never)));
 
     // ------------------------------------------------------------------ M9 silk dust decal
     public static final DeferredBlock<SilkDustGlowBlock> SILK_DUST_GLOW = blockNoItem("silk_dust_glow", () -> new SilkDustGlowBlock(

@@ -1,4 +1,4 @@
-"""M7: Starlace armor + Zenithite, Umbral tool set, five special weapons."""
+"""M7: Starlace armor + Zenithite, Umbral tool set, five special weapons, Heartwood Bow grasping roots."""
 from gen_resources import loot_ore, mod
 
 TOOLS = {"sword": ["R", "R", "S"], "pickaxe": ["RRR", " S ", " S "], "axe": ["RR", "RS", " S"],
@@ -10,6 +10,7 @@ def build(g):
     starlace(g)
     umbral_tools(g)
     weapons(g)
+    grasping_roots(g)
 
 
 def zenithite(g):
@@ -58,6 +59,24 @@ def umbral_tools(g):
                  category="equipment", unlock="lacuna:umbral_steel_ingot")
         g.tag("item", f"minecraft:{tool}s", mod(iid))
         g.tag("item", "lacuna:umbral_gear", mod(iid))
+    for tool, en, it in [
+        ("sword", "It drinks the light from every wound.", "Beve la luce da ogni ferita."),
+        ("pickaxe", "It digs best where no light has ever been.", "Scava meglio dove la luce non è mai arrivata."),
+        ("axe", "Each swing is a small eclipse.", "Ogni colpo è una piccola eclissi."),
+        ("shovel", "The deeper the dark, the softer the earth.", "Più fondo è il buio, più morbida è la terra."),
+        ("hoe", "Even shadows need tending.", "Anche le ombre vanno coltivate."),
+    ]:
+        g.name(f"item.lacuna.umbral_steel_{tool}.lore", en, it)
+    g.name("item.lacuna.umbral_steel.nightforged", "Nightforged: mines %s faster where light is %s or less",
+           "Forgiato nella notte: scava il %s più in fretta dove la luce è %s o meno")
+    g.name("item.lacuna.umbral_steel_sword.rend", "Umbral Rend: every third hit tears the shadow open",
+           "Squarcio umbrale: ogni terzo colpo squarcia l'ombra")
+    g.name("item.lacuna.umbral_steel_sword.rend_detail", " +%s armor-piercing damage, heals you %s, slows and blinds",
+           " +%s danni che ignorano l'armatura, ti cura di %s, rallenta e acceca")
+    g.name("item.lacuna.umbral_steel_axe.cleave", "Eclipse Cleave: charged hits release a shadow shockwave",
+           "Fendente d'eclissi: i colpi caricati liberano un'onda d'urto d'ombra")
+    g.name("item.lacuna.umbral_steel_axe.cleave_detail", " Foes within %2$s blocks take %1$s of the hit and are thrown back",
+           " I nemici entro %2$s blocchi subiscono il %1$s del colpo e vengono respinti")
     g.tag("item", "lacuna:umbral_gear", mod("eclipser"), mod("gravemaw_greatsword"))
     g.tag("item", "lacuna:drawn_weapons", mod("umbral_steel_sword"), mod("umbral_steel_axe"), mod("ruby_sword"), mod("ruby_axe"),
           mod("gravemaw_greatsword"), mod("tidecaller_sickle"), mod("echo_dagger"), mod("heartwood_bow"),
@@ -97,8 +116,10 @@ def weapons(g):
         g.name(f"item.lacuna.{iid}.lore", en, it)
     g.name("item.lacuna.gravemaw_greatsword.use", "Stand still and hold use: release a crescent wave",
            "Resta fermo e tieni premuto: libera un'onda a mezzaluna")
-    g.name("item.lacuna.heartwood_bow.use", "Arrows root targets (longer against a wall)",
-           "Le frecce radicano i bersagli (più a lungo contro un muro)")
+    g.name("item.lacuna.heartwood_bow.use", "Arrows sprout grasping roots that hold whatever they catch",
+           "Le frecce fanno germogliare radici avvinghianti che trattengono ciò che afferrano")
+    g.name("item.lacuna.heartwood_bow.use2", "Hit targets are rooted (longer against a wall)",
+           "I bersagli colpiti restano radicati (più a lungo contro un muro)")
     g.name("item.lacuna.pyrrhic_scepter.use", "Use: pay 2 health for a homing bolt", "Usa: paga 2 salute per un dardo a ricerca")
     g.name("lacuna.sickle.tide", "Tide charges: %s / %s", "Cariche di marea: %s / %s")
     g.name("lacuna.scepter.too_weak", "You are too weak to pay the price.", "Sei troppo debole per pagarne il prezzo.")
@@ -116,3 +137,38 @@ def weapons(g):
              "lacuna:pyrrhic_scepter", category="equipment", unlock="minecraft:blaze_rod")
     for w in ("gravemaw_greatsword", "tidecaller_sickle", "heartwood_bow", "echo_dagger", "pyrrhic_scepter"):
         g.tag("item", "minecraft:enchantable/durability", mod(w))
+
+
+def roots_model(tex):
+    """A tangle: the two diagonal planes of a cross plus four inset crop-style planes (a cage around the feet)."""
+    def plane(frm, to, faces, rot=False):
+        el = {"from": frm, "to": to, "shade": False,
+              "faces": {f: {"uv": uv, "texture": "#roots"} for f, uv in faces}}
+        if rot:
+            el["rotation"] = {"origin": [8, 8, 8], "axis": "y", "angle": 45, "rescale": True}
+        return el
+    fwd, back = [0, 0, 16, 16], [16, 0, 0, 16]
+    return {
+        "parent": "minecraft:block/block", "ambientocclusion": False, "render_type": "minecraft:cutout",
+        "textures": {"particle": tex, "roots": tex},
+        "elements": [
+            plane([0.8, 0, 8], [15.2, 16, 8], [("north", fwd), ("south", fwd)], rot=True),
+            plane([8, 0, 0.8], [8, 16, 15.2], [("west", fwd), ("east", fwd)], rot=True),
+            plane([3, 0, 0], [3, 13, 16], [("west", fwd), ("east", back)]),
+            plane([13, 0, 0], [13, 13, 16], [("west", back), ("east", fwd)]),
+            plane([0, 0, 3], [16, 13, 3], [("north", fwd), ("south", back)]),
+            plane([0, 0, 13], [16, 13, 13], [("north", back), ("south", fwd)]),
+        ],
+    }
+
+
+def grasping_roots(g):
+    """Heartwood Bow roots: no item, no loot; random y rotations; a dry texture for the final withering second."""
+    def variants(model):
+        return [{"model": model}, {"model": model, "y": 90}, {"model": model, "y": 180}, {"model": model, "y": 270}]
+    blockstate = {"variants": {"withering=false": variants("lacuna:block/grasping_roots"),
+                               "withering=true": variants("lacuna:block/grasping_roots_withered")}}
+    g.single("grasping_roots", "Grasping Roots", "Radici avvinghianti", roots_model("lacuna:block/grasping_roots"),
+             item=False, loot=None, blockstate=blockstate)
+    g.asset("models/block/grasping_roots_withered", roots_model("lacuna:block/grasping_roots_withered"))
+    g.props("grasping_roots", sprouted=["true", "false"], withering=["true", "false"])

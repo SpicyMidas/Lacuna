@@ -1,4 +1,5 @@
-"""M7 textures: Zenithite, Starlace cloth/armor (+ armor layers), Umbral tools, five special weapons, Rooted icon."""
+"""M7 textures: Zenithite, Starlace cloth/armor (+ armor layers), Umbral tools, five special weapons, Rooted icon,
+Heartwood Bow grasping roots (fresh + withered)."""
 import math
 
 from texlib import c, from_ascii, lerp, new, noise_fill, ramp, rng, save, with_alpha
@@ -153,6 +154,63 @@ def bow(pull: int):
     return img
 
 
+# root strands: (base x, height, wobble amplitude, phase, lean per row)
+ROOT_STRANDS = [(1, 12, 0.9, 0.0, 0.10), (4, 15, 1.3, 1.1, 0.05), (7, 10, 1.0, 2.0, -0.08), (9, 14, 1.2, 0.4, 0.12),
+                (12, 11, 1.1, 2.6, -0.15), (14, 8, 0.8, 1.7, -0.10)]
+
+
+def grasping_roots(withered: bool):
+    """Twisted root strands rising from the bottom edge on a transparent background, thick and dark at the base,
+    mossy in places, with pale growing tips; the withered variant is dry, grey-brown and broken off shorter."""
+    img = new()
+    px = img.load()
+    r = rng("grasping_roots_withered" if withered else "grasping_roots")
+    if withered:
+        dark, mid, light, moss, tip = c("#2E2721"), c("#55493D"), c("#7A6C5C"), c("#5E5A44"), c("#B5A68C")
+    else:
+        dark, mid, light, moss, tip = c("#2A1A0E"), c("#5A3A1E"), c("#83592F"), c("#4F6E2A"), c("#E6D9B4")
+
+    def put(x, y, col, only_empty=False):
+        if 0 <= x < 16 and 0 <= y < 16 and (not only_empty or px[x, y][3] == 0):
+            px[x, y] = col
+
+    tips = []
+    for (x0, height, amp, phase, lean) in ROOT_STRANDS:
+        if withered:
+            height = max(4, height - 2 - r.randrange(3))
+        last = None
+        for k in range(height):
+            y = 15 - k
+            xi = int(round(x0 + amp * math.sin(k * 0.62 + phase) + lean * k))
+            body = light if (k + xi) % 4 == 0 else mid
+            if r.random() < (0.12 if withered else 0.22):
+                body = moss
+            put(xi, y, body)
+            if k < height * 0.5:
+                put(xi + 1, y, dark)  # thick, shaded base
+            if last is not None and abs(xi - last) > 1:
+                put((xi + last) // 2, y, mid)  # keep the strand continuous on a sharp twist
+            last = xi
+        tips.append((last, 16 - height))
+        # a short side rootlet curling off the strand
+        k = r.randrange(3, max(4, height - 2))
+        xi = int(round(x0 + amp * math.sin(k * 0.62 + phase) + lean * k))
+        side = 1 if r.random() < 0.5 else -1
+        put(xi + side, 15 - k - 1, mid, only_empty=True)
+        put(xi + 2 * side, 15 - k - 2, light if not withered else mid, only_empty=True)
+    # crossing tendrils knotting neighbouring strands together
+    for (y, x0, x1) in ((12, 2, 6), (9, 7, 11), (13, 10, 14), (6, 3, 6)):
+        for x in range(x0, x1 + 1):
+            if r.random() < (0.55 if withered else 0.8):
+                put(x, y + (1 if (x - x0) % 3 == 1 else 0), dark if (x % 2) else mid, only_empty=True)
+    # pale root tips
+    for (x, y) in tips:
+        put(x, y, tip)
+        if not withered and r.random() < 0.5:
+            put(x + (1 if r.random() < 0.5 else -1), y - 1, tip, only_empty=True)
+    return img
+
+
 def weave(w, h, regions, name):
     img = new(w, h)
     px = img.load()
@@ -215,3 +273,5 @@ def paint():
         px[9, 3 + k] = c("#8A6234")
         px[6 + k // 2, 9 - k // 2] = c("#4FA84A")
     save(icon, "mob_effect/rooted")
+    save(grasping_roots(False), "block/grasping_roots")
+    save(grasping_roots(True), "block/grasping_roots_withered")

@@ -25,6 +25,9 @@ public final class GearEvents {
         bus.addListener(EchoDaggerItem::onServerTick);
         bus.addListener(EchoDaggerItem::onServerStopped);
         bus.addListener(HeartwoodBowItem::onImpact);
+        bus.addListener(UmbralAxeItem::onAttack);
+        bus.addListener(UmbralAxeItem::onDamage);
+        bus.addListener(UmbralTools::onBreakSpeed);
     }
 
     /** +25 % damage dealt with Umbral gear when the wielder stands where max local raw brightness <= 4. */

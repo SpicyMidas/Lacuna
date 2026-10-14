@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.3.0 — revision 3 (player feedback)
+
+- **Textures:** V2 hand-drawn textures (animated Chronoshard Pocket Watch, Divine Magnifying Glass, Eclipser charge
+  states, Echo Dagger, Fractured Pearl and both shards, Heartwood Bow) used verbatim; the placed Arrival Anchor is
+  repainted in the pearl's violet and gold.
+- **Totem of Banishing:** tolls its own bell on every use; 6 uses in total and no repair, 15 s cooldown after
+  banishing a creature or player, 4 s after crossing yourself. The Forgotten Land countdown shows the overworld
+  coordinates you would return to (1 block = 12).
+- **Item details on demand:** Lacuna item descriptions only appear while the "Item details" key (Space) is held.
+- **Divine Magnifying Glass:** the beam always runs straight where you look; it never bends towards mobs.
+- **Null Lantern:** works even on mobs already attacking you or that you hit.
+- **Umbral Steel** is now stronger than Ruby (netherite-like tier); the sword's *Umbral Rend*, the axe's *Eclipse
+  Cleave*, and *Nightforged* faster mining in the dark on every tool. The Chronoshard Pocket Watch is crafted and
+  repaired with Umbral Steel; the Echo Dagger with Zenithite.
+- **Heartwood Bow:** arrows really grow Grasping Roots around targets and where they land.
+- **Mobs:** the spider-like and hound-like custom mobs are gone (the Lantern Moth stays); their drops come from
+  spiders, cave spiders, husks and pillagers. The Last Merchant is a plains villager in a blue vest.
+- **Fractured Pearl:** the shards always reach you; any that do not fit drop at your feet.
+- **Sounds:** new layered cues for the magnifying glass, echo dagger, pyrrhic bolt, null lantern, divine glass,
+  tidecaller sickle, whisperbone flute, pearl split, clockwork decoy and the new umbral abilities and roots.
+
 ## 0.2.0 — revision 2 (player feedback)
 
 - **Textures:** the hand-drawn textures (ruby set, ores with animation, Umbral Steel set, Divine Magnifying Glass,
