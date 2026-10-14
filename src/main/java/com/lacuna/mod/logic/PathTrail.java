@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A single player's scent trail (spec M9): positions recorded every {@code interval} ticks, kept for {@code window}
- * ticks, at most {@code maxPoints}. Pure Java, unit-tested; owned by the volatile ScentTracker.
+ * A recorded movement trail: positions recorded every {@code interval} ticks, kept for {@code window} ticks, at most
+ * {@code maxPoints}. Pure Java, unit-tested; used by the Reflection to replay its player's path.
  */
-public final class ScentTrail {
+public final class PathTrail {
     public record Point(double x, double y, double z, long time) {
         public double distanceSq(double px, double py, double pz) {
             double dx = x - px;
@@ -23,7 +23,7 @@ public final class ScentTrail {
     private final int maxPoints;
     private final List<Point> points = new ArrayList<>();
 
-    public ScentTrail(int interval, long window, int maxPoints) {
+    public PathTrail(int interval, long window, int maxPoints) {
         this.interval = Math.max(1, interval);
         this.window = Math.max(1, window);
         this.maxPoints = Math.max(1, maxPoints);

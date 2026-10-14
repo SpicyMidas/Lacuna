@@ -30,7 +30,6 @@ public final class ModTags {
 
     public static final class Items {
         public static final TagKey<Item> MOTH_ATTRACTOR = tag("moth_attractor");
-        public static final TagKey<Item> LIGHT_SOURCES = tag("light_sources");
         public static final TagKey<Item> DRAWN_WEAPONS = tag("drawn_weapons");
         public static final TagKey<Item> UMBRAL_GEAR = tag("umbral_gear");
         public static final TagKey<Item> HEARTWOOD_REPAIR = tag("heartwood_bow_repair");

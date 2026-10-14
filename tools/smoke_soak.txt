@@ -11,18 +11,18 @@ time set 0
 @wait 400
 execute in lacuna:forgotten_land run place feature lacuna:clear_ice_cap 40 90 -28
 @wait 400
-summon lacuna:clockwork_hound -18 90 -1
+summon minecraft:husk -18 90 -1
 @wait 200
 place structure lacuna:obelisk -25 70 -24
 @wait 200
-kill @e[type=lacuna:gloomcrawler]
-kill @e[type=lacuna:clockwork_hound]
+kill @e[type=minecraft:spider]
+kill @e[type=minecraft:husk]
 kill @e[type=minecraft:pig,name=soak]
 @wait 400
 weather thunder
 @wait 200
-kill @e[type=lacuna:gloomcrawler]
-kill @e[type=lacuna:clockwork_hound]
+kill @e[type=minecraft:spider]
+kill @e[type=minecraft:husk]
 kill @e[type=minecraft:pig,name=soak]
 @wait 100
 summon lacuna:lantern_moth -22 90 12
@@ -41,19 +41,17 @@ weather clear
 @wait 100
 execute in lacuna:forgotten_land run place feature lacuna:floating_island -40 90 45
 @wait 600
-kill @e[type=lacuna:gloomcrawler]
-kill @e[type=lacuna:clockwork_hound]
+kill @e[type=minecraft:spider]
+kill @e[type=minecraft:husk]
 kill @e[type=minecraft:pig,name=soak]
 @wait 200
-lacuna scent
 @wait 100
 execute in lacuna:forgotten_land run place feature lacuna:floating_island -42 90 10
 @wait 400
 lacuna selftest
 @wait 600
-summon lacuna:gloomcrawler 23 90 -18
+summon minecraft:spider 23 90 -18
 @wait 600
-lacuna scent
 @wait 600
 summon minecraft:pig -28 100 18 {CustomName:'"soak"'}
 @wait 20
@@ -71,7 +69,7 @@ time set 1000
 @wait 400
 weather thunder
 @wait 400
-summon lacuna:gloomcrawler -16 90 -21
+summon minecraft:spider -16 90 -21
 @wait 600
 summon minecraft:pig -25 100 -24 {CustomName:'"soak"'}
 @wait 20
@@ -95,8 +93,8 @@ weather rain
 @wait 600
 time set 13000
 @wait 400
-kill @e[type=lacuna:gloomcrawler]
-kill @e[type=lacuna:clockwork_hound]
+kill @e[type=minecraft:spider]
+kill @e[type=minecraft:husk]
 kill @e[type=minecraft:pig,name=soak]
 @wait 600
 save-all
@@ -111,7 +109,7 @@ lacuna banish @e[type=minecraft:pig,name=soak,limit=1]
 @wait 100
 lacuna return @e[type=minecraft:pig,name=soak]
 @wait 600
-summon lacuna:gloomcrawler -18 90 23
+summon minecraft:spider -18 90 23
 @wait 600
 place structure lacuna:obelisk 4 70 -19
 @wait 600
@@ -121,9 +119,7 @@ lacuna banish @e[type=minecraft:pig,name=soak,limit=1]
 @wait 100
 lacuna return @e[type=minecraft:pig,name=soak]
 @wait 200
-lacuna scent
 @wait 100
-lacuna scent
 @wait 200
 place structure lacuna:obelisk -7 70 -10
 @wait 100
@@ -137,11 +133,11 @@ place structure lacuna:obelisk 39 70 22
 @wait 200
 lacuna selftest
 @wait 600
-kill @e[type=lacuna:gloomcrawler]
-kill @e[type=lacuna:clockwork_hound]
+kill @e[type=minecraft:spider]
+kill @e[type=minecraft:husk]
 kill @e[type=minecraft:pig,name=soak]
 @wait 600
-summon lacuna:gloomcrawler -8 90 13
+summon minecraft:spider -8 90 13
 @wait 100
 time set 1000
 @wait 600
@@ -151,9 +147,8 @@ lacuna selftest
 @wait 400
 lacuna selftest
 @wait 200
-summon lacuna:clockwork_hound 27 90 19
+summon minecraft:husk 27 90 19
 @wait 100
-lacuna scent
 @wait 600
 summon minecraft:pig -6 100 -31 {CustomName:'"soak"'}
 @wait 20
@@ -187,9 +182,7 @@ lacuna banish @e[type=minecraft:pig,name=soak,limit=1]
 @wait 100
 lacuna return @e[type=minecraft:pig,name=soak]
 @wait 600
-lacuna scent
 @wait 200
-lacuna scent
 @wait 200
 summon minecraft:pig 27 100 -30 {CustomName:'"soak"'}
 @wait 20
@@ -209,15 +202,13 @@ lacuna return @e[type=minecraft:pig,name=soak]
 @wait 200
 save-all
 @wait 200
-kill @e[type=lacuna:gloomcrawler]
-kill @e[type=lacuna:clockwork_hound]
+kill @e[type=minecraft:spider]
+kill @e[type=minecraft:husk]
 kill @e[type=minecraft:pig,name=soak]
 @wait 400
-summon lacuna:gloomcrawler 19 90 9
+summon minecraft:spider 19 90 9
 @wait 600
-lacuna scent
 @wait 600
-lacuna scent
 @wait 400
 lacuna selftest
 @wait 200
@@ -227,7 +218,7 @@ place structure lacuna:obelisk 38 70 2
 @wait 200
 lacuna selftest
 @wait 200
-summon lacuna:gloomcrawler 12 90 -25
+summon minecraft:spider 12 90 -25
 @wait 100
 summon lacuna:lantern_moth -26 90 -29
 @wait 600
@@ -239,7 +230,7 @@ save-all
 @wait 600
 execute in lacuna:forgotten_land run place feature lacuna:floating_island -37 90 20
 @wait 600
-summon lacuna:gloomcrawler -23 90 19
+summon minecraft:spider -23 90 19
 @wait 100
 save-all
 @wait 100
@@ -249,15 +240,13 @@ lacuna banish @e[type=minecraft:pig,name=soak,limit=1]
 @wait 100
 lacuna return @e[type=minecraft:pig,name=soak]
 @wait 600
-lacuna scent
 @wait 400
 place structure lacuna:sunken_bell_tower 40 70 33
 @wait 200
 save-all
 @wait 600
-summon lacuna:clockwork_hound -3 90 -25
+summon minecraft:husk -3 90 -25
 @wait 100
-lacuna scent
 @wait 400
 lacuna selftest
 @wait 600

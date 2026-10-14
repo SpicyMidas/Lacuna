@@ -17,6 +17,9 @@
 - **Fractured Pearl:** the placed anchor is a cube; shards work in every dimension and across dimensions (never into
   or out of the Forgotten Land).
 - **Null Lantern:** hostile mobs never target or hurt the holder unless provoked (no close-range exception).
+- **Mobs:** the M9 ambush spider and brass hound are gone; spiders and cave spiders now rarely drop Umbral Steel
+  nuggets, husks drop Clockwork Gears and rarely Chronal Shards, pillagers drop Clockwork Gears. Spiders and rabbits
+  took their place in the Forgotten Land. The Last Merchant looks like a plains villager in a blue vest.
 - **Forgotten Land:** much denser fog (client config) with mist; Memory Mural paintings hang in shrines and halls.
 - **Effects framework:** shader beams/flares, additive particles, screen shake/flash/tints (Distortion Effects
   slider and a client toggle respected); vortex rifts for Totem crossings, golden rewind ring, blazing Pyrrhic bolt.
@@ -34,7 +37,7 @@
 - **M6** Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute + Echo, Orrery of Thresholds.
 - **M7** Starlace armor, Zenithite, Umbral tools, five special weapons.
 - **M8** Four wood families (Cindervine, Crystal Willow, Tidebloom, Echo Birch) with trees and worldgen.
-- **M9** Lantern Moth, Gloomcrawler, Clockwork Hound (scent trails), Silk Dust, Clockwork Decoy.
+- **M9** Lantern Moth, two hostile mobs (removed in 0.2.0), Silk Dust, Clockwork Decoy.
 - **M10** Five Forgotten Land biomes, Sunken Bell Tower, Obelisk of Unreadable Names, Mirror Labyrinth + Reflection,
   the Last Merchant.
 - **M11** Townships: five walled town styles, reputation, laws, bell and gates, council policies, township coin,

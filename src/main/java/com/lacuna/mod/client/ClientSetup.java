@@ -47,8 +47,6 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.ECHO.get(), EchoRenderer::new);
         event.registerEntityRenderer(ModEntities.PYRRHIC_BOLT.get(), PyrrhicBoltRenderer::new);
         event.registerEntityRenderer(ModEntities.LANTERN_MOTH.get(), LanternMothRenderer::new);
-        event.registerEntityRenderer(ModEntities.GLOOMCRAWLER.get(), GloomcrawlerRenderer::new);
-        event.registerEntityRenderer(ModEntities.CLOCKWORK_HOUND.get(), ClockworkHoundRenderer::new);
         event.registerEntityRenderer(ModEntities.DECOY.get(), DecoyRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWN_DECOY.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntities.REFLECTION.get(), ReflectionRenderer::new);

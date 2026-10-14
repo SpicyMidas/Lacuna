@@ -55,7 +55,7 @@
       {
         "maxCount": 2,
         "minCount": 1,
-        "type": "lacuna:gloomcrawler",
+        "type": "minecraft:spider",
         "weight": 4
       }
     ],

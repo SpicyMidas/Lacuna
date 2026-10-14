@@ -28,7 +28,6 @@ load after registration; they live in `Balance`.
 | gear | umbralDarkBonus | 0.25 | Extra damage fraction for Umbral gear in darkness |
 | wood | extras | false | Reserved for signs/boats (not implemented) |
 | wood | tidebloomFish | true | Tidebloom roots spawn fish |
-| mobs | scentTracking / gloomcrawlerAmbush | true / true | |
 | forgottenBiomes | marshFog, dunesSlowCrops, updraftSprings, mirrorLabyrinth, lastMerchant, sunkenBell | true | |
 | forgottenBiomes | lastMerchantIntervalTicks | 72000 | ~3 in-game days |
 | township | enabled, laws, council, currency, guilds | true | Townships and their subsystems |

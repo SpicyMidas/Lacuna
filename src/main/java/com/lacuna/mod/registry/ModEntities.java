@@ -4,9 +4,7 @@ import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.flute.EchoEntity;
 import com.lacuna.mod.gear.PyrrhicBoltEntity;
 import com.lacuna.mod.merchant.LastMerchant;
-import com.lacuna.mod.mob.ClockworkHound;
 import com.lacuna.mod.mob.DecoyEntity;
-import com.lacuna.mod.mob.Gloomcrawler;
 import com.lacuna.mod.mob.LanternMoth;
 import com.lacuna.mod.mob.ThrownDecoyEntity;
 import com.lacuna.mod.structure.ReflectionEntity;
@@ -53,12 +51,6 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<LanternMoth>> LANTERN_MOTH = ENTITIES.register("lantern_moth",
             () -> EntityType.Builder.<LanternMoth>of(LanternMoth::new, MobCategory.AMBIENT)
                     .sized(0.56F, 0.48F).eyeHeight(0.24F).clientTrackingRange(8).build("lantern_moth"));
-    public static final DeferredHolder<EntityType<?>, EntityType<Gloomcrawler>> GLOOMCRAWLER = ENTITIES.register("gloomcrawler",
-            () -> EntityType.Builder.<Gloomcrawler>of(Gloomcrawler::new, MobCategory.MONSTER)
-                    .sized(1.12F, 0.72F).eyeHeight(0.52F).clientTrackingRange(8).build("gloomcrawler"));
-    public static final DeferredHolder<EntityType<?>, EntityType<ClockworkHound>> CLOCKWORK_HOUND = ENTITIES.register("clockwork_hound",
-            () -> EntityType.Builder.<ClockworkHound>of(ClockworkHound::new, MobCategory.CREATURE)
-                    .sized(0.6F, 0.85F).eyeHeight(0.68F).clientTrackingRange(10).build("clockwork_hound"));
     public static final DeferredHolder<EntityType<?>, EntityType<DecoyEntity>> DECOY = ENTITIES.register("clockwork_decoy",
             () -> EntityType.Builder.<DecoyEntity>of(DecoyEntity::new, MobCategory.MISC)
                     .sized(0.6F, 1.95F).clientTrackingRange(8).noSave().build("clockwork_decoy"));
@@ -81,20 +73,14 @@ public final class ModEntities {
     public static void onAttributes(EntityAttributeCreationEvent event) {
         event.put(ECHO.get(), EchoEntity.createAttributes().build());
         event.put(LANTERN_MOTH.get(), LanternMoth.createAttributes().build());
-        event.put(GLOOMCRAWLER.get(), Gloomcrawler.createAttributes().build());
-        event.put(CLOCKWORK_HOUND.get(), ClockworkHound.createAttributes().build());
         event.put(DECOY.get(), DecoyEntity.createAttributes().build());
         event.put(REFLECTION.get(), ReflectionEntity.createAttributes().build());
         event.put(LAST_MERCHANT.get(), net.minecraft.world.entity.Mob.createMobAttributes().build());
     }
 
-    /** Mod bus: natural spawn placement rules for the M9 mobs (new entries need a placement type and heightmap). */
+    /** Mod bus: natural spawn placement rules for the M9 Lantern Moth (new entries need a placement type and heightmap). */
     public static void onSpawnPlacements(RegisterSpawnPlacementsEvent event) {
         event.register(LANTERN_MOTH.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 LanternMoth::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-        event.register(GLOOMCRAWLER.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                Gloomcrawler::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
-        event.register(CLOCKWORK_HOUND.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                ClockworkHound::checkSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 }

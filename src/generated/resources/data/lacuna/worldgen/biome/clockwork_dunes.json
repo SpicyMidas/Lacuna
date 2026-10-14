@@ -46,10 +46,10 @@
     "axolotls": [],
     "creature": [
       {
-        "maxCount": 2,
-        "minCount": 1,
-        "type": "lacuna:clockwork_hound",
-        "weight": 3
+        "maxCount": 3,
+        "minCount": 2,
+        "type": "minecraft:rabbit",
+        "weight": 4
       }
     ],
     "misc": [],

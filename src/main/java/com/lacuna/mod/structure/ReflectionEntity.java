@@ -1,7 +1,7 @@
 package com.lacuna.mod.structure;
 
 import com.lacuna.mod.Balance;
-import com.lacuna.mod.logic.ScentTrail;
+import com.lacuna.mod.logic.PathTrail;
 import com.lacuna.mod.registry.ModDamageTypes;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Reflection (spec M10): a dark-silver double of the player who woke it. It does not path-find: it replays its
- * player's own path 60 ticks late (positions sampled every 5 ticks into a volatile {@link ScentTrail}), passing
+ * player's own path 60 ticks late (positions sampled every 5 ticks into a volatile {@link PathTrail}), passing
  * through mirrors like a reflection would. Touching the player deals 6. 20 HP, never saved; it vanishes if its
  * player leaves 48 blocks, logs out or changes dimension.
  */
@@ -28,7 +28,7 @@ public class ReflectionEntity extends PathfinderMob {
     private UUID target;
     @Nullable
     private BlockPos trigger;
-    private final ScentTrail history = new ScentTrail(5, Balance.REFLECTION_DELAY * 2L, 40);
+    private final PathTrail history = new PathTrail(5, Balance.REFLECTION_DELAY * 2L, 40);
     private int hitCooldown;
     private boolean reported;
 

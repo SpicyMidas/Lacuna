@@ -1,0 +1,9 @@
+{
+  "entries": [
+    "lacuna:spider_drops",
+    "lacuna:cave_spider_drops",
+    "lacuna:husk_drops",
+    "lacuna:pillager_drops"
+  ],
+  "replace": false
+}

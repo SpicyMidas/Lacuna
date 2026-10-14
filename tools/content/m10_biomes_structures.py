@@ -162,7 +162,7 @@ def spawner(entity, weight, lo, hi):
 def biomes(g):
     biome_features(g)
     V, T = wg.VEGETAL_DECORATION, wg.TOP_LAYER_MODIFICATION
-    gloom = spawner("lacuna:gloomcrawler", 4, 1, 2)
+    spiders = spawner("minecraft:spider", 4, 1, 2)
 
     def feats(**steps):
         f = [[] for _ in range(11)]
@@ -170,10 +170,10 @@ def biomes(g):
             f[int(step[1:])] = lst
         return f
 
-    # Forgotten Plains gains Echo Birch groves and Gloomcrawlers (M9)
+    # Forgotten Plains gains Echo Birch groves and spiders
     g.override("data/lacuna/worldgen/biome/forgotten_plains.json", wg.biome(0.6, 0.3, feats(
         s9=["lacuna:divine_glass_cluster_patch", "minecraft:patch_grass_plain", "lacuna:fl_echo_birch_grove"]),
-        spawners={"monster": [gloom]}, particle="minecraft:ash", particle_p=0.004))
+        spawners={"monster": [spiders]}, particle="minecraft:ash", particle_p=0.004))
 
     defs = {
         "cinderfrost_flats": ("Cinderfrost Flats", "Distese di cenere gelata", wg.biome(
@@ -190,13 +190,13 @@ def biomes(g):
             0.4, 0.9, feats(s1=["lacuna:marsh_pool"],
                             s9=["lacuna:fl_tidebloom_grove", "lacuna:spore_mushroom_patch", "minecraft:patch_waterlily",
                                 "minecraft:patch_grass_normal"]),
-            spawners={"ambient": [spawner("lacuna:lantern_moth", 8, 1, 3)], "monster": [spawner("lacuna:gloomcrawler", 6, 1, 2)]},
+            spawners={"ambient": [spawner("lacuna:lantern_moth", 8, 1, 3)], "monster": [spawner("minecraft:spider", 6, 1, 2)]},
             grass="#6B7F6A", foliage="#62785F", particle="minecraft:white_ash", particle_p=0.01,
             water=wg.rgb("#4E6B5A"), water_fog=wg.rgb("#3B5446"), additions="minecraft:ambient.warped_forest.additions")),
         "clockwork_dunes": ("Clockwork Dunes", "Dune a orologeria", wg.biome(
             1.4, 0.0, feats(s9=["lacuna:buried_watch_patch", "lacuna:rusted_gear_patch", "minecraft:patch_dead_bush_2",
                                 "lacuna:fl_echo_birch_sparse"]),
-            spawners={"creature": [spawner("lacuna:clockwork_hound", 3, 1, 2)]},
+            spawners={"creature": [spawner("minecraft:rabbit", 4, 2, 3)]},
             grass="#A99F72", foliage="#A0976A", fog=wg.rgb("#A9A38F"), sky=wg.rgb("#9C9A8C"),
             additions="minecraft:block.note_block.hat")),
     }

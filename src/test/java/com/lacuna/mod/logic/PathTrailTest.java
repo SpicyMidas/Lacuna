@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-class ScentTrailTest {
+class PathTrailTest {
     @Test
     void recordsEveryIntervalOnly() {
-        ScentTrail t = new ScentTrail(200, 3600, 18);
+        PathTrail t = new PathTrail(200, 3600, 18);
         assertTrue(t.record(0, 64, 0, 0));
         assertFalse(t.record(1, 64, 0, 199));
         assertTrue(t.record(2, 64, 0, 200));
@@ -18,7 +18,7 @@ class ScentTrailTest {
 
     @Test
     void windowAndCapacityAreBounded() {
-        ScentTrail t = new ScentTrail(200, 3600, 18);
+        PathTrail t = new PathTrail(200, 3600, 18);
         for (int i = 0; i <= 40; i++) {
             t.record(i, 64, 0, i * 200L);
         }
@@ -29,7 +29,7 @@ class ScentTrailTest {
 
     @Test
     void followsFromOldestNearbyPoint() {
-        ScentTrail t = new ScentTrail(1, 10_000, 18);
+        PathTrail t = new PathTrail(1, 10_000, 18);
         t.record(0, 0, 0, 0);
         t.record(10, 0, 0, 1);
         t.record(20, 0, 0, 2);
@@ -39,7 +39,7 @@ class ScentTrailTest {
 
     @Test
     void breakingForgetsOlderPoints() {
-        ScentTrail t = new ScentTrail(1, 10_000, 18);
+        PathTrail t = new PathTrail(1, 10_000, 18);
         for (int i = 0; i < 5; i++) {
             t.record(i, 0, 0, i);
         }
@@ -52,7 +52,7 @@ class ScentTrailTest {
 
     @Test
     void newestNearbyAndTimeLookup() {
-        ScentTrail t = new ScentTrail(1, 10_000, 18);
+        PathTrail t = new PathTrail(1, 10_000, 18);
         t.record(0, 0, 0, 10);
         t.record(2, 0, 0, 20);
         t.record(50, 0, 0, 30);
@@ -65,7 +65,7 @@ class ScentTrailTest {
 
     @Test
     void replaysInterpolatedPositions() {
-        ScentTrail t = new ScentTrail(5, 120, 40);
+        PathTrail t = new PathTrail(5, 120, 40);
         t.record(0, 64, 0, 100);
         t.record(10, 64, 0, 105);
         t.record(10, 64, 20, 110);

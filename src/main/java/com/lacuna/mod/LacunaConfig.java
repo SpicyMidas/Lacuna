@@ -68,10 +68,6 @@ public final class LacunaConfig {
     public static final ModConfigSpec.BooleanValue WOOD_EXTRAS;
     public static final ModConfigSpec.BooleanValue TIDEBLOOM_FISH;
 
-    // ---------------------------------------------------------------- mobs
-    public static final ModConfigSpec.BooleanValue SCENT_ENABLED;
-    public static final ModConfigSpec.BooleanValue GLOOMCRAWLER_ENABLED;
-
     // ---------------------------------------------------------------- forgotten land biomes & structures
     public static final ModConfigSpec.BooleanValue MARSH_FOG_ENABLED;
     public static final ModConfigSpec.BooleanValue DUNES_SLOW_CROPS;
@@ -162,11 +158,6 @@ public final class LacunaConfig {
         B.push("wood");
         WOOD_EXTRAS = B.comment("Reserved for signs/boats (M12, currently not implemented).").define("extras", false);
         TIDEBLOOM_FISH = B.comment("Tidebloom roots occasionally spawn fish in adjacent water.").define("tidebloomFish", true);
-        B.pop();
-
-        B.push("mobs");
-        SCENT_ENABLED = B.comment("Clockwork Hound scent trails (volatile, never saved).").define("scentTracking", true);
-        GLOOMCRAWLER_ENABLED = B.define("gloomcrawlerAmbush", true);
         B.pop();
 
         B.push("forgottenBiomes");

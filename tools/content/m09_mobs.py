@@ -1,4 +1,5 @@
-"""M9: Lantern Moth, Gloomcrawler, Clockwork Hound, Silk Dust (+ glow decal), Clockwork Decoy."""
+"""M9: Lantern Moth, Silk Dust (+ glow decal), Clockwork Decoy, and extra drops for vanilla mobs (global loot
+modifiers: spiders drop Umbral Steel nuggets, husks and pillagers Clockwork Gears)."""
 from gen_resources import mod, pool
 
 FACINGS = {"up": (0, 0), "down": (180, 0), "north": (90, 0), "east": (90, 90), "south": (90, 180), "west": (90, 270)}
@@ -9,6 +10,7 @@ def build(g):
     items(g)
     silk_glow(g)
     loot(g)
+    vanilla_drops(g)
     tags(g)
     spawns(g)
     g.shapeless("clockwork_decoy", ["lacuna:clockwork_gear", "lacuna:clockwork_gear", "lacuna:clockwork_gear",
@@ -17,8 +19,6 @@ def build(g):
 
 def entities(g):
     g.name("entity.lacuna.lantern_moth", "Lantern Moth", "Falena lanterna")
-    g.name("entity.lacuna.gloomcrawler", "Gloomcrawler", "Strisciabuio")
-    g.name("entity.lacuna.clockwork_hound", "Clockwork Hound", "Segugio a orologeria")
     g.name("entity.lacuna.clockwork_decoy", "Clockwork Decoy", "Esca a orologeria")
     g.name("entity.lacuna.thrown_clockwork_decoy", "Thrown Clockwork Decoy", "Esca a orologeria lanciata")
 
@@ -28,9 +28,6 @@ def items(g):
     g.item("clockwork_gear", "Clockwork Gear", "Ingranaggio a orologeria")
     g.item("clockwork_decoy", "Clockwork Decoy", "Esca a orologeria")
     g.item("lantern_moth_spawn_egg", "Lantern Moth Spawn Egg", "Uovo generatore di falena lanterna", model="spawn_egg")
-    g.item("gloomcrawler_spawn_egg", "Gloomcrawler Spawn Egg", "Uovo generatore di strisciabuio", model="spawn_egg")
-    g.item("clockwork_hound_spawn_egg", "Clockwork Hound Spawn Egg", "Uovo generatore di segugio a orologeria",
-           model="spawn_egg")
 
 
 def silk_glow(g):
@@ -78,24 +75,46 @@ def entity_loot(g, eid, pools):
 
 def loot(g):
     entity_loot(g, "lantern_moth", [pool([{"type": "minecraft:item", "name": "lacuna:silk_dust", "functions": count(0.0, 2.0)}])])
-    entity_loot(g, "gloomcrawler", [
-        pool([{"type": "minecraft:item", "name": "minecraft:string", "functions": count(0.0, 2.0)}]),
-        pool([{"type": "minecraft:item", "name": "lacuna:umbral_steel_nugget"}], conditions=rare(0.05)),
-    ])
-    entity_loot(g, "clockwork_hound", [
-        pool([{"type": "minecraft:item", "name": "lacuna:clockwork_gear", "functions": count(1.0, 3.0)}]),
-        pool([{"type": "minecraft:item", "name": "lacuna:chronal_shard"}], conditions=rare(0.04)),
-    ])
     entity_loot(g, "clockwork_decoy", [])
+
+
+def extra_loot(g, name, targets, pools):
+    """An extra table (loot_table/extra/<name>) that a neoforge:add_table global loot modifier (<target>_drops) rolls
+    on top of each vanilla entity table in `targets`; every modifier is listed in neoforge's global_loot_modifiers."""
+    g.data(f"loot_table/extra/{name}", {"type": "minecraft:entity", "pools": pools, "random_sequence": mod(f"extra/{name}")})
+    for target in targets:
+        key = f"{target}_drops"
+        g.data(f"loot_modifiers/{key}", {
+            "type": "neoforge:add_table",
+            "conditions": [{"condition": "neoforge:loot_table_id", "loot_table_id": f"minecraft:entities/{target}"}],
+            "table": mod(f"extra/{name}")})
+        g.shared.setdefault("loot_modifiers", []).append(mod(key))
+
+
+def drop(iid, functions=None):
+    entry = {"type": "minecraft:item", "name": iid}
+    if functions:
+        entry["functions"] = functions
+    return entry
+
+
+def vanilla_drops(g):
+    # the drops of the two removed M9 hostile mobs (spider-like and hound-like) now come from vanilla mobs
+    extra_loot(g, "spider", ["spider", "cave_spider"], [
+        pool([drop("lacuna:umbral_steel_nugget")], conditions=rare(0.05))])
+    extra_loot(g, "husk", ["husk"], [
+        pool([drop("lacuna:clockwork_gear", count(0.0, 2.0))]),
+        pool([drop("lacuna:chronal_shard")], conditions=rare(0.04))])
+    extra_loot(g, "pillager", ["pillager"], [pool([drop("lacuna:clockwork_gear", count(0.0, 1.0))])])
+    g.data("loot_modifiers/global_loot_modifiers", {"replace": False, "entries": g.shared["loot_modifiers"]},
+           namespace="neoforge")
 
 
 def tags(g):
     g.tag("item", "lacuna:moth_attractor", "minecraft:torch", "minecraft:soul_torch", "minecraft:lantern",
           "minecraft:soul_lantern", "minecraft:glowstone", "#minecraft:candles")
-    g.tag("item", "lacuna:light_sources", "#lacuna:moth_attractor", "minecraft:sea_lantern", "minecraft:jack_o_lantern",
-          "minecraft:shroomlight", "minecraft:lava_bucket", "minecraft:end_rod", "minecraft:glow_berries")
-    g.tag("entity_type", "minecraft:arthropod", "lacuna:lantern_moth", "lacuna:gloomcrawler")
-    g.tag("entity_type", "minecraft:sensitive_to_bane_of_arthropods", "lacuna:lantern_moth", "lacuna:gloomcrawler")
+    g.tag("entity_type", "minecraft:arthropod", "lacuna:lantern_moth")
+    g.tag("entity_type", "minecraft:sensitive_to_bane_of_arthropods", "lacuna:lantern_moth")
     g.tag("entity_type", "minecraft:fall_damage_immune", "lacuna:lantern_moth")
     # a decoy is a temporary, unsaved construct: banishing it would only lose it
     g.tag("entity_type", "lacuna:cannot_be_banished", "lacuna:clockwork_decoy")
@@ -108,11 +127,6 @@ def add_spawns(g, name, biomes, entity, weight, lo, hi):
 
 
 def spawns(g):
-    # Forgotten Land biomes (Whispering Marsh, Forgotten Plains, Clockwork Dunes) list these mobs directly (M10)
+    # Forgotten Land biomes (Whispering Marsh, Forgotten Plains) list the moth directly (M10)
     add_spawns(g, "lantern_moth_forests", "#c:is_forest", "lacuna:lantern_moth", 8, 1, 3)
     add_spawns(g, "lantern_moth_swamps", "#c:is_swamp", "lacuna:lantern_moth", 8, 1, 3)
-    add_spawns(g, "gloomcrawler_dark_forest", ["minecraft:dark_forest"], "lacuna:gloomcrawler", 6, 1, 2)
-    add_spawns(g, "gloomcrawler_swamps", "#c:is_swamp", "lacuna:gloomcrawler", 6, 1, 2)
-    add_spawns(g, "gloomcrawler_taigas", "#c:is_taiga", "lacuna:gloomcrawler", 6, 1, 2)
-    add_spawns(g, "clockwork_hound_deserts", "#c:is_desert", "lacuna:clockwork_hound", 3, 1, 2)
-    add_spawns(g, "clockwork_hound_badlands", "#c:is_badlands", "lacuna:clockwork_hound", 3, 1, 2)

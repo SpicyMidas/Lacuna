@@ -223,9 +223,6 @@ public final class Balance {
 
     // ---------------------------------------------------------------- mobs (M9)
     public static final int SILK_GLOW_TICKS = 3600;
-    public static final int SCENT_INTERVAL = 200;
-    public static final int SCENT_WINDOW = 3600;
-    public static final int SCENT_MAX_POINTS = 18;
     public static final int DECOY_LIFETIME = 300;
     public static final int DECOY_COOLDOWN = 400;
 
