@@ -1,0 +1,16 @@
+# Revision 3 boot check: a world loads, the new roots block and merchant render, Umbral and totem items in hand.
+world lacuna_rev3 flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd gamerule doDaylightCycle false
+cmd time set 6000
+cmd summon lacuna:last_merchant ~0 ~0 ~4 {NoAI:1b,Rotation:[180f,0f]}
+cmd setblock ~-2 ~0 ~4 lacuna:grasping_roots
+cmd setblock ~2 ~0 ~4 lacuna:arrival_anchor
+cmd give @s lacuna:umbral_steel_sword
+look 0 10
+wait 40
+shot rev3_merchant
+quit
