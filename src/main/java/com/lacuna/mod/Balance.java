@@ -146,6 +146,14 @@ public final class Balance {
     public static final int LANTERN_RADIUS = 16;
     public static final int LANTERN_SPAWN_RADIUS = 24;
     public static final int LANTERN_TICKS_PER_DURABILITY = 200;
+    /** Mobs hunting a protected player are swept from this far away (or the config radius, if larger). */
+    public static final int LANTERN_SWEEP_RADIUS = 32;
+    /** A lit placed lantern shelters every player within this many blocks of it. */
+    public static final int LANTERN_PLACED_RADIUS = 12;
+    public static final int LANTERN_LIGHT = 13;
+    /** Charge restored by one fuel item, in percent of the maximum. */
+    public static final int LANTERN_PEARL_RECHARGE_PERCENT = 50;
+    public static final int LANTERN_ECHO_RECHARGE_PERCENT = 100;
 
     // ---------------------------------------------------------------- whisperbone flute (M6)
     public static final int FLUTE_DURABILITY = 40;

@@ -10,7 +10,10 @@
   coordinates you would return to (1 block = 12).
 - **Item details on demand:** Lacuna item descriptions only appear while the "Item details" key (Space) is held.
 - **Divine Magnifying Glass:** the beam always runs straight where you look; it never bends towards mobs.
-- **Null Lantern:** works even on mobs already attacking you or that you hit.
+- **Null Lantern:** works even on mobs already attacking you or that you hit (it no longer switches itself off
+  after meeting a zombie or skeleton). It can now be placed like a lantern, standing or hanging, and shelters
+  everyone within 12 blocks while lit; its durability is a charge that burns held or placed, runs dark instead of
+  breaking, and is refilled with Ender Pearls (+50 %) or Echo Shards (+100 %).
 - **Umbral Steel** is now stronger than Ruby (netherite-like tier); the sword's *Umbral Rend*, the axe's *Eclipse
   Cleave*, and *Nightforged* faster mining in the dark on every tool. The Chronoshard Pocket Watch is crafted and
   repaired with Umbral Steel; the Echo Dagger with Zenithite.

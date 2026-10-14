@@ -12,15 +12,63 @@ def box(frm, to, tex, uv_side=None):
 
 def build(g):
     items(g)
+    null_lantern(g)
     orrery(g)
     tags(g)
+
+
+def null_lantern(g):
+    """Placeable, chargeable Null Lantern: vanilla lantern templates, lit/dark block and item models."""
+    bid = "null_lantern"
+    g.block_lang(bid, "Null Lantern", "Lanterna nulla")
+    for suffix, template, tex in [("", "template_lantern", "null_lantern"),
+                                  ("_hanging", "template_hanging_lantern", "null_lantern"),
+                                  ("_off", "template_lantern", "null_lantern_off"),
+                                  ("_hanging_off", "template_hanging_lantern", "null_lantern_off")]:
+        g.asset(f"models/block/{bid}{suffix}", {"parent": f"minecraft:block/{template}", "render_type": "minecraft:cutout",
+                                                 "textures": {"lantern": mod(f"block/{tex}")}})
+    variants = {}
+    for hanging in ("false", "true"):
+        for lit in ("false", "true"):
+            model = bid + ("_hanging" if hanging == "true" else "") + ("" if lit == "true" else "_off")
+            variants[f"hanging={hanging},lit={lit}"] = {"model": mod(f"block/{model}")}
+    g.asset(f"blockstates/{bid}", {"variants": variants})
+    g.props(bid, hanging=["true", "false"], lit=["true", "false"], waterlogged=["true", "false"])
+    g.tag("block", "minecraft:mineable/pickaxe", mod(bid))
+    # NullLanternBlock#getDrops is authoritative (always exactly one lantern, even from explosions); this table mirrors
+    # it for loot viewers: the block entity's components (its charge as minecraft:damage, a custom name) are copied over
+    g.loot(bid, {"type": "minecraft:block", "pools": [{"bonus_rolls": 0.0, "rolls": 1.0, "entries": [
+        {"type": "minecraft:item", "name": mod(bid), "functions": [
+            {"function": "minecraft:copy_components", "source": "block_entity"}]}]}],
+        "random_sequence": mod(f"blocks/{bid}")})
+    # item: the hand-drawn sprite while charged, lacuna:item/null_lantern_off once dark (client property lacuna:lit)
+    g.item_model(f"{bid}_lit", {"parent": "minecraft:item/generated", "textures": {"layer0": mod(f"item/{bid}")}})
+    g.item_model(f"{bid}_off", {"parent": "minecraft:item/generated", "textures": {"layer0": mod(f"item/{bid}_off")}})
+    g.item(bid, "Null Lantern", "Lanterna nulla", overrides=[
+        {"predicate": {"lacuna:lit": 0.0}, "model": mod(f"item/{bid}_off")},
+        {"predicate": {"lacuna:lit": 1.0}, "model": mod(f"item/{bid}_lit")}])
+    g.name(f"item.lacuna.{bid}.use",
+           "Held or placed: hostile mobs ignore you and cannot hurt you (placed: anyone within 12 blocks).",
+           "In mano o posata: le creature ostili ti ignorano e non possono ferirti (posata: chiunque entro 12 blocchi).")
+    g.name(f"item.lacuna.{bid}.recharge",
+           "Recharge: click an Ender Pearl (+50%%) or an Echo Shard (+100%%) onto it, or use one on the placed lantern.",
+           "Ricarica: cliccaci sopra una perla di ender (+50%%) o un frammento di eco (+100%%), o usali sulla lanterna posata.")
+    for key, en, it in [
+        ("lacuna.lantern.charge", "Charge: %s%% (%s / %s)", "Carica: %s%% (%s / %s)"),
+        ("lacuna.lantern.charge_out", "Dark: out of charge", "Spenta: carica esaurita"),
+        ("lacuna.lantern.out", "Your Null Lantern gutters out. Feed it an Ender Pearl or an Echo Shard.",
+         "La tua Lanterna nulla si spegne. Nutrila con una perla di ender o un frammento di eco."),
+        ("lacuna.lantern.placed_out", "A Null Lantern nearby gutters out.", "Una Lanterna nulla qui vicino si spegne."),
+        ("lacuna.lantern.recharged", "Null Lantern charge: %s%%", "Carica della Lanterna nulla: %s%%"),
+        ("lacuna.lantern.full", "The Null Lantern is already fully charged.", "La Lanterna nulla è già carica del tutto."),
+    ]:
+        g.name(key, en, it)
 
 
 def items(g):
     g.item("chronoshard_pocket_watch", "Chronoshard Pocket Watch", "Orologio da taschino di cronoscheggia")
     g.item("chronal_shard", "Chronal Shard", "Scheggia cronale")
     g.item("mirror_of_recursion", "Mirror of Recursion", "Specchio della ricorsione")
-    g.item("null_lantern", "Null Lantern", "Lanterna nulla")
     g.item("whisperbone_flute", "Whisperbone Flute", "Flauto d'ossosussurro")
     g.item("echo_fragment", "Echo Fragment", "Frammento d'eco")
     g.name("entity.lacuna.echo", "Echo", "Eco")
@@ -34,8 +82,6 @@ def items(g):
         g.name(f"item.lacuna.{iid}.lore", en, it)
     g.name("item.lacuna.mirror_of_recursion.use", "Hold: reflect projectiles. Sneak + use: release a stored echo.",
            "Tieni premuto: rifletti i proiettili. Accovacciato + usa: rilascia un'eco.")
-    g.name("item.lacuna.null_lantern.use", "Held: hostile mobs ignore you and cannot hurt you, even mid-fight.",
-           "In mano: le creature ostili ti ignorano e non possono ferirti, anche nel mezzo di uno scontro.")
     g.name("item.lacuna.whisperbone_flute.use", "Use: call echoes of the recently fallen.", "Usa: richiama le eco dei caduti recenti.")
     for key, en, it in [
         ("lacuna.tooltip.cooldown", "Cooldown: %s s", "Ricarica: %s s"),

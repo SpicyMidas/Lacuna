@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "hanging=false,lit=false": {
+      "model": "lacuna:block/null_lantern_off"
+    },
+    "hanging=false,lit=true": {
+      "model": "lacuna:block/null_lantern"
+    },
+    "hanging=true,lit=false": {
+      "model": "lacuna:block/null_lantern_hanging_off"
+    },
+    "hanging=true,lit=true": {
+      "model": "lacuna:block/null_lantern_hanging"
+    }
+  }
+}

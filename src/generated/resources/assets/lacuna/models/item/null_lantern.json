@@ -1,4 +1,18 @@
 {
+  "overrides": [
+    {
+      "model": "lacuna:item/null_lantern_off",
+      "predicate": {
+        "lacuna:lit": 0.0
+      }
+    },
+    {
+      "model": "lacuna:item/null_lantern_lit",
+      "predicate": {
+        "lacuna:lit": 1.0
+      }
+    }
+  ],
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "lacuna:item/null_lantern"

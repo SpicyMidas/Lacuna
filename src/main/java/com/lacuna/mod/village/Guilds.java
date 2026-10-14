@@ -137,6 +137,10 @@ public final class Guilds {
         if (stored != null) {
             return stored;
         }
+        // hasMemoryValue first: Brain#getMemory throws for memories the brain never registered
+        if (!villager.getBrain().hasMemoryValue(MemoryModuleType.JOB_SITE)) {
+            return null;
+        }
         GuildType found = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
                 .filter(gp -> gp.dimension() == villager.level().dimension())
                 .map(GlobalPos::pos)
