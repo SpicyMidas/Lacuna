@@ -1,6 +1,6 @@
-"""M9 textures: Lantern Moth (bee UV), Gloomcrawler (spider UV), Clockwork Hound (wolf UV), Clockwork Decoy
-(humanoid UV), Silk Dust, Clockwork Gear, Clockwork Decoy item and the silk glow decal."""
-from texlib import c, from_ascii, lerp, new, ramp, rng, save, with_alpha
+"""M9 textures: Lantern Moth (bee UV), Clockwork Decoy (humanoid UV), Silk Dust, Clockwork Gear, Clockwork Decoy
+item and the silk glow decal."""
+from texlib import c, from_ascii, lerp, new, ramp, rng, save
 from art.humanoid import face_rects, humanoid_skin
 
 
@@ -83,108 +83,6 @@ def lantern_moth():
     for (x, y) in ((26, 9), (27, 9), (28, 9), (29, 9), (28, 7), (28, 8)):
         px[x, y] = c("#EADBA8")
     save(img, "entity/lantern_moth")
-
-
-# ---------------------------------------------------------------------------------------- gloomcrawler (spider layout)
-def gloom_base(alpha=255):
-    img = new(64, 32)
-    px = img.load()
-    r = rng("gloomcrawler")
-    hide = ramp("#0E140D", "#18231A", "#22331F", "#30452A", alpha=alpha)
-    paint_box(px, r, 32, 4, 8, 8, 8, hide)          # head
-    paint_box(px, r, 0, 0, 6, 6, 6, hide)           # neck
-    paint_box(px, r, 0, 12, 10, 8, 12, hide)        # abdomen
-    legs = ramp("#0A0F09", "#141E12", "#22301C", alpha=alpha)
-    paint_box(px, r, 18, 0, 16, 2, 2, legs)          # legs
-    # leaf-litter mottling on the abdomen and head
-    for _ in range(70):
-        x = r.randrange(0, 44)
-        y = r.randrange(12, 32)
-        if px[x, y][3]:
-            px[x, y] = with_alpha(r.choice([c("#3E5A2C"), c("#4C6B30"), c("#2A3B20"), c("#5B4A2A")]), alpha)
-    for _ in range(18):
-        x = r.randrange(32, 64)
-        y = r.randrange(4, 20)
-        if px[x, y][3]:
-            px[x, y] = with_alpha(r.choice([c("#3E5A2C"), c("#2A3B20")]), alpha)
-    # a pale chevron of dead leaves on the back (abdomen top)
-    for i in range(5):
-        for (x, y) in ((16 - i, 14 + i * 2), (17 + i, 14 + i * 2)):
-            px[x, y] = with_alpha(c("#6B5A33"), alpha)
-    # leg joints
-    for x in range(20, 52, 4):
-        px[x, 2] = with_alpha(c("#3A2A1A"), alpha)
-        px[x, 3] = with_alpha(c("#3A2A1A"), alpha)
-    return img
-
-
-EYES = [(42, 15), (45, 15), (42, 16), (45, 16), (41, 14), (46, 14), (43, 13), (44, 13)]
-
-
-def gloomcrawler():
-    img = gloom_base()
-    px = img.load()
-    for (x, y) in EYES:
-        px[x, y] = c("#5A0E14")
-    px[42, 15] = c("#B0202C")
-    px[45, 15] = c("#B0202C")
-    save(img, "entity/gloomcrawler")
-    hidden = gloom_base(alpha=40)
-    save(hidden, "entity/gloomcrawler_hidden")
-    eyes = new(64, 32)
-    ep = eyes.load()
-    for (x, y) in EYES:
-        ep[x, y] = c("#C0202A")
-    ep[42, 15] = c("#FF5A4A")
-    ep[45, 15] = c("#FF5A4A")
-    save(eyes, "entity/gloomcrawler_eyes")
-
-
-# ---------------------------------------------------------------------------------------- clockwork hound (wolf layout)
-def hound(angry):
-    img = new(64, 32)
-    px = img.load()
-    r = rng("clockwork_hound")
-    brass = ramp("#5E4524", "#86663A", "#B08D57", "#D2B57A")
-    dark = ramp("#3A2A18", "#5A4226", "#76582F")
-    paint_box(px, r, 0, 0, 6, 6, 4, brass)            # head
-    paint_box(px, r, 16, 14, 2, 2, 1, dark)           # ears
-    paint_box(px, r, 0, 10, 3, 3, 4, dark)            # muzzle
-    paint_box(px, r, 18, 14, 6, 9, 6, brass)          # body
-    paint_box(px, r, 21, 0, 8, 6, 7, ramp("#4A3520", "#6E5230", "#8E6F42", "#A9884F"))  # mane (gear housing)
-    paint_box(px, r, 0, 18, 2, 8, 2, dark)            # legs
-    paint_box(px, r, 9, 18, 2, 8, 2, ramp("#6B3A22", "#8A4A2A", "#A35E34"))  # tail: rusted spring
-    # rust blooms
-    for _ in range(40):
-        x = r.randrange(0, 52)
-        y = r.randrange(0, 32)
-        if px[x, y][3]:
-            px[x, y] = r.choice([c("#8A4A2A"), c("#A35E34"), c("#6B3A22")])
-    # rivet lines along the body sides and plates on the mane
-    for y in range(20, 29, 2):
-        for x in (19, 22, 31, 34):
-            px[x, y] = c("#E8D19A")
-    for x in range(28, 36, 2):
-        px[x, 9] = c("#2A1E12")
-        px[x, 11] = c("#E8D19A")
-    # spring coils on the tail
-    for y in range(20, 28, 2):
-        for x in range(9, 17):
-            px[x, y] = c("#4A2814")
-    # eyes on the head front (4..9, 4..9)
-    eye = c("#FF3A2A") if angry else c("#FFC94A")
-    glow = c("#FFB0A0") if angry else c("#FFF0B0")
-    for (x, y) in ((5, 6), (8, 6)):
-        px[x, y] = eye
-    px[5, 5] = glow
-    px[8, 5] = glow
-    if angry:
-        for x in range(4, 10):
-            px[x, 4] = c("#3A2A18")
-    # nose
-    px[5, 14] = c("#1E140A")
-    px[6, 14] = c("#1E140A")
-    save(img, "entity/clockwork_hound_angry" if angry else "entity/clockwork_hound")
 
 
 # ---------------------------------------------------------------------------------------- decoy (humanoid layout)
@@ -285,8 +183,5 @@ def items():
 
 def paint():
     lantern_moth()
-    gloomcrawler()
-    hound(False)
-    hound(True)
     decoy()
     items()

@@ -9,7 +9,6 @@ import com.lacuna.mod.flute.DeathMemory;
 import com.lacuna.mod.gear.GearEvents;
 import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
-import com.lacuna.mod.mob.ScentTracker;
 import com.lacuna.mod.network.LacunaNetwork;
 import com.lacuna.mod.orrery.OrreryBlock;
 import com.lacuna.mod.structure.SunkenBellBlock;
@@ -71,11 +70,6 @@ public final class Lacuna {
         ForgottenBiomeEvents.register(NeoForge.EVENT_BUS);
         com.lacuna.mod.village.VillageEvents.register(NeoForge.EVENT_BUS);
         NeoForge.EVENT_BUS.addListener(com.lacuna.mod.merchant.MerchantSpawner::onServerTick);
-        // M9 volatile scent trails
-        NeoForge.EVENT_BUS.addListener(ScentTracker::onServerTick);
-        NeoForge.EVENT_BUS.addListener(ScentTracker::onLogout);
-        NeoForge.EVENT_BUS.addListener(ScentTracker::onChangeDimension);
-        NeoForge.EVENT_BUS.addListener(ScentTracker::onServerStopped);
         AnvilRepairs.add(ModItems.WHISPERBONE_FLUTE, ModItems.ECHO_FRAGMENT, Balance.FLUTE_REPAIR_PER_FRAGMENT);
 
         AnvilRepairs.add(ModItems.DIVINE_MAGNIFYING_GLASS, ModItems.DIVINE_GLASS_SHARD, Balance.BEAM_REPAIR_PER_SHARD);

@@ -16,9 +16,8 @@ final class ExtraChecks {
 
     static void registries(List<String> failures, int[] checks) {
         // M9: every living Lacuna mob needs an attribute table (a missing one crashes on spawn)
-        List<EntityType<?>> living = List.of(ModEntities.ECHO.get(), ModEntities.LANTERN_MOTH.get(), ModEntities.GLOOMCRAWLER.get(),
-                ModEntities.CLOCKWORK_HOUND.get(), ModEntities.DECOY.get(), ModEntities.REFLECTION.get(),
-                ModEntities.LAST_MERCHANT.get());
+        List<EntityType<?>> living = List.of(ModEntities.ECHO.get(), ModEntities.LANTERN_MOTH.get(), ModEntities.DECOY.get(),
+                ModEntities.REFLECTION.get(), ModEntities.LAST_MERCHANT.get());
         for (EntityType<?> type : living) {
             checks[0]++;
             if (!DefaultAttributes.hasSupplier(type)) {
@@ -36,11 +35,9 @@ final class ExtraChecks {
         if (BuiltInRegistries.ENTITY_TYPE.getTag(ModTags.Entities.CANNOT_BE_BANISHED).map(s -> s.size() == 0).orElse(true)) {
             failures.add("empty entity tag lacuna:cannot_be_banished");
         }
-        for (var tag : List.of(ModTags.Items.MOTH_ATTRACTOR, ModTags.Items.LIGHT_SOURCES)) {
-            checks[0]++;
-            if (BuiltInRegistries.ITEM.getTag(tag).map(s -> s.size() == 0).orElse(true)) {
-                failures.add("empty item tag " + tag.location());
-            }
+        checks[0]++;
+        if (BuiltInRegistries.ITEM.getTag(ModTags.Items.MOTH_ATTRACTOR).map(s -> s.size() == 0).orElse(true)) {
+            failures.add("empty item tag lacuna:moth_attractor");
         }
     }
 

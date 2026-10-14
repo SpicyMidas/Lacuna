@@ -15,7 +15,7 @@ with laws, a council, a currency and guilds. No dependencies besides NeoForge; E
    when your time runs out, by using the totem again, or by dying.
 3. Explore its biomes: **Cinderfrost Flats** (ash snow that keeps footprints, ice over drowned ruins), **Inverted
    Falls** (floating islands with zenithite, upward springs), **Whispering Marsh** (fog, spore mushrooms, moths and
-   gloomcrawlers), **Clockwork Dunes** (buried watches, slow time, clockwork hounds). Find the **Mirror Labyrinth**
+   spiders), **Clockwork Dunes** (buried watches, slow time, rabbits). Find the **Mirror Labyrinth**
    and beat your own Reflection for its hoard.
 4. Back home: the **Divine Magnifying Glass** (a beam of focused sunlight), **Umbral Steel** and the **Eclipser**,
    **Sun's Fury**, the **Fractured Pearl** (two linked teleport shards), the **Chronoshard Pocket Watch**, **Mirror of
@@ -50,6 +50,6 @@ python3 tools/gen_structures.py    # structure NBT templates (ruins, towers, lab
 python3 tools/validate_assets.py   # consistency checks (models, textures, lang, tags, loot, worldgen, jigsaws)
 ```
 
-Pure logic (coordinates, beams, charges, scent trails, reputation, council, pricing) is unit-tested with JUnit 5.
+Pure logic (coordinates, beams, charges, path trails, reputation, council, pricing) is unit-tested with JUnit 5.
 
 License: All Rights Reserved.

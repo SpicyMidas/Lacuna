@@ -164,22 +164,16 @@ All `/lacuna` commands need permission level 2.
 ## M9 — Mobs
 ```
 /give @s lacuna:lantern_moth_spawn_egg 4
-/give @s lacuna:gloomcrawler_spawn_egg 2
-/give @s lacuna:clockwork_hound_spawn_egg 2
 /give @s lacuna:clockwork_decoy 4
 /give @s lacuna:silk_dust 16
 /give @s minecraft:torch 16
-/lacuna scent
 ```
 - [ ] Moths glow, flutter like small pale bees, never sting, and gather around a torch held in hand or a placed
       lantern; a Null Lantern in hand does not attract them. Killing one drops 0–2 Silk Dust.
 - [ ] Silk Dust on the floor, walls and ceiling leaves a faint sparkling light-9 decal; walk through it; it
       disappears after 3 minutes (try `/tick sprint 3600`), also after leaving and re-entering the world.
-- [ ] A Gloomcrawler next to leaves/tall grass flattens and turns almost invisible; walking past it (not sneaking)
-      within 4 blocks makes it leap; sneaking past does not. Holding a torch within 6 blocks makes it flee to darkness.
-- [ ] Clockwork Hound: walk 60+ blocks away over ~2 minutes, then `/lacuna scent`; the hound follows the particle
-      trail and attacks once within 16 blocks. Jumping into water or sneaking near it makes it give up.
-      Bones/meat do nothing to it.
+- [ ] Kill spiders/cave spiders, husks and pillagers as a player: about 1 in 20 spiders drops an Umbral Steel
+      nugget, husks drop 0–2 Clockwork Gears (rarely a Chronal Shard), pillagers 0–1 Clockwork Gear.
 - [ ] Throw a decoy near zombies chasing you: they turn to the mannequin for 15 s; the decoy cannot be damaged by
       its thrower; it vanishes in a puff of smoke afterwards.
 ## M10a — Forgotten Land biomes
@@ -198,8 +192,8 @@ All `/lacuna` commands need permission level 2.
       the pool's spring lifts you through the islet springs to the island's edge; place a spring yourself: items and
       mobs rise too; a block above the spring cuts the column.
 - [ ] Whispering Marsh: fog closes in, far sounds are muffled; spore mushrooms glow and make nearby mobs (and you)
-      glow; crouched Gloomcrawlers become visible.
-- [ ] Clockwork Dunes: buried watches (drop chronal shards) and rusted gears on sand; Clockwork Hounds; wheat
+      glow.
+- [ ] Clockwork Dunes: buried watches (drop chronal shards) and rusted gears on sand; rabbits; wheat
       planted here grows visibly slower than in the Overworld; a faint ticking ambience.
 ## M10b — Sunken Bell Tower, Obelisk
 ```
@@ -239,6 +233,7 @@ All `/lacuna` commands need permission level 2.
       offer; he sells divine glass shards, rubies, chronal shards and echo shards for emeralds.
 - [ ] Re-spawn several merchants: about 1 in 12 offers a Solar Flare Fragment for 16 rubies + 24 divine glass shards.
 - [ ] Leaving the area (chunk unload) or restarting removes the merchant; he never comes back from a save.
+- [ ] The merchant looks like a normal plains villager wearing a blue vest.
 ## M11a — Township structures
 ```
 /locate structure #lacuna:townships

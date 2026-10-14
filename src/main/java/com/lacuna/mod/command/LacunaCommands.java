@@ -1,13 +1,11 @@
 package com.lacuna.mod.command;
 
 import com.lacuna.mod.banish.BanishmentManager;
-import com.lacuna.mod.mob.ScentTracker;
 import com.lacuna.mod.village.VillageCommand;
 import com.lacuna.mod.village.VillageRecord;
 import com.lacuna.mod.village.VillageService;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import com.lacuna.mod.registry.ModDimensions;
 import com.lacuna.mod.registry.ModRegistries;
 import com.mojang.brigadier.CommandDispatcher;
@@ -53,8 +51,7 @@ public final class LacunaCommands {
                                 .then(Commands.argument("value", IntegerArgumentType.integer(-100, 100))
                                         .executes(ctx -> repSet(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"),
                                                 IntegerArgumentType.getInteger(ctx, "value")))))))
-                .then(VillageCommand.build())
-                .then(Commands.literal("scent").executes(ctx -> scent(ctx.getSource()))));
+                .then(VillageCommand.build()));
     }
 
     private static int giveKit(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
@@ -102,31 +99,6 @@ public final class LacunaCommands {
         int n = done;
         source.sendSuccess(() -> Component.literal("Returned " + n + " entities from the Forgotten Land"), true);
         return n;
-    }
-
-    /** Lists every tracked scent trail and marks the caller's own points with particles. */
-    private static int scent(CommandSourceStack source) {
-        var trails = ScentTracker.all();
-        if (trails.isEmpty()) {
-            source.sendSuccess(() -> Component.literal("No scent trails recorded (scentTracking may be disabled)."), false);
-            return 0;
-        }
-        ServerPlayer self = source.getPlayer();
-        trails.forEach((uuid, trail) -> {
-            ServerPlayer p = source.getServer().getPlayerList().getPlayer(uuid);
-            String name = p == null ? uuid.toString() : p.getGameProfile().getName();
-            var points = trail.points();
-            String newest = points.isEmpty() ? "-" : String.format("%.0f %.0f %.0f", points.get(points.size() - 1).x(),
-                    points.get(points.size() - 1).y(), points.get(points.size() - 1).z());
-            source.sendSuccess(() -> Component.literal(name + ": " + points.size() + " points, newest at " + newest), false);
-            if (self != null && self.getUUID().equals(uuid)) {
-                for (var pt : points) {
-                    self.serverLevel().sendParticles(self, ParticleTypes.HAPPY_VILLAGER, true, pt.x(), pt.y() + 0.5, pt.z(),
-                            6, 0.2, 0.3, 0.2, 0.0);
-                }
-            }
-        });
-        return trails.size();
     }
 
     private static java.util.Optional<VillageRecord> villageHere(CommandSourceStack source) {

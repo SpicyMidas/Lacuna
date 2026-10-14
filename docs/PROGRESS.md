@@ -305,44 +305,24 @@ Built:
 - **Silk Dust** + **`silk_dust_glow`**: right click a face places a thin, collision-less, light-9 translucent decal
   (6 facings, button-style rotations) that removes itself after 3600 ticks through a scheduled tick (saved with
   the chunk); a random tick re-schedules it if the tick ever went missing. Breaks with its supporting block.
-- **Gloomcrawler** (monster): own `Monster` subclass with the vanilla `SpiderModel` (scale 0.8), wall climbing
-  (`WallClimberNavigation` + synced climbing flag). Next to leaves/grass/ferns/bushes/saplings and without a target
-  it crouches (half-height hitbox, flattened, near-invisible translucent texture, eyes hidden); while crouched it
-  only acquires a non-sneaking player within 4 blocks, then leaps (`LeapAtTargetGoal`) and bites. A flee goal runs
-  to the darkest of 10 sampled spots (block light ≤ 4) whenever block light ≥ 7 is at its feet or a player
-  holding `#lacuna:light_sources` is inside 6 blocks; it never targets or keeps targeting such a player. 22 HP,
-  4 damage. Spawns in dark forests, swamps, taigas (monster light rules, weight 6). Drops 0–2 string, 5 % umbral
-  iron nugget (player kill, looting bonus).
-- **Clockwork Hound** (creature): extends `Wolf` to reuse `WolfModel`/sounds/anger timer; taming, feeding,
-  dyeing, armor, breeding and `applyTamingSideEffects` are disabled; all wolf goals replaced. 30 HP, 5 damage,
-  speed 0.33. `ScentTracker` (volatile, server-thread only) records each player every 200 ticks for 3600 ticks
-  (≤ 18 points), cleared on logout, dimension change and server stop, never saved; pure trail logic is
-  `logic/ScentTrail` (unit-tested). With no target a hound picks the oldest trail point within 48 blocks, walks the
-  trail oldest → newest (tracking by point time, so pruning never skips it) and targets the player inside 16
-  blocks. If that player is in water or sneaking within 8 blocks it loses the scent: target and anger cleared,
-  the trail broken at the newest point near the player, 400 tick calm period. A player who hits it is fought
-  normally (neutral mob). Spawns on sand/terracotta in deserts and badlands (weight 3). Drops 1–3 clockwork gears,
-  4 % chronal shard.
+- Two more mobs built here (an ambush spider and a brass tracking hound) were removed in revision 2 (0.2.0):
+  their drops now come from vanilla mobs through `neoforge:add_table` global loot modifiers
+  (`data/neoforge/loot_modifiers/global_loot_modifiers.json` → `lacuna:extra/*` tables): spiders and cave spiders
+  5 % umbral steel nugget (player kill, looting bonus); husks 0–2 clockwork gears (+ looting) and 4 % chronal shard;
+  pillagers 0–1 clockwork gear (+ looting).
 - **Clockwork Decoy**: shapeless recipe (3 gears + redstone + white wool), thrown (snowball arc, stack 16, 400
   tick cooldown); on landing it becomes a `clockwork_decoy` humanoid (zombie-layer model, brass texture, 20 HP,
   immovable, never saved, no loot/XP, immune to its owner) for 300 ticks. On its first tick every `Enemy` mob within
   16 blocks that targets the owner or nothing switches to it, and it re-asserts that every 5 ticks (vanilla
   target goals would otherwise switch back within a second); expiry/death releases them.
-- Spawn eggs (`DeferredSpawnEggItem`) for moth, gloomcrawler and hound; attributes via
+- Spawn egg (`DeferredSpawnEggItem`) for the moth; attributes via
   `EntityAttributeCreationEvent`; placements via `RegisterSpawnPlacementsEvent` (REPLACE, ON_GROUND,
-  MOTION_BLOCKING_NO_LEAVES); spawns via `neoforge:add_spawns` biome modifiers; vanilla sounds (bee, spider, wolf).
-- `/lacuna scent` lists every trail and marks the caller's points with particles. Selftest now checks that every
-  living Lacuna entity has attributes and that the light tags are non-empty.
+  MOTION_BLOCKING_NO_LEAVES); spawns via `neoforge:add_spawns` biome modifiers; vanilla bee sounds.
+- Selftest now checks that every living Lacuna entity has attributes and that the moth attractor tag is non-empty.
 - Validator: new check that every `Lacuna.id("textures/…png")` referenced from Java exists (negative-tested).
-- GameTests: spec attributes for the three mobs, hound cannot be tamed/fed, silk glow light/no collision/
-  scheduled removal, decoy lures an idle zombie, gloomcrawler crouches next to leaves.
+- GameTests: moth attributes, silk glow light/no collision/scheduled removal, decoy lures an idle zombie.
 
-Deviations:
-- The Gloomcrawler extends `Monster` instead of `Spider` (avoids spider jockeys/effects on spawn); the model is the
-  vanilla `SpiderModel`, so the visual result is the same.
-- The hound's "calm down" only applies to scent hunts; once a player has hurt it, it fights like any neutral mob.
-- Gloomcrawler flee threshold uses block light ≥ 7 at its own position as the "light source ≥ 9 within 6 blocks"
-  proxy, plus any player holding a light item inside 6 blocks (cheap and avoids a 13³ block scan per tick).
+Deviations: none.
 
 Known limitations: brain-driven mobs (piglins, hoglins, wardens) ignore the decoy because they do not use
 `Mob#setTarget`-based goals.
@@ -355,7 +335,7 @@ Built:
 - The dimension's `multi_noise` source now has five biomes (temperature/vegetation noise only; terrain unchanged):
   Forgotten Plains (base), Cinderfrost Flats (T < −0.45), Whispering Marsh (humid), Clockwork Dunes (hot, dry),
   Inverted Falls (hot, humid). Per-biome surface rules, features, spawns, tints, particles and ambient sounds.
-- **Forgotten Plains**: + Echo Birch groves (rarity 1/7 × 3) and Gloomcrawlers (weight 4).
+- **Forgotten Plains**: + Echo Birch groves (rarity 1/7 × 3) and spiders (weight 4).
 - **Cinderfrost Flats**: `ashen_snow_block` surface over tuff (blockstate `footprint` 0–3: any living entity
   stepping on it sets 3, a scheduled tick fades one stage per 100 ticks), ash particles, rare Cindervine spires,
   `clear_ice` (near-transparent ice, silk touch only) capping every still pond through a `lacuna:clear_ice_cap`
@@ -371,20 +351,19 @@ Built:
   and divine glass clusters on the ground.
 - **Whispering Marsh**: mud/grass surface, `marsh_pool` shallow pools (vanilla `waterlogged_vegetation_patch`
   with mud floor and seagrass), Tidebloom mangroves, lily pads, `spore_mushroom` patches (light 7, spore particles;
-  every 20 ticks living entities within 6 blocks glow for 60 ticks — reveals crouched Gloomcrawlers; skipped when no
+  every 20 ticks living entities within 6 blocks glow for 60 ticks — reveals mobs in the fog; skipped when no
   player is within 48 blocks; worldgen-placed mushrooms start their cycle on the first random tick), Lantern
-  Moths (ambient 8) and Gloomcrawlers (monster 6). Client (config `marshFog`, SafeRun): fog far plane blends to 28
+  Moths (ambient 8) and spiders (monster 6). Client (config `marshFog`, SafeRun): fog far plane blends to 28
   blocks and non-relative sounds from beyond 16 blocks play at 40 % (a delegating `SoundInstance`, because
   `PlaySoundEvent` fires before the sound is resolved).
 - **Clockwork Dunes**: sand over sandstone, `buried_watch` (tilted half-buried watch, drops 1–2 chronal shards,
-  silk touch drops itself), `rusted_gear` (flat decorative gear), dead bushes, sparse Echo Birch, Clockwork Hounds
-  (creature 3), quiet note-block "hat" ticking as the additions sound. Slow time: 50 % of `CropGrowEvent.Pre`
+  silk touch drops itself), `rusted_gear` (flat decorative gear), dead bushes, sparse Echo Birch, rabbits
+  (creature 4), quiet note-block "hat" ticking as the additions sound. Slow time: 50 % of `CropGrowEvent.Pre`
   results are `DO_NOT_GROW` in this biome (config `dunesSlowCrops`).
-- Gloomcrawler spawn rule: dark-only monster rules in the Overworld, any light in the Forgotten Land (its sky is
-  always lit, so the M9 rule could never pass there). Moths treat the Forgotten Land's fixed dusk as night.
+- Moths treat the Forgotten Land's fixed dusk as night.
 - Validator: configured feature types (vanilla or registered in `ModFeatures`) and placement modifier types are
   checked now (negative-tested).
-- GameTests: footprint set/fade, updraft lifts a pig, spore mushroom makes a Gloomcrawler glow and emits light 7,
+- GameTests: footprint set/fade, updraft lifts a pig, spore mushroom makes a spider glow and emits light 7,
   buried watch drops. Smoke phase 1 locates all four new biomes and runs the three new features once.
 
 Deviations: the updraft's "+0.08/tick" is applied as net acceleration (gravity compensated), otherwise a 0.08
@@ -431,7 +410,7 @@ Built:
 - Stepping on the ring (not in creative/spectator) spawns one **Reflection** per labyrinth: dark-silver
   translucent humanoid (zombie-layer model), 20 HP, contact damage 6 (`lacuna:reflection_touch`, 10 tick
   interval), no physics, never saved. It replays its player's own path 60 ticks late: the player's position is
-  sampled every 5 ticks into a volatile `ScentTrail` (same class as the hound's trails) and interpolated
+  sampled every 5 ticks into a volatile `PathTrail` and interpolated
   (`positionAt`, unit-tested). It vanishes when the player leaves 48 blocks, logs out, dies or changes dimension
   (the ring re-arms). Killed by a player → every `labyrinth_exit` within the labyrinth turns to air with
   particles, the ring shows as solved.
@@ -446,8 +425,8 @@ Gates: 3 ✔, 4 (logic, 30 tests) ✔, 1/2/5/6 not runnable here.
 ## M10d — Caravan of the Last Merchant
 
 Built:
-- `last_merchant`: extends `WanderingTrader` (vanilla goals, trading UI, despawn timer) rendered with the vanilla
-  wandering-trader `VillagerModel` and a faded travelling-robe texture; entity type is `noSave` ("no persistent
+- `last_merchant`: extends `WanderingTrader` (vanilla goals, trading UI, despawn timer) rendered as a plains villager
+  (vanilla `VillagerModel`, villager + plains type textures) with a blue vest overlay (revision 2); entity type is `noSave` ("no persistent
   state"), so it is gone after despawn, chunk unload or restart. Spawn egg for testing.
 - `MerchantSpawner` (server tick, Overworld): every `lastMerchantIntervalTicks` (default 72000 = 3 days, next attempt
   kept in `lacuna_last_merchant` SavedData) a 25 % chance by day (respects `doTraderSpawning`) to spawn 16–48 blocks
@@ -608,7 +587,7 @@ Built:
 - GameTest: tab order/completeness and all seven advancements loaded.
 
 Not done (optional in the spec): wood signs/hanging signs/boats, Orrery block-entity animation, TerraBlender
-injection. Emissive layers exist where they mattered (Gloomcrawler eyes, full-bright Lantern Moths).
+injection. Emissive layers exist where they mattered (full-bright Lantern Moths).
 
 Final QA status: the 30-minute soak, memory/tick profiling and `./gradlew build` need a machine with access to
 maven.neoforged.net and the Mojang servers (blocked here); the scripts are ready (`tools/smoke.sh`,

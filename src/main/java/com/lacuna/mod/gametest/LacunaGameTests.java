@@ -284,28 +284,7 @@ public final class LacunaGameTests {
     @GameTest(template = PLATFORM)
     public static void mobsHaveSpecAttributes(GameTestHelper helper) {
         var moth = helper.spawn(ModEntities.LANTERN_MOTH.get(), CENTER);
-        var crawler = helper.spawn(ModEntities.GLOOMCRAWLER.get(), CENTER.east(2));
-        var hound = helper.spawn(ModEntities.CLOCKWORK_HOUND.get(), CENTER.west(2));
         check(helper, moth.getMaxHealth() == 6.0F, "lantern moth has 6 HP");
-        check(helper, crawler.getMaxHealth() == 22.0F, "gloomcrawler has 22 HP");
-        check(helper, crawler.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) == 4.0, "gloomcrawler deals 4");
-        check(helper, hound.getMaxHealth() == 30.0F, "clockwork hound has 30 HP");
-        check(helper, hound.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) == 5.0, "hound deals 5");
-        check(helper, Math.abs(hound.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED) - 0.33) < 1e-6, "hound speed 0.33");
-        helper.succeed();
-    }
-
-    @GameTest(template = PLATFORM)
-    public static void houndCannotBeTamedOrFed(GameTestHelper helper) {
-        var hound = helper.spawn(ModEntities.CLOCKWORK_HOUND.get(), CENTER);
-        var player = helper.makeMockPlayer(GameType.SURVIVAL);
-        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.BONE, 64));
-        for (int i = 0; i < 20; i++) {
-            hound.mobInteract(player, net.minecraft.world.InteractionHand.MAIN_HAND);
-        }
-        check(helper, !hound.isTame(), "hound must never be tamed");
-        check(helper, !hound.isFood(new ItemStack(Items.BEEF)), "hound has no food");
-        check(helper, hound.getMaxHealth() == 30.0F, "taming side effects must not change health");
         helper.succeed();
     }
 
@@ -328,17 +307,6 @@ public final class LacunaGameTests {
         var zombie = helper.spawn(EntityType.ZOMBIE, CENTER.east(3));
         var decoy = helper.spawn(ModEntities.DECOY.get(), CENTER);
         helper.succeedWhen(() -> check(helper, zombie.getTarget() == decoy, "zombie should target the decoy"));
-    }
-
-    @GameTest(template = PLATFORM, timeoutTicks = 100)
-    public static void gloomcrawlerCrouchesInCover(GameTestHelper helper) {
-        var crawler = helper.spawn(ModEntities.GLOOMCRAWLER.get(), CENTER);
-        crawler.setNoAi(true); // stay next to the cover; crouching is driven by tick(), not by the AI
-        BlockState leaves = Blocks.OAK_LEAVES.defaultBlockState().setValue(net.minecraft.world.level.block.LeavesBlock.PERSISTENT, true);
-        for (Direction d : Direction.Plane.HORIZONTAL) {
-            helper.setBlock(CENTER.relative(d), leaves);
-        }
-        helper.succeedWhen(() -> check(helper, crawler.isCrouched() && crawler.getBbHeight() < 0.5F, "gloomcrawler should crouch next to leaves"));
     }
 
     // ------------------------------------------------------------------ M10a Forgotten Land biome blocks
@@ -370,9 +338,9 @@ public final class LacunaGameTests {
     public static void sporeMushroomRevealsHiddenMobs(GameTestHelper helper) {
         helper.setBlock(CENTER.below(), Blocks.MOSS_BLOCK);
         helper.setBlock(CENTER, ModBlocks.SPORE_MUSHROOM.get());
-        var crawler = helper.spawn(ModEntities.GLOOMCRAWLER.get(), CENTER.east(3));
+        var spider = helper.spawn(EntityType.SPIDER, CENTER.east(3));
         int n = com.lacuna.mod.fl.SporeMushroomBlock.revealAround(helper.getLevel(), helper.absolutePos(CENTER));
-        check(helper, n >= 1 && crawler.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING), "gloomcrawler should glow");
+        check(helper, n >= 1 && spider.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING), "spider should glow");
         check(helper, helper.getLevel().getBlockState(helper.absolutePos(CENTER)).getLightEmission(helper.getLevel(),
                 helper.absolutePos(CENTER)) == 7, "spore mushroom emits light 7");
         helper.succeed();

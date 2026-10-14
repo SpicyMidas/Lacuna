@@ -147,10 +147,6 @@ public final class ModItems {
             new Item.Properties().stacksTo(16));
     public static final DeferredItem<DeferredSpawnEggItem> LANTERN_MOTH_SPAWN_EGG = item("lantern_moth_spawn_egg",
             p -> new DeferredSpawnEggItem(ModEntities.LANTERN_MOTH, 0xF3E9B5, 0xFFC94A, p), new Item.Properties());
-    public static final DeferredItem<DeferredSpawnEggItem> GLOOMCRAWLER_SPAWN_EGG = item("gloomcrawler_spawn_egg",
-            p -> new DeferredSpawnEggItem(ModEntities.GLOOMCRAWLER, 0x23301F, 0x7A1E2A, p), new Item.Properties());
-    public static final DeferredItem<DeferredSpawnEggItem> CLOCKWORK_HOUND_SPAWN_EGG = item("clockwork_hound_spawn_egg",
-            p -> new DeferredSpawnEggItem(ModEntities.CLOCKWORK_HOUND, 0xB08D57, 0x6B3A22, p), new Item.Properties());
 
     public static final DeferredItem<DeferredSpawnEggItem> LAST_MERCHANT_SPAWN_EGG = item("last_merchant_spawn_egg",
             p -> new DeferredSpawnEggItem(ModEntities.LAST_MERCHANT, 0x3B4A6B, 0xC9A869, p), new Item.Properties());

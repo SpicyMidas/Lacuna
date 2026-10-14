@@ -20,7 +20,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * Spore Mushroom (Whispering Marsh, spec M10): light 7, drifting spores; every 20 ticks it makes living entities
- * within 6 blocks glow for 60 ticks, which reveals crouching Gloomcrawlers. Worldgen does not run onPlace, so a
+ * within 6 blocks glow for 60 ticks, which reveals mobs lurking in the fog. Worldgen does not run onPlace, so a
  * random tick starts (or restarts) the 20-tick cycle when none is scheduled; the work is skipped when no player is
  * within 48 blocks.
  */

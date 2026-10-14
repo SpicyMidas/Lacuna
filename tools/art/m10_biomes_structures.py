@@ -245,50 +245,61 @@ def reflection():
     save(img, "entity/reflection")
 
 
-def last_merchant():
-    from art.m09_mobs import paint_box
+# villager jacket box (uv 0,38; 8x20x6): the vest covers the top 10 rows of its four sides plus the top face
+VEST_ROWS = range(44, 54)
+VEST_SIDES = {"right": range(0, 6), "front": range(6, 14), "left": range(14, 20), "back": range(20, 28)}
+# the plains robe's V-neck (transparent there) and the vest's open centre line on the front face
+VEST_NECK = {44: range(7, 13), 45: range(8, 12)}
+VEST_OPEN = (9, 10)
+
+
+def last_merchant_vest():
+    """Blue vest overlay for the Last Merchant, drawn over the vanilla villager + plains type textures."""
     img = new(64, 64)
     px = img.load()
-    r = rng("last_merchant")
-    skin = ramp("#8C7A6A", "#A8927E", "#BFA892", "#D2BCA4")
-    robe = ramp("#1E2638", "#2B3650", "#3B4A6B", "#4E5F86")
-    trim = c("#C9A869")
-    paint_box(px, r, 0, 0, 8, 10, 8, skin)                  # head
-    paint_box(px, r, 24, 0, 2, 4, 2, ramp("#9C846E", "#B39A82"))  # nose
-    paint_box(px, r, 32, 0, 8, 10, 8, ramp("#1A1A22", "#262633", "#33334A", alpha=255))  # hood
-    paint_box(px, r, 16, 20, 8, 12, 6, robe)                # body
-    paint_box(px, r, 0, 38, 8, 20, 6, robe)                 # robe overlay
-    paint_box(px, r, 44, 22, 4, 8, 4, robe)                 # arms
-    paint_box(px, r, 40, 38, 8, 4, 4, robe)                 # folded arms
-    paint_box(px, r, 0, 22, 4, 12, 4, ramp("#2A2018", "#3A2C20", "#4A3A2A"))  # legs
-    # hood shows the face: clear the front of the hood overlay, keep a rim
-    for y in range(10, 18):
-        for x in range(42, 46):
-            px[x, y] = (0, 0, 0, 0)
-    for x in range(40, 48):
-        px[x, 8] = trim
-    # face: tired kind eyes, grey beard
-    for (x, y) in ((9, 12), (14, 12)):
-        px[x, y] = c("#1C2A3A")
-        px[x, y - 1] = c("#6B5A4A")
-    for y in range(14, 18):
-        for x in range(9, 15):
-            if (x + y) % 3:
-                px[x, y] = c("#B8B4AC")
-    # gold trim down the robe front and hem, a coin pouch
-    for y in range(44, 64):
-        px[10, y] = trim
-    for x in range(6, 14):
-        px[x, 62] = trim
-        px[x, 63] = c("#A68A50")
-    for (x, y) in ((24, 33), (25, 33), (24, 34), (25, 34)):
-        px[x, y] = c("#7A5A2A")
-    px[24, 33] = trim
-    save(img, "entity/last_merchant")
+    r = rng("last_merchant_vest")
+    shade, dark, base, light = ramp("#244A86", "#29549A", "#2F5FA8", "#3C70BC")
+    trim, button = c("#1D3D70"), c("#7FA7DD")
+    pal = [shade, dark, base, base, light]
+    folds = [r.uniform(-0.18, 0.18) for _ in range(28)]  # soft vertical folds, one value per column
+
+    def cloth(x, y, lift=0.0):
+        v = 0.55 + folds[x] + lift + r.uniform(-0.3, 0.3)
+        return pal[max(0, min(len(pal) - 1, int(v * len(pal))))]
+
+    # top face (6..13, 38..43): hidden under the head except its shoulder edges
+    for y in range(38, 44):
+        for x in range(6, 14):
+            px[x, y] = cloth(x, y, 0.1)
+    for face, cols in VEST_SIDES.items():
+        for y in VEST_ROWS:
+            for x in cols:
+                if face == "front" and (x in VEST_OPEN or x in VEST_NECK.get(y, ())):
+                    continue
+                px[x, y] = cloth(x, y, 0.12 if y < 47 else (-0.08 if y > 51 else 0.0))
+    # armholes: the robe's shoulders show through at the top of each side face, with a dark edge below
+    for x0 in (0, 14):
+        for x in range(x0 + 1, x0 + 5):
+            px[x, 44] = (0, 0, 0, 0)
+            px[x, 45] = (0, 0, 0, 0)
+            px[x, 46] = trim
+    # dark trim along the front opening and the hem
+    for y in VEST_ROWS:
+        neck = VEST_NECK.get(y)
+        lo, hi = (neck.start - 1, neck.stop) if neck else (VEST_OPEN[0] - 1, VEST_OPEN[1] + 1)
+        px[lo, y] = trim
+        px[hi, y] = trim
+    for x in range(0, 28):
+        if px[x, 53][3]:
+            px[x, 53] = trim
+    # two small buttons on the left panel's edge
+    px[8, 47] = button
+    px[8, 50] = button
+    save(img, "entity/last_merchant_vest")
 
 
 def paint():
-    last_merchant()
+    last_merchant_vest()
     mirror("mirror_glass")
     mirror("labyrinth_exit", crack=True)
     trigger("labyrinth_trigger", True)
