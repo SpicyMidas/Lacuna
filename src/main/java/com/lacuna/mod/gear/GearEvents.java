@@ -28,6 +28,8 @@ public final class GearEvents {
         bus.addListener(UmbralAxeItem::onAttack);
         bus.addListener(UmbralAxeItem::onDamage);
         bus.addListener(UmbralTools::onBreakSpeed);
+        bus.addListener(TideCurrents::onServerTick);
+        bus.addListener(TideCurrents::onServerStopped);
     }
 
     /** +25 % damage dealt with Umbral gear when the wielder stands where max local raw brightness <= 4. */

@@ -18,6 +18,9 @@
   Cleave*, and *Nightforged* faster mining in the dark on every tool. The Chronoshard Pocket Watch is crafted and
   repaired with Umbral Steel; the Echo Dagger with Zenithite.
 - **Heartwood Bow:** arrows really grow Grasping Roots around targets and where they land.
+- **Tidecaller Sickle** reworked around the tide: right click sends a rolling **Tidal Wave** that sweeps mobs away,
+  douses fire and quenches lava; with 3 Tide Charges, sneak + right click opens a drowning **Maelstrom** that ends
+  in a geyser. Melee hits drench (Slowness) and hit harder in water or rain; the old pull hook is gone.
 - **Mobs:** the spider-like and hound-like custom mobs are gone (the Lantern Moth stays); their drops come from
   spiders, cave spiders, husks and pillagers. The Last Merchant is a plains villager in a blue vest.
 - **Fractured Pearl:** the shards always reach you; any that do not fit drop at your feet.

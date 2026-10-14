@@ -129,7 +129,25 @@ def weapons(g):
     g.name("item.lacuna.heartwood_bow.use2", "Hit targets are rooted (longer against a wall)",
            "I bersagli colpiti restano radicati (più a lungo contro un muro)")
     g.name("item.lacuna.pyrrhic_scepter.use", "Use: pay 2 health for a homing bolt", "Usa: paga 2 salute per un dardo a ricerca")
+    g.name("item.lacuna.tidecaller_sickle.wave", "Use: Tidal Wave", "Usa: Onda di marea")
+    g.name("item.lacuna.tidecaller_sickle.wave_detail",
+           " A wall of water rolls %s blocks ahead, sweeping foes away (%s damage), dousing fire and quenching lava",
+           " Un muro d'acqua avanza per %s blocchi, travolge i nemici (%s danni), spegne il fuoco e solidifica la lava")
+    g.name("item.lacuna.tidecaller_sickle.maelstrom", "Sneak + use with %s tide charges: Maelstrom",
+           "Accovacciato + usa con %s cariche di marea: Gorgo")
+    g.name("item.lacuna.tidecaller_sickle.maelstrom_detail",
+           " A whirlpool drags foes in and drowns them for %s s, then bursts into a geyser",
+           " Un vortice trascina dentro i nemici e li annega per %s s, poi esplode in un geyser")
+    g.name("item.lacuna.tidecaller_sickle.melee", "Hits drench the target; +%s damage while you are in water or rain",
+           "I colpi inzuppano il bersaglio; +%s danni mentre sei in acqua o sotto la pioggia")
+    g.name("item.lacuna.tidecaller_sickle.charges",
+           "The tide rises with hits in water or rain, waves that strike and time spent in water",
+           "La marea sale con i colpi in acqua o sotto la pioggia, le onde che colpiscono e il tempo passato in acqua")
     g.name("lacuna.sickle.tide", "Tide charges: %s / %s", "Cariche di marea: %s / %s")
+    g.name("lacuna.sickle.tide_rise", "The tide rises %s", "La marea sale %s")
+    g.name("lacuna.sickle.tide_full", "Full tide %s  Sneak + use: Maelstrom", "Alta marea %s  Accovacciato + usa: Gorgo")
+    g.name("lacuna.sickle.tide_ebb", "The tide ebbs %s", "La marea si ritira %s")
+    g.name("lacuna.sickle.tide_low", "The tide is too low for a maelstrom %s", "La marea è troppo bassa per un gorgo %s")
     g.name("lacuna.scepter.too_weak", "You are too weak to pay the price.", "Sei troppo debole per pagarne il prezzo.")
 
     g.shaped("gravemaw_greatsword", ["UUU", "URU", " S "],

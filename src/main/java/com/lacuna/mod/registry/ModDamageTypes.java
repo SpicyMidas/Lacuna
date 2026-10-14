@@ -23,6 +23,8 @@ public final class ModDamageTypes {
     public static final ResourceKey<DamageType> UMBRAL_REND = key("umbral_rend");
     /** Umbral Steel Axe "Eclipse Cleave" shockwave (no knockback: the shockwave pushes victims itself). */
     public static final ResourceKey<DamageType> ECLIPSE_CLEAVE = key("eclipse_cleave");
+    /** Tidecaller Sickle "Tidal Wave" (no knockback: the wave carries its victims itself). */
+    public static final ResourceKey<DamageType> TIDAL_WAVE = key("tidal_wave");
 
     private ModDamageTypes() {}
 
