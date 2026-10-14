@@ -3,6 +3,7 @@ package com.lacuna.mod.registry;
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.chrono.HarmfulEffectLog;
 import com.lacuna.mod.eclipse.ShadowWalkState;
+import com.lacuna.mod.gear.UmbralSwordItem;
 import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -40,6 +41,10 @@ public final class ModAttachments {
     /** Marks arrows shot from the Heartwood Bow (they root what they hit). */
     public static final Supplier<AttachmentType<Boolean>> HEARTWOOD_ARROW = ATTACHMENTS.register("heartwood_arrow",
             () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL, v -> v).build());
+
+    /** Umbral Rend stacks on a target (who applied them, how many, until which game tick). Transient: a 4 s window. */
+    public static final Supplier<AttachmentType<UmbralSwordItem.Rend>> UMBRAL_REND = ATTACHMENTS.register("umbral_rend",
+            () -> AttachmentType.builder(() -> UmbralSwordItem.Rend.NONE).build());
 
     /** M10: ore totals at the player's last Last Merchant visit (stock reflects what was mined since). */
     public static final Supplier<AttachmentType<java.util.Map<String, Integer>>> MINED_SNAPSHOT = ATTACHMENTS.register("mined_snapshot",

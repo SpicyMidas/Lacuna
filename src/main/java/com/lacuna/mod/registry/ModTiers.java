@@ -12,14 +12,14 @@ public final class ModTiers {
             Balance.RUBY_TOOL_SPEED, Balance.RUBY_TOOL_DAMAGE_BONUS, Balance.RUBY_TOOL_ENCHANTABILITY,
             () -> Ingredient.of(ModItems.RUBY.get()));
 
-    /** Umbral Steel: iron mining level, 900 uses, speed 6.5, enchantability 12 (tool set in M7). */
-    public static final Tier UMBRAL = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.UMBRAL_TOOL_DURABILITY,
+    /** Umbral Steel: netherite mining level, 1500 uses, speed 8.5, damage bonus 4, enchantability 15 (stronger than Ruby). */
+    public static final Tier UMBRAL = new SimpleTier(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, Balance.UMBRAL_TOOL_DURABILITY,
             Balance.UMBRAL_TOOL_SPEED, Balance.UMBRAL_TOOL_DAMAGE_BONUS, Balance.UMBRAL_TOOL_ENCHANTABILITY,
             () -> Ingredient.of(ModItems.UMBRAL_STEEL_INGOT.get()));
 
     /** Eclipser: its own tier so TieredItem uses the Eclipser's 250 durability; repaired with Umbral Steel. */
     public static final Tier ECLIPSER = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.ECLIPSER_DURABILITY,
-            Balance.UMBRAL_TOOL_SPEED, 0.0F, 10, () -> Ingredient.of(ModItems.UMBRAL_STEEL_INGOT.get()));
+            Balance.ECLIPSER_TOOL_SPEED, 0.0F, 10, () -> Ingredient.of(ModItems.UMBRAL_STEEL_INGOT.get()));
 
     /** Special weapons get their own tiers so TieredItem uses their exact durability and repair material. */
     public static final Tier GRAVEMAW = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.GRAVEMAW_DURABILITY,

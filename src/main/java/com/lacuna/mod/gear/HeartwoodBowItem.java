@@ -5,6 +5,7 @@ import com.lacuna.mod.LacunaConfig;
 import com.lacuna.mod.registry.ModAttachments;
 import com.lacuna.mod.registry.ModEffects;
 import com.lacuna.mod.registry.ModTags;
+import com.lacuna.mod.util.SafeRun;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -21,12 +22,15 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 
 /**
  * Heartwood Bow (spec M7): arrows root their target for 2 s (movement and jump -100 %), 4 s with "pinned" particles
- * when a solid wall is within 1.5 blocks behind the target along the arrow's flight. Arrows hitting blocks sprout.
+ * when a solid wall is within 1.5 blocks behind the target along the arrow's flight. Every hit grows
+ * {@link GraspingRootsBlock grasping roots}: around the target's feet (6 s) or as a small patch where the arrow lands
+ * (10 s) that catches anything walking into it.
  */
 public class HeartwoodBowItem extends BowItem {
     public HeartwoodBowItem(Properties properties) {
@@ -55,9 +59,14 @@ public class HeartwoodBowItem extends BowItem {
                 level.sendParticles(ParticleTypes.HAPPY_VILLAGER, target.getX(), target.getY() + 0.5, target.getZ(), 16, 0.4, 0.6, 0.4, 0.0);
                 level.sendParticles(ParticleTypes.CRIT, behind.x, behind.y, behind.z, 8, 0.1, 0.3, 0.1, 0.1);
             }
-        } else if (event.getRayTraceResult() instanceof BlockHitResult block) {
+            // grasping roots burst from the ground around the target's feet and hold it there
+            SafeRun.run("heartwood_roots", () -> GraspingRootsBlock.entangle(level, target, Balance.GRASPING_ROOTS_PER_HIT));
+        } else if (event.getRayTraceResult() instanceof BlockHitResult block && block.getType() == HitResult.Type.BLOCK) {
             Vec3 at = block.getLocation();
             level.sendParticles(ParticleTypes.HAPPY_VILLAGER, at.x, at.y, at.z, 10, 0.25, 0.25, 0.25, 0.0);
+            // a small patch of roots sprouts where the arrow lands: whatever walks into it is caught
+            SafeRun.run("heartwood_roots", () -> GraspingRootsBlock.sprout(level, block.getBlockPos(), block.getDirection(),
+                    Balance.GRASPING_ROOTS_PER_HIT));
         }
     }
 
@@ -80,5 +89,6 @@ public class HeartwoodBowItem extends BowItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.lacuna.heartwood_bow.lore").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("item.lacuna.heartwood_bow.use").withStyle(ChatFormatting.GREEN));
+        tooltip.add(Component.translatable("item.lacuna.heartwood_bow.use2").withStyle(ChatFormatting.GRAY));
     }
 }

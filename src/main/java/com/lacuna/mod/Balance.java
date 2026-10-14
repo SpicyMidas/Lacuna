@@ -164,10 +164,32 @@ public final class Balance {
     public static final int ORRERY_GLOBAL_INTERVAL = 20;
 
     // ---------------------------------------------------------------- gear (M7)
-    public static final int UMBRAL_TOOL_DURABILITY = 900;
-    public static final float UMBRAL_TOOL_SPEED = 6.5F;
-    public static final float UMBRAL_TOOL_DAMAGE_BONUS = 2.5F;
-    public static final int UMBRAL_TOOL_ENCHANTABILITY = 12;
+    /** Umbral Steel outclasses Ruby: netherite mining level, 1500 uses, speed 8.5, +4 damage, enchantability 15. */
+    public static final int UMBRAL_TOOL_DURABILITY = 1500;
+    public static final float UMBRAL_TOOL_SPEED = 8.5F;
+    public static final float UMBRAL_TOOL_DAMAGE_BONUS = 4.0F;
+    public static final int UMBRAL_TOOL_ENCHANTABILITY = 15;
+    /** Eclipser keeps the old Umbral mining speed (it is a sword; the value only matters for its tier record). */
+    public static final float ECLIPSER_TOOL_SPEED = 6.5F;
+    /** Sword: +3 over the tier (1 + 4 + 3 = 8 damage, 1.6 speed). Axe: +5 over the tier (10 damage, 1.0 speed). */
+    public static final int UMBRAL_SWORD_DAMAGE = 3;
+    public static final float UMBRAL_SWORD_SPEED = -2.4F;
+    public static final float UMBRAL_AXE_DAMAGE = 5.0F;
+    public static final float UMBRAL_AXE_SPEED = -3.0F;
+    /** Umbral Rend (sword): the 3rd hit on the same target within 80 ticks detonates. */
+    public static final int UMBRAL_REND_HITS = 3;
+    public static final int UMBRAL_REND_WINDOW = 80;
+    public static final float UMBRAL_REND_DAMAGE = 6.0F;
+    public static final float UMBRAL_REND_HEAL = 2.0F;
+    public static final int UMBRAL_REND_DEBUFF_TICKS = 40;
+    /** Eclipse Cleave (axe): fully charged hits deal 60 % of the hit to other mobs within 3 blocks of the target. */
+    public static final float UMBRAL_CLEAVE_MIN_CHARGE = 0.9F;
+    public static final double UMBRAL_CLEAVE_RADIUS = 3.0;
+    public static final float UMBRAL_CLEAVE_FACTOR = 0.6F;
+    public static final double UMBRAL_CLEAVE_KNOCKBACK = 0.7;
+    /** Nightforged (every Umbral Steel tool): +30 % mining speed where the light at the eyes is <= 7. */
+    public static final float UMBRAL_NIGHTFORGED_BONUS = 0.3F;
+    public static final int UMBRAL_NIGHTFORGED_LIGHT = 7;
     public static final float UMBRAL_DARK_BONUS = 0.25F;
     public static final int UMBRAL_DARK_LIGHT = 4;
 
@@ -203,6 +225,13 @@ public final class Balance {
     public static final int HEARTWOOD_DURABILITY = 480;
     public static final int ROOTED_TICKS = 40;
     public static final int ROOTED_PINNED_TICKS = 80;
+    /** Grasping Roots (Heartwood Bow): lifetime around a hit target / on terrain, final withering stage, per-hit cap. */
+    public static final int GRASPING_ROOTS_TARGET_TICKS = 120;
+    public static final int GRASPING_ROOTS_SPROUT_TICKS = 200;
+    public static final int GRASPING_ROOTS_WITHER_TICKS = 20;
+    public static final int GRASPING_ROOTS_PER_HIT = 5;
+    /** Rooted duration re-applied every tick to a living entity standing in grasping roots. */
+    public static final int GRASPING_ROOTS_HOLD_TICKS = 10;
 
     public static final int ECHO_DAGGER_DURABILITY = 300;
     public static final int ECHO_DAGGER_DAMAGE = 3;

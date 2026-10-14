@@ -350,6 +350,16 @@
    "z"
   ]
  },
+ "grasping_roots": {
+  "sprouted": [
+   "true",
+   "false"
+  ],
+  "withering": [
+   "true",
+   "false"
+  ]
+ },
  "guild_board": {
   "facing": [
    "north",

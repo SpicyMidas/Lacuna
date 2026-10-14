@@ -10,6 +10,9 @@ import com.lacuna.mod.gear.GravemawGreatswordItem;
 import com.lacuna.mod.gear.HeartwoodBowItem;
 import com.lacuna.mod.gear.PyrrhicScepterItem;
 import com.lacuna.mod.gear.TidecallerSickleItem;
+import com.lacuna.mod.gear.UmbralAxeItem;
+import com.lacuna.mod.gear.UmbralSwordItem;
+import com.lacuna.mod.gear.UmbralTools;
 import net.minecraft.world.item.ArmorItem;
 import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
@@ -112,16 +115,22 @@ public final class ModItems {
             p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.BOOTS, p),
             new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
 
-    public static final DeferredItem<SwordItem> UMBRAL_STEEL_SWORD = item("umbral_steel_sword", p -> new SwordItem(ModTiers.UMBRAL, p),
-            new Item.Properties().attributes(SwordItem.createAttributes(ModTiers.UMBRAL, 3, -2.4F)));
-    public static final DeferredItem<PickaxeItem> UMBRAL_STEEL_PICKAXE = item("umbral_steel_pickaxe", p -> new PickaxeItem(ModTiers.UMBRAL, p),
+    // Umbral Steel outclasses Ruby: sword 8 damage / 1.6 speed (ruby 7), axe 10 / 1.0 (ruby 9)
+    public static final DeferredItem<UmbralSwordItem> UMBRAL_STEEL_SWORD = item("umbral_steel_sword",
+            p -> new UmbralSwordItem(ModTiers.UMBRAL, p), new Item.Properties().attributes(
+                    SwordItem.createAttributes(ModTiers.UMBRAL, Balance.UMBRAL_SWORD_DAMAGE, Balance.UMBRAL_SWORD_SPEED)));
+    public static final DeferredItem<PickaxeItem> UMBRAL_STEEL_PICKAXE = item("umbral_steel_pickaxe",
+            p -> new UmbralTools.Pickaxe(ModTiers.UMBRAL, p),
             new Item.Properties().attributes(PickaxeItem.createAttributes(ModTiers.UMBRAL, 1.0F, -2.8F)));
-    public static final DeferredItem<AxeItem> UMBRAL_STEEL_AXE = item("umbral_steel_axe", p -> new AxeItem(ModTiers.UMBRAL, p),
-            new Item.Properties().attributes(AxeItem.createAttributes(ModTiers.UMBRAL, 5.5F, -3.05F)));
-    public static final DeferredItem<ShovelItem> UMBRAL_STEEL_SHOVEL = item("umbral_steel_shovel", p -> new ShovelItem(ModTiers.UMBRAL, p),
+    public static final DeferredItem<UmbralAxeItem> UMBRAL_STEEL_AXE = item("umbral_steel_axe",
+            p -> new UmbralAxeItem(ModTiers.UMBRAL, p), new Item.Properties().attributes(
+                    AxeItem.createAttributes(ModTiers.UMBRAL, Balance.UMBRAL_AXE_DAMAGE, Balance.UMBRAL_AXE_SPEED)));
+    public static final DeferredItem<ShovelItem> UMBRAL_STEEL_SHOVEL = item("umbral_steel_shovel",
+            p -> new UmbralTools.Shovel(ModTiers.UMBRAL, p),
             new Item.Properties().attributes(ShovelItem.createAttributes(ModTiers.UMBRAL, 1.5F, -3.0F)));
-    public static final DeferredItem<HoeItem> UMBRAL_STEEL_HOE = item("umbral_steel_hoe", p -> new HoeItem(ModTiers.UMBRAL, p),
-            new Item.Properties().attributes(HoeItem.createAttributes(ModTiers.UMBRAL, -2.5F, -1.0F)));
+    public static final DeferredItem<HoeItem> UMBRAL_STEEL_HOE = item("umbral_steel_hoe",
+            p -> new UmbralTools.Hoe(ModTiers.UMBRAL, p),
+            new Item.Properties().attributes(HoeItem.createAttributes(ModTiers.UMBRAL, -4.0F, 0.0F)));
 
     public static final DeferredItem<GravemawGreatswordItem> GRAVEMAW_GREATSWORD = item("gravemaw_greatsword",
             p -> new GravemawGreatswordItem(ModTiers.GRAVEMAW, p),

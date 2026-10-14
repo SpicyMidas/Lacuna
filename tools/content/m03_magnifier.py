@@ -14,6 +14,10 @@ DAMAGE_TYPES = [
      "%1$s è stato colpito da un dardo pirrico", "%1$s ha pagato il dardo pirrico di %2$s"),
     ("gravemaw_wave", False, "%1$s was swallowed by a crescent wave", "%1$s was swallowed by %2$s's crescent wave",
      "%1$s è stato inghiottito da un'onda a mezzaluna", "%1$s è stato inghiottito dall'onda a mezzaluna di %2$s"),
+    ("umbral_rend", False, "%1$s was torn open by umbral shadows", "%1$s was rent apart by %2$s's umbral blade",
+     "%1$s è stato squarciato dalle ombre umbrali", "%1$s è stato squarciato dalla lama umbrale di %2$s"),
+    ("eclipse_cleave", False, "%1$s was swept away by an eclipse shockwave", "%1$s was cleaved by %2$s's eclipse shockwave",
+     "%1$s è stato travolto da un'onda d'urto d'eclissi", "%1$s è stato travolto dall'onda d'urto d'eclissi di %2$s"),
     ("reflection_touch", False, "%1$s met their own reflection", "%1$s met their own reflection while fighting %2$s",
      "%1$s ha incontrato il proprio riflesso", "%1$s ha incontrato il proprio riflesso combattendo %2$s"),
 ]
@@ -27,7 +31,8 @@ def build(g):
         g.name(f"death.attack.lacuna.{did}.player", en_p, it_p)
         if fire:
             g.tag("damage_type", "minecraft:is_fire", f"lacuna:{did}")
-    g.tag("damage_type", "minecraft:no_knockback", "lacuna:solar_beam")
+    g.tag("damage_type", "minecraft:no_knockback", "lacuna:solar_beam", "lacuna:umbral_rend", "lacuna:eclipse_cleave")
+    g.tag("damage_type", "minecraft:bypasses_armor", "lacuna:umbral_rend")
 
     g.item("divine_magnifying_glass", "Divine Magnifying Glass", "Lente d'ingrandimento divina", model="handheld")
     g.name("item.lacuna.divine_magnifying_glass.lore", "Sunlight remembers where it was told to go.",
