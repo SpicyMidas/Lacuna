@@ -40,7 +40,7 @@ SIZE_RULES = [
     (re.compile(r"^textures/particle/"), {(8, 8), (32, 32)}),
     (re.compile(r"^textures/effect/"), {(32, 32), (64, 64), (16, 64), (32, 128)}),
     # hand-drawn high-resolution items/blocks (tools/art/hand), e.g. the 32x32 Gravemaw Greatsword
-    (re.compile(r"^textures/(item|block)/"), {(32, 32)}),
+    (re.compile(r"^textures/(item|block)/"), {(32, 32), (24, 24)}),
 ]
 ANIMATED_OK = True  # textures with .mcmeta may be 16 x (16*frames)
 

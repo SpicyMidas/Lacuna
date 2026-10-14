@@ -86,13 +86,21 @@ def umbral_tools(g):
 
 
 def weapons(g):
-    # 32x32 hand-drawn texture; the display transforms make it a real two-hander in the hands (GUI stays normal)
-    g.item("gravemaw_greatsword", "Gravemaw Greatsword", "Spadone Fauce-di-tomba", model="handheld", extra={"display": {
+    # In the hands: the 32x32 hand-drawn texture, scaled by the display transforms into a real two-hander.
+    # In inventories, item frames and on the ground: the 24x24 hand-drawn icon (NeoForge separate transforms).
+    g.item_model("gravemaw_greatsword_icon", {"parent": "minecraft:item/generated",
+                                              "textures": {"layer0": "lacuna:item/gravemaw_greatsword_icon"}})
+    icon = {"parent": "lacuna:item/gravemaw_greatsword_icon"}
+    g.item("gravemaw_greatsword", "Gravemaw Greatsword", "Spadone Fauce-di-tomba", model="none")
+    g.item_model("gravemaw_greatsword", {"loader": "neoforge:separate_transforms",
+                                         "base": {"parent": "lacuna:item/gravemaw_greatsword_held"},
+                                         "perspectives": {"gui": icon, "fixed": icon, "ground": icon}})
+    g.item_model("gravemaw_greatsword_held", {"parent": "minecraft:item/handheld",
+                                              "textures": {"layer0": "lacuna:item/gravemaw_greatsword"}, "display": {
         "thirdperson_righthand": {"rotation": [0, -90, 55], "translation": [0, 8.5, 1.25], "scale": [1.55, 1.55, 1.55]},
         "thirdperson_lefthand": {"rotation": [0, 90, -55], "translation": [0, 8.5, 1.25], "scale": [1.55, 1.55, 1.55]},
         "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.6, 1.13], "scale": [0.85, 0.85, 0.85]},
-        "firstperson_lefthand": {"rotation": [0, 90, -25], "translation": [1.13, 3.6, 1.13], "scale": [0.85, 0.85, 0.85]},
-        "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.6, 0.6, 0.6]}}})
+        "firstperson_lefthand": {"rotation": [0, 90, -25], "translation": [1.13, 3.6, 1.13], "scale": [0.85, 0.85, 0.85]}}})
     g.item("tidecaller_sickle", "Tidecaller Sickle", "Falcetto Richiamamaree", model="handheld")
     pulling = [{"predicate": {"pulling": 1}, "model": "lacuna:item/heartwood_bow_pulling_0"},
                {"predicate": {"pulling": 1, "pull": 0.65}, "model": "lacuna:item/heartwood_bow_pulling_1"},
