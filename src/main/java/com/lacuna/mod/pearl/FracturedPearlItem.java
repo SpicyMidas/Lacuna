@@ -42,6 +42,10 @@ public class FracturedPearlItem extends Item {
             }
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_CLUSTER_BREAK,
                     SoundSource.PLAYERS, 1.0F, 0.8F);
+            // the two halves ring apart, still tuned to each other
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_BLOCK_RESONATE,
+                    SoundSource.PLAYERS, 0.8F, 1.2F);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDER_EYE_DEATH, SoundSource.PLAYERS, 0.6F, 0.9F);
             player.displayClientMessage(Component.translatable("lacuna.pearl.split"), true);
             com.lacuna.mod.util.LacunaAdvancements.award(player, "lacuna/link_pearl");
             return InteractionResultHolder.success(result);

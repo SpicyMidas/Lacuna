@@ -71,6 +71,9 @@ public class TidecallerSickleItem extends SwordItem {
         target.hurt(level.damageSources().playerAttack(player), Balance.SICKLE_HOOK_DAMAGE);
         server.sendParticles(ParticleTypes.SPLASH, target.getX(), target.getY() + 1, target.getZ(), 20, 0.3, 0.3, 0.3, 0.1);
         server.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.PLAYERS, 1.0F, 0.8F);
+        // the tide hauls: a wave crashing over the target and the riptide's rush
+        server.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 0.9F, 0.8F);
+        server.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.TRIDENT_RIPTIDE_1.value(), SoundSource.PLAYERS, 0.5F, 1.3F);
         if (player.isInWaterOrRain() && tide(stack) < Balance.SICKLE_MAX_TIDE) {
             stack.set(ModComponents.TIDE_CHARGES.get(), tide(stack) + 1);
             player.displayClientMessage(Component.translatable("lacuna.sickle.tide", tide(stack), Balance.SICKLE_MAX_TIDE), true);

@@ -20,6 +20,8 @@ public class ClockworkDecoyItem extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.PLAYERS, 0.5F, 0.6F);
+        // the spring is wound as it leaves the hand
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.CROSSBOW_LOADING_MIDDLE.value(), SoundSource.PLAYERS, 0.6F, 1.6F);
         if (!level.isClientSide()) {
             ThrownDecoyEntity thrown = new ThrownDecoyEntity(level, player);
             thrown.setItem(stack.copyWithCount(1));

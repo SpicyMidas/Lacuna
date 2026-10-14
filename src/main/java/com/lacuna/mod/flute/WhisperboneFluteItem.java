@@ -49,6 +49,9 @@ public class WhisperboneFluteItem extends Item {
         player.startUsingItem(hand);
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(7).value(),
                 SoundSource.PLAYERS, 1.0F, 0.6F);
+        // the bones answer: souls slipping loose under the note
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.2F, 0.6F);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SCULK_SHRIEKER_SHRIEK, SoundSource.PLAYERS, 0.25F, 1.6F);
         player.getCooldowns().addCooldown(this, Balance.FLUTE_COOLDOWN);
         stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
         return InteractionResultHolder.consume(stack);
