@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.4.0 — revision 4 (player feedback)
+
+- **Null Lantern fixed:** reading brain memories that goal-based mobs (zombies, skeletons...) do not have threw an
+  error that switched the lantern off for the whole session; it now really keeps every hostile mob off you. It can
+  be placed like a lantern, standing or hanging (vanilla lantern shape, its own violet texture) and shelters everyone
+  within 12 blocks while lit (light 13); its durability is a charge that burns held or placed, runs dark (very dark
+  purple, no light) instead of breaking, and is refilled with Ender Pearls (+50 %) or Echo Shards (+100 %), clicked
+  onto it in the inventory or used on the placed lantern.
+- **Tidecaller Sickle** reworked around the tide: right click sends a rolling **Tidal Wave** that sweeps mobs away,
+  douses fire and quenches lava; with 3 Tide Charges, sneak + right click opens a drowning **Maelstrom** that ends
+  in a geyser. Melee hits drench (Slowness) and hit harder in water or rain.
+- **Shadow Walk** is the effect itself: however it is given (Eclipser or /effect) it switches the player to the
+  shadow spectator mode for its duration and back afterwards.
+- **Fractured Pearl:** shards go to the pearl's own slot, the nearest free hotbar slot, the off hand, the inventory,
+  and only then the ground, with a message saying where.
+- **Textures:** V3 hand-drawn textures (clockwork gear, coin, Null Lantern, Pyrrhic Scepter, Mirror of Recursion,
+  silk dust, Starlace armor items and layers, Starlace cloth, Tidecaller Sickle, Whisperbone Flute); the Gravemaw
+  Greatsword shows its 24x24 icon in inventories, item frames and on the ground and its 32x32 sprite in the hands.
+
 ## 0.3.0 — revision 3 (player feedback)
 
 - **Textures:** V2 hand-drawn textures (animated Chronoshard Pocket Watch, Divine Magnifying Glass, Eclipser charge
@@ -10,17 +29,11 @@
   coordinates you would return to (1 block = 12).
 - **Item details on demand:** Lacuna item descriptions only appear while the "Item details" key (Space) is held.
 - **Divine Magnifying Glass:** the beam always runs straight where you look; it never bends towards mobs.
-- **Null Lantern:** works even on mobs already attacking you or that you hit (it no longer switches itself off
-  after meeting a zombie or skeleton). It can now be placed like a lantern, standing or hanging, and shelters
-  everyone within 12 blocks while lit; its durability is a charge that burns held or placed, runs dark instead of
-  breaking, and is refilled with Ender Pearls (+50 %) or Echo Shards (+100 %).
+- **Null Lantern:** works even on mobs already attacking you or that you hit.
 - **Umbral Steel** is now stronger than Ruby (netherite-like tier); the sword's *Umbral Rend*, the axe's *Eclipse
   Cleave*, and *Nightforged* faster mining in the dark on every tool. The Chronoshard Pocket Watch is crafted and
   repaired with Umbral Steel; the Echo Dagger with Zenithite.
 - **Heartwood Bow:** arrows really grow Grasping Roots around targets and where they land.
-- **Tidecaller Sickle** reworked around the tide: right click sends a rolling **Tidal Wave** that sweeps mobs away,
-  douses fire and quenches lava; with 3 Tide Charges, sneak + right click opens a drowning **Maelstrom** that ends
-  in a geyser. Melee hits drench (Slowness) and hit harder in water or rain; the old pull hook is gone.
 - **Mobs:** the spider-like and hound-like custom mobs are gone (the Lantern Moth stays); their drops come from
   spiders, cave spiders, husks and pillagers. The Last Merchant is a plains villager in a blue vest.
 - **Fractured Pearl:** the shards always reach you; any that do not fit drop at your feet.
