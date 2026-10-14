@@ -37,9 +37,10 @@ public record BeamTrace(BeamMath.Beam beam, Vec3 eye, Vec3 look, double range, B
         BlockHitResult blockHit = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, user));
         Vec3 stop = blockHit.getType() == HitResult.Type.MISS ? end : blockHit.getLocation();
 
+        // strictly the creature on the line of sight (no widened hitboxes): the ray never bends towards nearby mobs
         EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(level, user, eye, stop,
                 user.getBoundingBox().expandTowards(look.scale(range)).inflate(1.0),
-                e -> e instanceof LivingEntity living && living.isAlive() && !e.isSpectator() && e != user && e.isPickable());
+                e -> e instanceof LivingEntity living && living.isAlive() && !e.isSpectator() && e != user && e.isPickable(), 0.0F);
         if (entityHit != null) {
             stop = entityHit.getLocation();
         }

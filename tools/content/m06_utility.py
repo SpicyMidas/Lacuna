@@ -34,8 +34,8 @@ def items(g):
         g.name(f"item.lacuna.{iid}.lore", en, it)
     g.name("item.lacuna.mirror_of_recursion.use", "Hold: reflect projectiles. Sneak + use: release a stored echo.",
            "Tieni premuto: rifletti i proiettili. Accovacciato + usa: rilascia un'eco.")
-    g.name("item.lacuna.null_lantern.use", "Held: hostile mobs ignore you and cannot hurt you, unless you strike first.",
-           "In mano: le creature ostili ti ignorano e non possono ferirti, a meno che non colpisca tu per primo.")
+    g.name("item.lacuna.null_lantern.use", "Held: hostile mobs ignore you and cannot hurt you, even mid-fight.",
+           "In mano: le creature ostili ti ignorano e non possono ferirti, anche nel mezzo di uno scontro.")
     g.name("item.lacuna.whisperbone_flute.use", "Use: call echoes of the recently fallen.", "Usa: richiama le eco dei caduti recenti.")
     for key, en, it in [
         ("lacuna.tooltip.cooldown", "Cooldown: %s s", "Ricarica: %s s"),
@@ -52,9 +52,9 @@ def items(g):
     ]:
         g.name(key, en, it)
 
-    g.shaped("chronoshard_pocket_watch", [" R ", "GCG", " D "],
-             {"R": "lacuna:ruby", "G": "minecraft:gold_ingot", "C": "minecraft:clock", "D": "lacuna:divine_glass_shard"},
-             "lacuna:chronoshard_pocket_watch", category="tools", unlock="minecraft:clock")
+    g.shaped("chronoshard_pocket_watch", [" N ", "UCU", " U "],
+             {"N": "lacuna:umbral_steel_nugget", "U": "lacuna:umbral_steel_ingot", "C": "minecraft:clock"},
+             "lacuna:chronoshard_pocket_watch", category="tools", unlock="lacuna:umbral_steel_ingot")
     g.shaped("mirror_of_recursion", ["QDQ", "DGD", "QDQ"],
              {"Q": "minecraft:amethyst_shard", "D": "lacuna:divine_glass_shard", "G": "minecraft:gold_ingot"},
              "lacuna:mirror_of_recursion", category="equipment", unlock="lacuna:divine_glass_shard")

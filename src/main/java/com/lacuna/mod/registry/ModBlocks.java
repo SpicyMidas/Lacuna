@@ -86,7 +86,7 @@ public final class ModBlocks {
 
     // ------------------------------------------------------------------ M5 fractured pearl
     public static final DeferredBlock<ArrivalAnchorBlock> ARRIVAL_ANCHOR = blockNoItem("arrival_anchor", () -> new ArrivalAnchorBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).strength(1.5F, 1200.0F).noOcclusion().noLootTable()
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(1.5F, 1200.0F).noOcclusion().noLootTable()
                     .lightLevel(s -> 6).sound(SoundType.AMETHYST).pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
 
     // ------------------------------------------------------------------ M6 orrery

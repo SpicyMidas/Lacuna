@@ -114,6 +114,8 @@ public class PyrrhicBoltEntity extends Projectile {
             if (target.hurt(ModDamageTypes.source(level(), ModDamageTypes.PYRRHIC_BOLT, this, getOwner()), damage)) {
                 target.igniteForSeconds(2.0F);
             }
+            com.lacuna.mod.util.Sfx.at(this, net.minecraft.sounds.SoundEvents.FIRECHARGE_USE, 0.8F, 1.1F);
+            com.lacuna.mod.util.Sfx.at(this, net.minecraft.sounds.SoundEvents.BLAZE_HURT, 0.35F, 1.6F);
             discard();
         }
     }
@@ -124,6 +126,8 @@ public class PyrrhicBoltEntity extends Projectile {
         if (!level().isClientSide()) {
             if (level() instanceof ServerLevel server) {
                 server.sendParticles(ParticleTypes.SMOKE, getX(), getY(), getZ(), 6, 0.1, 0.1, 0.1, 0.02);
+                com.lacuna.mod.util.Sfx.at(this, net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH, 0.5F, 1.4F);
+                com.lacuna.mod.util.Sfx.at(this, net.minecraft.sounds.SoundEvents.LAVA_POP, 0.8F, 1.0F);
             }
             discard();
         }

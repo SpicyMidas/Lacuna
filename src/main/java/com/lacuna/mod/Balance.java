@@ -41,10 +41,13 @@ public final class Balance {
     public static final int DIVINE_SIGHT_MAX_ENTITY_BOXES = 32;
 
     // ---------------------------------------------------------------- totem of banishing (M2)
-    public static final int TOTEM_DURABILITY = 16;
-    public static final int TOTEM_COOLDOWN = 2400;
+    /** Total uses: the totem cannot be repaired, so every crossing and every banishment counts. */
+    public static final int TOTEM_DURABILITY = 6;
+    /** Cooldown after banishing another creature or player (15 s). */
+    public static final int TOTEM_COOLDOWN = 300;
+    /** Cooldown after crossing yourself, either way (4 s). */
+    public static final int TOTEM_SELF_COOLDOWN = 80;
     public static final double TOTEM_KNOCKBACK = 1.5;
-    public static final float TOTEM_REPAIR_FRACTION = 0.25F;
 
     // ---------------------------------------------------------------- relics (M2)
     public static final int RELIC_LIFETIME_TICKS = 36000; // ~30 min
@@ -142,7 +145,6 @@ public final class Balance {
     public static final int LANTERN_DURABILITY = 300;
     public static final int LANTERN_RADIUS = 16;
     public static final int LANTERN_SPAWN_RADIUS = 24;
-    public static final int LANTERN_PROVOKE_TICKS = 100;
     public static final int LANTERN_TICKS_PER_DURABILITY = 200;
 
     // ---------------------------------------------------------------- whisperbone flute (M6)

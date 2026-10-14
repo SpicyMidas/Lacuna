@@ -62,9 +62,7 @@ public final class LacunaCommands {
         int count = 0;
         for (var holder : ModRegistries.ITEMS.getEntries()) {
             ItemStack stack = new ItemStack(holder.get());
-            if (!player.getInventory().add(stack)) {
-                player.drop(stack, false);
-            }
+            com.lacuna.mod.util.Give.toPlayer(player, stack);
             count++;
         }
         int given = count;

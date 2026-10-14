@@ -59,5 +59,10 @@ public class ArrivalAnchorBlock extends Block implements EntityBlock {
                     pos.getY() + 0.4 + random.nextDouble() * 0.6, pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.6,
                     0.0, 0.05, 0.0);
         }
+        if (random.nextInt(6) == 0) {
+            // a gold glint off the seam, matching the pearl's palette
+            level.addParticle(com.lacuna.mod.registry.ModParticles.SOLAR_GLINT.get(), pos.getX() + 0.3 + random.nextDouble() * 0.4,
+                    pos.getY() + 0.3 + random.nextDouble() * 0.4, pos.getZ() + 0.3 + random.nextDouble() * 0.4, 0.0, 0.0, 0.0);
+        }
     }
 }

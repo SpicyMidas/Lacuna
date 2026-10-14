@@ -79,9 +79,7 @@ public class ArrivalShardEntity extends ThrowableItemProjectile {
         }
         if (unusable != null || getY() < level().getMinBuildHeight()) {
             if (getOwner() instanceof Player p && !p.isRemoved()) {
-                if (!p.getInventory().add(getItem().copy())) {
-                    p.drop(getItem().copy(), false);
-                }
+                com.lacuna.mod.util.Give.toPlayer(p, getItem().copy());
             }
         } else {
             PearlLinks.dropBack(server, position(), getItem());

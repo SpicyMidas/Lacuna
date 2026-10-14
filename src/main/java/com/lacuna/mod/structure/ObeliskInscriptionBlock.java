@@ -67,9 +67,7 @@ public class ObeliskInscriptionBlock extends Block {
             default -> new ItemStack(ModItems.CHRONAL_SHARD.get());
         };
         data.reward(player.getUUID(), key, now + Balance.OBELISK_COOLDOWN);
-        if (!player.getInventory().add(reward)) {
-            player.drop(reward, false);
-        }
+        com.lacuna.mod.util.Give.toPlayer(player, reward);
         player.sendSystemMessage(Component.translatable("lacuna.obelisk.reward").withStyle(ChatFormatting.GOLD));
         level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
     }

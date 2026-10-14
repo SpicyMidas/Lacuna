@@ -1,12 +1,13 @@
 package com.lacuna.mod.banish;
 
 import com.lacuna.mod.Balance;
-import com.lacuna.mod.registry.ModItems;
+import com.lacuna.mod.registry.ModSounds;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +20,8 @@ import net.minecraft.world.level.Level;
 
 /**
  * Totem of Banishing (spec 9.2): right click to enter/leave the Forgotten Land, melee hit to banish a target.
- * 16 durability, 1 per transfer, 2400-tick shared cooldown, repaired with rubies at an anvil, never enchantable.
+ * 6 uses in total (1 per transfer, never repaired, never enchantable); a short cooldown after banishing a target and
+ * an even shorter one after crossing yourself. Every use tolls the banishing bell.
  */
 public class TotemOfBanishingItem extends Item implements ForgottenLandRules.NoAnvilMerge {
     public TotemOfBanishingItem(Properties properties) {
@@ -36,7 +38,8 @@ public class TotemOfBanishingItem extends Item implements ForgottenLandRules.NoA
             return InteractionResultHolder.pass(stack);
         }
         if (BanishmentManager.useTotemSelf(serverPlayer)) {
-            spend(stack, serverPlayer, hand);
+            spend(stack, serverPlayer, hand, Balance.TOTEM_SELF_COOLDOWN);
+            toll(serverPlayer);
             return InteractionResultHolder.success(stack);
         }
         return InteractionResultHolder.fail(stack);
@@ -51,20 +54,27 @@ public class TotemOfBanishingItem extends Item implements ForgottenLandRules.NoA
             return false;
         }
         if (BanishmentManager.queueBanish(player, target)) {
-            spend(stack, player, InteractionHand.MAIN_HAND);
+            spend(stack, player, InteractionHand.MAIN_HAND, Balance.TOTEM_COOLDOWN);
+            toll(player);
             return true;
         }
         return false;
     }
 
-    private void spend(ItemStack stack, ServerPlayer player, InteractionHand hand) {
-        player.getCooldowns().addCooldown(this, Balance.TOTEM_COOLDOWN);
+    private void spend(ItemStack stack, ServerPlayer player, InteractionHand hand, int cooldown) {
+        player.getCooldowns().addCooldown(this, cooldown);
         stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+    }
+
+    /** The bell rings where the user stands now (after a crossing: on the other side, so they hear it arrive). */
+    private static void toll(ServerPlayer player) {
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.TOTEM_BELL.get(), SoundSource.PLAYERS,
+                1.0F, 0.95F + player.getRandom().nextFloat() * 0.1F);
     }
 
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(ModItems.RUBY.get());
+        return false; // a limited number of uses: the totem wears out for good
     }
 
     @Override
@@ -86,6 +96,7 @@ public class TotemOfBanishingItem extends Item implements ForgottenLandRules.NoA
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.lacuna.totem_of_banishing.lore").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("item.lacuna.totem_of_banishing.use").withStyle(ChatFormatting.DARK_AQUA));
+        tooltip.add(Component.translatable("item.lacuna.totem_of_banishing.wear").withStyle(ChatFormatting.DARK_RED));
         tooltip.add(Component.translatable("lacuna.tooltip.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage())
                 .withStyle(ChatFormatting.DARK_GRAY));
     }

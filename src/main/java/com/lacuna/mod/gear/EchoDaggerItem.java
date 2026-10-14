@@ -49,6 +49,7 @@ public class EchoDaggerItem extends SwordItem {
         LivingEntity target = event.getEntity();
         QUEUE.add(new PendingEcho(target.getUUID(), target.level().dimension(), player.getUUID(),
                 event.getNewDamage() * Balance.ECHO_DAGGER_FACTOR, player.level().getGameTime() + Balance.ECHO_DAGGER_DELAY));
+        com.lacuna.mod.util.Sfx.varied(target, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_HIT, 0.8F, 1.7F, 0.1F);
     }
 
     public static void onServerTick(ServerTickEvent.Post event) {
@@ -77,6 +78,9 @@ public class EchoDaggerItem extends SwordItem {
                 if (target.hurt(ModDamageTypes.source(level, ModDamageTypes.ECHO_STRIKE, attacker), p.amount())) {
                     level.sendParticles(ParticleTypes.SCULK_CHARGE_POP, target.getX(), target.getY() + target.getBbHeight() * 0.6,
                             target.getZ(), 6, 0.2, 0.3, 0.2, 0.01);
+                    com.lacuna.mod.util.Sfx.varied(target, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_RESONATE, 1.0F, 1.6F, 0.1F);
+                    com.lacuna.mod.util.Sfx.varied(target, net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_SWEEP, 0.5F, 1.8F, 0.1F);
+                    com.lacuna.mod.util.Sfx.at(target, net.minecraft.sounds.SoundEvents.SCULK_CLICKING, 0.7F, 1.3F);
                 }
             }
         }, QUEUE::clear);

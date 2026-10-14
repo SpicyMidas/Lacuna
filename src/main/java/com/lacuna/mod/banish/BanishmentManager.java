@@ -280,8 +280,11 @@ public final class BanishmentManager {
                     returnEntity(player);
                 } else {
                     long left = (r.returnGameTime - now) / 20;
+                    // where the walk home would end: 1 block here is FL_SCALE (12) blocks in the overworld
+                    double scale = LacunaConfig.get(LacunaConfig.FL_SCALE);
                     player.displayClientMessage(Component.translatable("lacuna.banish.countdown",
-                            String.format("%d:%02d", left / 60, left % 60)), true);
+                            String.format("%d:%02d", left / 60, left % 60), CoordMath.toOverworld(player.getX(), scale),
+                            CoordMath.toOverworld(player.getZ(), scale)), true);
                 }
                 continue;
             }

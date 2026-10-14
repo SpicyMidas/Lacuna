@@ -18,6 +18,7 @@ public final class LacunaClient {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
         container.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, LacunaClientConfig.SPEC);
         ClientSetup.register(modBus);
+        modBus.addListener(GenericTooltips::onRegisterKeys);
 
         NeoForge.EVENT_BUS.addListener(DivineSight::onClientTick);
         com.lacuna.mod.client.sight.DivineXray.register(NeoForge.EVENT_BUS);

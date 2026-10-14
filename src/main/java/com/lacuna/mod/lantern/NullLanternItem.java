@@ -30,9 +30,10 @@ import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 
 /**
  * Null Lantern (spec M6, revised): while held in either hand, hostile and angered neutral mobs cannot target or hurt
- * the holder at any distance unless the holder hurt them in the last 5 s; mobs already hunting the holder forget
- * them (brain memories and anger included, creepers stop swelling) and natural hostile spawns within 24 blocks are
- * blocked. Bosses ({@code lacuna:cannot_be_banished}) are unaffected. 1 durability / 200 ticks.
+ * the holder at any distance, even when they were already attacking or the holder strikes them: mobs hunting the
+ * holder forget them at once (brain memories and anger included, creepers stop swelling, charging attacks are
+ * cancelled) and natural hostile spawns within 24 blocks are blocked. Bosses ({@code lacuna:cannot_be_banished})
+ * are unaffected. 1 durability / 200 ticks.
  */
 public class NullLanternItem extends Item {
     public static final String FEATURE = "null_lantern";
@@ -63,6 +64,17 @@ public class NullLanternItem extends Item {
         if (now % Balance.LANTERN_TICKS_PER_DURABILITY == 0) {
             stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
         }
+        if (now % 100 == 0) {
+            com.lacuna.mod.util.Sfx.at(player, net.minecraft.sounds.SoundEvents.BEACON_AMBIENT, 0.25F, 0.5F);
+        }
+        if (level instanceof ServerLevel server && now % 5 != 0) {
+            // between the wide sweeps, mobs right next to the holder are checked every tick
+            SafeRun.run(FEATURE, () -> {
+                for (Mob mob : server.getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(6.0), m -> affects(m, player))) {
+                    forget(mob, player);
+                }
+            });
+        }
         if (now % 5 == 0 && level instanceof ServerLevel server) {
             SafeRun.run(FEATURE, () -> {
                 double r = Math.max(32.0, LacunaConfig.get(LacunaConfig.LANTERN_RADIUS));
@@ -86,13 +98,9 @@ public class NullLanternItem extends Item {
         return mob instanceof Enemy || mob instanceof NeutralMob;
     }
 
-    private static boolean provoked(Mob mob, Player player) {
-        return mob.getLastHurtByMob() == player && mob.tickCount - mob.getLastHurtByMobTimestamp() < Balance.LANTERN_PROVOKE_TICKS;
-    }
-
-    /** True when {@code mob} must leave {@code player} alone right now. */
+    /** True when {@code mob} must leave {@code player} alone right now: always, for every threat, provoked or not. */
     private static boolean shouldIgnore(Mob mob, Player player) {
-        return isThreat(mob) && !provoked(mob, player);
+        return isThreat(mob);
     }
 
     private static boolean affects(Mob mob, Player player) {
@@ -109,8 +117,14 @@ public class NullLanternItem extends Item {
                 || mob.getBrain().getMemory(MemoryModuleType.ANGRY_AT).filter(id -> id.equals(player.getUUID())).isPresent();
     }
 
-    /** Drops every way {@code mob} could be hunting {@code player}. */
+    /** Drops every way {@code mob} could be hunting {@code player}, with a cold whisper and a puff of shadow. */
     private static void forget(Mob mob, Player player) {
+        if (mob.level() instanceof ServerLevel server) {
+            server.sendParticles(com.lacuna.mod.registry.ModParticles.SHADOW_MOTE.get(), mob.getX(), mob.getY() + mob.getBbHeight() * 0.7,
+                    mob.getZ(), 8, 0.3, 0.3, 0.3, 0.01);
+            com.lacuna.mod.util.Sfx.varied(mob, net.minecraft.sounds.SoundEvents.SOUL_ESCAPE.value(), 1.0F, 0.7F, 0.1F);
+            com.lacuna.mod.util.Sfx.at(mob, net.minecraft.sounds.SoundEvents.SCULK_CLICKING_STOP, 0.6F, 0.6F);
+        }
         if (mob.getTarget() == player) {
             mob.setTarget(null);
         }
@@ -126,6 +140,13 @@ public class NullLanternItem extends Item {
         if (mob instanceof Creeper creeper && creeper.getSwellDir() > 0) {
             creeper.setSwellDir(-1);
         }
+        if (mob.getLastHurtByMob() == player) {
+            mob.setLastHurtByMob(null); // HurtByTargetGoal would pick the holder right back up
+        }
+        if (mob.isUsingItem()) {
+            mob.stopUsingItem(); // a skeleton's drawn bow or a crossbow being loaded at the holder
+        }
+        mob.setAggressive(false);
     }
 
     public static void onChangeTarget(LivingChangeTargetEvent event) {

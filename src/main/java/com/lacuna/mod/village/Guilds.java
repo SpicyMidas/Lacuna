@@ -105,9 +105,7 @@ public final class Guilds {
         int reward = (Integer) row[3] + r.nextInt((Integer) row[4] - (Integer) row[3] + 1);
         ItemStack contract = new ItemStack(ModItems.GUILD_CONTRACT.get());
         contract.set(ModComponents.GUILD_CONTRACT.get(), new ContractData((String) row[0], count, reward, t.id.toString(), guild.getSerializedName()));
-        if (!player.getInventory().add(contract)) {
-            player.drop(contract, false);
-        }
+        com.lacuna.mod.util.Give.toPlayer(player, contract);
         player.displayClientMessage(Component.translatable("lacuna.guild.contract_given"), true);
     }
 
@@ -127,9 +125,7 @@ public final class Guilds {
         ContainerHelper.clearOrCountMatchingItems(player.getInventory(), s -> s.is(item), d.count(), false);
         contract.consume(1, player);
         ItemStack pay = new ItemStack(ModItems.VILLAGE_COIN.get(), d.rewardCoins());
-        if (!player.getInventory().add(pay)) {
-            player.drop(pay, false);
-        }
+        com.lacuna.mod.util.Give.toPlayer(player, pay);
         VillageService.change(level, t, player, ReputationMath.Change.CONTRACT, 1);
         player.sendSystemMessage(Component.translatable("lacuna.guild.contract_done", d.rewardCoins()).withStyle(ChatFormatting.GREEN));
         level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1.0F, 1.0F);

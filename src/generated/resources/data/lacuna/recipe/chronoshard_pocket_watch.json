@@ -4,20 +4,17 @@
     "C": {
       "item": "minecraft:clock"
     },
-    "D": {
-      "item": "lacuna:divine_glass_shard"
+    "N": {
+      "item": "lacuna:umbral_steel_nugget"
     },
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
-    "R": {
-      "item": "lacuna:ruby"
+    "U": {
+      "item": "lacuna:umbral_steel_ingot"
     }
   },
   "pattern": [
-    " R ",
-    "GCG",
-    " D "
+    " N ",
+    "UCU",
+    " U "
   ],
   "result": {
     "count": 1,

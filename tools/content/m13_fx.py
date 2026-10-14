@@ -12,6 +12,18 @@ PARTICLES = {
 }
 
 
+# custom sound events: event id -> (files under assets/lacuna/sounds, subtitle en, subtitle it)
+SOUNDS = {
+    "item.totem_of_banishing.bell": (["item/totem_bell"], "Banishing bell tolls", "Rintocca la campana dell'esilio"),
+}
+
+
 def build(g):
     for name, sprites in PARTICLES.items():
         g.asset(f"particles/{name}", {"textures": [f"lacuna:{s}" for s in sprites]})
+    sounds = {}
+    for event, (files, en, it) in SOUNDS.items():
+        subtitle = "subtitles.lacuna." + event
+        sounds[event] = {"subtitle": subtitle, "sounds": [{"name": f"lacuna:{f}", "attenuation_distance": 32} for f in files]}
+        g.name(subtitle, en, it)
+    g.asset("sounds", sounds)

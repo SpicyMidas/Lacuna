@@ -27,7 +27,7 @@ public final class ModTiers {
     public static final Tier TIDECALLER = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.SICKLE_DURABILITY,
             6.0F, 0.0F, 10, () -> Ingredient.of(net.minecraft.world.item.Items.PRISMARINE_SHARD));
     public static final Tier ECHO_DAGGER = new SimpleTier(BlockTags.INCORRECT_FOR_IRON_TOOL, Balance.ECHO_DAGGER_DURABILITY,
-            6.0F, 0.0F, 10, () -> Ingredient.of(net.minecraft.world.item.Items.ECHO_SHARD));
+            6.0F, 0.0F, 10, () -> Ingredient.of(ModItems.ZENITHITE_SHARD.get()));
 
     private ModTiers() {}
 }

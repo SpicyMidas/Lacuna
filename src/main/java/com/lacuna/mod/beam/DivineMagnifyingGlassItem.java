@@ -33,6 +33,10 @@ public class DivineMagnifyingGlassItem extends Item {
             return InteractionResultHolder.fail(stack);
         }
         player.startUsingItem(hand);
+        if (!level.isClientSide()) {
+            com.lacuna.mod.util.Sfx.at(player, net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE, 0.45F, 1.9F);
+            com.lacuna.mod.util.Sfx.at(player, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, 1.0F, 1.5F);
+        }
         return InteractionResultHolder.consume(stack);
     }
 
@@ -53,12 +57,19 @@ public class DivineMagnifyingGlassItem extends Item {
         }
         int ticks = getUseDuration(stack, entity) - remainingUseDuration;
         BeamHandler.tick(level, entity, stack, ticks);
+        if (ticks > 0 && ticks % 30 == 0) {
+            com.lacuna.mod.util.Sfx.at(entity, net.minecraft.sounds.SoundEvents.BEACON_AMBIENT, 0.35F, 1.8F);
+        }
     }
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
         if (entity instanceof Player player) {
             player.getCooldowns().addCooldown(this, Balance.BEAM_RELEASE_COOLDOWN);
+        }
+        if (!level.isClientSide()) {
+            com.lacuna.mod.util.Sfx.at(entity, net.minecraft.sounds.SoundEvents.BEACON_DEACTIVATE, 0.4F, 1.9F);
+            com.lacuna.mod.util.Sfx.at(entity, net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH, 0.15F, 1.8F);
         }
     }
 

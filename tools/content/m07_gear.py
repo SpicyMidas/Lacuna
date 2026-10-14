@@ -108,9 +108,9 @@ def weapons(g):
              "lacuna:gravemaw_greatsword", category="equipment", unlock="lacuna:umbral_steel_ingot")
     g.shaped("tidecaller_sickle", [" PP", " SP", "S  "], {"P": "minecraft:prismarine_shard", "S": "minecraft:stick"},
              "lacuna:tidecaller_sickle", category="equipment", unlock="minecraft:prismarine_shard")
-    g.shaped("echo_dagger", [" E ", " D ", " S "],
-             {"E": "minecraft:echo_shard", "D": "lacuna:divine_glass_shard", "S": "minecraft:stick"},
-             "lacuna:echo_dagger", category="equipment", unlock="minecraft:echo_shard")
+    g.shaped("echo_dagger", [" Z ", " Z ", " S "],
+             {"Z": "lacuna:zenithite_shard", "S": "minecraft:stick"},
+             "lacuna:echo_dagger", category="equipment", unlock="lacuna:zenithite_shard")
     g.shaped("pyrrhic_scepter", [" R ", " B ", " G "],
              {"R": "lacuna:ruby", "B": "minecraft:blaze_rod", "G": "minecraft:gold_ingot"},
              "lacuna:pyrrhic_scepter", category="equipment", unlock="minecraft:blaze_rod")

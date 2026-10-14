@@ -21,10 +21,11 @@ import net.minecraft.world.phys.Vec3;
 /**
  * The Divine Magnifying Glass beam, drawn by every client for every player using a glass: the ray is recomputed each
  * frame with the server's rules ({@link BeamTrace}: range 24, solid-block clip, first living entity, water surface,
- * x0.5 underwater) and the server's colours (day yellow, night white, underwater blue). Sunlight gathered by the lens
- * converges from the lens (found exactly on the drawn item in first person, {@link HandPose}; at the raised hand
- * otherwise) onto a white-hot point: a shimmering shader cone and core, a lens flare at the glass, and a starburst
- * with sparks and smoke (bubbles underwater) where it burns. Purely visual: damage stays on the server.
+ * x0.5 underwater) and the server's colours (day yellow, night white, underwater blue). The ray leaves the lens (found
+ * exactly on the drawn item in first person, {@link HandPose}; at the raised hand otherwise) and always runs straight
+ * along the player's view direction, never bending towards whatever it hits: a shimmering shader beam and core, a lens
+ * flare at the glass, and a starburst with sparks and smoke (bubbles underwater) where it burns, at the depth the
+ * view ray ends. Purely visual: damage stays on the server.
  */
 public final class MagnifierBeams {
     private static final double MAX_DISTANCE = 128.0;
@@ -32,7 +33,26 @@ public final class MagnifierBeams {
     private static final float LENS_X = 9.5F;
     private static final float LENS_Y = 6.0F;
 
+    /** Lens position relative to the eye from the last frame, so per-tick impact particles sit on the drawn beam. */
+    private static final java.util.Map<Player, Vec3> LENS_OFFSET = new java.util.WeakHashMap<>();
+
     private MagnifierBeams() {}
+
+    /** Where the drawn ray ends: from the lens, straight along the view, as deep as the view ray reached. */
+    static Vec3 parallelStop(BeamTrace trace, Vec3 lens) {
+        double depth = Math.max(0.0, trace.stop().subtract(lens).dot(trace.look()));
+        return lens.add(trace.look().scale(depth));
+    }
+
+    /** The impact point shifted sideways by the lens offset (the offset's part across the view direction). */
+    static Vec3 impact(Player player, BeamTrace trace) {
+        Vec3 offset = LENS_OFFSET.get(player);
+        if (offset == null) {
+            return trace.stop();
+        }
+        Vec3 across = offset.subtract(trace.look().scale(offset.dot(trace.look())));
+        return trace.stop().add(across);
+    }
 
     static boolean beaming(Player player) {
         return player.isUsingItem() && player.getUseItem().is(ModItems.DIVINE_MAGNIFYING_GLASS.get()) && !player.isSpectator();
@@ -61,6 +81,7 @@ public final class MagnifierBeams {
             BeamTrace trace = BeamTrace.of(ctx.level(), player, player.getEyePosition(pt), player.getViewVector(pt), pt);
             boolean first = firstPerson(mc, player) && player instanceof LocalPlayer;
             Vec3 lens = first ? HandPose.bowPixel((LocalPlayer) player, ctx.camera(), pt, LENS_X, LENS_Y) : handLens(player, pt);
+            LENS_OFFSET.put(player, lens.subtract(player.getEyePosition(pt)));
             draw(ctx, player, trace, lens, first);
         }
     }
@@ -78,9 +99,10 @@ public final class MagnifierBeams {
         PoseStack.Pose pose = ctx.pose().last();
         int rgb = trace.beam().color();
         int hot = mix(rgb, 0xFFFFFF, 0.7F);
+        Vec3 end = parallelStop(trace, lens);
         Vec3 a = ctx.rel(lens);
-        Vec3 b = ctx.rel(trace.stop());
-        float len = (float) lens.distanceTo(trace.stop());
+        Vec3 b = ctx.rel(end);
+        float len = (float) lens.distanceTo(end);
         float t = ctx.time(player.tickCount);
         float shimmer = 0.9F + 0.1F * Mth.sin(t * 1.9F) * Mth.sin(t * 0.7F + 1.0F);
         // the lens is about as wide as the cone where it starts (much closer to the eye in first person)
@@ -100,7 +122,7 @@ public final class MagnifierBeams {
         FxDraw.billboard(pose, glow, ctx.camera(), a, (firstPerson ? 0.08F : 0.3F) * (0.95F + 0.1F * shimmer), t * 0.05F,
                 FxDraw.argb(0.9F, hot));
         if (trace.hitsSomething()) {
-            Vec3 hit = ctx.rel(trace.stop().subtract(trace.look().scale(0.06)));
+            Vec3 hit = ctx.rel(end.subtract(trace.look().scale(0.06)));
             VertexConsumer flare = ctx.buffers().getBuffer(SolarRenderTypes.flare());
             FxDraw.billboard(pose, flare, ctx.camera(), hit, 1.1F + 0.12F * Mth.sin(t * 2.3F), t * 0.03F, FxDraw.argb(0.9F * shimmer, rgb));
             glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
@@ -130,7 +152,7 @@ public final class MagnifierBeams {
                 continue;
             }
             BeamTrace trace = BeamTrace.of(level, player, player.getEyePosition(), player.getViewVector(1.0F), 1.0F);
-            Vec3 hit = trace.stop().subtract(trace.look().scale(0.08));
+            Vec3 hit = impact(player, trace).subtract(trace.look().scale(0.08));
             if (trace.beam().underwater()) {
                 if (trace.hitsSomething()) {
                     level.addParticle(ParticleTypes.BUBBLE, hit.x, hit.y, hit.z, (random.nextDouble() - 0.5) * 0.1, 0.05,

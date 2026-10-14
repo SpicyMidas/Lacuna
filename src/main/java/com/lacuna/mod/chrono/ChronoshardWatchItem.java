@@ -186,7 +186,7 @@ public class ChronoshardWatchItem extends Item {
 
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(net.minecraft.world.item.Items.GOLD_INGOT);
+        return repairCandidate.is(com.lacuna.mod.registry.ModItems.UMBRAL_STEEL_INGOT.get());
     }
 
     @Override

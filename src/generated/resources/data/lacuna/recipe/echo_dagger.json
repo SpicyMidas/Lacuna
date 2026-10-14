@@ -1,19 +1,16 @@
 {
   "category": "equipment",
   "key": {
-    "D": {
-      "item": "lacuna:divine_glass_shard"
-    },
-    "E": {
-      "item": "minecraft:echo_shard"
-    },
     "S": {
       "item": "minecraft:stick"
+    },
+    "Z": {
+      "item": "lacuna:zenithite_shard"
     }
   },
   "pattern": [
-    " E ",
-    " D ",
+    " Z ",
+    " Z ",
     " S "
   ],
   "result": {

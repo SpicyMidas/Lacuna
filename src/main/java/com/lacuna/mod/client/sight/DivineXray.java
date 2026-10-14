@@ -102,6 +102,13 @@ public final class DivineXray {
 
     /** Called by the renderer each frame a glass window is inside the view frustum. */
     static void markVisible() {
+        if (ticks - lastVisibleTick > 100) {
+            // the glass "opens": a faint crystalline chime when a window comes back into view after a while
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player != null) {
+                mc.player.playSound(net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, 0.35F, 1.8F);
+            }
+        }
         lastVisibleTick = ticks;
     }
 

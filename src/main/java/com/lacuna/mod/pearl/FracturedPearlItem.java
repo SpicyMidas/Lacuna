@@ -29,15 +29,22 @@ public class FracturedPearlItem extends Item {
         if (!level.isClientSide()) {
             ItemStack[] pair = PearlLinks.split();
             stack.consume(1, player);
-            for (ItemStack half : pair) {
-                if (!player.getInventory().add(half)) {
-                    player.drop(half, false);
-                }
+            // Vanilla empties the hand after a use that returns an empty stack, which would wipe a half given to that
+            // (now free) slot: when the last pearl is spent, the hand keeps the first half and the second is handed over.
+            ItemStack result = stack;
+            int next = 0;
+            if (stack.isEmpty()) {
+                result = pair[0];
+                next = 1;
+            }
+            for (int i = next; i < pair.length; i++) {
+                com.lacuna.mod.util.Give.toPlayer(player, pair[i]);
             }
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_CLUSTER_BREAK,
                     SoundSource.PLAYERS, 1.0F, 0.8F);
             player.displayClientMessage(Component.translatable("lacuna.pearl.split"), true);
             com.lacuna.mod.util.LacunaAdvancements.award(player, "lacuna/link_pearl");
+            return InteractionResultHolder.success(result);
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
