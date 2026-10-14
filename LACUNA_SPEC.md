@@ -255,6 +255,7 @@ All have durability bars as stated and the shared repair rules (anvil with the l
 - Recipe: `.U. / ULU / .D.` U = `umbral_iron_ingot`, L = `soul_lantern`, D = `divine_glass_shard`.
 - While held in either hand: hostile mobs within 16 blocks cannot **target** the player (cancel `LivingChangeTargetEvent`), unless the player attacked them in the last 5 s or they are within 3 blocks; natural hostile spawns within 24 blocks of the holder are blocked (`MobSpawnEvent.PositionCheck`). Burns 1 durability per 200 ticks held. No light emission requirement.
 - Does not affect bosses (tag `lacuna:cannot_be_banished`).
+- *Revision 4 (player feedback):* the durability is the lantern's **charge** and it is **placeable** as block `lacuna:null_lantern` (vanilla lantern behaviour and template models, standing or hanging, waterloggable, `lit` state: light 13 / 0). Held or placed and lit, threats never target or hurt the protected players (the holder; for a placed lantern every player within 12 blocks), mobs hunting them forget them, natural monster spawns within 24 blocks fail. Both burn 1 charge / 200 ticks. At 0 charge it **goes dark instead of breaking**. Placing moves the charge into the block entity; breaking (hand, explosion, piston) drops one lantern carrying it. Recharge: Ender Pearl +50 %, Echo Shard +100 %, clicked onto the lantern in any slot or used on the placed one.
 
 **Whisperbone Flute** (`whisperbone_flute`, durability 40)
 - Recipe: `.B. / BEB / .B.` B = `bone`, E = `echo_shard`.

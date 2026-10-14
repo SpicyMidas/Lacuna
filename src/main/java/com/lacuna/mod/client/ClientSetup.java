@@ -2,6 +2,7 @@ package com.lacuna.mod.client;
 
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.eclipse.EclipserItem;
+import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.registry.ModEntities;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.util.SafeRun;
@@ -32,6 +33,9 @@ public final class ClientSetup {
     private static void itemProperties() {
         ItemProperties.register(ModItems.ECLIPSER.get(), Lacuna.id("charge"),
                 (stack, level, entity, seed) -> EclipserItem.charge(stack) / 100.0F);
+        // the Null Lantern goes dark (lacuna:item/null_lantern_off) when its charge runs out
+        ItemProperties.register(ModItems.NULL_LANTERN.get(), Lacuna.id("lit"),
+                (stack, level, entity, seed) -> NullLanternItem.isLit(stack) ? 1.0F : 0.0F);
         // the Heartwood Bow reuses the vanilla bow model predicates, registered for our item
         ItemProperties.register(ModItems.HEARTWOOD_BOW.get(), ResourceLocation.withDefaultNamespace("pull"),
                 (stack, level, entity, seed) -> entity == null || entity.getUseItem() != stack ? 0.0F

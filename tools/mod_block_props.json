@@ -435,6 +435,20 @@
    "east"
   ]
  },
+ "null_lantern": {
+  "hanging": [
+   "true",
+   "false"
+  ],
+  "lit": [
+   "true",
+   "false"
+  ],
+  "waterlogged": [
+   "true",
+   "false"
+  ]
+ },
  "ruin_pillar": {
   "axis": [
    "x",

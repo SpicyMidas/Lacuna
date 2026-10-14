@@ -93,7 +93,8 @@ public final class ModItems {
     public static final DeferredItem<Item> CHRONAL_SHARD = item("chronal_shard", Item::new, new Item.Properties().rarity(Rarity.UNCOMMON));
     public static final DeferredItem<MirrorOfRecursionItem> MIRROR_OF_RECURSION = item("mirror_of_recursion",
             MirrorOfRecursionItem::new, new Item.Properties().durability(Balance.MIRROR_DURABILITY).rarity(Rarity.RARE));
-    public static final DeferredItem<NullLanternItem> NULL_LANTERN = item("null_lantern", NullLanternItem::new,
+    public static final DeferredItem<NullLanternItem> NULL_LANTERN = item("null_lantern",
+            p -> new NullLanternItem(ModBlocks.NULL_LANTERN.get(), p),
             new Item.Properties().durability(Balance.LANTERN_DURABILITY).rarity(Rarity.UNCOMMON));
     public static final DeferredItem<WhisperboneFluteItem> WHISPERBONE_FLUTE = item("whisperbone_flute", WhisperboneFluteItem::new,
             new Item.Properties().durability(Balance.FLUTE_DURABILITY).rarity(Rarity.UNCOMMON));

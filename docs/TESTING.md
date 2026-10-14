@@ -114,8 +114,13 @@ All `/lacuna` commands need permission level 2.
       reverse-portal particles; tooltip counts moments and shards. Shard in off hand + use: inserts it.
 - [ ] Mirror: hold use facing a skeleton: arrows bounce back at it; sneak + use fires a stored echo; the 4th use of
       the same echo shatters.
-- [ ] Lantern in off hand at night: zombies 4–16 blocks away ignore you; hit one and it attacks; no new monsters
-      spawn close by.
+- [ ] Lantern in off hand at night: zombies, skeletons and spiders ignore you even after you hit them (puff of
+      shadow + whisper when one gives up); no new monsters spawn close by.
+- [ ] Place it on the ground and under a ceiling (hanging): purple light 13, drifting motes; standing within 12 blocks
+      of it, mobs leave you alone. Break it: one lantern drops with the same charge (also from a creeper blast).
+- [ ] `/give @s lacuna:null_lantern[damage=299]`: in survival, after ≤ 10 s in hand it fizzles out (dark sprite, action-bar
+      message, no ward). Click an Ender Pearl onto it in the inventory: +50 %; use an Echo Shard on a dark placed
+      lantern: it relights at 100 %.
 - [ ] Flute: kill 2 cows nearby, play the flute: 2 translucent Echoes appear and fight what you hit; after 10 s
       they fade and drop Echo Fragments. With no recent deaths: "The bones stay silent."
 - [ ] Orrery: right click shows coordinates ÷12 and (after M10) the direction to an obelisk / bell tower.

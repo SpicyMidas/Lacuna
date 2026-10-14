@@ -7,7 +7,7 @@ import com.lacuna.mod.chrono.ChronoshardWatchItem;
 import com.lacuna.mod.fl.ForgottenBiomeEvents;
 import com.lacuna.mod.flute.DeathMemory;
 import com.lacuna.mod.gear.GearEvents;
-import com.lacuna.mod.lantern.NullLanternItem;
+import com.lacuna.mod.lantern.LanternWard;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
 import com.lacuna.mod.network.LacunaNetwork;
 import com.lacuna.mod.orrery.OrreryBlock;
@@ -61,9 +61,9 @@ public final class Lacuna {
             }
         });
         NeoForge.EVENT_BUS.addListener(MirrorOfRecursionItem::onProjectileImpact);
-        NeoForge.EVENT_BUS.addListener(NullLanternItem::onChangeTarget);
-        NeoForge.EVENT_BUS.addListener(NullLanternItem::onSpawnCheck);
-        NeoForge.EVENT_BUS.addListener(NullLanternItem::onIncomingDamage);
+        NeoForge.EVENT_BUS.addListener(LanternWard::onChangeTarget);
+        NeoForge.EVENT_BUS.addListener(LanternWard::onSpawnCheck);
+        NeoForge.EVENT_BUS.addListener(LanternWard::onIncomingDamage);
         NeoForge.EVENT_BUS.addListener(DeathMemory::onDeath);
         NeoForge.EVENT_BUS.addListener(DeathMemory::onServerStopped);
         GearEvents.register(NeoForge.EVENT_BUS);
@@ -90,6 +90,7 @@ public final class Lacuna {
         SafeRun.resetAll();
         OrreryBlock.clearVolatile();
         SunkenBellBlock.clearVolatile();
+        LanternWard.clearVolatile();
         com.lacuna.mod.structure.LabyrinthHandler.clearVolatile();
         com.lacuna.mod.village.VillageEvents.clearVolatile();
     }

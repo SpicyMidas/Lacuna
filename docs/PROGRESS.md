@@ -220,6 +220,17 @@ Built:
   16 blocks cannot target the holder unless hurt by them in the last 5 s (`LivingChangeTargetEvent` + a 1 Hz sweep
   that drops existing targets); natural monster spawns within 24 blocks fail (`MobSpawnEvent.PositionCheck`);
   1 durability per 200 ticks held. Repair: umbral iron ingot.
+  - Revision 4: fixed the lantern silently switching itself off (brain memories were read with `Brain#getMemory`,
+    which throws for goal-based mobs, and SafeRun then disabled `null_lantern`; every read is now guarded by
+    `hasMemoryValue`). The item is a `BlockItem` for `lacuna:null_lantern` (`lantern/NullLanternBlock` extends
+    `LanternBlock`, + `lit`; vanilla `template_lantern` / `template_hanging_lantern` models with generated
+    `block/null_lantern` (3-frame flicker) and `block/null_lantern_off` textures). Durability = charge: placing moves
+    it into `NullLanternBlockEntity`, `getDrops` puts it back (exactly one item, also on explosions and pistons).
+    `lantern/LanternWard` holds the shared ward: held lit lantern or within 12 blocks of a lit placed one, plus a
+    volatile per-dimension registry of lit placed lanterns (cleared on server stop) for the target, damage and spawn
+    events. Both burn 1 charge / 200 game ticks; at 0 the item stays (damage capped, `lacuna:lit` item property ->
+    `item/null_lantern_off`) and the block turns `lit=false`, with a fizzle cue. Recharge: Ender Pearl 50 %, Echo
+    Shard 100 % (`overrideOtherStackedOnMe` in any slot, or `useItemOn` on the placed lantern, which relights it).
 - Whisperbone Flute (40 durability, `.B. / BEB / .B.`, goat-horn animation/sound, 1200 cooldown) + Echo mob:
   volatile per-dimension ring buffer (64) of non-player non-boss deaths; up to 3 deaths within 20 blocks and
   1200 ticks become Echoes (translucent zombie-model humanoid, health ≤ 20, attack ≤ 6, speed 0.3, 200 ticks,
