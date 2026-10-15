@@ -173,6 +173,11 @@ public final class MagnifierBeams {
                 continue;
             }
             level.addParticle(ModParticles.SOLAR_GLINT.get(), hit.x, hit.y, hit.z, 0.0, 0.0, 0.0);
+            if (player.tickCount % 9 == 0 && trace.beam().ignites()) {
+                // the burning point sizzles and crackles
+                level.playLocalSound(hit.x, hit.y, hit.z, net.minecraft.sounds.SoundEvents.FIRE_AMBIENT, net.minecraft.sounds.SoundSource.PLAYERS,
+                        0.35F, 1.3F + random.nextFloat() * 0.3F, false);
+            }
             if (player.tickCount % 2 == 0) {
                 level.addParticle(ParticleTypes.SMOKE, hit.x, hit.y, hit.z, 0.0, 0.03, 0.0);
             }

@@ -30,6 +30,7 @@ public final class LacunaClient {
         NeoForge.EVENT_BUS.addListener(ForgottenAtmosphere::onFog);
         NeoForge.EVENT_BUS.addListener(MarshAtmosphere::onPlaySound);
         NeoForge.EVENT_BUS.addListener(GenericTooltips::onTooltip);
+        NeoForge.EVENT_BUS.addListener(HeldAuras::onClientTick);
         // Revision 2 effect framework (client/fx)
         NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.fx.FxManager::onClientTick);
         NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.fx.FxManager::onRenderLevel);

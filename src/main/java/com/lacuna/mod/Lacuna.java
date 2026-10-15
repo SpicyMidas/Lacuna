@@ -46,6 +46,7 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(Lacuna::onServerStopped);
         BanishEvents.register(NeoForge.EVENT_BUS);
         EclipseEvents.register(NeoForge.EVENT_BUS);
+        com.lacuna.mod.polish.Flourishes.register(NeoForge.EVENT_BUS);
         modBus.addListener(ModEntities::onAttributes);
         modBus.addListener(ModEntities::onSpawnPlacements);
         modBus.addListener(LacunaNetwork::register);

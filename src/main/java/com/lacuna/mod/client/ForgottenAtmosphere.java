@@ -43,7 +43,26 @@ public final class ForgottenAtmosphere {
             if (inFl && !mc.isPaused() && LacunaClientConfig.get(LacunaClientConfig.FL_MIST)) {
                 spawnMist(mc, level, camera);
             }
+            if (inFl && !mc.isPaused()) {
+                distantBell(level, camera);
+            }
         });
+    }
+
+    private static int bellTimer = 600;
+
+    /** Now and then the land remembers the bell that banished someone: a faint, low toll somewhere in the fog. */
+    private static void distantBell(ClientLevel level, Entity camera) {
+        if (--bellTimer > 0) {
+            return;
+        }
+        RandomSource r = level.random;
+        bellTimer = 1200 + r.nextInt(2400);
+        double angle = r.nextDouble() * Math.PI * 2.0;
+        double x = camera.getX() + Math.cos(angle) * 14.0;
+        double z = camera.getZ() + Math.sin(angle) * 14.0;
+        level.playLocalSound(x, camera.getY() + 6.0, z, com.lacuna.mod.registry.ModSounds.TOTEM_BELL.get(),
+                net.minecraft.sounds.SoundSource.AMBIENT, 0.22F, 0.5F + r.nextFloat() * 0.15F, false);
     }
 
     private static void spawnMist(Minecraft mc, ClientLevel level, Entity camera) {
