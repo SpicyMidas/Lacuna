@@ -1,0 +1,18 @@
+# Revision 5 boot check: a world loads with the new portal frames, the merchant in his robe and an animated item.
+world lacuna_rev5 flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd gamerule doDaylightCycle false
+cmd time set 6000
+cmd summon lacuna:last_merchant ~-2 ~0 ~4 {NoAI:1b,Rotation:[180f,0f]}
+cmd summon lacuna:animated_item ~1 ~0 ~3
+cmd setblock ~2 ~0 ~5 lacuna:forgotten_portal_frame
+cmd setblock ~3 ~0 ~5 lacuna:forgotten_portal_frame
+cmd give @s lacuna:ember_triangle
+cmd give @s lacuna:quickening_wand
+look 0 10
+wait 40
+shot rev5_boot
+quit

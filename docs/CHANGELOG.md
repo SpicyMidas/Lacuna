@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.5.0 — revision 5 (player feedback)
+
+- **Wand of Quickening** (palette swap of the hand-drawn scepter: emerald shaft, pink heart gem): for one heart, a
+  dropped item (or your off-hand item) grows little legs and fights beside you for 40 s, then turns back into the
+  very same item. It keeps its ability: blades slash and sweep (x1.25 damage), bows and crossbows shoot (the
+  Heartwood Bow still roots), tridents, snowballs and potions are thrown, TNT charges in and blows up, shields taunt
+  and block, food heals you, ender pearls blink, blocks body-slam. Smooth walk cycle, hops, squash and stretch.
+- **Ember Triangle** (hand-drawn): a circular thermal wave that instantly pulverizes hostile creatures into dust
+  shaped exactly like their bodies, which then peels away on the hot air; huge layered sound and screen shake;
+  advancement **Triangle of Instant Pulverization**. 16 uses, 60 s cooldown, repaired with Ember.
+- **Forgotten Portal:** 8 craftable frames around a 2x2 opening, laid flat like the End portal; light it with the
+  Totem of Banishing (one use). Stand in it to cross to the Forgotten Land (1:12 coordinates) and back; mobs pushed
+  in are banished.
+- **Eclipser:** its own black and crimson melee slash (and sweep) instead of the white vanilla one.
+- **Umbral Steel slashes** are now blue and violet in the steel's own palette.
+- **Raw Ruby removed:** ruby ores drop rubies directly.
+- **Last Merchant:** the same villager face, now in a very dark grey robe.
+- **Chronoshard Pocket Watch:** the animation only plays the smooth, always-forward frames (the strip contained
+  repeated and stray frames that made the hands jump back).
+- **Village Coin** shown smaller everywhere; **Divine Glass** about three times rarer (fewer clusters, fewer shards).
+- **Effects and sounds:** ores and crystals ring and sparkle when mined, coins jingle on pickup, rare items chime,
+  ruby blades leave red glints, every special item has a faint aura while held (rift motes on the Totem, sun glints,
+  violet wisps, crimson sparks growing with the Eclipser's charge, drips from the Tidecaller...), Starlace armor
+  sparkles with tiny stars at night, the Magnifying Glass sizzles where it burns, and a distant bell sometimes tolls
+  in the Forgotten Land.
+
 ## 0.4.0 — revision 4 (player feedback)
 
 - **Null Lantern fixed:** reading brain memories that goal-based mobs (zombies, skeletons...) do not have threw an

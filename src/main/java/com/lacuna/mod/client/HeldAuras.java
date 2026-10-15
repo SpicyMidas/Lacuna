@@ -94,10 +94,13 @@ public final class HeldAuras {
                 if (stack.isEmpty()) {
                     continue;
                 }
-                special(mc, level, player, hand, stack, budget, rnd);
+                // in first person the motes gather at the held item in the screen corner: fewer and tighter
+                boolean own = firstPerson(mc, player);
+                float scale = own ? 0.35F : 1.0F;
+                special(mc, level, player, hand, stack, budget * scale, rnd);
                 Aura aura = AURAS.get(stack.getItem());
-                if (aura != null && rnd.nextFloat() < aura.chance() * budget) {
-                    Vec3 at = handPos(mc, player, hand).add(jitter(rnd, 0.12));
+                if (aura != null && rnd.nextFloat() < aura.chance() * budget * scale) {
+                    Vec3 at = handPos(mc, player, hand).add(jitter(rnd, own ? 0.04 : 0.12));
                     level.addParticle(aura.particle().get(), at.x, at.y, at.z, (rnd.nextDouble() - 0.5) * 0.01, aura.rise(),
                             (rnd.nextDouble() - 0.5) * 0.01);
                 }
@@ -156,16 +159,22 @@ public final class HeldAuras {
     private static Vec3 handPos(Minecraft mc, Player player, InteractionHand hand) {
         boolean right = (hand == InteractionHand.MAIN_HAND) == (player.getMainArm() == HumanoidArm.RIGHT);
         float side = right ? 1.0F : -1.0F;
-        if (player == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson()) {
+        if (firstPerson(mc, player)) {
+            // where the first-person item is drawn: low in the screen corner, a little over an arm's length away
             Vec3 look = player.getViewVector(1.0F);
             Vec3 rightVec = look.cross(new Vec3(0, 1, 0)).normalize();
-            return player.getEyePosition().add(look.scale(0.75)).add(rightVec.scale(0.38 * side)).add(0, -0.3, 0);
+            Vec3 upVec = rightVec.cross(look).normalize();
+            return player.getEyePosition().add(look.scale(1.1)).add(rightVec.scale(0.62 * side)).add(upVec.scale(-0.58));
         }
         float yaw = player.yBodyRot * Mth.DEG_TO_RAD;
         Vec3 rightVec = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw));
         Vec3 forward = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
         double y = player.getY() + (player.isCrouching() ? 0.85 : 1.05);
         return new Vec3(player.getX(), y, player.getZ()).add(rightVec.scale(0.38 * side)).add(forward.scale(0.3));
+    }
+
+    private static boolean firstPerson(Minecraft mc, Player player) {
+        return player == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson();
     }
 
     private static Vec3 jitter(RandomSource rnd, double r) {
