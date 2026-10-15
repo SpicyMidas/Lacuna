@@ -8,10 +8,8 @@ def build(g):
     g.cube("deepslate_ruby_ore", "Deepslate Ruby Ore", "Minerale di rubino di ardesia profonda",
            loot=loot_ore("deepslate_ruby_ore", "lacuna:ruby"))
     g.cube("ruby_block", "Block of Ruby", "Blocco di rubino")
-    g.cube("raw_ruby_block", "Block of Raw Ruby", "Blocco di rubino grezzo")
 
     g.item("ruby", "Ruby", "Rubino")
-    g.item("raw_ruby", "Raw Ruby", "Rubino grezzo")
     for tool, en, it in [("sword", "Ruby Sword", "Spada di rubino"), ("pickaxe", "Ruby Pickaxe", "Piccone di rubino"),
                          ("axe", "Ruby Axe", "Ascia di rubino"), ("shovel", "Ruby Shovel", "Pala di rubino"),
                          ("hoe", "Ruby Hoe", "Zappa di rubino")]:
@@ -26,7 +24,7 @@ def build(g):
     cluster_loot = {"type": "minecraft:block", "pools": [pool([{"type": "minecraft:alternatives", "children": [
         {"type": "minecraft:item", "conditions": [SILK], "name": mod("divine_glass_cluster")},
         {"type": "minecraft:item", "name": mod("divine_glass_shard"), "functions": [
-            {"function": "minecraft:set_count", "add": False, "count": {"type": "minecraft:uniform", "min": 2.0, "max": 4.0}},
+            {"function": "minecraft:set_count", "add": False, "count": {"type": "minecraft:uniform", "min": 1.0, "max": 2.0}},
             {"function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune",
              "formula": "minecraft:uniform_bonus_count", "parameters": {"bonusMultiplier": 1}},
             {"function": "minecraft:explosion_decay"}]}]}])],
@@ -35,8 +33,6 @@ def build(g):
 
     # ---------------------------------------------------------------- recipes
     g.storage("lacuna:ruby_block", "lacuna:ruby")
-    g.storage("lacuna:raw_ruby_block", "lacuna:raw_ruby")
-    g.smelt_and_blast("ruby", "lacuna:raw_ruby", "lacuna:ruby", 1.0)
     g.cooking("ruby_from_smelting_ruby_ore", "smelting", "lacuna:ruby_ore", "lacuna:ruby", 1.0, 200)
     g.cooking("ruby_from_blasting_ruby_ore", "blasting", "lacuna:ruby_ore", "lacuna:ruby", 1.0, 100)
     g.cooking("ruby_from_smelting_deepslate_ruby_ore", "smelting", "lacuna:deepslate_ruby_ore", "lacuna:ruby", 1.0, 200)
@@ -53,18 +49,17 @@ def build(g):
              category="decorations")
 
     # ---------------------------------------------------------------- tags
-    for b in ("ruby_ore", "deepslate_ruby_ore", "ruby_block", "raw_ruby_block", "divine_glass_cluster"):
+    for b in ("ruby_ore", "deepslate_ruby_ore", "ruby_block", "divine_glass_cluster"):
         g.tag("block", "minecraft:mineable/pickaxe", mod(b))
-    for b in ("ruby_ore", "deepslate_ruby_ore", "ruby_block", "raw_ruby_block"):
+    for b in ("ruby_ore", "deepslate_ruby_ore", "ruby_block"):
         g.tag("block", "minecraft:needs_iron_tool", mod(b))
     g.tag("block", "c:ores", "#c:ores/ruby")
     g.tag("block", "c:ores/ruby", mod("ruby_ore"), mod("deepslate_ruby_ore"))
     g.tag("block", "c:ores_in_ground/stone", mod("ruby_ore"))
     g.tag("block", "c:ores_in_ground/deepslate", mod("deepslate_ruby_ore"))
     g.tag("block", "c:ore_rates/singular", mod("ruby_ore"), mod("deepslate_ruby_ore"))
-    g.tag("block", "c:storage_blocks", "#c:storage_blocks/ruby", "#c:storage_blocks/raw_ruby")
+    g.tag("block", "c:storage_blocks", "#c:storage_blocks/ruby")
     g.tag("block", "c:storage_blocks/ruby", mod("ruby_block"))
-    g.tag("block", "c:storage_blocks/raw_ruby", mod("raw_ruby_block"))
     g.tag("block", "minecraft:beacon_base_blocks", mod("ruby_block"))
     g.tag("block", "minecraft:impermeable", mod("divine_glass"))
     g.tag("block", "c:glass_blocks", mod("divine_glass"))
@@ -74,11 +69,8 @@ def build(g):
     g.tag("item", "c:ores/ruby", mod("ruby_ore"), mod("deepslate_ruby_ore"))
     g.tag("item", "c:gems", "#c:gems/ruby")
     g.tag("item", "c:gems/ruby", mod("ruby"))
-    g.tag("item", "c:raw_materials", "#c:raw_materials/ruby")
-    g.tag("item", "c:raw_materials/ruby", mod("raw_ruby"))
-    g.tag("item", "c:storage_blocks", "#c:storage_blocks/ruby", "#c:storage_blocks/raw_ruby")
+    g.tag("item", "c:storage_blocks", "#c:storage_blocks/ruby")
     g.tag("item", "c:storage_blocks/ruby", mod("ruby_block"))
-    g.tag("item", "c:storage_blocks/raw_ruby", mod("raw_ruby_block"))
     g.tag("item", "c:glass_blocks", mod("divine_glass"))
     g.tag("item", "c:glass_panes", mod("divine_glass_pane"))
     g.tag("item", "minecraft:beacon_payment_items", mod("ruby"))

@@ -13,6 +13,7 @@ public final class EclipseEvents {
                 EclipserItem.resetOnDamage(e.getEntity());
             }
         });
+        bus.addListener(EclipserItem::onAttack);
         bus.addListener(EclipseDash::onPlayerTick);
         bus.addListener(EclipseDash::onDeath);
         bus.addListener(EclipseDash::onLogout);

@@ -56,7 +56,7 @@
             {
               "add": false,
               "count": {
-                "max": 3.0,
+                "max": 2.0,
                 "min": 1.0,
                 "type": "minecraft:uniform"
               },
@@ -65,7 +65,7 @@
           ],
           "name": "lacuna:divine_glass_shard",
           "type": "minecraft:item",
-          "weight": 10
+          "weight": 4
         },
         {
           "functions": [

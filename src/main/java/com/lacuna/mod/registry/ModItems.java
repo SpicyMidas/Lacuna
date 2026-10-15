@@ -47,7 +47,6 @@ public final class ModItems {
 
     // ------------------------------------------------------------------ M1 ruby & divine glass
     public static final DeferredItem<Item> RUBY = item("ruby", Item::new, new Item.Properties());
-    public static final DeferredItem<Item> RAW_RUBY = item("raw_ruby", Item::new, new Item.Properties());
     public static final DeferredItem<Item> DIVINE_GLASS_SHARD = item("divine_glass_shard", Item::new, new Item.Properties());
 
     public static final DeferredItem<SwordItem> RUBY_SWORD = item("ruby_sword", p -> new SwordItem(ModTiers.RUBY, p),

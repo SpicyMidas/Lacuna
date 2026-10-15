@@ -245,61 +245,74 @@ def reflection():
     save(img, "entity/reflection")
 
 
-# villager jacket box (uv 0,38; 8x20x6): the vest covers the top 10 rows of its four sides plus the top face
-VEST_ROWS = range(44, 54)
-VEST_SIDES = {"right": range(0, 6), "front": range(6, 14), "left": range(14, 20), "back": range(20, 28)}
-# the plains robe's V-neck (transparent there) and the vest's open centre line on the front face
-VEST_NECK = {44: range(7, 13), 45: range(8, 12)}
-VEST_OPEN = (9, 10)
+# Last Merchant robe: UV regions of the vanilla villager model (64x64) that the robe covers. The head (face, hat)
+# is never painted, so the villager's own face shows unchanged.
+ROBE_JACKET_SIDES = {"right": range(0, 6), "front": range(6, 14), "left": range(14, 20), "back": range(20, 28)}
+ROBE_NECK = {44: range(8, 12), 45: range(9, 11)}     # V-neck on the front of the robe
+ROBE_BELT = 51
 
 
-def last_merchant_vest():
-    """Blue vest overlay for the Last Merchant, drawn over the vanilla villager + plains type textures."""
+def last_merchant_robe():
+    """A very dark grey travelling robe for the Last Merchant: robe, body, sleeves and trousers, face untouched."""
     img = new(64, 64)
     px = img.load()
-    r = rng("last_merchant_vest")
-    shade, dark, base, light = ramp("#244A86", "#29549A", "#2F5FA8", "#3C70BC")
-    trim, button = c("#1D3D70"), c("#7FA7DD")
-    pal = [shade, dark, base, base, light]
-    folds = [r.uniform(-0.18, 0.18) for _ in range(28)]  # soft vertical folds, one value per column
+    r = rng("last_merchant_robe")
+    deep, dark, base, mid, light = ramp("#141417", "#1B1B1F", "#222227", "#29292F", "#323238")
+    trim, thread, boot = c("#0E0E10"), c("#4A4A53"), c("#0B0B0D")
+    pal = [deep, dark, base, base, mid, light]
+    folds = [r.uniform(-0.16, 0.16) for _ in range(64)]  # soft vertical folds, one value per column
 
     def cloth(x, y, lift=0.0):
-        v = 0.55 + folds[x] + lift + r.uniform(-0.3, 0.3)
+        v = 0.5 + folds[x] + lift + r.uniform(-0.22, 0.22)
         return pal[max(0, min(len(pal) - 1, int(v * len(pal))))]
 
-    # top face (6..13, 38..43): hidden under the head except its shoulder edges
-    for y in range(38, 44):
-        for x in range(6, 14):
-            px[x, y] = cloth(x, y, 0.1)
-    for face, cols in VEST_SIDES.items():
-        for y in VEST_ROWS:
+    def fill(x0, y0, x1, y1, lift=0.0):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                px[x, y] = cloth(x, y, lift)
+
+    # robe (jacket cube, uv 0,38): four sides 20 rows tall, the shoulders of the top face, open hem underneath
+    for face, cols in ROBE_JACKET_SIDES.items():
+        for y in range(44, 64):
             for x in cols:
-                if face == "front" and (x in VEST_OPEN or x in VEST_NECK.get(y, ())):
+                if face == "front" and x in ROBE_NECK.get(y, ()):
                     continue
-                px[x, y] = cloth(x, y, 0.12 if y < 47 else (-0.08 if y > 51 else 0.0))
-    # armholes: the robe's shoulders show through at the top of each side face, with a dark edge below
-    for x0 in (0, 14):
-        for x in range(x0 + 1, x0 + 5):
-            px[x, 44] = (0, 0, 0, 0)
-            px[x, 45] = (0, 0, 0, 0)
-            px[x, 46] = trim
-    # dark trim along the front opening and the hem
-    for y in VEST_ROWS:
-        neck = VEST_NECK.get(y)
-        lo, hi = (neck.start - 1, neck.stop) if neck else (VEST_OPEN[0] - 1, VEST_OPEN[1] + 1)
-        px[lo, y] = trim
-        px[hi, y] = trim
+                # light catches the shoulders, the hem sinks into shadow
+                px[x, y] = cloth(x, y, 0.12 if y < 47 else (-0.12 if y > 59 else 0.0))
+    for y in range(38, 44):
+        for x in (6, 7, 12, 13):
+            px[x, y] = cloth(x, y, 0.1)
     for x in range(0, 28):
-        if px[x, 53][3]:
-            px[x, 53] = trim
-    # two small buttons on the left panel's edge
-    px[8, 47] = button
-    px[8, 50] = button
-    save(img, "entity/last_merchant_vest")
+        px[x, ROBE_BELT] = trim                       # a narrow dark sash
+        if px[x, 63][3]:
+            px[x, 63] = thread if x % 3 == 0 else trim  # stitched hem
+    for y, cols in ROBE_NECK.items():
+        px[cols.start - 1, y] = thread
+        px[cols.stop, y] = thread
+    px[9, ROBE_BELT] = thread                         # the sash knot
+    px[10, ROBE_BELT] = thread
+    # body (uv 16,20): sides and underside, under the robe
+    fill(16, 26, 40, 38)
+    fill(30, 20, 38, 26, -0.1)
+    # sleeves (both side boxes of the crossed arms, uv 44,22); the folded hands (uv 40,38) stay bare
+    fill(48, 22, 56, 26, 0.05)
+    fill(44, 26, 60, 34)
+    for x in range(44, 60):
+        px[x, 33] = trim                              # cuffs
+    # trousers and boots (uv 0,22)
+    fill(4, 22, 12, 26, -0.1)
+    fill(0, 26, 16, 38, -0.05)
+    for y in range(35, 38):
+        for x in range(0, 16):
+            px[x, y] = boot
+    for x in range(8, 12):
+        for y in range(22, 26):
+            px[x, y] = boot                           # soles
+    save(img, "entity/last_merchant_robe")
 
 
 def paint():
-    last_merchant_vest()
+    last_merchant_robe()
     mirror("mirror_glass")
     mirror("labyrinth_exit", crack=True)
     trigger("labyrinth_trigger", True)

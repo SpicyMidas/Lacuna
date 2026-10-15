@@ -101,7 +101,7 @@ def civic_blocks(g):
              "functions": [{"function": "minecraft:set_count", "add": False, "count": {"type": "minecraft:uniform", "min": 1.0, "max": 3.0}}]},
             {"type": "minecraft:item", "name": "minecraft:gold_nugget", "weight": 2,
              "functions": [{"function": "minecraft:set_count", "add": False, "count": {"type": "minecraft:uniform", "min": 2.0, "max": 7.0}}]},
-            {"type": "minecraft:item", "name": mod("raw_ruby"), "weight": 1}]}]})
+            {"type": "minecraft:item", "name": mod("ruby"), "weight": 1}]}]})
 
 
 def civic_pools(g):
@@ -162,7 +162,16 @@ def reputation(g):
 
 # ============================================================================================ 11c council, currency, court
 def council_currency(g):
-    g.item("village_coin", "Village Coin", "Moneta del villaggio")
+    # the hand-drawn coin fills its whole 16x16 tile: shown smaller everywhere so it reads as a small coin
+    small = {"gui": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.62, 0.62, 0.62]},
+             "fixed": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [0.6, 0.6, 0.6]},
+             "ground": {"rotation": [0, 0, 0], "translation": [0, 1.5, 0], "scale": [0.32, 0.32, 0.32]},
+             "head": {"rotation": [0, 180, 0], "translation": [0, 13, 7], "scale": [0.6, 0.6, 0.6]},
+             "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 2.5, 0.5], "scale": [0.36, 0.36, 0.36]},
+             "thirdperson_lefthand": {"rotation": [0, 0, 0], "translation": [0, 2.5, 0.5], "scale": [0.36, 0.36, 0.36]},
+             "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.45, 0.45, 0.45]},
+             "firstperson_lefthand": {"rotation": [0, 90, -25], "translation": [1.13, 3.2, 1.13], "scale": [0.45, 0.45, 0.45]}}
+    g.item("village_coin", "Village Coin", "Moneta del villaggio", extra={"display": small})
     for prof, en, it in (("coiner", "Coiner", "Coniatore"), ("magistrate", "Magistrate", "Magistrato"),
                          ("guildmaster", "Guildmaster", "Maestro di gilda")):
         g.name(f"entity.minecraft.villager.lacuna.{prof}", en, it)

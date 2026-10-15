@@ -68,7 +68,7 @@
           "weight": 2
         },
         {
-          "name": "lacuna:raw_ruby",
+          "name": "lacuna:ruby",
           "type": "minecraft:item",
           "weight": 1
         }

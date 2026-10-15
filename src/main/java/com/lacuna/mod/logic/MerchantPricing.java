@@ -35,7 +35,7 @@ public final class MerchantPricing {
         FAMILIES.put("lapis", new Object[] {"minecraft:lapis_lazuli", 12});
         FAMILIES.put("diamond", new Object[] {"minecraft:diamond", 1});
         FAMILIES.put("quartz", new Object[] {"minecraft:quartz", 12});
-        FAMILIES.put("ruby", new Object[] {"lacuna:raw_ruby", 3});
+        FAMILIES.put("ruby", new Object[] {"lacuna:ruby", 2});
         FAMILIES.put("umbral_steel", new Object[] {"lacuna:raw_umbral_steel", 3});
         FAMILIES.put("zenithite", new Object[] {"lacuna:zenithite_shard", 4});
         INGOTS.put("minecraft:iron_ingot", 5);

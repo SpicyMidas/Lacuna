@@ -1,15 +1,5 @@
 {
   "criteria": {
-    "raw_ruby": {
-      "conditions": {
-        "items": [
-          {
-            "items": "lacuna:raw_ruby"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
     "ruby": {
       "conditions": {
         "items": [
@@ -39,8 +29,7 @@
   },
   "requirements": [
     [
-      "ruby",
-      "raw_ruby"
+      "ruby"
     ]
   ]
 }

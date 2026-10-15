@@ -24,6 +24,8 @@ public final class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SHADOW_MOTE = simple("shadow_mote");
     /** Black crescent sword slash with a crimson rim. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> UMBRAL_SLASH = simple("umbral_slash");
+    /** The Eclipser's own cut: a black blade with a crimson edge (Umbral Steel slashes are blue and violet). */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> ECLIPSE_SLASH = simple("eclipse_slash");
     /** Dark violet shard fragment with gravity. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> UMBRAL_SHARD = simple("umbral_shard");
     /** Small violet glowing wisp (umbral energy), additive. */

@@ -4,7 +4,6 @@ from art.common import (deepslate_base, gem, glass, ore, pane_top, raw_block, ra
                         storage_block, tool)
 
 RUBY = ramp("#4A0716", "#8E0F2A", "#D6143F", "#FF5C7A", "#FFC2CC")
-RAW_RUBY = ramp("#3A1016", "#6E1D2A", "#9E2E40", "#C4566A", "#E48A98")
 DIVINE = ramp("#B8862A", "#FFD35C", "#FFE9A0", "#FFF7D6", "#FFFFFF")
 FRINGE = [c("#B8E8FF"), c("#FFC8F0")]
 
@@ -13,9 +12,7 @@ def paint():
     save(ore(stone_base(), RUBY, "ruby_ore"), "block/ruby_ore")
     save(ore(deepslate_base(), RUBY, "deepslate_ruby_ore"), "block/deepslate_ruby_ore")
     save(storage_block(RUBY, "ruby_block"), "block/ruby_block")
-    save(raw_block(RAW_RUBY, "raw_ruby_block"), "block/raw_ruby_block")
     save(gem(RUBY), "item/ruby")
-    save(raw_chunk(RAW_RUBY, "raw_ruby"), "item/raw_ruby")
     for kind in ("sword", "pickaxe", "axe", "shovel", "hoe"):
         save(tool(kind, [RUBY[0], RUBY[1], RUBY[2], RUBY[3], RUBY[4]]), f"item/ruby_{kind}")
 

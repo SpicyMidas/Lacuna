@@ -6,6 +6,7 @@ PARTICLES = {
     "crimson_spark": ["crimson_spark_0", "crimson_spark_1"],
     "shadow_mote": ["shadow_mote_0", "shadow_mote_1", "shadow_mote_2", "shadow_mote_3"],
     "umbral_slash": ["umbral_slash_0", "umbral_slash_1", "umbral_slash_2"],
+    "eclipse_slash": ["eclipse_slash_0", "eclipse_slash_1", "eclipse_slash_2"],
     "umbral_shard": ["umbral_shard_0", "umbral_shard_1", "umbral_shard_2"],
     "mist": ["mist_0", "mist_1", "mist_2"],
     "umbral_wisp": ["light_mote"],

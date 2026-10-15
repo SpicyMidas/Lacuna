@@ -96,14 +96,29 @@ def _crescent(img, cx, cy, r_out, r_in, offset, start, end, body, rim, rim_w):
             px[x, y] = (col[0], col[1], col[2], a)
 
 
-def umbral_slash():
-    body = (8, 6, 12, 245)
-    rim = (226, 32, 48, 255)
-    for frame, (start, end, alpha) in enumerate(((60, 200, 1.0), (30, 250, 1.0), (40, 240, 0.55))):
+SLASH_FRAMES = ((60, 200, 1.0), (30, 250, 1.0), (40, 240, 0.55))
+
+
+def _slash_set(name, body, rim, glint=None):
+    """Three crescent frames (drawn, full, fading); an optional bright inner glint along the cutting edge."""
+    for frame, (start, end, alpha) in enumerate(SLASH_FRAMES):
         img = new(32, 32)
         _crescent(img, 16, 16, 15, 12.5, 4.0, start, end, (body[0], body[1], body[2], int(body[3] * alpha)),
                   (rim[0], rim[1], rim[2], int(rim[3] * alpha)), 1.1)
-        save(img, f"particle/umbral_slash_{frame}")
+        if glint:
+            _crescent(img, 16, 16, 15, 14.2, 4.0, start + 25, end - 25, (glint[0], glint[1], glint[2], int(glint[3] * alpha)),
+                      (glint[0], glint[1], glint[2], int(glint[3] * alpha)), 0.5)
+        save(img, f"particle/{name}_{frame}")
+
+
+def umbral_slash():
+    # Umbral Steel: the steel's own palette, a slate-blue blade with a lavender-violet edge
+    _slash_set("umbral_slash", (68, 75, 115, 238), (169, 166, 220, 255))
+
+
+def eclipse_slash():
+    # the Eclipser keeps its black blade with a crimson edge
+    _slash_set("eclipse_slash", (8, 6, 12, 245), (226, 32, 48, 255))
 
 
 def umbral_shard():
@@ -119,7 +134,7 @@ def umbral_shard():
             for x in range(16):
                 if _inside(poly, x + 0.5, y + 0.5):
                     edge = _edge_distance(poly, x + 0.5, y + 0.5)
-                    px[x, y] = (150, 90, 210, 255) if edge < 1.0 else (44, 22, 66, 255)
+                    px[x, y] = (169, 166, 220, 255) if edge < 1.0 else (57, 63, 97, 255)  # umbral lavender on navy
         save(img, f"particle/umbral_shard_{frame}")
 
 
@@ -201,6 +216,7 @@ def paint():
     crimson_spark()
     shadow_mote()
     umbral_slash()
+    eclipse_slash()
     umbral_shard()
     mist()
     effect_masks()

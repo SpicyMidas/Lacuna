@@ -49,8 +49,6 @@ public final class ModBlocks {
             UniformInt.of(3, 7), BlockBehaviour.Properties.ofFullCopy(Blocks.DEEPSLATE_DIAMOND_ORE).strength(4.5F, 3.0F)));
     public static final DeferredBlock<Block> RUBY_BLOCK = block("ruby_block", () -> new Block(
             BlockBehaviour.Properties.ofFullCopy(Blocks.DIAMOND_BLOCK).mapColor(MapColor.COLOR_RED)));
-    public static final DeferredBlock<Block> RAW_RUBY_BLOCK = block("raw_ruby_block", () -> new Block(
-            BlockBehaviour.Properties.ofFullCopy(Blocks.RAW_IRON_BLOCK).mapColor(MapColor.COLOR_RED)));
 
     // ------------------------------------------------------------------ M1 divine glass
     public static final DeferredBlock<TransparentBlock> DIVINE_GLASS = block("divine_glass", () -> new TransparentBlock(

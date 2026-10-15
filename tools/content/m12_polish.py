@@ -36,11 +36,10 @@ def code():
 
 
 def advancements(g):
-    adv(g, "root", "lacuna:totem_of_banishing", {"ruby": has("lacuna:ruby"), "raw_ruby": has("lacuna:raw_ruby")},
+    adv(g, "root", "lacuna:totem_of_banishing", {"ruby": has("lacuna:ruby")},
         background="lacuna:textures/block/ruin_stone_bricks.png",
         en=("Lacuna", "Find your first ruby: the world remembers more than it shows."),
         it=("Lacuna", "Trova il tuo primo rubino: il mondo ricorda più di quanto mostri."))
-    g.files[f"data/lacuna/advancement/lacuna/root.json"]["requirements"] = [["ruby", "raw_ruby"]]
     adv(g, "enter_forgotten_land", "lacuna:chiseled_ruin_glyph",
         {"enter": {"trigger": "minecraft:changed_dimension", "conditions": {"to": "lacuna:forgotten_land"}}}, "root",
         en=("A Land Nobody Remembers", "Enter the Forgotten Land."), it=("Una terra che nessuno ricorda", "Entra nella Terra Dimenticata."))

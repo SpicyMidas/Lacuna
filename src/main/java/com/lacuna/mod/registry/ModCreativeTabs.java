@@ -33,7 +33,7 @@ public final class ModCreativeTabs {
             ModItems.RUBY_SWORD, ModItems.RUBY_PICKAXE, ModItems.RUBY_AXE, ModItems.RUBY_SHOVEL, ModItems.RUBY_HOE,
             ModItems.STARLACE_HELMET, ModItems.STARLACE_CHESTPLATE, ModItems.STARLACE_LEGGINGS, ModItems.STARLACE_BOOTS,
             // materials
-            ModItems.RUBY, ModItems.RAW_RUBY, ModItems.DIVINE_GLASS_SHARD, ModItems.RAW_UMBRAL_STEEL, ModItems.UMBRAL_STEEL_INGOT,
+            ModItems.RUBY, ModItems.DIVINE_GLASS_SHARD, ModItems.RAW_UMBRAL_STEEL, ModItems.UMBRAL_STEEL_INGOT,
             ModItems.UMBRAL_STEEL_NUGGET, ModItems.ZENITHITE_SHARD, ModItems.STARLACE_CLOTH, ModItems.SOLAR_FLARE_FRAGMENT, ModItems.SOLAR_FLARE,
             ModItems.CHRONAL_SHARD, ModItems.ECHO_FRAGMENT, ModItems.EMBER, ModItems.CRYSTAL_WILLOW_SHARD, ModItems.SILK_DUST, ModItems.CLOCKWORK_GEAR,
             // villages and creatures

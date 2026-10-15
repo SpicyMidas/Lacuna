@@ -65,6 +65,7 @@ public final class FxParticles {
         provider(event, ModParticles.CRIMSON_SPARK.get(), CRIMSON_SPARK);
         provider(event, ModParticles.SHADOW_MOTE.get(), SHADOW_MOTE);
         provider(event, ModParticles.UMBRAL_SLASH.get(), UMBRAL_SLASH);
+        provider(event, ModParticles.ECLIPSE_SLASH.get(), UMBRAL_SLASH);
         provider(event, ModParticles.UMBRAL_SHARD.get(), UMBRAL_SHARD);
         provider(event, ModParticles.MIST.get(), MIST);
         provider(event, ModParticles.UMBRAL_WISP.get(), UMBRAL_WISP);

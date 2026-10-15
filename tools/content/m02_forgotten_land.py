@@ -106,7 +106,7 @@ def dimension(g):
     g.shared.setdefault("fl_biomes", []).append("lacuna:forgotten_plains")
     g.name("biome.lacuna.forgotten_plains", "Forgotten Plains", "Pianure dimenticate")
     g.data("worldgen/configured_feature/divine_glass_cluster_patch", {"type": "minecraft:random_patch", "config": {
-        "tries": 6, "xz_spread": 5, "y_spread": 2,
+        "tries": 3, "xz_spread": 4, "y_spread": 2,
         "feature": {"feature": {"type": "minecraft:simple_block", "config": {"to_place": {
             "type": "minecraft:simple_state_provider",
             "state": {"Name": "lacuna:divine_glass_cluster", "Properties": {"facing": "up", "waterlogged": "false"}}}}},
@@ -115,7 +115,7 @@ def dimension(g):
                 {"type": "minecraft:would_survive", "state": {"Name": "lacuna:divine_glass_cluster",
                                                               "Properties": {"facing": "up", "waterlogged": "false"}}}]}}]}}})
     g.data("worldgen/placed_feature/divine_glass_cluster_patch", {"feature": "lacuna:divine_glass_cluster_patch", "placement": [
-        {"type": "minecraft:rarity_filter", "chance": 6}, {"type": "minecraft:in_square"},
+        {"type": "minecraft:rarity_filter", "chance": 18}, {"type": "minecraft:in_square"},
         {"type": "minecraft:heightmap", "heightmap": "WORLD_SURFACE_WG"}, {"type": "minecraft:biome"}]})
 
     def fl_biome_tag(g2):
@@ -145,9 +145,9 @@ def structures(g):
 
     # Ruin cache loot: other milestones append entries through g.shared["ruin_cache"]
     g.shared["ruin_cache"] = [
-        wg.loot_entry("lacuna:divine_glass_shard", 20, 1, 3),
+        wg.loot_entry("lacuna:divine_glass_shard", 8, 1, 2),
         wg.loot_entry("lacuna:ruby", 10, 1, 2),
-        wg.loot_entry("lacuna:raw_ruby", 10, 1, 3),
+        wg.loot_entry("lacuna:ruby", 8, 1, 2),
         wg.loot_entry("minecraft:gold_nugget", 15, 2, 6),
         wg.loot_entry("minecraft:amethyst_shard", 8, 1, 3),
         wg.loot_entry("minecraft:paper", 10, 1, 4),

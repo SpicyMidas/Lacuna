@@ -26,7 +26,7 @@ public final class VillageTrades {
     public static void onVillagerTrades(VillagerTradesEvent event) {
         if (event.getType() == ModVillagers.COINER.get()) {
             add(event, 1, buy(Items.RAW_IRON, 6), buy(Items.RAW_COPPER, 12), buy(Items.RAW_GOLD, 4));
-            add(event, 2, buy(ModItems.RAW_RUBY.get(), 3), buy(ModItems.RAW_UMBRAL_STEEL.get(), 3), buy(Items.IRON_INGOT, 5));
+            add(event, 2, buy(ModItems.RUBY.get(), 2), buy(ModItems.RAW_UMBRAL_STEEL.get(), 3), buy(Items.IRON_INGOT, 5));
             add(event, 3, buy(Items.GOLD_INGOT, 3), buy(ModItems.UMBRAL_STEEL_INGOT.get(), 2), buy(ModItems.RUBY.get(), 2));
             add(event, 4, sell(Items.EMERALD, 1, 4), buy(Items.COPPER_INGOT, 10));
             add(event, 5, sell(ModItems.RUBY.get(), 1, 3));

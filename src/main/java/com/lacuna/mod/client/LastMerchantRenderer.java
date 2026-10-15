@@ -13,18 +13,16 @@ import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Last Merchant: a plain plains villager (vanilla villager model, base skin and plains type layer) wearing a blue
- * vest drawn as a third cutout layer over the robe.
+ * Last Merchant: a vanilla villager (model, base skin and face untouched) in a very dark grey travelling robe,
+ * drawn as a cutout layer over the base like vanilla's villager type layer.
  */
 public class LastMerchantRenderer extends MobRenderer<LastMerchant, VillagerModel<LastMerchant>> {
     private static final ResourceLocation BASE = ResourceLocation.withDefaultNamespace("textures/entity/villager/villager.png");
-    private static final ResourceLocation PLAINS = ResourceLocation.withDefaultNamespace("textures/entity/villager/type/plains.png");
-    private static final ResourceLocation VEST = Lacuna.id("textures/entity/last_merchant_vest.png");
+    private static final ResourceLocation ROBE = Lacuna.id("textures/entity/last_merchant_robe.png");
 
     public LastMerchantRenderer(EntityRendererProvider.Context context) {
         super(context, new VillagerModel<>(context.bakeLayer(ModelLayers.VILLAGER)), 0.5F);
-        addLayer(new Overlay(this, PLAINS));
-        addLayer(new Overlay(this, VEST));
+        addLayer(new Overlay(this, ROBE));
     }
 
     @Override
