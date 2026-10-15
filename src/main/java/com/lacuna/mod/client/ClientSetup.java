@@ -24,6 +24,7 @@ public final class ClientSetup {
         modBus.addListener(com.lacuna.mod.client.fx.FxShaders::onRegisterShaders);
         modBus.addListener(com.lacuna.mod.client.fx.FxParticles::register);
         modBus.addListener(com.lacuna.mod.client.fx.ScreenFx::registerLayer);
+        modBus.addListener(com.lacuna.mod.client.gear.AnimatedItemRenderer::registerLayers);
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {
@@ -55,5 +56,6 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.THROWN_DECOY.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntities.REFLECTION.get(), ReflectionRenderer::new);
         event.registerEntityRenderer(ModEntities.LAST_MERCHANT.get(), LastMerchantRenderer::new);
+        event.registerEntityRenderer(ModEntities.ANIMATED_ITEM.get(), com.lacuna.mod.client.gear.AnimatedItemRenderer::new);
     }
 }

@@ -168,6 +168,11 @@ public final class ModItems {
     public static final DeferredItem<com.lacuna.mod.village.RepairKitItem> REPAIR_KIT = item("repair_kit",
             com.lacuna.mod.village.RepairKitItem::new, new Item.Properties().stacksTo(16));
 
+    // ------------------------------------------------------------------ Wand of Quickening
+    public static final DeferredItem<com.lacuna.mod.gear.QuickeningWandItem> QUICKENING_WAND = item("quickening_wand",
+            com.lacuna.mod.gear.QuickeningWandItem::new,
+            new Item.Properties().durability(Balance.QUICKENING_DURABILITY).rarity(Rarity.RARE));
+
     private ModItems() {}
 
     /**

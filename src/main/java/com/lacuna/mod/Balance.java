@@ -314,4 +314,53 @@ public final class Balance {
     public static final int GUILD_FEE = 20;
     public static final int GUILD_MIN_REP = 10;
     public static final int PARDON_COOLDOWN_DAYS = 3;
+
+    // ---------------------------------------------------------------- Wand of Quickening (animated items)
+    public static final int QUICKENING_DURABILITY = 64;
+    public static final int QUICKENING_COOLDOWN = 40;
+    public static final float QUICKENING_HEALTH_COST = 2.0F;
+    /** Refused at or below this health (like the Pyrrhic Scepter); free in creative. */
+    public static final float QUICKENING_MIN_HEALTH = 4.0F;
+    public static final double QUICKENING_RANGE = 16.0;
+    /** Generous pick radius around the view ray for dropped items. */
+    public static final double QUICKENING_PICK_RADIUS = 0.8;
+    /** Animated items alive per player; the oldest falls asleep early when a new one wakes. */
+    public static final int QUICKENING_MAX_ALIVE = 3;
+    public static final int ANIMATED_LIFETIME = 800;
+    /** Legs sprout over the first ticks of life... */
+    public static final int ANIMATED_WAKE_TICKS = 8;
+    /** ...and shrink away over the last ones (also the delay of an early sleep). */
+    public static final int ANIMATED_SLEEP_TICKS = 10;
+    public static final float ANIMATED_MAX_HEALTH = 16.0F;
+    public static final double ANIMATED_SPEED = 0.3;
+    public static final double ANIMATED_HUNT_RANGE = 16.0;
+    public static final double ANIMATED_TELEPORT_DISTANCE = 24.0;
+    public static final double ANIMATED_FOLLOW_START = 4.0;
+    public static final double ANIMATED_FOLLOW_STOP = 2.0;
+    /** Blades and other weapons strike with their own damage times this. */
+    public static final float ANIMATED_WEAPON_MULTIPLIER = 1.25F;
+    /** Swords also sweep foes next to the target for 1 + this fraction of the hit. */
+    public static final float ANIMATED_SWEEP_FRACTION = 0.25F;
+    public static final float ANIMATED_SLAM_DAMAGE = 2.0F;
+    /** Block items slam harder the harder the block: + hardness x 0.8, at most this. */
+    public static final float ANIMATED_SLAM_HARDNESS_BONUS = 4.0F;
+    public static final int ANIMATED_IGNITE_SECONDS = 4;
+    public static final double ANIMATED_ARCHER_RANGE = 8.0;
+    public static final double ANIMATED_THROWER_RANGE = 6.0;
+    public static final int ANIMATED_SHOT_INTERVAL = 30;
+    public static final int ANIMATED_TRIDENT_INTERVAL = 40;
+    public static final int ANIMATED_THROW_MIN_INTERVAL = 40;
+    public static final int ANIMATED_THROW_MAX_INTERVAL = 80;
+    /** Beneficial splash/lingering potions are thrown at the owner, at most this often. */
+    public static final int ANIMATED_POTION_OWNER_INTERVAL = 120;
+    public static final float ANIMATED_TNT_RADIUS = 3.0F;
+    public static final int ANIMATED_TNT_FUSE = 30;
+    public static final int ANIMATED_TNT_REARM = 40;
+    public static final double ANIMATED_SHIELD_TAUNT_RANGE = 8.0;
+    public static final int ANIMATED_SHIELD_TAUNT_INTERVAL = 60;
+    public static final double ANIMATED_SHIELD_ARMOR = 12.0;
+    public static final double ANIMATED_SHIELD_KNOCKBACK_RESISTANCE = 0.6;
+    public static final int ANIMATED_FEED_INTERVAL = 100;
+    public static final int ANIMATED_BLINK_INTERVAL = 60;
+    public static final int ANIMATED_LEAP_WINDUP = 3;
 }

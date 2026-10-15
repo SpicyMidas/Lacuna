@@ -67,6 +67,11 @@ public final class ModEntities {
             () -> EntityType.Builder.<LastMerchant>of(LastMerchant::new, MobCategory.CREATURE)
                     .sized(0.6F, 1.95F).eyeHeight(1.62F).clientTrackingRange(10).noSave().build("last_merchant"));
 
+    // ------------------------------------------------------------------ Wand of Quickening
+    public static final DeferredHolder<EntityType<?>, EntityType<com.lacuna.mod.gear.AnimatedItemEntity>> ANIMATED_ITEM = ENTITIES.register(
+            "animated_item", () -> EntityType.Builder.<com.lacuna.mod.gear.AnimatedItemEntity>of(com.lacuna.mod.gear.AnimatedItemEntity::new,
+                    MobCategory.MISC).sized(0.5F, 0.9F).eyeHeight(0.6F).clientTrackingRange(8).build("animated_item"));
+
     private ModEntities() {}
 
     /** Mod bus: attribute tables for every living Lacuna entity. */
@@ -76,6 +81,7 @@ public final class ModEntities {
         event.put(DECOY.get(), DecoyEntity.createAttributes().build());
         event.put(REFLECTION.get(), ReflectionEntity.createAttributes().build());
         event.put(LAST_MERCHANT.get(), net.minecraft.world.entity.Mob.createMobAttributes().build());
+        event.put(ANIMATED_ITEM.get(), com.lacuna.mod.gear.AnimatedItemEntity.createAttributes().build());
     }
 
     /** Mod bus: natural spawn placement rules for the M9 Lantern Moth (new entries need a placement type and heightmap). */
