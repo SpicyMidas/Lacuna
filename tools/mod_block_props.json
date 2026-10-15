@@ -350,6 +350,18 @@
    "z"
   ]
  },
+ "forgotten_portal_frame": {
+  "active": [
+   "true",
+   "false"
+  ],
+  "facing": [
+   "north",
+   "south",
+   "west",
+   "east"
+  ]
+ },
  "grasping_roots": {
   "sprouted": [
    "true",

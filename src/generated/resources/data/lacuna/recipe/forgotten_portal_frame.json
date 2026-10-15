@@ -1,0 +1,21 @@
+{
+  "category": "building",
+  "key": {
+    "O": {
+      "item": "minecraft:crying_obsidian"
+    },
+    "R": {
+      "item": "lacuna:ruby"
+    }
+  },
+  "pattern": [
+    " R ",
+    "ROR",
+    " R "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:forgotten_portal_frame"
+  },
+  "type": "minecraft:crafting_shaped"
+}

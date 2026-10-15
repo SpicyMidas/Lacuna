@@ -24,7 +24,7 @@ public final class ModCreativeTabs {
 
     private static final List<Supplier<? extends ItemLike>> CURATED = List.of(
             // relics
-            ModItems.TOTEM_OF_BANISHING, ModItems.ECLIPSER, ModItems.SUNS_FURY, ModItems.DIVINE_MAGNIFYING_GLASS,
+            ModItems.TOTEM_OF_BANISHING, ModBlocks.FORGOTTEN_PORTAL_FRAME, ModItems.ECLIPSER, ModItems.SUNS_FURY, ModItems.DIVINE_MAGNIFYING_GLASS,
             ModItems.FRACTURED_PEARL, ModItems.ARRIVAL_SHARD, ModItems.DEPARTURE_SHARD, ModItems.CHRONOSHARD_POCKET_WATCH,
             ModItems.MIRROR_OF_RECURSION, ModItems.NULL_LANTERN, ModItems.WHISPERBONE_FLUTE, ModBlocks.ORRERY_OF_THRESHOLDS,
             // special weapons, tools, armour

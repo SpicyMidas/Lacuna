@@ -129,7 +129,7 @@ public final class SafeSpot {
         return state.is(BlockTags.FIRE) || state.is(Blocks.LAVA) || state.is(Blocks.MAGMA_BLOCK) || state.is(Blocks.CACTUS)
                 || state.is(Blocks.POWDER_SNOW) || state.is(Blocks.SWEET_BERRY_BUSH) || state.is(Blocks.WITHER_ROSE)
                 || state.is(BlockTags.CAMPFIRES) || state.is(Blocks.POINTED_DRIPSTONE) || state.is(Blocks.END_PORTAL)
-                || state.is(Blocks.NETHER_PORTAL);
+                || state.is(Blocks.NETHER_PORTAL) || state.is(com.lacuna.mod.registry.ModBlocks.FORGOTTEN_PORTAL);
     }
 
     public static BlockPos clampToWorld(ServerLevel level, BlockPos pos) {

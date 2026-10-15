@@ -49,6 +49,11 @@ public final class Balance {
     public static final int TOTEM_SELF_COOLDOWN = 80;
     public static final double TOTEM_KNOCKBACK = 1.5;
 
+    // ---------------------------------------------------------------- forgotten portal (M2)
+    /** Ticks a player must stand in a Forgotten Portal before crossing (2 s); any other creature crosses sooner. */
+    public static final int PORTAL_PLAYER_TICKS = 40;
+    public static final int PORTAL_MOB_TICKS = 10;
+
     // ---------------------------------------------------------------- relics (M2)
     public static final int RELIC_LIFETIME_TICKS = 36000; // ~30 min
     public static final int RELIC_OWNER_ONLY_TICKS = 12000; // 10 min

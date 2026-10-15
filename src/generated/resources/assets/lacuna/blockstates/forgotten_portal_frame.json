@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "active=false,facing=east": {
+      "model": "lacuna:block/forgotten_portal_frame",
+      "y": 270
+    },
+    "active=false,facing=north": {
+      "model": "lacuna:block/forgotten_portal_frame",
+      "y": 180
+    },
+    "active=false,facing=south": {
+      "model": "lacuna:block/forgotten_portal_frame"
+    },
+    "active=false,facing=west": {
+      "model": "lacuna:block/forgotten_portal_frame",
+      "y": 90
+    },
+    "active=true,facing=east": {
+      "model": "lacuna:block/forgotten_portal_frame_active",
+      "y": 270
+    },
+    "active=true,facing=north": {
+      "model": "lacuna:block/forgotten_portal_frame_active",
+      "y": 180
+    },
+    "active=true,facing=south": {
+      "model": "lacuna:block/forgotten_portal_frame_active"
+    },
+    "active=true,facing=west": {
+      "model": "lacuna:block/forgotten_portal_frame_active",
+      "y": 90
+    }
+  }
+}

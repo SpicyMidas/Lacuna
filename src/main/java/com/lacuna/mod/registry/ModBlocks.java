@@ -172,6 +172,17 @@ public final class ModBlocks {
             civicProps(MapColor.METAL, SoundType.ANVIL).requiresCorrectToolForDrops(), Shapes.or(Block.box(1, 0, 1, 15, 6, 15),
                     Block.box(6, 6, 6, 10, 16, 10))));
 
+    // ------------------------------------------------------------------ M2 Forgotten Portal (lit with the Totem of Banishing)
+    public static final DeferredBlock<com.lacuna.mod.banish.ForgottenPortalFrameBlock> FORGOTTEN_PORTAL_FRAME = block("forgotten_portal_frame",
+            () -> new com.lacuna.mod.banish.ForgottenPortalFrameBlock(BlockBehaviour.Properties.of().mapColor(MapColor.DEEPSLATE)
+                    .instrument(NoteBlockInstrument.BASEDRUM).strength(5.0F, 1200.0F).requiresCorrectToolForDrops()
+                    .sound(SoundType.DEEPSLATE_BRICKS).pushReaction(PushReaction.BLOCK)
+                    .lightLevel(s -> s.getValue(com.lacuna.mod.banish.ForgottenPortalFrameBlock.ACTIVE) ? 7 : 0)));
+    public static final DeferredBlock<com.lacuna.mod.banish.ForgottenPortalBlock> FORGOTTEN_PORTAL = blockNoItem("forgotten_portal",
+            () -> new com.lacuna.mod.banish.ForgottenPortalBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+                    .noCollission().noOcclusion().strength(-1.0F, 3600000.0F).noLootTable().lightLevel(s -> 11)
+                    .sound(SoundType.GLASS).pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
+
     private static BlockBehaviour.Properties civicProps(MapColor color, SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(color).strength(2.5F, 6.0F).sound(sound).noOcclusion()
                 .pushReaction(PushReaction.BLOCK).ignitedByLava();
