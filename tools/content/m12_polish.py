@@ -57,6 +57,9 @@ def advancements(g):
     adv(g, "village_friend", "lacuna:village_ledger", code(), "root",
         en=("A Friend of the Village", "Become Friendly with a village: trade, defend it, ring its bell at dawn."),
         it=("Amico del villaggio", "Diventa Amichevole con un villaggio: commercia, difendilo, suona la sua campana all'alba."))
+    adv(g, "triangle_of_instant_pulverization", "lacuna:ember_triangle", code(), "root", frame="challenge",
+        en=("Triangle of Instant Pulverization", "Turn a creature to dust with the Ember Triangle."),
+        it=("Triangolo di polverizzazione istantanea", "Riduci in polvere una creatura con il Triangolo di brace."))
 
 
 TIPS = {

@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.triangle_of_instant_pulverization.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:ember_triangle"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.triangle_of_instant_pulverization.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "code"
+    ]
+  ]
+}

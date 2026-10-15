@@ -30,6 +30,10 @@ public final class ModParticles {
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> UMBRAL_WISP = simple("umbral_wisp");
     /** Large, very faint drifting fog wisp (Forgotten Land). */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> MIST = simple("mist");
+    /** Ember Triangle: an ash grain or flake of a pulverized body (tinted and cooled by client/gear/EmberDust). */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> EMBER_DUST = simple("ember_dust");
+    /** Ember Triangle: a glowing ember speck that cools from orange to grey. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> EMBER_SPECK = simple("ember_speck");
 
     private ModParticles() {}
 

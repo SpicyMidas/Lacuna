@@ -168,6 +168,11 @@ public final class ModItems {
     public static final DeferredItem<com.lacuna.mod.village.RepairKitItem> REPAIR_KIT = item("repair_kit",
             com.lacuna.mod.village.RepairKitItem::new, new Item.Properties().stacksTo(16));
 
+    // ------------------------------------------------------------------ ember triangle (thermal wave relic)
+    public static final DeferredItem<com.lacuna.mod.gear.EmberTriangleItem> EMBER_TRIANGLE = item("ember_triangle",
+            com.lacuna.mod.gear.EmberTriangleItem::new,
+            new Item.Properties().durability(Balance.EMBER_TRIANGLE_DURABILITY).rarity(Rarity.EPIC).fireResistant());
+
     private ModItems() {}
 
     /**
