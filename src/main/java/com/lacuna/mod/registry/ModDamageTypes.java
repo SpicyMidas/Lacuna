@@ -25,6 +25,8 @@ public final class ModDamageTypes {
     public static final ResourceKey<DamageType> ECLIPSE_CLEAVE = key("eclipse_cleave");
     /** Tidecaller Sickle "Tidal Wave" (no knockback: the wave carries its victims itself). */
     public static final ResourceKey<DamageType> TIDAL_WAVE = key("tidal_wave");
+    /** Ember Triangle thermal wave: turns the victim to dust (bypasses armor, shields and effects, no knockback). */
+    public static final ResourceKey<DamageType> PULVERIZED = key("pulverized");
 
     private ModDamageTypes() {}
 

@@ -10,6 +10,9 @@ PARTICLES = {
     "umbral_shard": ["umbral_shard_0", "umbral_shard_1", "umbral_shard_2"],
     "mist": ["mist_0", "mist_1", "mist_2"],
     "umbral_wisp": ["light_mote"],
+    # Ember Triangle pulverization dust (tinted and cooled by client/gear/EmberDust)
+    "ember_dust": [f"ember_dust_{i}" for i in range(6)],
+    "ember_speck": ["ember_speck_0", "ember_speck_1", "ember_speck_2"],
 }
 
 

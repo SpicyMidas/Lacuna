@@ -29,6 +29,7 @@ public final class ModCreativeTabs {
             ModItems.MIRROR_OF_RECURSION, ModItems.NULL_LANTERN, ModItems.WHISPERBONE_FLUTE, ModBlocks.ORRERY_OF_THRESHOLDS,
             // special weapons, tools, armour
             ModItems.GRAVEMAW_GREATSWORD, ModItems.TIDECALLER_SICKLE, ModItems.HEARTWOOD_BOW, ModItems.ECHO_DAGGER, ModItems.PYRRHIC_SCEPTER,
+            ModItems.EMBER_TRIANGLE,
             ModItems.UMBRAL_STEEL_SWORD, ModItems.UMBRAL_STEEL_PICKAXE, ModItems.UMBRAL_STEEL_AXE, ModItems.UMBRAL_STEEL_SHOVEL, ModItems.UMBRAL_STEEL_HOE,
             ModItems.RUBY_SWORD, ModItems.RUBY_PICKAXE, ModItems.RUBY_AXE, ModItems.RUBY_SHOVEL, ModItems.RUBY_HOE,
             ModItems.STARLACE_HELMET, ModItems.STARLACE_CHESTPLATE, ModItems.STARLACE_LEGGINGS, ModItems.STARLACE_BOOTS,

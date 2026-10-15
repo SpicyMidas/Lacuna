@@ -319,4 +319,21 @@ public final class Balance {
     public static final int GUILD_FEE = 20;
     public static final int GUILD_MIN_REP = 10;
     public static final int PARDON_COOLDOWN_DAYS = 3;
+
+    // ---------------------------------------------------------------- ember triangle (thermal wave relic)
+    /** Total uses; repaired at an anvil with Ember, {@link #EMBER_TRIANGLE_REPAIR_PER_EMBER} uses per Ember. */
+    public static final int EMBER_TRIANGLE_DURABILITY = 16;
+    public static final int EMBER_TRIANGLE_REPAIR_PER_EMBER = 4;
+    /** Cooldown after a thermal wave (60 s). */
+    public static final int EMBER_TRIANGLE_COOLDOWN = 1200;
+    /** The triangle flares for this many ticks before the wave is released. */
+    public static final int EMBER_TRIANGLE_WINDUP = 6;
+    /** The wave front runs this far along the ground (blocks) in {@link #EMBER_TRIANGLE_WAVE_TICKS}, slowing as it spreads. */
+    public static final double EMBER_TRIANGLE_RADIUS = 10.0;
+    public static final int EMBER_TRIANGLE_WAVE_TICKS = 12;
+    /** The front catches what stands up to this far above / below the ground it runs on. */
+    public static final double EMBER_TRIANGLE_REACH_UP = 2.5;
+    public static final double EMBER_TRIANGLE_REACH_DOWN = 1.0;
+    /** Bosses (tag lacuna:cannot_be_banished) are scorched for this much instead of being pulverized. */
+    public static final float EMBER_TRIANGLE_BOSS_DAMAGE = 30.0F;
 }

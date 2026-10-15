@@ -11,6 +11,7 @@ def build(g):
     umbral_tools(g)
     weapons(g)
     grasping_roots(g)
+    ember_triangle(g)
 
 
 def zenithite(g):
@@ -198,3 +199,34 @@ def grasping_roots(g):
              item=False, loot=None, blockstate=blockstate)
     g.asset("models/block/grasping_roots_withered", roots_model("lacuna:block/grasping_roots_withered"))
     g.props("grasping_roots", sprouted=["true", "false"], withering=["true", "false"])
+
+
+def ember_triangle(g):
+    """Ember Triangle: a relic that releases a circular thermal wave and pulverizes what it catches (gear/EmberWave)."""
+    g.item("ember_triangle", "Ember Triangle", "Triangolo di brace")
+    g.shaped("ember_triangle", [" E ", "EBE", "EEE"], {"E": "lacuna:ember", "B": "minecraft:blaze_powder"},
+             "lacuna:ember_triangle", category="equipment", unlock="lacuna:ember")
+    # the pulverizing damage: nothing protects from it (armor, shields, resistance, enchantments) and it pushes nobody
+    g.data("damage_type/pulverized", {"exhaustion": 0.0, "message_id": "lacuna.pulverized", "scaling": "never",
+                                      "effects": "burning"})
+    for tag in ("minecraft:bypasses_armor", "minecraft:bypasses_shield", "minecraft:bypasses_effects",
+                "minecraft:no_knockback"):
+        g.tag("damage_type", tag, "lacuna:pulverized")
+    g.name("death.attack.lacuna.pulverized", "%1$s was pulverized", "%1$s è stato polverizzato")
+    g.name("death.attack.lacuna.pulverized.player", "%1$s was pulverized by %2$s", "%1$s è stato polverizzato da %2$s")
+    g.name("death.attack.lacuna.pulverized.item", "%1$s was pulverized by %2$s using %3$s",
+           "%1$s è stato polverizzato da %2$s con %3$s")
+    g.name("item.lacuna.ember_triangle.lore", "Three embers that swore never to go out.",
+           "Tre braci che hanno giurato di non spegnersi mai.")
+    g.name("item.lacuna.ember_triangle.use", "Use: Thermal Wave (%s blocks around you)",
+           "Usa: Onda termica (%s blocchi attorno a te)")
+    g.name("item.lacuna.ember_triangle.use_detail", " Hostile creatures and anything hunting you are pulverized on the spot",
+           " Le creature ostili e chiunque ti dia la caccia vengono polverizzati all'istante")
+    g.name("item.lacuna.ember_triangle.spare", " Spares you, your pets, villagers, golems and peaceful animals",
+           " Risparmia te, i tuoi animali, i villici, i golem e gli animali pacifici")
+    g.name("item.lacuna.ember_triangle.pvp", " Other players only when PvP is on",
+           " Gli altri giocatori solo se il PvP è attivo")
+    g.name("item.lacuna.ember_triangle.boss", " Bosses resist: %s damage instead", " I boss resistono: subiscono invece %s danni")
+    g.name("item.lacuna.ember_triangle.cooldown", "Cooldown: %s s", "Ricarica: %s s")
+    g.name("item.lacuna.ember_triangle.repair", "Repair at an anvil with Ember (+%s uses each)",
+           "Si ripara all'incudine con la brace (+%s usi ciascuna)")
