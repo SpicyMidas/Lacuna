@@ -140,11 +140,11 @@ Add a debug command tree `/lacuna` (permission level 2): `selftest`, `banish [ta
 ## 8. M1 — Ruby and Divine Glass
 
 **Ruby**
-- Items: `ruby`, `raw_ruby`. Blocks: `ruby_ore`, `deepslate_ruby_ore`, `ruby_block`, `raw_ruby_block`.
+- Items: `ruby`. Blocks: `ruby_ore`, `deepslate_ruby_ore`, `ruby_block` (0.5.0: raw ruby removed, the ores drop rubies).
 - Ore drops 1 `ruby` (Fortune applies, like diamond), XP 3–7, needs iron tool or better. Hardness 3.0 (deepslate 4.5), blast resistance 3.0/3.0.
 - Worldgen: vein size 4, 4 per chunk, trapezoid Y -64..16, air-exposure discard 0.5. Biome modifier adds to `#minecraft:is_overworld`.
 - Ruby tier tools: sword, pickaxe, axe, shovel, hoe. Durability 800, speed 7.0, enchantability 15, mining level like diamond; damage bonuses like diamond tier. Repair with `ruby`.
-- Recipes: ruby block ⇄ 9 ruby; raw variants; smelt/blast `raw_ruby` → `ruby`.
+- Recipes: ruby block ⇄ 9 ruby; smelting the ore (silk touch) gives a ruby.
 
 **Divine Glass**
 - Items: `divine_glass_shard`. Blocks: `divine_glass` (4 shards 2x2 → 1 block), `divine_glass_pane` (6 blocks → 16 panes), `divine_glass_cluster` (natural crystal cluster, like amethyst cluster, drops 2–4 shards, Silk Touch drops the cluster, Fortune +1 per level; spawns only in the Forgotten Land, see M2/M10).

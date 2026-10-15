@@ -55,7 +55,7 @@ Gates: 3 ✔, 4 (logic) ✔ 8/8, 1/2/5/6 not runnable here (see note).
 
 Built:
 - Blocks `ruby_ore`, `deepslate_ruby_ore` (DropExperienceBlock XP 3–7, hardness 3.0/4.5, blast 3, iron tool),
-  `ruby_block`, `raw_ruby_block`; items `ruby`, `raw_ruby`; Ruby tool set (SimpleTier: diamond level, 800 uses,
+  `ruby_block`; item `ruby` (raw ruby removed in 0.5.0); Ruby tool set (SimpleTier: diamond level, 800 uses,
   speed 7, +3 damage like diamond, enchantability 15, repair with ruby).
 - Ore worldgen (size 4, count 4, trapezoid −64..16, air discard 0.5) through a NeoForge biome modifier on
   `#minecraft:is_overworld`. Recipes: storage ⇄ 9, raw variants, smelt/blast.
@@ -444,7 +444,7 @@ Built:
   kept in `lacuna_last_merchant` SavedData) a 25 % chance by day (respects `doTraderSpawning`) to spawn 16–48 blocks
   from a random player on dry solid ground; despawns after 3 days; config `lastMerchant`.
 - Stock (`logic/MerchantPricing`, unit-tested): buys the three ore families the nearest player mined most (raw iron,
-  copper, gold, coal, redstone, lapis, diamond, quartz, raw ruby, raw umbral iron, zenithite) plus a bulk offer for the
+  copper, gold, coal, redstone, lapis, diamond, quartz, ruby, raw umbral steel, zenithite) plus a bulk offer for the
   top one, and two ingot/gem buys; sells divine glass shards (2), rubies (3), chronal shards (8) and echo shards (10);
   8 % chance of one Solar Flare Fragment for 16 rubies + 24 divine glass shards (spec 14). "Recently mined" = vanilla
   `Stats.BLOCK_MINED` over `#c:ores` since the player's previous merchant visit (a `mined_snapshot` attachment, kept on
@@ -538,7 +538,7 @@ Built:
   transient +50 % attack modifier, laws penalise every 5 s). Players in the township are told the decree.
 - **Currency**: `township_coin`. `CurrencyService` now returns the coin while `township.enabled` and
   `township.currency` are on (the Last Merchant trades in coins too), the emerald otherwise.
-- **Coiner** profession (job site `mint_press`, placed in two workshop buildings) buys raw iron/copper/gold, raw ruby,
+- **Coiner** profession (job site `mint_press`, placed in two workshop buildings) buys raw iron/copper/gold, rubies,
   raw umbral iron and ingots for coins; **Magistrate** (job site `judge_bench`) sells paper, books, name tags and a bell
   for coins. POI types + professions are registered through DeferredRegister (POIs after blocks), trades through
   `VillagerTradesEvent`; villager/zombie-villager profession overlays and names exist for both (and the M11d
