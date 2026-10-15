@@ -172,6 +172,11 @@ public final class ModItems {
             com.lacuna.mod.gear.EmberTriangleItem::new,
             new Item.Properties().durability(Balance.EMBER_TRIANGLE_DURABILITY).rarity(Rarity.EPIC).fireResistant());
 
+    // ------------------------------------------------------------------ Wand of Quickening
+    public static final DeferredItem<com.lacuna.mod.gear.QuickeningWandItem> QUICKENING_WAND = item("quickening_wand",
+            com.lacuna.mod.gear.QuickeningWandItem::new,
+            new Item.Properties().durability(Balance.QUICKENING_DURABILITY).rarity(Rarity.RARE));
+
     private ModItems() {}
 
     /**
