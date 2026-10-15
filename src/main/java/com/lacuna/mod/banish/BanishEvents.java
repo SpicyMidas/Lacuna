@@ -20,5 +20,7 @@ public final class BanishEvents {
         gameBus.addListener(ForgottenLandRules::onAnvil);
         gameBus.addListener(RelicHandler::onDrops);
         gameBus.addListener(RelicHandler::onPickup);
+        gameBus.addListener(ForgottenPortals::onServerTick);
+        gameBus.addListener(ForgottenPortals::onServerStopped);
     }
 }

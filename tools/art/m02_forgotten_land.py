@@ -1,10 +1,11 @@
-"""M2 textures: ruin stone family, memory murals (paintings + mural blocks), Totem of Banishing."""
+"""M2 textures: ruin stone family, memory murals (paintings + mural blocks), Totem of Banishing, Forgotten Portal."""
 import math
 
 from PIL import Image
 
 from texlib import c, from_ascii, lerp, new, noise_fill, ramp, rng, save, value_noise
 from art.common import shift
+from art import forgotten_portal
 
 RUIN = ramp("#5E6670", "#6E7782", "#7D8691", "#8F98A3", "#A3ADB8")
 GROOVE = c("#454C55")
@@ -375,3 +376,4 @@ def paint():
         save(pic, f"painting/{name}")
         save(mural_block(pic), f"block/mural_block_{i}")
     save(totem(), "item/totem_of_banishing")
+    forgotten_portal.paint()

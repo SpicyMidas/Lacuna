@@ -28,6 +28,7 @@ def build(g):
     dimension(g)
     structures(g)
     messages(g)
+    portal(g)
 
 
 def ruins(g):
@@ -80,6 +81,8 @@ def totem(g):
            "Una mano di pietra che ricorda una terra che nessun altro ricorda.")
     g.name("item.lacuna.totem_of_banishing.use", "Use: enter or leave the Forgotten Land. Strike: banish the target.",
            "Usa: entra o esci dalla Terra Dimenticata. Colpisci: esilia il bersaglio.")
+    g.name("item.lacuna.totem_of_banishing.portal", "Use on a ring of Forgotten Portal Frames: light the portal.",
+           "Usa su un anello di cornici del portale dimenticato: accende il portale.")
     g.name("item.lacuna.totem_of_banishing.wear", "Wears out after 6 uses; it cannot be repaired.",
            "Si consuma dopo 6 usi; non può essere riparato.")
     g.shaped("totem_of_banishing", ["RGR", "GTG", " R "],
@@ -182,3 +185,71 @@ def messages(g):
     g.name("lacuna.relic.name", "Unreadable Relic", "Reliquia illeggibile")
     g.name("lacuna.relic.scattered", "Your belongings were scattered across the overworld near %s %s",
            "I tuoi averi sono stati dispersi nel mondo vicino a %s %s")
+
+
+# ------------------------------------------------------------------------------------------- forgotten portal
+# 8 frames, 2 per side with the corners empty, around a 2x2 opening; the Totem of Banishing lights it (see
+# banish/ForgottenPortals). The frame is shaped like the End portal frame: 13/16 tall, sides show rows 3..15.
+
+FRAME_TEX = {
+    "particle": "lacuna:block/forgotten_portal_frame_side",
+    "bottom": "lacuna:block/forgotten_portal_frame_bottom",
+    "top": "lacuna:block/forgotten_portal_frame_top",
+    "side": "lacuna:block/forgotten_portal_frame_side",
+}
+FRAME_FACING_Y = {"east": 270, "north": 180, "south": 0, "west": 90}
+
+
+def frame_element(top, side, bottom=None):
+    faces = {"up": {"uv": [0, 0, 16, 16], "texture": top}}
+    if bottom:
+        faces["down"] = {"uv": [0, 0, 16, 16], "texture": bottom, "cullface": "down"}
+    for d in ("north", "south", "west", "east"):
+        faces[d] = {"uv": [0, 3, 16, 16], "texture": side, "cullface": d}
+    return {"from": [0, 0, 0], "to": [16, 13, 16], "faces": faces}
+
+
+def portal(g):
+    stone = frame_element("#top", "#side", "#bottom")
+    variants = {}
+    for active in ("false", "true"):
+        model = "lacuna:block/forgotten_portal_frame" + ("_active" if active == "true" else "")
+        for facing, y in FRAME_FACING_Y.items():
+            variants[f"active={active},facing={facing}"] = {"model": model, "y": y} if y else {"model": model}
+    g.single("forgotten_portal_frame", "Forgotten Portal Frame", "Cornice del portale dimenticato",
+             {"parent": "minecraft:block/block", "textures": FRAME_TEX, "elements": [stone]},
+             blockstate={"variants": variants})
+    # active: the same stone with the runes and the hand sigil drawn again on top, full bright (lit runes)
+    glow = frame_element("#top_glow", "#side_glow")
+    glow["shade"] = False
+    glow["neoforge_data"] = {"block_light": 15, "sky_light": 15, "ambient_occlusion": False}
+    g.asset("models/block/forgotten_portal_frame_active", {
+        "parent": "minecraft:block/block", "render_type": "minecraft:cutout",
+        "textures": dict(FRAME_TEX, top_glow="lacuna:block/forgotten_portal_frame_top_glow",
+                         side_glow="lacuna:block/forgotten_portal_frame_side_glow"),
+        "elements": [stone, glow]})
+    g.props("forgotten_portal_frame", active=["true", "false"], facing=["north", "south", "west", "east"])
+    g.tag("block", "minecraft:mineable/pickaxe", mod("forgotten_portal_frame"))
+    g.shaped("forgotten_portal_frame", [" R ", "ROR", " R "], {"R": "lacuna:ruby", "O": "minecraft:crying_obsidian"},
+             "lacuna:forgotten_portal_frame", category="building", unlock="lacuna:totem_of_banishing")
+
+    # the portal: a flat, see-through, full-bright plate at 12/16 like the End portal surface (no item, no drops)
+    g.single("forgotten_portal", "Forgotten Portal", "Portale dimenticato", {
+        "parent": "minecraft:block/block", "ambientocclusion": False, "render_type": "minecraft:translucent",
+        "textures": {"particle": "lacuna:block/forgotten_portal", "portal": "lacuna:block/forgotten_portal"},
+        "elements": [{"from": [0, 12, 0], "to": [16, 12, 16], "shade": False,
+                      "neoforge_data": {"block_light": 15, "sky_light": 15},
+                      "faces": {"up": {"uv": [0, 0, 16, 16], "texture": "#portal"},
+                                "down": {"uv": [0, 0, 16, 16], "texture": "#portal"}}}]},
+             item=False, loot=None)
+    for t in ("minecraft:dragon_immune", "minecraft:wither_immune"):
+        g.tag("block", t, mod("forgotten_portal"))
+
+    g.name("item.lacuna.forgotten_portal_frame.tip",
+           "Eight frames, two per side with the corners empty, around a 2×2 opening: touch one with the Totem of Banishing.",
+           "Otto cornici, due per lato con gli angoli vuoti, attorno a un'apertura 2×2: toccane una con il Totem dell'esilio.")
+    g.name("lacuna.portal.incomplete", "The ring is incomplete: 8 frames, 2 per side (corners empty), around a 2×2 opening.",
+           "L'anello è incompleto: 8 cornici, 2 per lato (angoli vuoti), attorno a un'apertura 2×2.")
+    g.name("lacuna.portal.blocked", "The opening inside the frames must be clear.",
+           "L'apertura dentro le cornici deve essere libera.")
+    g.name("lacuna.portal.already_open", "This portal is already open.", "Questo portale è già aperto.")
