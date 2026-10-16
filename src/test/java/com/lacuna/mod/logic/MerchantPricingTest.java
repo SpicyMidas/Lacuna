@@ -23,17 +23,19 @@ class MerchantPricingTest {
 
     @Test
     void topMinedFamilyGetsBulkOffer() {
-        var offers = MerchantPricing.build(Map.of("copper", 300, "iron", 20), "minecraft:emerald", 1.0, new Random(1), false);
+        var offers = MerchantPricing.build(Map.of("copper", 300, "iron", 20), "lacuna:ruby", 1.0, new Random(1), false);
         assertEquals("minecraft:raw_copper", offers.get(0).costItem());
-        assertTrue(offers.stream().anyMatch(o -> o.costItem().equals("minecraft:raw_copper") && o.costCount() == 48 && o.resultCount() == 5));
+        assertTrue(offers.stream().anyMatch(o -> o.costItem().equals("minecraft:raw_copper") && o.costCount() == 64 && o.resultCount() == 5));
         assertTrue(offers.stream().anyMatch(o -> o.costItem().equals("minecraft:raw_iron")));
         assertFalse(offers.stream().anyMatch(o -> o.resultItem().equals("lacuna:solar_flare_fragment")));
     }
 
     @Test
-    void sellsTheFourGoodsAndOptionallyAFragment() {
-        var offers = MerchantPricing.build(Map.of(), "minecraft:emerald", 1.0, new Random(7), true);
-        for (String good : List.of("lacuna:divine_glass_shard", "lacuna:ruby", "lacuna:chronal_shard", "minecraft:echo_shard")) {
+    void sellsItsCatalogForRubiesAndOptionallyAFragment() {
+        var offers = MerchantPricing.build(Map.of(), "lacuna:ruby", 1.0, new Random(7), true);
+        assertFalse(offers.stream().anyMatch(o -> o.costItem().equals("lacuna:ruby") && o.resultItem().equals("lacuna:ruby")));
+        assertTrue(offers.stream().allMatch(o -> o.costItem().equals("lacuna:ruby") || o.resultItem().equals("lacuna:ruby")));
+        for (String good : List.of("lacuna:divine_glass_shard", "lacuna:chronal_shard", "minecraft:echo_shard")) {
             assertTrue(offers.stream().anyMatch(o -> o.resultItem().equals(good)), good);
         }
         var fragment = offers.stream().filter(o -> o.resultItem().equals("lacuna:solar_flare_fragment")).findFirst().orElseThrow();

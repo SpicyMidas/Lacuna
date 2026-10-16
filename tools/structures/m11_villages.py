@@ -117,6 +117,14 @@ class Civic:
             nbt["LootTable"] = loot
         self.set(x, y, z, "chest", {"facing": facing, "type": "single", "waterlogged": "false"}, nbt)
 
+    def bed(self, x, z, facing):
+        """A bed on the floor: foot at (x, z), head one block towards `facing`. Beds are what villagers count as homes:
+        they claim them, sleep in them and run to them when the bell rings."""
+        dx, dz = {"east": (1, 0), "west": (-1, 0), "south": (0, 1), "north": (0, -1)}[facing]
+        name = f"{self.p['banner']}_bed"
+        self.set(x, 1, z, name, {"facing": facing, "occupied": "false", "part": "foot"})
+        self.set(x + dx, 1, z + dz, name, {"facing": facing, "occupied": "false", "part": "head"})
+
     def villager_spot(self, x, z):
         """minecraft:bottom jigsaw in the floor: an (usually unemployed) villager of this style spawns above it."""
         self.t.jigsaw(x, 0, z, "up_north", "minecraft:bottom", "minecraft:bottom", f"minecraft:village/{self.v}/villagers",
@@ -250,6 +258,8 @@ def village_hall(Template, v):
         b.wall_banner(0, 3, z, "west", p["banner"], "minecraft:stripe_center", "white")
     for x in (4, 8):
         b.lantern_on_chain(x, zc)
+    b.bed(3, 8, "west")
+    b.bed(3, 2, "west")
     b.villager_spot(3, 7)
     b.save()
 
@@ -282,6 +292,8 @@ def mint(Template, v):
     b.set(9, top + 1, 2, "campfire", {"facing": "north", "lit": "true", "signal_fire": "false", "waterlogged": "false"})
     b.lantern_on_chain(3, zc)
     b.lantern_on_chain(7, zc)
+    b.bed(6, 6, "east")
+    b.bed(3, 6, "west")
     b.villager_spot(3, 5)
     b.save()
 
@@ -308,6 +320,8 @@ def guild_hall(Template, v):
         b.wall_banner(0, 3, z, "west", "gray" if z < zc else "purple", "minecraft:border", "yellow")
     for x in (4, 8):
         b.lantern_on_chain(x, zc)
+    b.bed(8, 8, "east")
+    b.bed(8, 2, "east")
     b.villager_spot(3, 3)
     b.villager_spot(3, 7)
     b.save()
@@ -333,6 +347,8 @@ def schoolhouse(Template, v):
             b.set(x, 2, z, "bookshelf")
     for x in (3, 7):
         b.lantern_on_chain(x, zc)
+    b.bed(3, 8, "west")
+    b.bed(5, 2, "east")
     b.villager_spot(2, 2)
     b.save()
 

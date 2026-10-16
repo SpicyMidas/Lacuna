@@ -54,7 +54,8 @@ public class LastMerchant extends WanderingTrader {
             mined = recentlyMined(sp);
         }
         boolean fragment = random.nextFloat() < Balance.MERCHANT_FRAGMENT_CHANCE;
-        String currency = BuiltInRegistries.ITEM.getKey(CurrencyService.currency()).toString();
+        // the Last Merchant deals only in rubies
+        String currency = "lacuna:ruby";
         List<MerchantPricing.Offer> plan = MerchantPricing.build(mined, currency, priceIndex, new Random(random.nextLong()), fragment);
         for (MerchantPricing.Offer o : plan) {
             Item cost = item(o.costItem());

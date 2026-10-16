@@ -64,40 +64,68 @@ public final class MerchantPricing {
         return Math.max(1, Math.min(64, (int) Math.ceil(price * Math.max(0.5, priceIndex))));
     }
 
+    /** What the Last Merchant sells for rubies: item, count, price in rubies, max uses. */
+    public static final Object[][] CATALOG = {
+            {"lacuna:divine_glass_shard", 1, 2, 12},
+            {"lacuna:chronal_shard", 1, 6, 3},
+            {"minecraft:echo_shard", 1, 8, 3},
+            {"lacuna:umbral_steel_ingot", 1, 4, 8},
+            {"lacuna:zenithite_shard", 2, 3, 8},
+            {"lacuna:ember", 4, 1, 12},
+            {"minecraft:experience_bottle", 3, 2, 12},
+            {"lacuna:fractured_pearl", 1, 10, 2},
+    };
+
+    /**
+     * The Last Merchant's offers: he only deals in {@code currency} (rubies). He buys the families the player mined most
+     * (and a bulk lot of the top one) plus two ingots, paying in rubies, and sells his catalog for rubies. The currency
+     * itself is never bought or sold.
+     */
     public static List<Offer> build(Map<String, Integer> minedByFamily, String currency, double priceIndex, Random random,
                                     boolean solarFragment) {
         List<Offer> offers = new ArrayList<>();
-        List<String> ranked = new ArrayList<>(FAMILIES.keySet());
+        List<String> ranked = new ArrayList<>();
+        for (Map.Entry<String, Object[]> e : FAMILIES.entrySet()) {
+            if (!currency.equals(e.getValue()[0])) {
+                ranked.add(e.getKey());
+            }
+        }
         ranked.sort(Comparator.comparingInt((String f) -> -minedByFamily.getOrDefault(f, 0)).thenComparing(f -> f));
         boolean minedAny = minedByFamily.values().stream().anyMatch(v -> v > 0);
         if (!minedAny) {
             java.util.Collections.shuffle(ranked, random);
         }
-        // buys: the three most-mined families, the top one also in bulk at a better rate
+        // buys: the three most-mined families, the top one also in bulk at a better rate (rubies are dear: twice the goods)
         for (int i = 0; i < 3; i++) {
             String f = ranked.get(i);
             Object[] raw = FAMILIES.get(f);
-            offers.add(new Offer((String) raw[0], (Integer) raw[1], null, 0, currency, f.equals("diamond") ? 4 : 1, 16));
+            int count = Math.min(64, (Integer) raw[1] * 2);
+            offers.add(new Offer((String) raw[0], count, null, 0, currency, f.equals("diamond") ? 2 : 1, 16));
         }
         if (minedAny) {
             Object[] top = FAMILIES.get(ranked.get(0));
-            int count = (Integer) top[1];
-            int bulk = Math.min(64, count * 4);
-            offers.add(new Offer((String) top[0], bulk, null, 0, currency, ranked.get(0).equals("diamond") ? 20 : 5, 8));
+            int bulk = Math.min(64, (Integer) top[1] * 8);
+            offers.add(new Offer((String) top[0], bulk, null, 0, currency, ranked.get(0).equals("diamond") ? 10 : 5, 8));
         }
-        // two ingot/gem buys
-        List<String> ingots = new ArrayList<>(INGOTS.keySet());
+        // two ingot buys
+        List<String> ingots = new ArrayList<>();
+        for (String id : INGOTS.keySet()) {
+            if (!currency.equals(id)) {
+                ingots.add(id);
+            }
+        }
         java.util.Collections.shuffle(ingots, random);
-        for (int i = 0; i < 2; i++) {
-            offers.add(new Offer(ingots.get(i), INGOTS.get(ingots.get(i)), null, 0, currency, 1, 12));
+        for (int i = 0; i < Math.min(2, ingots.size()); i++) {
+            offers.add(new Offer(ingots.get(i), Math.min(64, INGOTS.get(ingots.get(i)) * 2), null, 0, currency, 1, 12));
         }
-        // sells
-        offers.add(new Offer(currency, scaled(2, priceIndex), null, 0, "lacuna:divine_glass_shard", 1, 12));
-        offers.add(new Offer(currency, scaled(3, priceIndex), null, 0, "lacuna:ruby", 1, 12));
-        offers.add(new Offer(currency, scaled(8, priceIndex), null, 0, "lacuna:chronal_shard", 1, 3));
-        offers.add(new Offer(currency, scaled(10, priceIndex), null, 0, "minecraft:echo_shard", 1, 3));
+        // sells, priced in rubies
+        for (Object[] c : CATALOG) {
+            if (!currency.equals(c[0])) {
+                offers.add(new Offer(currency, scaled((Integer) c[2], priceIndex), null, 0, (String) c[0], (Integer) c[1], (Integer) c[3]));
+            }
+        }
         if (solarFragment) {
-            offers.add(new Offer("lacuna:ruby", 16, "lacuna:divine_glass_shard", 24, "lacuna:solar_flare_fragment", 1, 1));
+            offers.add(new Offer(currency, 16, "lacuna:divine_glass_shard", 24, "lacuna:solar_flare_fragment", 1, 1));
         }
         return offers;
     }
