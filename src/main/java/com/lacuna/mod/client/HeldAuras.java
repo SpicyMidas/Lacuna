@@ -17,7 +17,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -135,14 +134,7 @@ public final class HeldAuras {
 
     /** Starlace shimmers with tiny stars, more pieces and more at night. */
     private static void starlace(ClientLevel level, Player player, float budget, RandomSource rnd) {
-        int pieces = 0;
-        for (EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
-            Item item = player.getItemBySlot(slot).getItem();
-            if (item == ModItems.STARLACE_HELMET.get() || item == ModItems.STARLACE_CHESTPLATE.get()
-                    || item == ModItems.STARLACE_LEGGINGS.get() || item == ModItems.STARLACE_BOOTS.get()) {
-                pieces++;
-            }
-        }
+        int pieces = com.lacuna.mod.gear.StarlaceSet.pieces(player);
         if (pieces == 0) {
             return;
         }

@@ -14,7 +14,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-/** Gear listeners: Umbral darkness bonus, Starlace Boots glide, special weapon hooks. */
+/** Gear listeners: Umbral darkness bonus, Starlace Boots glide (set abilities: {@link StarlaceSet}), special weapon hooks. */
 public final class GearEvents {
     private GearEvents() {}
 
@@ -34,6 +34,7 @@ public final class GearEvents {
         bus.addListener(EmberWave::onServerStopped);
         bus.addListener(AnimatedItemEntity::onIncomingDamage);
         bus.addListener(AnimatedItemEntity::onMobGriefing);
+        StarlaceSet.register(bus);
     }
 
     /** +25 % damage dealt with Umbral gear when the wielder stands where max local raw brightness <= 4. */

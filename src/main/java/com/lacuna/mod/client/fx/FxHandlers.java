@@ -35,5 +35,6 @@ public final class FxHandlers {
         com.lacuna.mod.client.solar.SolarFx.register();
         com.lacuna.mod.client.eclipse.EclipseFx.register();
         com.lacuna.mod.client.gear.EmberTriangleFx.register();
+        com.lacuna.mod.client.gear.StarlaceClient.registerFx();
     }
 }

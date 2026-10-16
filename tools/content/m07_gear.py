@@ -47,6 +47,18 @@ def starlace(g):
         g.tag("item", tag, mod(iid))
         g.tag("item", "minecraft:trimmable_armor", mod(iid))
     g.name("item.lacuna.starlace_boots.glide", "Sneak while falling: glide on starlight", "Accovacciati in caduta: plana sulla luce delle stelle")
+    # set abilities (gear/StarlaceSet): lore and set-bonus lines shown on every piece
+    g.name("item.lacuna.starlace.lore", "Zenithite thread that still remembers the night sky.",
+           "Filo di zenithite che ricorda ancora il cielo notturno.")
+    g.name("item.lacuna.starlace.set", "Set bonus (%s/%s):", "Bonus del set (%s/%s):")
+    g.name("item.lacuna.starlace.starlit", "Starlit (each piece): +%s%% speed at night under the open sky, or in the End",
+           "Luce stellare (ogni pezzo): +%s%% di velocità di notte a cielo aperto, o nell'End")
+    g.name("item.lacuna.starlace.cushion", "Starfall (%s+): fall damage reduced by %s%%",
+           "Caduta stellare (%s+): danni da caduta ridotti del %s%%")
+    g.name("item.lacuna.starlace.starfall", "Starfall (%s): land from over %s blocks unharmed, in a shockwave of starlight that strikes nearby foes",
+           "Caduta stellare (%s): atterri illeso da oltre %s blocchi, in un'onda di luce stellare che colpisce i nemici vicini")
+    g.name("item.lacuna.starlace.step", "Constellation Step (%s): press jump in mid-air to leap again",
+           "Passo della costellazione (%s): premi salto a mezz'aria per balzare di nuovo")
 
 
 def umbral_tools(g):

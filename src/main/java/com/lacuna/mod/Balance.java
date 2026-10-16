@@ -214,6 +214,26 @@ public final class Balance {
     public static final float STARLACE_GLIDE_FALL = 4.0F;
     public static final int STARLACE_GLIDE_TICKS = 80;
     public static final int STARLACE_GLIDE_COOLDOWN = 200;
+    /** Constellation Step (full set): a second jump in mid-air, once per airtime, at this fraction of the jump strength. */
+    public static final float STARLACE_STEP_JUMP_FACTOR = 1.1F;
+    /** Horizontal push added along the movement direction by Constellation Step (blocks/tick). */
+    public static final double STARLACE_STEP_FORWARD = 0.22;
+    /** Horizontal speed carried into the step from the current movement, and the cap after the push (blocks/tick). */
+    public static final double STARLACE_STEP_MAX_CARRY = 0.5;
+    public static final double STARLACE_STEP_MAX_HORIZONTAL = 0.62;
+    /** Minimum ticks between two Constellation Steps (a guard against packet spam; the airtime rule does the rest). */
+    public static final int STARLACE_STEP_COOLDOWN = 8;
+    public static final float STARLACE_STEP_EXHAUSTION = 0.1F;
+    /** Starfall: fall damage multiplier with 2+ pieces; with the full set a fall over the threshold becomes a shockwave. */
+    public static final int STARLACE_HALF_FALL_PIECES = 2;
+    public static final float STARLACE_FALL_DAMAGE_FACTOR = 0.5F;
+    public static final float STARLACE_STARFALL_FALL = 5.0F;
+    public static final double STARLACE_STARFALL_RADIUS = 3.5;
+    public static final float STARLACE_STARFALL_DAMAGE = 4.0F;
+    public static final double STARLACE_STARFALL_KNOCKBACK = 0.9;
+    /** Starlit: movement speed per worn piece at night under the open sky (or anywhere in the End), re-checked every second. */
+    public static final double STARLACE_STARLIT_SPEED = 0.05;
+    public static final int STARLACE_STARLIT_INTERVAL = 20;
 
     public static final int GRAVEMAW_DURABILITY = 700;
     public static final int GRAVEMAW_DAMAGE = 11;

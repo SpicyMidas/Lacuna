@@ -25,6 +25,7 @@ load after registration; they live in `Balance`.
 | items | fracturedPearl, pocketWatch, mirrorOfRecursion, nullLantern, whisperboneFlute, orrery | true | Utility items |
 | items | nullLanternRadius / orreryRadiusChunks | 16 / 48 | |
 | gear | specialWeapons / starlaceGlide | true / true | |
+| gear | starlaceAbilities | true | Starlace set: Constellation Step (mid-air jump, full set), Starfall (fall damage halved at 2+ pieces; full set: falls over 5 blocks land as a starlight shockwave), Starlit (+5 % speed per piece at night under open sky / in the End) |
 | gear | umbralDarkBonus | 0.25 | Extra damage fraction for Umbral gear in darkness |
 | wood | extras | false | Reserved for signs/boats (not implemented) |
 | wood | tidebloomFish | true | Tidebloom roots spawn fish |

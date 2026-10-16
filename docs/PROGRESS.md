@@ -251,6 +251,12 @@ Built:
 - Starlace (registered `ArmorMaterial`: 2/6/5/2, toughness 0.5, enchantability 18, factor 24, repair cloth):
   `starlace_cloth` (shard + 2 string → 2), four armor pieces, 64x32 armor layers. Starlace Boots: sneaking while
   falling > 4 blocks gives slow falling 80 ticks once (item cooldown 200 ticks, 1 durability), server-side only.
+  Set abilities (`gear/StarlaceSet`, toggle `gear.starlaceAbilities`): Constellation Step (full set; jump again in
+  mid-air once per airtime: the client sends `StarStepPayload` on the jump key's rising edge, the server re-checks set,
+  airtime, liquids/flight/elytra/riding and an 8-tick cooldown, then sets the motion), Starfall (2+ pieces halve fall
+  damage; full set: a landing from > 5 blocks is harmless and hits hostile mobs within 3.5 blocks for 4 magic damage
+  and knockback, ring FX `starlace_starfall`), Starlit (+5 % speed per piece at night under open sky or in the End,
+  one transient modifier `lacuna:starlit` refreshed every second). Tooltips list the set bonus with the worn count.
 - Umbral Iron tool set (tier from M4). `lacuna:umbral_gear` (tools + Eclipser + Gravemaw) deals +25 %
   (`gear.umbralDarkBonus`) direct melee damage while the wielder's max local raw brightness ≤ 4.
 - Special weapons (own tiers for exact durability/repair; only Unbreaking via `supportsEnchantment` /
