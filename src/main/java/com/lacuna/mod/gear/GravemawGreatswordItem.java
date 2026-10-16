@@ -92,13 +92,12 @@ public class GravemawGreatswordItem extends SwordItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (attacker.level() instanceof ServerLevel server) {
-            // heavy blade: a dark slash and a low thud on every melee hit
-            server.sendParticles(ModParticles.UMBRAL_SLASH.get(), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(),
-                    1, 0.0, 0.0, 0.0, 0.0);
+            // heavy blade: umbral shards and a low thud on every melee hit (its sweep is the vanilla one, see TexturedSweep)
             server.sendParticles(ModParticles.UMBRAL_SHARD.get(), target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(),
                     6, 0.25, 0.3, 0.25, 0.12);
             server.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 1.0F, 0.55F);
         }
+        TexturedSweep.afterHit(attacker, target, stack);
         return super.hurtEnemy(stack, target, attacker);
     }
 

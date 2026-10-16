@@ -52,58 +52,9 @@ public class EclipserItem extends SwordItem {
                 setState(stack, next);
                 showCharge(attacker, next.charge());
             }
-            slash(target, attacker);
         }
+        com.lacuna.mod.gear.TexturedSweep.afterHit(attacker, target, stack);
         return super.hurtEnemy(stack, target, attacker);
-    }
-
-    /** Strength of the swing that is landing, captured before vanilla resets the attack timer (AttackEntityEvent). */
-    private static final java.util.Map<java.util.UUID, Float> SWING = new java.util.HashMap<>();
-    private static int swings;
-
-    public static void onAttack(net.neoforged.neoforge.event.entity.player.AttackEntityEvent event) {
-        Player player = event.getEntity();
-        if (!player.level().isClientSide() && player.getMainHandItem().getItem() instanceof EclipserItem) {
-            SWING.put(player.getUUID(), player.getAttackStrengthScale(0.5F));
-        }
-    }
-
-    /**
-     * The Eclipser's own cut replaces the vanilla white sweep: a black and crimson crescent through the target, and on
-     * a full, grounded swing the crescent sweeps the creatures right around the target too.
-     */
-    private static void slash(LivingEntity target, LivingEntity attacker) {
-        if (!(attacker.level() instanceof net.minecraft.server.level.ServerLevel level)) {
-            return;
-        }
-        float strength = attacker instanceof Player p ? SWING.getOrDefault(p.getUUID(), 1.0F) : 1.0F;
-        net.minecraft.world.phys.Vec3 from = attacker.position().add(0, attacker.getBbHeight() * 0.62, 0);
-        net.minecraft.world.phys.Vec3 at = target.position().add(0, target.getBbHeight() * 0.55, 0);
-        com.lacuna.mod.fx.LacunaFx.send(level, at, com.lacuna.mod.network.FxPayload.line("eclipser_slash", from, at)
-                .withEntity(attacker.getId()).withParams(swings++, strength, 0.0F));
-        com.lacuna.mod.util.Sfx.varied(target, net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_SWEEP, 0.8F, 0.62F, 0.06F);
-        com.lacuna.mod.util.Sfx.varied(target, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_BREAK, 0.45F, 0.55F, 0.05F);
-        if (strength >= 0.9F) {
-            com.lacuna.mod.util.Sfx.at(target, net.minecraft.sounds.SoundEvents.TRIDENT_HIT, 0.5F, 0.7F);
-        }
-        if (strength < 0.9F || !(attacker instanceof Player player) || !player.onGround() || player.isSprinting()) {
-            return;
-        }
-        float damage = 1.0F + 0.5F * (float) player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
-        for (LivingEntity other : level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0, 0.25, 1.0),
-                e -> e != player && e != target && e.isAlive() && !player.isAlliedTo(e)
-                        && !(e instanceof net.minecraft.world.entity.decoration.ArmorStand stand && stand.isMarker())
-                        && !(e instanceof net.minecraft.world.entity.OwnableEntity own && player.getUUID().equals(own.getOwnerUUID()))
-                        && player.distanceToSqr(e) < 9.0)) {
-            other.knockback(0.4F, Math.sin(player.getYRot() * Math.PI / 180.0), -Math.cos(player.getYRot() * Math.PI / 180.0));
-            other.hurt(level.damageSources().playerAttack(player), damage);
-        }
-    }
-
-    /** No vanilla sweep (its white crescent): the Eclipser sweeps with its own black and crimson cut above. */
-    @Override
-    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility ability) {
-        return ability != net.neoforged.neoforge.common.ItemAbilities.SWORD_SWEEP && super.canPerformAction(stack, ability);
     }
 
     @Override

@@ -96,29 +96,47 @@ def _crescent(img, cx, cy, r_out, r_in, offset, start, end, body, rim, rim_w):
             px[x, y] = (col[0], col[1], col[2], a)
 
 
-SLASH_FRAMES = ((60, 200, 1.0), (30, 250, 1.0), (40, 240, 0.55))
+# The melee slashes copy the vanilla sweep (8 opaque frames, 32x32): a wide flat arc above the centre that is drawn
+# in from its right tip, sweeps across and is drawn out towards its left tip. Only the colours are ours.
+SWEEP_WINDOWS = ((0.0, 0.12), (0.0, 0.45), (0.0, 0.75), (0.0, 1.0), (0.15, 1.0), (0.4, 1.0), (0.65, 1.0), (0.88, 1.0))
 
 
-def _slash_set(name, body, rim, glint=None):
-    """Three crescent frames (drawn, full, fading); an optional bright inner glint along the cutting edge."""
-    for frame, (start, end, alpha) in enumerate(SLASH_FRAMES):
+def _sweep_set(name, body, rim, under):
+    cx, cy, rx, ry = 16.0, 18.5, 12.5, 8.5
+    a0, a1 = 12.0, 168.0
+    for frame, (t0, t1) in enumerate(SWEEP_WINDOWS):
         img = new(32, 32)
-        _crescent(img, 16, 16, 15, 12.5, 4.0, start, end, (body[0], body[1], body[2], int(body[3] * alpha)),
-                  (rim[0], rim[1], rim[2], int(rim[3] * alpha)), 1.1)
-        if glint:
-            _crescent(img, 16, 16, 15, 14.2, 4.0, start + 25, end - 25, (glint[0], glint[1], glint[2], int(glint[3] * alpha)),
-                      (glint[0], glint[1], glint[2], int(glint[3] * alpha)), 0.5)
+        px = img.load()
+        thin = 1.0 if frame < 5 else (0.8 if frame == 5 else 0.6)
+        for y in range(32):
+            for x in range(32):
+                fx, fy = (x + 0.5 - cx) / rx, (cy - (y + 0.5)) / ry
+                if fy <= 0:
+                    continue
+                r = math.hypot(fx, fy)
+                ang = math.degrees(math.atan2(fy, fx))
+                if not (a0 <= ang <= a1):
+                    continue
+                t = (ang - a0) / (a1 - a0)          # 0 at the right tip, 1 at the left tip
+                if not t0 <= t <= t1:
+                    continue
+                w = 0.52 * thin * max(0.18, math.sin(math.pi * t)) ** 0.7
+                if r > 1.0 or r < 1.0 - w:
+                    continue
+                d = (1.0 - r) / w                   # 0 at the outer edge, 1 at the inner edge
+                col = rim if d < 0.34 else (under if d > 0.8 else body)
+                px[x, y] = (col[0], col[1], col[2], 255)
         save(img, f"particle/{name}_{frame}")
 
 
 def umbral_slash():
     # Umbral Steel: the steel's own palette, a slate-blue blade with a lavender-violet edge
-    _slash_set("umbral_slash", (68, 75, 115, 238), (169, 166, 220, 255))
+    _sweep_set("umbral_slash", (68, 75, 115), (169, 166, 220), (46, 51, 80))
 
 
 def eclipse_slash():
     # the Eclipser keeps its black blade with a crimson edge
-    _slash_set("eclipse_slash", (8, 6, 12, 245), (226, 32, 48, 255))
+    _sweep_set("eclipse_slash", (10, 7, 14), (226, 32, 48), (120, 14, 28))
 
 
 def umbral_shard():

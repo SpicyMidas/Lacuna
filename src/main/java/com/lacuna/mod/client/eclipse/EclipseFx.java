@@ -52,7 +52,6 @@ public final class EclipseFx {
     public static void register() {
         FxHandlers.register("eclipse_dash", EclipseFx::dash);
         FxHandlers.register("eclipse_hit", EclipseFx::hit);
-        FxHandlers.register("eclipser_slash", p -> FxManager.add(new MeleeFx(p.a(), p.b(), (int) p.p0(), p.p1(), p.entityId())));
         FxHandlers.register("eclipse_end", p -> end(p, false));
         FxHandlers.register("shadow_walk_end", p -> end(p, true));
     }
@@ -483,84 +482,6 @@ public final class EclipseFx {
                             band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, 0.55F, 1.12F, 16, FxDraw.argb(alpha, CRIMSON_HOT));
                             band(pose, vc, arcC, nrm, tan, r, -half, drawn, w, 0.86F, 1.0F, 16, FxDraw.argb(0.85F * alpha, HOT_CORE));
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    // ------------------------------------------------------------------------------------------ melee
-
-    /**
-     * The Eclipser's ordinary swing: one wide crescent cut through the target, black blade, crimson glow and edge,
-     * alternating forehand / backhand diagonals. Drawn in about two ticks, then it fades with sparks and shadow motes.
-     */
-    static final class MeleeFx implements ClientFx {
-        private static final int LIFE = 11;
-        private final Vec3 center;
-        private final Vec3 forward;
-        private final Vec3 side;
-        private final Vec3 up;
-        private final float sign;
-        private final float tilt;
-        private final float strength;
-        private final int attacker;
-        private int age;
-
-        MeleeFx(Vec3 from, Vec3 target, int swing, float strength, int attacker) {
-            Vec3 d = target.subtract(from);
-            Vec3 flat = new Vec3(d.x, 0, d.z);
-            this.forward = flat.lengthSqr() < 1.0E-4 ? new Vec3(0, 0, 1) : flat.normalize();
-            this.side = perp(forward);
-            this.up = side.cross(forward).normalize();
-            this.sign = (swing & 1) == 0 ? 1.0F : -1.0F;
-            this.tilt = sign * (0.35F + 0.12F * ((swing >> 1) % 3));
-            this.strength = Mth.clamp(strength, 0.3F, 1.0F);
-            this.attacker = attacker;
-            // the cut passes through the target, centred a little in front of it
-            this.center = target.subtract(forward.scale(0.35));
-            ClientLevel level = Minecraft.getInstance().level;
-            if (level != null) {
-                RandomSource rnd = level.random;
-                particles(level, ModParticles.CRIMSON_SPARK.get(), target, 10, 0.3, side.scale(0.25 * sign), 0.4, rnd);
-                particles(level, ModParticles.SHADOW_MOTE.get(), target, 4, 0.35, forward.scale(0.05), 0.08, rnd);
-                level.addParticle(ModParticles.ECLIPSE_SLASH.get(), target.x, target.y, target.z, 0, 0, 0);
-            }
-        }
-
-        @Override
-        public boolean tick() {
-            return ++age < LIFE;
-        }
-
-        @Override
-        public void render(FxRenderContext ctx) {
-            float t = ctx.time(age);
-            float alpha = (1.0F - smooth(0.3F, 1.0F, t / LIFE)) * (0.65F + 0.35F * strength);
-            Minecraft mc = Minecraft.getInstance();
-            boolean own = mc.player != null && mc.player.getId() == attacker && mc.options.getCameraType().isFirstPerson();
-            alpha *= own ? 0.8F : nearFade(ctx, center, 0.6, 1.2);
-            if (alpha <= 0.004F) {
-                return;
-            }
-            PoseStack.Pose pose = ctx.pose().last();
-            // the swing plane: across the attacker's body, tipped into a diagonal
-            Vec3 e1 = forward;
-            Vec3 e2 = side.scale(Mth.cos(tilt)).add(up.scale(Mth.sin(tilt))).scale(sign);
-            float r = 1.35F + 0.35F * strength;
-            float w = 0.55F + 0.35F * strength;
-            Vec3 c = ctx.rel(center.subtract(forward.scale(r * 0.85)));
-            float a0 = -1.25F;
-            float a1 = 1.25F;
-            float drawn = Mth.lerp(Mth.clamp(t / 2.0F, 0.0F, 1.0F), a0, a1);
-            for (int pass = 0; pass < 3; pass++) {
-                VertexConsumer vc = ctx.buffers().getBuffer(pass == 1 ? FxRenderTypes.shade(SLASH_MASK) : FxRenderTypes.additive(FxRenderTypes.BEAM));
-                switch (pass) {
-                    case 0 -> band(pose, vc, c, e1, e2, r, a0, drawn, w, 0.3F, 2.1F, 22, FxDraw.argb(0.5F * alpha, CRIMSON));
-                    case 1 -> band(pose, vc, c, e1, e2, r, a0, drawn, w, -1.0F, 1.0F, 24, FxDraw.argb(alpha, BLACK));
-                    default -> {
-                        band(pose, vc, c, e1, e2, r, a0, drawn, w, 0.55F, 1.1F, 24, FxDraw.argb(alpha, CRIMSON_HOT));
-                        band(pose, vc, c, e1, e2, r, a0, drawn, w, 0.86F, 1.0F, 24, FxDraw.argb(0.8F * alpha, HOT_CORE));
                     }
                 }
             }
