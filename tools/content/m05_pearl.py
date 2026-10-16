@@ -1,7 +1,6 @@
 """M5: Fractured Pearl, Arrival/Departure shards, Arrival Anchor."""
 
 
-
 def build(g):
     g.item("fractured_pearl", "Fractured Pearl", "Perla fratturata")
     g.item("arrival_shard", "Arrival Shard", "Scheggia d'arrivo")
