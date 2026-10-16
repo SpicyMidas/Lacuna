@@ -1,0 +1,14 @@
+# Revision 6 boot check: a lit Forgotten Portal (shader surface) and a mirror wall load without errors.
+world lacuna_rev6 flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd gamerule doDaylightCycle false
+cmd time set 6000
+cmd fill ~-1 ~0 ~3 ~0 ~0 ~4 lacuna:forgotten_portal
+cmd fill ~-4 ~0 ~8 ~4 ~3 ~8 lacuna:mirror_glass
+look 0 35
+wait 40
+shot rev6_boot
+quit

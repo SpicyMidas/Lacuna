@@ -11,6 +11,14 @@
 - **Sun's Fury:** during the focus the sun and the converging sunbeams glide every frame along the time sweep
   instead of stepping once per tick.
 - **Chronoshard Pocket Watch:** plays exactly one turn of the slow hand and loops seamlessly.
+- **Forgotten Portal:** the opening is one seamless End-style shader surface (swirling grey-violet fog, drifting
+  motes and lavender stars in parallax layers); stepping in crosses instantly, with a full-screen void transition
+  that fades in, holds while the land loads and fades out on the other side.
+- **Starlace armor:** Constellation Step (double jump with the full set), Starfall (halved fall damage with 2+
+  pieces; with the full set a high landing becomes a starlight shockwave instead of damage), Starlit (+5 % speed per
+  piece at night under the open sky).
+- **Mirror glass** shows a faint, properly mirrored reflection of you and nearby creatures, with a soft sheen
+  (client toggle `mirror.reflections`).
 
 ## 0.5.0 — revision 5 (player feedback)
 
