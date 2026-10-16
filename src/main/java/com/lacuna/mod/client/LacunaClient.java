@@ -41,6 +41,7 @@ public final class LacunaClient {
         com.lacuna.mod.client.fx.FxHandlers.bootstrap();
         NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.gear.GravemawFx::onClientTick);
         NeoForge.EVENT_BUS.addListener(com.lacuna.mod.client.gear.GravemawFx::onRenderLevel);
+        com.lacuna.mod.client.gear.StarlaceClient.register(NeoForge.EVENT_BUS);
         com.lacuna.mod.client.solar.SolarClient.register(modBus, NeoForge.EVENT_BUS);
         com.lacuna.mod.client.eclipse.EclipseClient.register(modBus, NeoForge.EVENT_BUS);
         com.lacuna.mod.client.debug.ClientDemo.register(NeoForge.EVENT_BUS);

@@ -62,6 +62,7 @@ public final class LacunaConfig {
     // ---------------------------------------------------------------- gear
     public static final ModConfigSpec.BooleanValue SPECIAL_WEAPONS_ENABLED;
     public static final ModConfigSpec.BooleanValue STARLACE_GLIDE_ENABLED;
+    public static final ModConfigSpec.BooleanValue STARLACE_ABILITIES_ENABLED;
     public static final ModConfigSpec.DoubleValue UMBRAL_DARK_BONUS;
 
     // ---------------------------------------------------------------- wood
@@ -152,6 +153,8 @@ public final class LacunaConfig {
         B.push("gear");
         SPECIAL_WEAPONS_ENABLED = B.define("specialWeapons", true);
         STARLACE_GLIDE_ENABLED = B.define("starlaceGlide", true);
+        STARLACE_ABILITIES_ENABLED = B.comment("Starlace set abilities: Constellation Step (double jump, full set), Starfall (softer landings, "
+                + "a starlight shockwave with the full set) and Starlit (speed at night under the open sky).").define("starlaceAbilities", true);
         UMBRAL_DARK_BONUS = B.defineInRange("umbralDarkBonus", (double) Balance.UMBRAL_DARK_BONUS, 0.0, 4.0);
         B.pop();
 

@@ -103,16 +103,16 @@ public final class ModItems {
     public static final DeferredItem<Item> ZENITHITE_SHARD = item("zenithite_shard", Item::new, new Item.Properties());
     public static final DeferredItem<Item> STARLACE_CLOTH = item("starlace_cloth", Item::new, new Item.Properties());
     public static final DeferredItem<ArmorItem> STARLACE_HELMET = item("starlace_helmet",
-            p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.HELMET, p),
+            p -> new com.lacuna.mod.gear.StarlaceArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.HELMET, p),
             new Item.Properties().durability(ArmorItem.Type.HELMET.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
     public static final DeferredItem<ArmorItem> STARLACE_CHESTPLATE = item("starlace_chestplate",
-            p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.CHESTPLATE, p),
+            p -> new com.lacuna.mod.gear.StarlaceArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.CHESTPLATE, p),
             new Item.Properties().durability(ArmorItem.Type.CHESTPLATE.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
     public static final DeferredItem<ArmorItem> STARLACE_LEGGINGS = item("starlace_leggings",
-            p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.LEGGINGS, p),
+            p -> new com.lacuna.mod.gear.StarlaceArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.LEGGINGS, p),
             new Item.Properties().durability(ArmorItem.Type.LEGGINGS.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
     public static final DeferredItem<ArmorItem> STARLACE_BOOTS = item("starlace_boots",
-            p -> new ArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.BOOTS, p),
+            p -> new com.lacuna.mod.gear.StarlaceArmorItem(ModArmorMaterials.STARLACE, ArmorItem.Type.BOOTS, p),
             new Item.Properties().durability(ArmorItem.Type.BOOTS.getDurability(Balance.STARLACE_DURABILITY_FACTOR)));
 
     // Umbral Steel outclasses Ruby: sword 8 damage / 1.6 speed (ruby 7), axe 10 / 1.0 (ruby 9)

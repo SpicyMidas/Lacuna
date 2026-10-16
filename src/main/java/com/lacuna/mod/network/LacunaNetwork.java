@@ -20,5 +20,11 @@ public final class LacunaNetwork {
                 com.lacuna.mod.client.fx.FxHandlers.handle(payload);
             }
         });
+        // client -> server: handled on the server thread; the server validates every condition itself
+        registrar.playToServer(StarStepPayload.TYPE, StarStepPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof net.minecraft.server.level.ServerPlayer player) {
+                com.lacuna.mod.gear.StarlaceSet.onStepRequest(player, payload);
+            }
+        });
     }
 }

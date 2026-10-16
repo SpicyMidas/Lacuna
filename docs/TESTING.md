@@ -128,6 +128,8 @@ All `/lacuna` commands need permission level 2.
 ```
 /give @s lacuna:starlace_boots
 /give @s lacuna:starlace_chestplate
+/give @s lacuna:starlace_helmet
+/give @s lacuna:starlace_leggings
 /give @s lacuna:umbral_steel_sword
 /give @s lacuna:gravemaw_greatsword
 /give @s lacuna:tidecaller_sickle
@@ -138,6 +140,12 @@ All `/lacuna` commands need permission level 2.
 ```
 - [ ] Starlace armor renders on the player (pale blue weave); jump from 10 blocks and sneak: slow falling, then a
       10 s cooldown on the boots.
+- [ ] Starlace set (survival, all four pieces): jump, release and press jump again in mid-air: a second leap with a
+      chime and a small constellation of stars left in the air; only once until you land; nothing in water, on a
+      ladder, while riding or flying. Drop 8+ blocks near zombies: no damage, a pale gold/lavender ring races out and
+      the zombies are hurt and pushed back. With 2-3 pieces the same fall only hurts half as much. At night under the
+      open sky (or in the End) you walk faster (+5 % per piece); under a roof the bonus goes away within a second.
+      Tooltips: "Set bonus (n/4)" lines light up for the pieces you are wearing (hold the details key).
 - [ ] Umbral sword in a dark cave hits harder (+25 %) than in daylight.
 - [ ] Gravemaw: stand still, hold use ≥ 1 s, release: sweep particles in an arc, mobs in front take damage; moving
       cancels.
