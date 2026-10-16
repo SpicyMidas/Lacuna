@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.0 — revision 6 (player feedback)
+
+- **Slashes like vanilla:** the Eclipser and the Gravemaw Greatsword sweep exactly like a vanilla sword (same rules,
+  targets, damage, knockback, sound, and the slash placed one block in front at mid-height for 4 ticks, 8 frames), with
+  their own sprites (black and crimson, blue and violet); the big shader crescent is gone.
+- **Villages:** the civic buildings have beds, so villagers count them as homes, sleep in them and hide there when
+  the bell rings.
+- **Last Merchant** only deals in rubies: he pays rubies for ores and ingots and sells his goods for rubies.
+- **Sun's Fury:** during the focus the sun and the converging sunbeams glide every frame along the time sweep
+  instead of stepping once per tick.
+- **Chronoshard Pocket Watch:** plays exactly one turn of the slow hand and loops seamlessly.
+
 ## 0.5.0 — revision 5 (player feedback)
 
 - **Wand of Quickening** (palette swap of the hand-drawn scepter: emerald shaft, pink heart gem): for one heart, a
