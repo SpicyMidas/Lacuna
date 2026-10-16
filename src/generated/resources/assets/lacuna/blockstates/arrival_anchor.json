@@ -1,7 +1,30 @@
 {
   "variants": {
-    "": {
+    "facing=down": {
+      "model": "lacuna:block/arrival_anchor",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "lacuna:block/arrival_anchor",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "lacuna:block/arrival_anchor",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "lacuna:block/arrival_anchor",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
       "model": "lacuna:block/arrival_anchor"
+    },
+    "facing=west": {
+      "model": "lacuna:block/arrival_anchor",
+      "x": 90,
+      "y": 270
     }
   }
 }

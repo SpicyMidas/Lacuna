@@ -1,4 +1,14 @@
 {
+ "arrival_anchor": {
+  "facing": [
+   "north",
+   "south",
+   "east",
+   "west",
+   "up",
+   "down"
+  ]
+ },
  "ashen_snow_block": {
   "footprint": [
    "0",

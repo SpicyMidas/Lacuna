@@ -27,12 +27,18 @@ def build(g):
     g.name("lacuna.pearl.forgotten_refuses", "The Forgotten Land swallows the call.", "La Terra Dimenticata inghiotte il richiamo.")
     g.name("entity.lacuna.arrival_shard", "Arrival Shard", "Scheggia d'arrivo")
 
-    # the hand-made 6x5x5 model (tools/art/hand/block/arrival_anchor.png), resting on the floor like a turtle egg
+    # the hand-made 6x5x5 model (tools/art/hand/block/arrival_anchor.png): its base sits on the surface the shard
+    # locked on - on the floor like a turtle egg, upside down on a ceiling, sideways on a wall (rotated like amethyst)
+    m = "lacuna:block/arrival_anchor"
     g.single("arrival_anchor", "Arrival Anchor", "Ancora d'arrivo",
              {"parent": "minecraft:block/block", "render_type": "minecraft:translucent",
               "textures": {"particle": "lacuna:block/arrival_anchor", "crystal": "lacuna:block/arrival_anchor"},
               "elements": ANCHOR_ELEMENTS},
-             item=False, loot=None)
+             item=False, loot=None, blockstate={"variants": {
+                 "facing=up": {"model": m}, "facing=down": {"model": m, "x": 180},
+                 "facing=north": {"model": m, "x": 90}, "facing=south": {"model": m, "x": 90, "y": 180},
+                 "facing=east": {"model": m, "x": 90, "y": 90}, "facing=west": {"model": m, "x": 90, "y": 270}}})
+    g.props("arrival_anchor", facing=["north", "south", "east", "west", "up", "down"])
 
     g.shaped("fractured_pearl", ["DRD", "RPR", "DRD"],
              {"D": "lacuna:divine_glass_shard", "R": "lacuna:ruby", "P": "minecraft:ender_pearl"},

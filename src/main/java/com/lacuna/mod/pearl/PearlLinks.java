@@ -58,11 +58,6 @@ public final class PearlLinks {
             return false;
         }
         BlockPos at = hitPos.relative(face);
-        // the anchor rests on the floor like a turtle egg: locked on a wall or ceiling, it settles onto the ground below
-        for (int i = 0; i < 32 && at.getY() > level.getMinBuildHeight() && level.hasChunkAt(at.below())
-                && level.getBlockState(at.below()).canBeReplaced() && level.getFluidState(at.below()).isEmpty(); i++) {
-            at = at.below();
-        }
         if (!level.hasChunkAt(at) || !level.getWorldBorder().isWithinBounds(at)
                 || at.getY() < level.getMinBuildHeight() || at.getY() >= level.getMaxBuildHeight()) {
             return false;
@@ -77,12 +72,12 @@ public final class PearlLinks {
         MinecraftServer server = level.getServer();
         PearlLinkSavedData data = PearlLinkSavedData.get(server);
         data.get(link.id()).ifPresent(old -> removeAnchorBlock(server, old, link.id()));
-        level.setBlock(at, ModBlocks.ARRIVAL_ANCHOR.get().defaultBlockState(), Block.UPDATE_ALL);
+        level.setBlock(at, ModBlocks.ARRIVAL_ANCHOR.get().defaultBlockState().setValue(ArrivalAnchorBlock.FACING, face), Block.UPDATE_ALL);
         if (level.getBlockEntity(at) instanceof ArrivalAnchorBlockEntity anchor) {
             anchor.setShard(shard);
         }
         data.put(link.id(), new PearlLinkSavedData.Anchor(level.dimension(), at));
-        level.sendParticles(ParticleTypes.PORTAL, at.getX() + 0.5, at.getY() + 0.2, at.getZ() + 0.5, 30, 0.3, 0.3, 0.3, 0.3);
+        level.sendParticles(ParticleTypes.PORTAL, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 30, 0.3, 0.3, 0.3, 0.3);
         level.playSound(null, at, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0F, 1.2F);
         return true;
     }

@@ -18,8 +18,8 @@
   pieces; with the full set a high landing becomes a starlight shockwave instead of damage), Starlit (+5 % speed per
   piece at night under the open sky).
 - **Textures and models:** new 16x16 Gravemaw Greatsword icon, Village Coin and Mirror of Recursion textures; the
-  Arrival Anchor is the new hand-made 6x5x5 crystal shell resting on the floor like a turtle egg (locked on a wall or
-  ceiling, it settles onto the ground below); the Sunken Bell stands on the ground.
+  Arrival Anchor is the new hand-made 6x5x5 crystal shell; it sits on the floor like a turtle egg, and thrown at a
+  wall or ceiling it sticks where it lands, base against that surface; the Sunken Bell stands on the ground.
 - **Mirror glass** shows a faint, properly mirrored reflection of you and nearby creatures, with a soft sheen
   (client toggle `mirror.reflections`).
 
