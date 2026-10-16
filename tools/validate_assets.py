@@ -39,6 +39,8 @@ SIZE_RULES = [
     # Revision 2 effects: particle sprites and render-effect masks
     (re.compile(r"^textures/particle/"), {(8, 8), (32, 32)}),
     (re.compile(r"^textures/effect/"), {(32, 32), (64, 64), (16, 64), (32, 128)}),
+    # shader-sampled environment layers (the Forgotten Portal's screen-space fog and motes, like vanilla end_sky)
+    (re.compile(r"^textures/environment/"), {(128, 128), (256, 256)}),
     # hand-drawn high-resolution items/blocks (tools/art/hand), e.g. the 32x32 Gravemaw Greatsword
     (re.compile(r"^textures/(item|block)/"), {(32, 32), (24, 24)}),
 ]

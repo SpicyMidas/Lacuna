@@ -1,6 +1,5 @@
 package com.lacuna.mod.banish;
 
-import com.lacuna.mod.Balance;
 import com.lacuna.mod.fx.LacunaFx;
 import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModBlocks;
@@ -9,8 +8,7 @@ import com.lacuna.mod.registry.ModParticles;
 import com.lacuna.mod.registry.ModTags;
 import com.lacuna.mod.util.SafeRun;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -24,7 +22,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -39,21 +37,24 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 /**
  * The Forgotten Portal: eight {@link ForgottenPortalFrameBlock}s, two per side with the corners empty, around a 2x2
  * opening on one level (the End portal's ring, one size smaller). The Totem of Banishing lights a complete ring like
- * flint and steel lights a nether portal. Whatever stands in the portal long enough (a player 2 s, any other creature
- * a moment) is sent through with the banishment system: banished from the overworld (timer, 1:12 coordinates, safe
- * spot), returned from the Forgotten Land. Travel runs at the end of the server tick, never inside a block callback.
+ * flint and steel lights a nether portal. Like the End portal, whatever touches the portal plane crosses at once
+ * (players and every creature that may be banished) with the banishment system: banished from the overworld (timer,
+ * 1:12 coordinates, safe spot), returned from the Forgotten Land. The transfer runs at the end of the server tick in
+ * which the portal was touched, never inside a block callback; the vanilla portal cooldown keeps the new arrival from
+ * bouncing straight back. A crossing player is sent {@link #CROSSING_FX} first, which the client turns into a
+ * full-screen fade through the swirling void (client/portal/PortalTransition).
  */
 public final class ForgottenPortals {
     public static final String FEATURE = "forgotten_portal";
-    /** Ticks spent standing in a portal, by entity (volatile: a charge never survives a restart). */
-    private static final Map<UUID, Charge> CHARGING = new HashMap<>();
+    /**
+     * FxPayload kind sent to a crossing player right before the transfer; {@code p0} = 1 (crossing now) or -1 (the
+     * transfer failed: lift the void again).
+     */
+    public static final String CROSSING_FX = "forgotten_crossing";
+    /** Entities that touched a portal during this tick, sent through at its end (in the order they touched). */
+    private static final Map<UUID, Entry> ENTERED = new LinkedHashMap<>();
 
-    private static final class Charge {
-        ResourceKey<Level> dimension;
-        long lastTick = Long.MIN_VALUE;
-        int ticks;
-        boolean ready;
-    }
+    private record Entry(ResourceKey<Level> dimension, BlockPos portal) {}
 
     enum Outcome { OPENED, ALREADY_OPEN, BLOCKED, INCOMPLETE }
 
@@ -124,6 +125,7 @@ public final class ForgottenPortals {
             }
             List<BlockPos> cells = opening(min);
             if (all(level, cells, ForgottenPortals::isPortal)) {
+                restoreSurface(level, min);
                 outcome = Outcome.ALREADY_OPEN;
             } else if (!all(level, cells, ForgottenPortals::isClear)) {
                 outcome = outcome == Outcome.ALREADY_OPEN ? outcome : Outcome.BLOCKED;
@@ -133,6 +135,23 @@ public final class ForgottenPortals {
             }
         }
         return outcome;
+    }
+
+    /**
+     * Portals lit before the surface had a block entity draw nothing: creates the missing ones on the portal cells
+     * around {@code pos} (enough for a whole 2x2 opening) and sends them to clients, which then draw the surface.
+     */
+    static void restoreSurface(ServerLevel level, BlockPos pos) {
+        for (BlockPos p : BlockPos.betweenClosed(pos.offset(-1, 0, -1), pos.offset(1, 0, 1))) {
+            if (!level.isLoaded(p)) {
+                continue;
+            }
+            BlockState state = level.getBlockState(p);
+            if (isPortal(state) && level.getChunkAt(p).getBlockEntity(p, LevelChunk.EntityCreationType.CHECK) == null
+                    && level.getBlockEntity(p) instanceof ForgottenPortalBlockEntity) { // created by this lookup
+                level.sendBlockUpdated(p, state, state, Block.UPDATE_CLIENTS);
+            }
+        }
     }
 
     private static void open(ServerLevel level, BlockPos min) {
@@ -194,120 +213,85 @@ public final class ForgottenPortals {
         return !entity.getType().is(ModTags.Entities.CANNOT_BE_BANISHED);
     }
 
-    /** From {@link ForgottenPortalBlock#entityInside}: one more tick standing in a portal. */
-    static void inside(ServerLevel level, Entity entity) {
+    /**
+     * From {@link ForgottenPortalBlock#entityInside}: the entity touched the portal plane at {@code pos}. Like the End
+     * portal it crosses at once, at the end of this server tick, unless it has only just arrived through one.
+     */
+    static void entered(ServerLevel level, Entity entity, BlockPos pos) {
         if (SafeRun.isDisabled(FEATURE) || !mayTravel(entity)
                 || (level.dimension() != Level.OVERWORLD && !ModDimensions.isForgottenLand(level))
                 || !BanishmentManager.enabled(level.getServer())) {
             return;
         }
-        SafeRun.run(FEATURE, () -> charge(level, entity));
-    }
-
-    private static void charge(ServerLevel level, Entity entity) {
-        if (entity.isOnPortalCooldown()) {
-            entity.setPortalCooldown(); // just arrived: no bouncing back until it has stepped out (vanilla portal rule)
-            return;
-        }
-        long now = level.getServer().getTickCount();
-        Charge c = CHARGING.computeIfAbsent(entity.getUUID(), id -> new Charge());
-        if (c.lastTick == now) {
-            return; // standing across several portal blocks
-        }
-        if (c.lastTick != now - 1 || c.dimension != level.dimension()) {
-            c.ticks = 0;
-        }
-        c.dimension = level.dimension();
-        c.lastTick = now;
-        c.ticks++;
-        int needed = entity instanceof Player ? Balance.PORTAL_PLAYER_TICKS : Balance.PORTAL_MOB_TICKS;
-        chargeEffects(level, entity, c.ticks, needed);
-        c.ready = c.ticks >= needed;
-    }
-
-    /** Players: a swirl of motes closing in and speeding up, a portal whoosh and a rising diminished arpeggio. */
-    private static void chargeEffects(ServerLevel level, Entity entity, int ticks, int needed) {
-        float progress = Math.min(1.0F, ticks / (float) needed);
-        if (!(entity instanceof Player)) {
-            if (ticks % 3 == 1) {
-                level.sendParticles(ModParticles.SHADOW_MOTE.get(), entity.getX(), entity.getY() + entity.getBbHeight() * 0.5,
-                        entity.getZ(), 3, entity.getBbWidth() * 0.4, entity.getBbHeight() * 0.3, entity.getBbWidth() * 0.4, 0.02);
+        SafeRun.run(FEATURE, () -> {
+            if (entity.isOnPortalCooldown()) {
+                entity.setPortalCooldown(); // just arrived: no bouncing back until it has stepped out (vanilla portal rule)
+                return;
             }
-            return;
-        }
-        int motes = 1 + Math.round(progress * 4.0F);
-        double radius = 1.0 - 0.45 * progress;
-        double height = entity.getBbHeight();
-        for (int i = 0; i < motes; i++) {
-            double a = ticks * (0.25 + 0.35 * progress) + i * Mth.TWO_PI / motes;
-            double y = entity.getY() + 0.1 + ((ticks * 0.045 + i / (double) motes) % 1.0) * height;
-            // count 0: the offsets are the motion, here tangent to the circle (the swirl) and slightly upward
-            level.sendParticles(i % 2 == 0 ? ModParticles.LIGHT_MOTE.get() : ModParticles.SHADOW_MOTE.get(),
-                    entity.getX() + Math.cos(a) * radius, y, entity.getZ() + Math.sin(a) * radius, 0,
-                    -Math.sin(a), 0.15, Math.cos(a), 0.05 + 0.1 * progress);
-        }
-        if (ticks == 1) {
-            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PORTAL_TRIGGER, SoundSource.PLAYERS,
-                    0.25F, 1.6F);
-        }
-        if (ticks % 8 == 1) {
-            int step = ticks / 8;
-            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.NOTE_BLOCK_BELL.value(),
-                    SoundSource.PLAYERS, 0.3F + 0.08F * step, (float) Math.pow(2.0, (3 * step - 6) / 12.0));
-        }
-    }
-
-    public static void onServerTick(ServerTickEvent.Post event) {
-        if (CHARGING.isEmpty()) {
-            return;
-        }
-        MinecraftServer server = event.getServer();
-        long now = server.getTickCount();
-        Map<UUID, ResourceKey<Level>> ready = new HashMap<>();
-        Iterator<Map.Entry<UUID, Charge>> it = CHARGING.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<UUID, Charge> e = it.next();
-            Charge c = e.getValue();
-            if (c.lastTick < now) {
-                it.remove(); // stepped out: the charge is lost
-            } else if (c.ready) {
-                it.remove();
-                ready.put(e.getKey(), c.dimension);
-            }
-        }
-        ready.forEach((id, dimension) -> {
-            ServerLevel level = server.getLevel(dimension);
-            Entity entity = level == null ? null : level.getEntity(id);
-            if (entity != null) {
-                send(level, entity);
-            }
+            ENTERED.putIfAbsent(entity.getUUID(), new Entry(level.dimension(), pos.immutable()));
         });
     }
 
-    private static void send(ServerLevel level, Entity entity) {
+    public static void onServerTick(ServerTickEvent.Post event) {
+        if (ENTERED.isEmpty()) {
+            return;
+        }
+        MinecraftServer server = event.getServer();
+        List<Map.Entry<UUID, Entry>> due = new ArrayList<>(ENTERED.entrySet());
+        ENTERED.clear();
+        for (Map.Entry<UUID, Entry> e : due) {
+            ServerLevel level = server.getLevel(e.getValue().dimension());
+            Entity entity = level == null ? null : level.getEntity(e.getKey());
+            if (entity != null && entity.isAlive() && entity.level() == level) {
+                SafeRun.run(FEATURE, () -> send(level, entity, e.getValue().portal()));
+            }
+        }
+    }
+
+    private static void send(ServerLevel level, Entity entity, BlockPos portal) {
         MinecraftServer server = level.getServer();
         if (!BanishmentManager.enabled(server) || !mayTravel(entity) || entity.isOnPortalCooldown()) {
             return;
         }
-        Entity moved = null;
-        if (level.dimension() == Level.OVERWORLD) {
-            if (entity instanceof Player || BanishmentManager.canBanish(entity)) {
-                moved = SafeRun.call(BanishmentManager.FEATURE, () -> BanishmentManager.banish(entity), null,
-                        () -> BanishmentManager.rescueAll(server));
-            }
-        } else if (ModDimensions.isForgottenLand(level)) {
-            moved = SafeRun.call(BanishmentManager.FEATURE, () -> BanishmentManager.returnEntity(entity), null,
-                    () -> BanishmentManager.rescueAll(server));
+        boolean outbound = level.dimension() == Level.OVERWORLD;
+        if ((!outbound && !ModDimensions.isForgottenLand(level))
+                || (outbound && !(entity instanceof Player) && !BanishmentManager.canBanish(entity))) {
+            return;
         }
-        if (moved != null) {
-            moved.setPortalCooldown();
-            if (moved instanceof ServerPlayer player) {
-                TotemOfBanishingItem.toll(player);
+        entryBurst(level, entity, portal);
+        ServerPlayer traveller = entity instanceof ServerPlayer player ? player : null;
+        if (traveller != null) {
+            // right before the transfer: the client fades into the void, holds it while the far side loads, fades out
+            LacunaFx.sendTo(traveller, FxPayload.at(CROSSING_FX, entity.position()).withParams(1.0F, 0.0F, 0.0F));
+        }
+        Entity moved = SafeRun.call(BanishmentManager.FEATURE,
+                () -> outbound ? BanishmentManager.banish(entity) : BanishmentManager.returnEntity(entity), null,
+                () -> BanishmentManager.rescueAll(server));
+        if (moved == null) {
+            entity.setPortalCooldown(); // no retry every tick: it tries again once it has stepped out and back in
+            if (traveller != null && !traveller.hasDisconnected()) {
+                LacunaFx.sendTo(traveller, FxPayload.at(CROSSING_FX, entity.position()).withParams(-1.0F, 0.0F, 0.0F));
             }
+            return;
+        }
+        moved.setPortalCooldown();
+        if (moved instanceof ServerPlayer player) {
+            TotemOfBanishingItem.toll(player);
         }
     }
 
+    /** A short burst where the traveller breaks the surface: pale motes splashing out, shadow motes rising. */
+    private static void entryBurst(ServerLevel level, Entity entity, BlockPos portal) {
+        double y = portal.getY() + 0.78;
+        double w = Math.max(0.3, entity.getBbWidth() * 0.6);
+        level.sendParticles(ModParticles.LIGHT_MOTE.get(), entity.getX(), y, entity.getZ(), 18, w, 0.04, w, 0.07);
+        level.sendParticles(ModParticles.SHADOW_MOTE.get(), entity.getX(), y + 0.25, entity.getZ(), 12, w * 0.8,
+                entity.getBbHeight() * 0.3, w * 0.8, 0.03);
+        level.sendParticles(ModParticles.MIST.get(), entity.getX(), y + 0.1, entity.getZ(), 3, w, 0.05, w, 0.01);
+        level.playSound(null, entity.getX(), y, entity.getZ(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 0.6F, 0.5F);
+    }
+
     public static void onServerStopped(ServerStoppedEvent event) {
-        CHARGING.clear();
+        ENTERED.clear();
     }
 }

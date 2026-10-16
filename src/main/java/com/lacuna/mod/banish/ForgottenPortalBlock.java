@@ -15,24 +15,28 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Forgotten Portal: a flat, see-through surface at 12/16 like the End portal (no collision, unbreakable, no
- * drops). Whatever stands in it long enough is sent through by {@link ForgottenPortals} with the banishment rules;
- * it falls apart as soon as one of its horizontal neighbours is neither portal nor frame.
+ * The Forgotten Portal: a flat surface at 12/16 like the End portal (no collision, unbreakable, no drops). The block
+ * model is invisible: its {@link ForgottenPortalBlockEntity} renderer draws one screen-space field across the whole
+ * opening, so the four blocks merge into a single seamless surface. Whatever touches the portal plane is sent
+ * through by {@link ForgottenPortals} at the end of that server tick, with the banishment rules. The portal falls
+ * apart as soon as one of its horizontal neighbours is neither portal nor frame.
  */
-public class ForgottenPortalBlock extends Block {
+public class ForgottenPortalBlock extends Block implements EntityBlock {
     public static final MapCodec<ForgottenPortalBlock> CODEC = simpleCodec(ForgottenPortalBlock::new);
     private static final VoxelShape SHAPE = Block.box(0.0, 6.0, 0.0, 16.0, 12.0, 16.0);
-    /** Below the surface: anything whose box reaches in here is standing in the portal. */
-    private static final double INSIDE_TOP = 12.0 / 16.0;
 
     public ForgottenPortalBlock(Properties properties) {
         super(properties);
@@ -44,16 +48,42 @@ public class ForgottenPortalBlock extends Block {
     }
 
     @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ForgottenPortalBlockEntity(pos, state);
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.INVISIBLE; // the block entity renderer draws the surface
+    }
+
+    @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
+    /** True when the entity's box reaches into the portal plane (EndPortalBlock's test); shared with the client. */
+    public static boolean touches(Entity entity, BlockState state, BlockGetter level, BlockPos pos) {
+        return Shapes.joinIsNotEmpty(Shapes.create(entity.getBoundingBox().move(-pos.getX(), -pos.getY(), -pos.getZ())),
+                state.getShape(level, pos), BooleanOp.AND);
+    }
+
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (level instanceof ServerLevel server && entity.getBoundingBox().intersects(
-                new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + INSIDE_TOP, pos.getZ() + 1.0))) {
-            ForgottenPortals.inside(server, entity);
+        if (level instanceof ServerLevel server && entity.canUsePortal(false) && touches(entity, state, level, pos)) {
+            ForgottenPortals.entered(server, entity, pos);
         }
+    }
+
+    @Override
+    protected boolean isRandomlyTicking(BlockState state) {
+        return true;
+    }
+
+    /** Portals lit before the surface had a block entity draw nothing: restore it (touching a frame with the totem does too). */
+    @Override
+    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        ForgottenPortals.restoreSurface(level, pos);
     }
 
     @Override

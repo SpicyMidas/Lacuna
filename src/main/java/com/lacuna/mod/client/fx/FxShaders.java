@@ -16,6 +16,8 @@ public final class FxShaders {
     private static ShaderInstance beam;
     @Nullable
     private static ShaderInstance glow;
+    @Nullable
+    private static ShaderInstance forgottenPortal;
 
     private FxShaders() {}
 
@@ -34,6 +36,13 @@ public final class FxShaders {
             glow = null;
             Lacuna.LOGGER.warn("Lacuna glow shader unavailable, using the textured fallback: {}", e.toString());
         }
+        try {
+            event.registerShader(new ShaderInstance(event.getResourceProvider(), Lacuna.id("forgotten_portal"),
+                    DefaultVertexFormat.POSITION), s -> forgottenPortal = s);
+        } catch (IOException | RuntimeException e) {
+            forgottenPortal = null;
+            Lacuna.LOGGER.warn("Lacuna forgotten_portal shader unavailable, using the plain fallback: {}", e.toString());
+        }
     }
 
     /** Procedural energy beam: u across the beam (0..1), v along it in blocks; colour = tint, alpha = intensity. */
@@ -46,5 +55,14 @@ public final class FxShaders {
     @Nullable
     public static ShaderInstance glow() {
         return glow;
+    }
+
+    /**
+     * The Forgotten Portal field (POSITION only, screen-space layers like vanilla's end portal); see
+     * {@code client/portal/ForgottenPortalRenderTypes}.
+     */
+    @Nullable
+    public static ShaderInstance forgottenPortal() {
+        return forgottenPortal;
     }
 }

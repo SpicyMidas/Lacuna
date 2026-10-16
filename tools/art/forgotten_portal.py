@@ -3,14 +3,14 @@
 * Frame: dark weathered ruin stone, 13/16 tall like the End portal frame (its sides only show rows 3..15), faint
   violet-grey runes round the sides and the Totem of Banishing's open stone hand carved into the top. Two overlays
   hold just the runes and the sigil, lit pale violet: the active frame model draws them emissive over the stone.
-* Portal: a slow swirl of grey-violet fog with faint pale motes drifting through it. Every frame tiles (the 2x2
-  opening reads as one surface) and the animation loops exactly: all motion is periodic over the loop.
+* Portal: the surface is the lacuna:forgotten_portal core shader (screen-space layers like the End portal). It samples
+  environment/forgotten_portal_sky (tiling grey-violet fog swept into soft swirls) and
+  environment/forgotten_portal_motes (sparse soft pale dots on black, drawn as drifting parallax layers). The block
+  texture is only its particle icon.
 """
-import json
 import math
-import os
 
-from texlib import TEXTURES, c, lerp, new, noise_fill, ramp, rng, save
+from texlib import c, lerp, new, noise_fill, ramp, rng, save
 
 STONE = ramp("#2A2D35", "#31353E", "#393D48", "#424753", "#4C525F")
 GROOVE = c("#1B1D23")
@@ -168,19 +168,22 @@ def frame_bottom():
 
 
 # --------------------------------------------------------------------------------------------- portal
+# The surface itself is drawn by the lacuna:forgotten_portal core shader (client/portal): screen-space layers of the
+# two environment textures below, like the End portal, so the 2x2 opening reads as one continuous field. The block
+# texture is only the particle icon (the portal's collapse shards), one still frame of the same fog.
 
-FRAMES = 64
 FOG = [c("#100D17"), c("#1A1624"), c("#262033"), c("#342D45"), c("#463E5A"), c("#5A5170"), c("#716888"),
        c("#8C84A2"), c("#A9A2BE")]
-MOTE = (236, 232, 248)
 BAYER = [[0, 2], [3, 1]]
 TAU = math.tau
+SKY = 128  # environment/forgotten_portal_sky: the fog base layer
+MOTES = 256  # environment/forgotten_portal_motes: the parallax mote / star layers
 
 
-def _periodic_noise(name, cell):
-    """Value noise on the 16x16 torus, sampled anywhere with wrap-around smooth interpolation."""
+def _periodic_noise(name, cell, size=16):
+    """Value noise on the size x size torus, sampled anywhere with wrap-around smooth interpolation."""
     r = rng(name)
-    n = 16 // cell
+    n = size // cell
     grid = [[r.random() for _ in range(n)] for _ in range(n)]
 
     def sample(x, y):
@@ -195,79 +198,93 @@ def _periodic_noise(name, cell):
     return sample
 
 
-def _eddies(x, y, t):
-    """Two counter-rotating spiral eddies per tile, one on the block centre and one on its corners (so a 2x2 portal
-    turns round its middle too). Each is windowed to its own cell, which keeps the tile seamless; one turn per loop."""
-    s = 0.0
-    for k in range(2):
-        o = 8.0 * k
-        dx = ((x + 0.5 - o) / 8.0 + 1.0) % 2.0 - 1.0
-        dy = ((y + 0.5 - o) / 8.0 + 1.0) % 2.0 - 1.0
-        d2 = dx * dx + dy * dy
-        window = math.sqrt((1.0 - dx * dx) * (1.0 - dy * dy))
-        sign = 1 if k else -1
-        ang = math.atan2(dy, dx) + (TAU * t - d2 * 6.0 + 2 * k) * sign
-        s += window * (math.sin(ang) + 1.0) / 2.0 / (2.0 * d2 + 1.0)
-    return s
+def _fog_tone(d):
+    """Continuous grey-violet ramp through the fog tones (d in 0..1)."""
+    v = max(0.0, min(1.0, d)) * (len(FOG) - 1)
+    lo = min(len(FOG) - 2, int(v))
+    return lerp(FOG[lo], FOG[lo + 1], v - lo)
 
 
-def _fog_density(big, small, x, y, t):
-    """Mostly dark void: the eddies gather the fog, periodic noise drifting one tile per loop breaks it into wisps."""
-    d = 0.65 * _eddies(x, y, t) + 0.35 * (0.7 * big(x + 16 * t, y - 16 * t) + 0.3 * small(x - 16 * t, y))
-    return max(0.0, min(1.0, d)) ** 1.35
-
-
-def _motes():
-    """(x0, y0, vx, vy, phase, cycles): each mote drifts while it fades in and out, `cycles` times per loop."""
-    r = rng("forgotten_portal_motes")
-    out = []
-    for i in range(7):
-        ang = r.random() * TAU
-        speed = 2.5 + r.random() * 3.0
-        out.append((r.random() * 16, r.random() * 16, math.cos(ang) * speed, math.sin(ang) * speed - 1.5,
-                    i / 7.0, 1 + (i % 2)))
-    return out
-
-
-def portal():
+def portal_particle():
+    """The block's particle icon: a still 16x16 of dithered grey-violet fog with one pale mote."""
     big = _periodic_noise("forgotten_portal_fog_big", 4)
     small = _periodic_noise("forgotten_portal_fog_small", 2)
-    motes = _motes()
-    sheet = new(16, 16 * FRAMES)
-    px = sheet.load()
-    for f in range(FRAMES):
-        t = f / FRAMES
-        layer = [[[0.0, 0.0, 0.0] for _ in range(16)] for _ in range(16)]
-        for (x0, y0, vx, vy, phase, cycles) in motes:
-            local = (t * cycles + phase) % 1.0
-            glow = math.sin(math.pi * local) ** 2 * 0.65
-            mx, my = (x0 + vx * local) % 16, (y0 + vy * local) % 16
-            ix, iy = int(mx), int(my)
-            fx, fy = mx - ix, my - iy
-            for ox, oy, w in ((0, 0, (1 - fx) * (1 - fy)), (1, 0, fx * (1 - fy)), (0, 1, (1 - fx) * fy), (1, 1, fx * fy)):
-                cell = layer[(iy + oy) % 16][(ix + ox) % 16]
+    img = new()
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            d = max(0.0, min(1.0, 0.7 * big(x, y) + 0.3 * small(x, y))) ** 1.2
+            v = d * (len(FOG) - 2)
+            lo = int(v)
+            px[x, y] = FOG[lo + 1] if (v - lo) > (BAYER[y % 2][x % 2] + 0.5) / 4 else FOG[lo]
+    px[11, 4] = c("#D9D3EE")
+    px[4, 10] = c("#8C84A2")
+    return img
+
+
+def portal_sky():
+    """Fog base layer: tiling grey-violet noise, swept into soft swirls by a periodic domain warp. Mostly deep
+    violet-black with brighter grey drifts; the shader scales, rotates and drifts two copies of it."""
+    size = SKY
+    n1 = _periodic_noise("forgotten_portal_sky_large", 32, size)
+    n2 = _periodic_noise("forgotten_portal_sky_mid", 16, size)
+    n3 = _periodic_noise("forgotten_portal_sky_fine", 8, size)
+    n4 = _periodic_noise("forgotten_portal_sky_grain", 4, size)
+    turn = _periodic_noise("forgotten_portal_sky_turn", 32, size)
+    reach = _periodic_noise("forgotten_portal_sky_reach", 64, size)
+    grain = rng("forgotten_portal_sky_speck")
+    img = new(size, size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            # swirl: every point is pulled along a slowly turning direction field (periodic, so it still tiles)
+            a = turn(x, y) * TAU * 1.6
+            k = 6.0 + 10.0 * reach(x, y)
+            wx, wy = x + math.cos(a) * k, y + math.sin(a) * k
+            a2 = n2(wx, wy) * TAU
+            wx2, wy2 = wx + math.cos(a2) * 4.0, wy + math.sin(a2) * 4.0
+            d = 0.52 * n1(wx2, wy2) + 0.28 * n2(wx2 + 7, wy2 - 5) + 0.13 * n3(wx, wy) + 0.07 * n4(x, y)
+            d = max(0.0, min(1.0, (d - 0.22) / 0.62)) ** 1.55
+            col = _fog_tone(d * 0.92)
+            j = grain.randint(-3, 3)
+            px[x, y] = (max(0, min(255, col[0] + j)), max(0, min(255, col[1] + j)), max(0, min(255, col[2] + j + 1)), 255)
+    return img
+
+
+def portal_motes():
+    """Parallax layers: sparse soft pale dots on black (the shader tints, scales and drifts each layer). Mostly tiny
+    star points, some softer motes and a few faint glows; every dot wraps round the edges so the layer tiles."""
+    size = MOTES
+    r = rng("forgotten_portal_motes")
+    acc = [[[0.0, 0.0, 0.0] for _ in range(size)] for _ in range(size)]
+    tints = [(1.0, 0.98, 1.0), (0.93, 0.9, 1.0), (0.86, 0.82, 1.0), (1.0, 0.96, 0.94)]
+    dots = []
+    for _ in range(46):  # star points
+        dots.append((r.random() * size, r.random() * size, 0.55 + r.random() * 0.35, 0.65 + r.random() * 0.35))
+    for _ in range(16):  # soft motes
+        dots.append((r.random() * size, r.random() * size, 1.3 + r.random() * 0.9, 0.45 + r.random() * 0.3))
+    for _ in range(5):  # faint glows
+        dots.append((r.random() * size, r.random() * size, 3.2 + r.random() * 1.6, 0.16 + r.random() * 0.08))
+    for (cx, cy, sigma, bright) in dots:
+        tint = tints[r.randrange(len(tints))]
+        reach = int(math.ceil(sigma * 3.2))
+        for oy in range(-reach, reach + 1):
+            for ox in range(-reach, reach + 1):
+                x, y = int(cx) + ox, int(cy) + oy
+                dx, dy = x + 0.5 - cx, y + 0.5 - cy
+                v = bright * math.exp(-(dx * dx + dy * dy) / (2 * sigma * sigma))
+                if v < 0.004:
+                    continue
+                cell = acc[y % size][x % size]
                 for k in range(3):
-                    cell[k] += MOTE[k] * glow * w
-        for y in range(16):
-            for x in range(16):
-                d = _fog_density(big, small, x, y, t)
-                # a fixed ordered dither between neighbouring fog tones keeps the pixel-art look while it flows
-                v = d * (len(FOG) - 1)
-                lo = int(v)
-                hi = min(len(FOG) - 1, lo + 1)
-                col = FOG[hi] if (v - lo) > (BAYER[y % 2][x % 2] + 0.5) / 4 else FOG[lo]
-                add = layer[y][x]
-                rgb = [min(255, int(col[k] + add[k])) for k in range(3)]
-                alpha = int(round(212 + 36 * d + min(7.0, sum(add) / 30)))
-                px[x, y + 16 * f] = (rgb[0], rgb[1], rgb[2], min(255, alpha))
-    return sheet
-
-
-def save_animated(img, rel, frametime):
-    save(img, rel)
-    with open(os.path.join(TEXTURES, rel + ".png.mcmeta"), "w", encoding="utf-8", newline="\n") as fh:
-        json.dump({"animation": {"frametime": frametime}}, fh, indent=2, sort_keys=True)
-        fh.write("\n")
+                    cell[k] += v * tint[k]
+    img = new(size, size)
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            cell = acc[y][x]
+            px[x, y] = tuple(min(255, int(round(255 * cell[k]))) for k in range(3)) + (255,)
+    return img
 
 
 def paint():
@@ -276,4 +293,6 @@ def paint():
     save(frame_top(), "block/forgotten_portal_frame_top")
     save(frame_top_glow(), "block/forgotten_portal_frame_top_glow")
     save(frame_bottom(), "block/forgotten_portal_frame_bottom")
-    save_animated(portal(), "block/forgotten_portal", 2)
+    save(portal_particle(), "block/forgotten_portal")
+    save(portal_sky(), "environment/forgotten_portal_sky")
+    save(portal_motes(), "environment/forgotten_portal_motes")

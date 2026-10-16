@@ -233,15 +233,11 @@ def portal(g):
     g.shaped("forgotten_portal_frame", [" R ", "ROR", " R "], {"R": "lacuna:ruby", "O": "minecraft:crying_obsidian"},
              "lacuna:forgotten_portal_frame", category="building", unlock="lacuna:totem_of_banishing")
 
-    # the portal: a flat, see-through, full-bright plate at 12/16 like the End portal surface (no item, no drops)
-    g.single("forgotten_portal", "Forgotten Portal", "Portale dimenticato", {
-        "parent": "minecraft:block/block", "ambientocclusion": False, "render_type": "minecraft:translucent",
-        "textures": {"particle": "lacuna:block/forgotten_portal", "portal": "lacuna:block/forgotten_portal"},
-        "elements": [{"from": [0, 12, 0], "to": [16, 12, 16], "shade": False,
-                      "neoforge_data": {"block_light": 15, "sky_light": 15},
-                      "faces": {"up": {"uv": [0, 0, 16, 16], "texture": "#portal"},
-                                "down": {"uv": [0, 0, 16, 16], "texture": "#portal"}}}]},
-             item=False, loot=None)
+    # the portal: its block entity renderer (client/portal) draws the surface at 12/16 (and the underside at 6/16) as
+    # one screen-space field over the whole opening, like the End portal, so the block model is invisible and only
+    # names the particle icon (the shards when the portal collapses). No item, no drops.
+    g.single("forgotten_portal", "Forgotten Portal", "Portale dimenticato",
+             {"textures": {"particle": "lacuna:block/forgotten_portal"}}, item=False, loot=None)
     for t in ("minecraft:dragon_immune", "minecraft:wither_immune"):
         g.tag("block", t, mod("forgotten_portal"))
 

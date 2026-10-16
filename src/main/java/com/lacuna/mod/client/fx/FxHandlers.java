@@ -36,5 +36,6 @@ public final class FxHandlers {
         com.lacuna.mod.client.eclipse.EclipseFx.register();
         com.lacuna.mod.client.gear.EmberTriangleFx.register();
         com.lacuna.mod.client.gear.StarlaceClient.registerFx();
+        com.lacuna.mod.client.portal.PortalTransition.register();
     }
 }
