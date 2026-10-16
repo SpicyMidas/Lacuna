@@ -33,8 +33,8 @@ import net.neoforged.neoforge.network.PacketDistributor;
  */
 public class SunkenBellBlock extends Block {
     public static final MapCodec<SunkenBellBlock> CODEC = simpleCodec(SunkenBellBlock::new);
-    private static final VoxelShape SHAPE = Shapes.or(Block.box(4, 2, 4, 12, 4, 12), Block.box(5, 4, 5, 11, 13, 11),
-            Block.box(7, 13, 7, 9, 16, 9));
+    private static final VoxelShape SHAPE = Shapes.or(Block.box(4, 0, 4, 12, 2, 12), Block.box(5, 2, 5, 11, 11, 11),
+            Block.box(7, 11, 7, 9, 14, 9));
     private static final Map<UUID, Long> COOLDOWNS = new ConcurrentHashMap<>();
 
     public SunkenBellBlock(Properties properties) {

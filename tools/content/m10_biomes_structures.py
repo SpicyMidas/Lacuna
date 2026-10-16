@@ -242,9 +242,9 @@ def bell_tower(g):
     bell_faces = lambda uv: {d: {"uv": uv, "texture": "#bell"} for d in ("north", "south", "east", "west", "up", "down")}
     g.single("sunken_bell", "Sunken Bell", "Campana sommersa", {
         "parent": "minecraft:block/block", "textures": {"particle": "lacuna:block/sunken_bell", "bell": "lacuna:block/sunken_bell"},
-        "elements": [{"from": [7, 13, 7], "to": [9, 16, 9], "faces": bell_faces([7, 0, 9, 3])},
-                     {"from": [5, 4, 5], "to": [11, 13, 11], "faces": bell_faces([5, 3, 11, 12])},
-                     {"from": [4, 2, 4], "to": [12, 4, 12], "faces": bell_faces([4, 12, 12, 14])}]})
+        "elements": [{"from": [7, 11, 7], "to": [9, 14, 9], "faces": bell_faces([7, 0, 9, 3])},
+                     {"from": [5, 2, 5], "to": [11, 11, 11], "faces": bell_faces([5, 3, 11, 12])},
+                     {"from": [4, 0, 4], "to": [12, 2, 12], "faces": bell_faces([4, 12, 12, 14])}]})
     g.tag("block", "minecraft:mineable/pickaxe", mod("sunken_bell"))
     g.tag("worldgen/biome", "lacuna:has_structure/sunken_bell_tower", "#minecraft:is_ocean", "#minecraft:is_deep_ocean")
     single_structure(g, "sunken_bell_tower", "#lacuna:has_structure/sunken_bell_tower", "OCEAN_FLOOR_WG", 1530771209, 36, 12)

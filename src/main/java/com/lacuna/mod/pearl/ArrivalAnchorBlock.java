@@ -17,12 +17,12 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Arrival Anchor (spec M5): a floating teal crystal created where an Arrival Shard locks. Never despawns,
+ * Arrival Anchor (spec M5): a small crystal shell resting on the floor where an Arrival Shard locks. Never despawns,
  * blast resistance 1200, not replaceable by fluids. Breaking it by hand gives the shard back and clears the link.
  */
 public class ArrivalAnchorBlock extends Block implements EntityBlock {
     public static final MapCodec<ArrivalAnchorBlock> CODEC = simpleCodec(ArrivalAnchorBlock::new);
-    private static final VoxelShape SHAPE = Block.box(4.0, 4.0, 4.0, 12.0, 12.0, 12.0);
+    private static final VoxelShape SHAPE = Block.box(5.0, 0.0, 5.5, 11.0, 5.0, 10.5);
 
     public ArrivalAnchorBlock(Properties properties) {
         super(properties);
@@ -56,13 +56,13 @@ public class ArrivalAnchorBlock extends Block implements EntityBlock {
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (random.nextInt(3) == 0) {
             level.addParticle(ParticleTypes.PORTAL, pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.6,
-                    pos.getY() + 0.4 + random.nextDouble() * 0.6, pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.6,
+                    pos.getY() + 0.15 + random.nextDouble() * 0.4, pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 0.6,
                     0.0, 0.05, 0.0);
         }
         if (random.nextInt(6) == 0) {
             // a gold glint off the seam, matching the pearl's palette
             level.addParticle(com.lacuna.mod.registry.ModParticles.SOLAR_GLINT.get(), pos.getX() + 0.3 + random.nextDouble() * 0.4,
-                    pos.getY() + 0.3 + random.nextDouble() * 0.4, pos.getZ() + 0.3 + random.nextDouble() * 0.4, 0.0, 0.0, 0.0);
+                    pos.getY() + 0.05 + random.nextDouble() * 0.27, pos.getZ() + 0.3 + random.nextDouble() * 0.4, 0.0, 0.0, 0.0);
         }
     }
 }

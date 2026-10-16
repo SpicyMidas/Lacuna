@@ -42,7 +42,7 @@ SIZE_RULES = [
     # shader-sampled environment layers (the Forgotten Portal's screen-space fog and motes, like vanilla end_sky)
     (re.compile(r"^textures/environment/"), {(128, 128), (256, 256)}),
     # hand-drawn high-resolution items/blocks (tools/art/hand), e.g. the 32x32 Gravemaw Greatsword
-    (re.compile(r"^textures/(item|block)/"), {(32, 32), (24, 24)}),
+    (re.compile(r"^textures/(item|block)/"), {(32, 32), (24, 24), (16, 16)}),
 ]
 ANIMATED_OK = True  # textures with .mcmeta may be 16 x (16*frames)
 
