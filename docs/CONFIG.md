@@ -38,3 +38,4 @@ load after registration; they live in `Balance`.
 |---|---|---|---|
 | divineSight | mode | XRAY | XRAY: Divine Glass is a window onto a void showing only ores, containers, spawners and mobs; OUTLINE: coloured boxes through walls (automatic fallback when the stencil buffer is unavailable or the window fails) |
 | divineSight | xrayRange / xrayMaxBlocks | 28 / 1024 | X-ray window: target search radius around the camera, max target blocks drawn |
+| mirror | reflections | true | Mirror Glass and the Labyrinth Seal show a faint, tinted reflection of you and of up to 8 nearby players and creatures (within 12 blocks, up to 3 mirror planes), plus a soft sheen; needs the stencil buffer (off without it) |

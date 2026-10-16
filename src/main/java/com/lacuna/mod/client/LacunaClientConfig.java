@@ -73,6 +73,16 @@ public final class LacunaClientConfig {
         B.pop();
     }
 
+    // ---------------------------------------------------------------- mirror (Mirror Glass reflections)
+    public static final ModConfigSpec.BooleanValue MIRROR_REFLECTIONS;
+
+    static {
+        B.push("mirror");
+        MIRROR_REFLECTIONS = B.comment("Mirror Glass and the Labyrinth Seal show a faint reflection of you and of nearby players and creatures.")
+                .define("reflections", true);
+        B.pop();
+    }
+
     public static final ModConfigSpec SPEC = B.build();
 
     private LacunaClientConfig() {}

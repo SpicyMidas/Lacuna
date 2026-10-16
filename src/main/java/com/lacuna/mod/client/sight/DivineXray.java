@@ -1,30 +1,24 @@
 package com.lacuna.mod.client.sight;
 
 import com.lacuna.mod.Balance;
-import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.LacunaConfig;
 import com.lacuna.mod.client.LacunaClientConfig;
+import com.lacuna.mod.client.render.SectionSweep;
+import com.lacuna.mod.client.render.StencilSupport;
 import com.lacuna.mod.registry.ModTags;
 import com.lacuna.mod.util.SafeRun;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.LevelChunkSection;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.StencilManager;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
@@ -35,8 +29,8 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
  * bounded number of block reads per tick: one finds Divine Glass (cheap: sections whose palette cannot contain glass
  * are skipped), the other finds {@code lacuna:divine_sight_targets} and only runs while some glass is actually on
  * screen. Finished sweeps replace the cached results; living entities near the camera are refreshed every few ticks.
- * The stencil buffer of the main render target is enabled here, outside any frame. Any failure disables the
- * {@value #FEATURE} feature and {@link DivineSight} falls back to the outline mode.
+ * The stencil buffer of the main render target is enabled here ({@link StencilSupport}), outside any frame. Any
+ * failure disables the {@value #FEATURE} feature and {@link DivineSight} falls back to the outline mode.
  */
 public final class DivineXray {
     public static final String FEATURE = "divine_xray";
@@ -55,13 +49,11 @@ public final class DivineXray {
     private static List<BlockPos> targets = List.of();
     private static List<LivingEntity> entities = List.of();
 
-    private static Sweep glassSweep;
-    private static Sweep targetSweep;
+    private static SectionSweep glassSweep;
+    private static SectionSweep targetSweep;
     private static int ticks;
     private static int glassSweepStart;
     private static int lastVisibleTick = -IDLE_TICKS;
-    private static int stencilBit = -2;
-    private static boolean chainsReloaded;
 
     private DivineXray() {}
 
@@ -76,7 +68,7 @@ public final class DivineXray {
         return LacunaConfig.get(LacunaConfig.DIVINE_SIGHT_ENABLED)
                 && LacunaClientConfig.get(LacunaClientConfig.SIGHT_MODE) == LacunaClientConfig.SightMode.XRAY
                 && !SafeRun.isDisabled(FEATURE)
-                && stencilBit != -1;
+                && !StencilSupport.failed();
     }
 
     static List<BlockPos> glass() {
@@ -93,7 +85,7 @@ public final class DivineXray {
 
     /** Stencil mask reserved for the window, or 0 when the main target has no stencil yet. */
     static int stencilMask() {
-        return stencilBit >= 0 && Minecraft.getInstance().getMainRenderTarget().isStencilEnabled() ? 1 << stencilBit : 0;
+        return StencilSupport.mask();
     }
 
     static int range() {
@@ -143,7 +135,7 @@ public final class DivineXray {
             reset();
             return;
         }
-        if (!ensureStencil(mc)) {
+        if (!StencilSupport.ensure(mc)) {
             return;
         }
         Vec3 eye = camera.getPosition();
@@ -151,7 +143,7 @@ public final class DivineXray {
 
         // 1) Divine Glass around the camera (restarted every few ticks; usually finishes within one tick)
         if (glassSweep == null && ticks - glassSweepStart >= GLASS_SWEEP_EVERY) {
-            glassSweep = new Sweep(level, eye, GLASS_RANGE, s -> s.is(ModTags.Blocks.DIVINE_GLASS));
+            glassSweep = new SectionSweep(level, eye, GLASS_RANGE, s -> s.is(ModTags.Blocks.DIVINE_GLASS));
             glassSweepStart = ticks;
         }
         if (glassSweep != null) {
@@ -171,7 +163,7 @@ public final class DivineXray {
             return;
         }
         if (targetSweep == null) {
-            targetSweep = new Sweep(level, eye, range(), s -> s.is(ModTags.Blocks.DIVINE_SIGHT_TARGETS));
+            targetSweep = new SectionSweep(level, eye, range(), s -> s.is(ModTags.Blocks.DIVINE_SIGHT_TARGETS));
         }
         targetSweep.run(level, Math.max(budget, BLOCK_BUDGET / 4));
         if (targetSweep.done()) {
@@ -189,136 +181,6 @@ public final class DivineXray {
                             && e.distanceToSqr(eye) <= r * r));
             found.sort(Comparator.comparingDouble(e -> e.distanceToSqr(eye)));
             entities = found.size() > MAX_ENTITIES ? List.copyOf(found.subList(0, MAX_ENTITIES)) : List.copyOf(found);
-        }
-    }
-
-    /**
-     * Enables the stencil buffer on the main render target (once, between frames). Fabulous graphics copies depth
-     * from the main target into its own targets, which only works when both have the same depth-stencil format: the
-     * post chains are rebuilt once so that their targets get a stencil too (NeoForge's PostChain mirrors the screen).
-     */
-    private static boolean ensureStencil(Minecraft mc) {
-        if (stencilBit == -2) {
-            stencilBit = StencilManager.reserveBit();
-            if (stencilBit < 0) {
-                Lacuna.LOGGER.warn("Divine Sight: no free stencil bit, using the outline mode");
-                return false;
-            }
-        }
-        RenderTarget main = mc.getMainRenderTarget();
-        if (!main.isStencilEnabled()) {
-            main.enableStencil();
-            Lacuna.LOGGER.info("Divine Sight: stencil buffer enabled on the main render target");
-        }
-        RenderTarget translucent = mc.levelRenderer.getTranslucentTarget();
-        if (translucent != null && !translucent.isStencilEnabled() && !chainsReloaded) {
-            chainsReloaded = true;
-            mc.levelRenderer.onResourceManagerReload(mc.getResourceManager());
-        }
-        return main.isStencilEnabled();
-    }
-
-    /** Progressive, budgeted scan of the chunk sections inside a sphere, nearest sections first. */
-    private static final class Sweep {
-        private final long[] sections;
-        private final Vec3 center;
-        private final double radiusSq;
-        private final Predicate<BlockState> match;
-        private final List<BlockPos> found = new ArrayList<>();
-        private int index;
-
-        Sweep(ClientLevel level, Vec3 center, int radius, Predicate<BlockState> match) {
-            this.center = center;
-            this.radiusSq = (double) radius * radius;
-            this.match = match;
-            int cx = SectionPos.blockToSectionCoord(center.x);
-            int cy = SectionPos.blockToSectionCoord(center.y);
-            int cz = SectionPos.blockToSectionCoord(center.z);
-            int r = (radius >> 4) + 1;
-            int minY = Math.max(cy - r, level.getMinSection());
-            int maxY = Math.min(cy + r, level.getMaxSection() - 1);
-            List<long[]> list = new ArrayList<>();
-            for (int x = cx - r; x <= cx + r; x++) {
-                for (int z = cz - r; z <= cz + r; z++) {
-                    for (int y = minY; y <= maxY; y++) {
-                        double d = sectionDistanceSq(x, y, z);
-                        if (d <= radiusSq) {
-                            list.add(new long[] {SectionPos.asLong(x, y, z), (long) d});
-                        }
-                    }
-                }
-            }
-            list.sort(Comparator.comparingLong(a -> a[1]));
-            this.sections = new long[list.size()];
-            for (int i = 0; i < sections.length; i++) {
-                sections[i] = list.get(i)[0];
-            }
-        }
-
-        /** Squared distance from the centre to the closest point of the section. */
-        private double sectionDistanceSq(int sx, int sy, int sz) {
-            double dx = axis(center.x, sx << 4);
-            double dy = axis(center.y, sy << 4);
-            double dz = axis(center.z, sz << 4);
-            return dx * dx + dy * dy + dz * dz;
-        }
-
-        private static double axis(double c, int min) {
-            return c < min ? min - c : c > min + 16 ? c - (min + 16) : 0.0;
-        }
-
-        boolean done() {
-            return index >= sections.length;
-        }
-
-        /** Scans sections until the budget runs out; returns the budget left. */
-        int run(ClientLevel level, int budget) {
-            while (index < sections.length && budget > 0) {
-                long packed = sections[index++];
-                int sx = SectionPos.x(packed);
-                int sy = SectionPos.y(packed);
-                int sz = SectionPos.z(packed);
-                budget -= 16;
-                LevelChunk chunk = level.getChunkSource().getChunk(sx, sz, false);
-                if (chunk == null) {
-                    continue;
-                }
-                int idx = level.getSectionIndexFromSectionY(sy);
-                LevelChunkSection[] all = chunk.getSections();
-                if (idx < 0 || idx >= all.length) {
-                    continue;
-                }
-                LevelChunkSection section = all[idx];
-                if (section == null || section.hasOnlyAir() || !section.maybeHas(match)) {
-                    continue;
-                }
-                budget -= 4096;
-                int bx = sx << 4;
-                int by = sy << 4;
-                int bz = sz << 4;
-                for (int y = 0; y < 16; y++) {
-                    double dy = by + y + 0.5 - center.y;
-                    for (int z = 0; z < 16; z++) {
-                        double dz = bz + z + 0.5 - center.z;
-                        for (int x = 0; x < 16; x++) {
-                            BlockState state = section.getBlockState(x, y, z);
-                            if (state.isAir() || !match.test(state)) {
-                                continue;
-                            }
-                            double dx = bx + x + 0.5 - center.x;
-                            if (dx * dx + dy * dy + dz * dz <= radiusSq) {
-                                found.add(new BlockPos(bx + x, by + y, bz + z));
-                            }
-                        }
-                    }
-                }
-            }
-            return budget;
-        }
-
-        List<BlockPos> result(int max) {
-            found.sort(Comparator.comparingDouble(p -> p.distToCenterSqr(center)));
-            return List.copyOf(found.size() > max ? found.subList(0, max) : found);
         }
     }
 }
