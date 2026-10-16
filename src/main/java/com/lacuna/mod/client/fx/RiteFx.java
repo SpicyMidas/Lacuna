@@ -31,6 +31,9 @@ public final class RiteFx {
 
     private static void flashIfHere(Vec3 at, int rgb, float alpha, int ticks) {
         Minecraft mc = Minecraft.getInstance();
+        if (com.lacuna.mod.client.portal.PortalTransition.active()) {
+            return; // crossing through a Forgotten Portal: its void transition already covers the screen
+        }
         if (mc.player != null && mc.player.position().distanceToSqr(at) < 2.5 * 2.5) {
             ScreenFx.flash(rgb, alpha, ticks);
         }

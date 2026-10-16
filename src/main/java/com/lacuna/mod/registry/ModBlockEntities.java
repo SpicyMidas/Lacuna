@@ -1,6 +1,7 @@
 package com.lacuna.mod.registry;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.banish.ForgottenPortalBlockEntity;
 import com.lacuna.mod.fl.UpdraftSpringBlockEntity;
 import com.lacuna.mod.lantern.NullLanternBlockEntity;
 import com.lacuna.mod.pearl.ArrivalAnchorBlockEntity;
@@ -26,6 +27,12 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<NullLanternBlockEntity>> NULL_LANTERN =
             BLOCK_ENTITIES.register("null_lantern",
                     () -> BlockEntityType.Builder.of(NullLanternBlockEntity::new, ModBlocks.NULL_LANTERN.get()).build(null));
+
+    /** Rendering only: the Forgotten Portal's seamless screen-space surface. */
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<ForgottenPortalBlockEntity>> FORGOTTEN_PORTAL =
+            BLOCK_ENTITIES.register("forgotten_portal",
+                    () -> BlockEntityType.Builder.of(ForgottenPortalBlockEntity::new, ModBlocks.FORGOTTEN_PORTAL.get()).build(null));
 
     private ModBlockEntities() {}
 }
