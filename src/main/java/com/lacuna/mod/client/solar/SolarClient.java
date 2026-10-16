@@ -30,6 +30,7 @@ public final class SolarClient {
         forgeBus.addListener(SolarClient::onClientTick);
         forgeBus.addListener(SolarClient::onRenderLevel);
         forgeBus.addListener(SolarClient::onFogColor);
+        forgeBus.addListener(SolarSky::onFrame);
         forgeBus.addListener(SolarClient::onLogout);
         HandPose.register(forgeBus);
     }

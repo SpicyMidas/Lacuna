@@ -57,6 +57,9 @@ public class SunsFuryEntity extends Projectile {
     private static final EntityDataAccessor<Integer> DATA_FOCUS_TICKS =
             SynchedEntityData.defineId(SunsFuryEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Vector3f> DATA_DIR = SynchedEntityData.defineId(SunsFuryEntity.class, EntityDataSerializers.VECTOR3);
+    /** The day-time sweep of the focus (0, 0 when the time is not swept), so clients can move the sun every frame. */
+    private static final EntityDataAccessor<Long> DATA_SWEEP_FROM = SynchedEntityData.defineId(SunsFuryEntity.class, EntityDataSerializers.LONG);
+    private static final EntityDataAccessor<Long> DATA_SWEEP_TO = SynchedEntityData.defineId(SunsFuryEntity.class, EntityDataSerializers.LONG);
 
     /** Client only: recent positions of the flying spear (oldest first), for the light trail. */
     public final Deque<Vec3> trail = new ArrayDeque<>();
@@ -85,6 +88,8 @@ public class SunsFuryEntity extends Projectile {
         builder.define(DATA_FOCUS_START, 0);
         builder.define(DATA_FOCUS_TICKS, Balance.SUNS_FURY_FOCUS_TICKS);
         builder.define(DATA_DIR, new Vector3f(0.0F, -1.0F, 0.0F));
+        builder.define(DATA_SWEEP_FROM, 0L);
+        builder.define(DATA_SWEEP_TO, 0L);
     }
 
     // ------------------------------------------------------------------ state (read by the client renderer)
@@ -111,6 +116,19 @@ public class SunsFuryEntity extends Projectile {
         }
         int age = (int) level().getGameTime() - entityData.get(DATA_FOCUS_START);
         return SolarMath.progress(Math.max(0, age) + partialTick, focusTicks());
+    }
+
+    /**
+     * Client: the day time the focus sweep has reached at this frame, following the server's schedule
+     * ({@link SolarMath#sweep}) between the once-per-tick time packets; -1 when this spear does not sweep the time.
+     */
+    public long smoothDayTime(float partialTick) {
+        long from = entityData.get(DATA_SWEEP_FROM);
+        long to = entityData.get(DATA_SWEEP_TO);
+        if (!isFocusing() || to <= from) {
+            return -1L;
+        }
+        return SolarMath.sweep(from, to, focusProgress(partialTick));
     }
 
     /** Unit direction the spear points along: its velocity in flight, its landing direction once embedded. */
@@ -324,6 +342,10 @@ public class SunsFuryEntity extends Projectile {
         sweepTime = server.dimension() == Level.OVERWORLD && LacunaConfig.get(LacunaConfig.SOLAR_CHANGE_TIME);
         startDay = server.getDayTime();
         targetDay = SolarMath.nextNoon(startDay);
+        if (sweepTime) {
+            entityData.set(DATA_SWEEP_FROM, startDay);
+            entityData.set(DATA_SWEEP_TO, targetDay);
+        }
         if (sweepTime) {
             server.setWeatherParameters(12000, 0, false, false); // rain fades out naturally
         }

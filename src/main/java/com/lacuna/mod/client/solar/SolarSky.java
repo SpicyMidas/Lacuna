@@ -34,6 +34,29 @@ public final class SolarSky {
 
     private SolarSky() {}
 
+    /**
+     * Every frame while a nearby Sun's Fury sweeps the time, the sun moves along the very schedule the server follows
+     * (instead of jumping once per tick when the time packets arrive), so the sun, the sky colours and the sunbeams that
+     * lean towards it glide smoothly. Never moves the time backwards; costs one pass over the rendered entities.
+     */
+    public static void onFrame(net.neoforged.neoforge.client.event.RenderFrameEvent.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.isPaused()) {
+            return;
+        }
+        float pt = event.getPartialTick().getGameTimeDeltaPartialTick(true);
+        for (net.minecraft.world.entity.Entity e : mc.level.entitiesForRendering()) {
+            if (e instanceof SunsFuryEntity spear && spear.isFocusing()) {
+                long t = spear.smoothDayTime(pt);
+                if (t > mc.level.getDayTime()) {
+                    // the level data directly: ClientLevel#setDayTime would also flip the client's daylight rule
+                    mc.level.getLevelData().setDayTime(t);
+                }
+                return;
+            }
+        }
+    }
+
     static void reset() {
         boost = 0.0F;
         boostO = 0.0F;
