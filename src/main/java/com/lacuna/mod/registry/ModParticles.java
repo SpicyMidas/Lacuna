@@ -37,6 +37,9 @@ public final class ModParticles {
     /** Ember Triangle: a glowing ember speck that cools from orange to grey. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> EMBER_SPECK = simple("ember_speck");
 
+    /** Chrono Hourglass: a tiny pale-blue clock face whose hand sweeps round as it rises and fades. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CHRONO_TICK = simple("chrono_tick");
+
     private ModParticles() {}
 
     private static DeferredHolder<ParticleType<?>, SimpleParticleType> simple(String name) {
