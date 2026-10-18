@@ -1,0 +1,30 @@
+{
+  "category": "misc",
+  "key": {
+    "#": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "lacuna:chronal_shard"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "S": {
+      "item": "minecraft:sand"
+    },
+    "U": {
+      "item": "lacuna:umbral_steel_ingot"
+    }
+  },
+  "pattern": [
+    "GUG",
+    "#C#",
+    "GSG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:chrono_hourglass"
+  },
+  "type": "minecraft:crafting_shaped"
+}

@@ -25,6 +25,12 @@
    "west"
   ]
  },
+ "chrono_hourglass": {
+  "half": [
+   "lower",
+   "upper"
+  ]
+ },
  "cindervine_door": {
   "facing": [
    "north",
