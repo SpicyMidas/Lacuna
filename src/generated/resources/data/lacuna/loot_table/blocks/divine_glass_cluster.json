@@ -29,15 +29,6 @@
             {
               "functions": [
                 {
-                  "add": false,
-                  "count": {
-                    "max": 2.0,
-                    "min": 1.0,
-                    "type": "minecraft:uniform"
-                  },
-                  "function": "minecraft:set_count"
-                },
-                {
                   "enchantment": "minecraft:fortune",
                   "formula": "minecraft:uniform_bonus_count",
                   "function": "minecraft:apply_bonus",

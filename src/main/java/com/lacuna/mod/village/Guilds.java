@@ -42,7 +42,7 @@ public final class Guilds {
     private static final Object[][] SMITHS = {{"minecraft:iron_ingot", 12, 24, 6, 10}, {"lacuna:umbral_steel_ingot", 4, 8, 8, 14},
             {"minecraft:coal", 32, 64, 4, 8}};
     private static final Object[][] GEMCUTTERS = {{"lacuna:ruby", 4, 8, 8, 12}, {"minecraft:lapis_lazuli", 16, 32, 5, 8},
-            {"lacuna:divine_glass_shard", 6, 12, 8, 12}};
+            {"lacuna:divine_glass_shard", 2, 4, 10, 14}};
     private static final Object[][] SCHOLARS = {{"minecraft:paper", 16, 32, 4, 8}, {"minecraft:book", 4, 8, 6, 10},
             {"lacuna:echo_fragment", 1, 3, 8, 14}};
 

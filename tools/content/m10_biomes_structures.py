@@ -250,7 +250,7 @@ def bell_tower(g):
     single_structure(g, "sunken_bell_tower", "#lacuna:has_structure/sunken_bell_tower", "OCEAN_FLOOR_WG", 1530771209, 36, 12)
     g.data("loot_table/chests/sunken_bell_tower", wg.chest_table([
         wg.chest_pool([wg.loot_entry("minecraft:prismarine_shard", 20, 2, 6), wg.loot_entry("minecraft:prismarine_crystals", 15, 1, 4),
-                       wg.loot_entry("lacuna:ruby", 10, 1, 3), wg.loot_entry("lacuna:divine_glass_shard", 4, 1, 2),
+                       wg.loot_entry("lacuna:ruby", 10, 1, 3), wg.loot_entry("lacuna:divine_glass_shard", 2, 1, 1),
                        wg.loot_entry("minecraft:gold_ingot", 10, 1, 3), wg.loot_entry("minecraft:iron_ingot", 12, 1, 4),
                        wg.loot_entry("minecraft:nautilus_shell", 5), wg.loot_entry("lacuna:chronal_shard", 3),
                        wg.loot_entry("minecraft:copper_ingot", 12, 2, 6)], 3, 6),
@@ -331,7 +331,7 @@ def labyrinth(g):
     g.data("worldgen/structure/mirror_labyrinth", wg.jigsaw_structure(mod("mirror_labyrinth"), "#lacuna:is_forgotten_land"))
     g.data("worldgen/structure_set/mirror_labyrinth", wg.structure_set([mod("mirror_labyrinth")], 30, 10, 1179408013))
     g.data("loot_table/chests/mirror_hoard", wg.chest_table([
-        wg.chest_pool([wg.loot_entry("lacuna:divine_glass_shard", 8, 1, 3), wg.loot_entry("lacuna:ruby", 15, 2, 5),
+        wg.chest_pool([wg.loot_entry("lacuna:divine_glass_shard", 4, 1, 2), wg.loot_entry("lacuna:ruby", 15, 2, 5),
                        wg.loot_entry("lacuna:chronal_shard", 8, 1, 2), wg.loot_entry("lacuna:echo_fragment", 6, 1, 2),
                        wg.loot_entry("minecraft:amethyst_shard", 10, 2, 6)], 4, 7),
         {"bonus_rolls": 0.0, "rolls": 1.0, "entries": [

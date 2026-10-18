@@ -66,7 +66,7 @@ public final class MerchantPricing {
 
     /** What the Last Merchant sells for rubies: item, count, price in rubies, max uses. */
     public static final Object[][] CATALOG = {
-            {"lacuna:divine_glass_shard", 1, 2, 12},
+            {"lacuna:divine_glass_shard", 1, 4, 6},
             {"lacuna:chronal_shard", 1, 6, 3},
             {"minecraft:echo_shard", 1, 8, 3},
             {"lacuna:umbral_steel_ingot", 1, 4, 8},
@@ -125,7 +125,7 @@ public final class MerchantPricing {
             }
         }
         if (solarFragment) {
-            offers.add(new Offer(currency, 16, "lacuna:divine_glass_shard", 24, "lacuna:solar_flare_fragment", 1, 1));
+            offers.add(new Offer(currency, 16, "lacuna:divine_glass_shard", 8, "lacuna:solar_flare_fragment", 1, 1));
         }
         return offers;
     }

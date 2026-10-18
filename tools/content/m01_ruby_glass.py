@@ -24,8 +24,7 @@ def build(g):
     cluster_loot = {"type": "minecraft:block", "pools": [pool([{"type": "minecraft:alternatives", "children": [
         {"type": "minecraft:item", "conditions": [SILK], "name": mod("divine_glass_cluster")},
         {"type": "minecraft:item", "name": mod("divine_glass_shard"), "functions": [
-            {"function": "minecraft:set_count", "add": False, "count": {"type": "minecraft:uniform", "min": 1.0, "max": 2.0}},
-            {"function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune",
+                        {"function": "minecraft:apply_bonus", "enchantment": "minecraft:fortune",
              "formula": "minecraft:uniform_bonus_count", "parameters": {"bonusMultiplier": 1}},
             {"function": "minecraft:explosion_decay"}]}]}])],
         "random_sequence": mod("blocks/divine_glass_cluster")}

@@ -40,7 +40,7 @@ class MerchantPricingTest {
         }
         var fragment = offers.stream().filter(o -> o.resultItem().equals("lacuna:solar_flare_fragment")).findFirst().orElseThrow();
         assertEquals(16, fragment.costCount());
-        assertEquals(24, fragment.cost2Count());
+        assertEquals(8, fragment.cost2Count());
         assertEquals(1, fragment.maxUses());
         assertFalse(offers.stream().anyMatch(o -> o.costCount() > 64 || o.costCount() < 1));
     }

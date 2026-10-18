@@ -2,7 +2,7 @@
   "feature": "lacuna:divine_glass_cluster_patch",
   "placement": [
     {
-      "chance": 18,
+      "chance": 40,
       "type": "minecraft:rarity_filter"
     },
     {
