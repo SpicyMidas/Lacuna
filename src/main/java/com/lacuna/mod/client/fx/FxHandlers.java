@@ -1,7 +1,6 @@
 package com.lacuna.mod.client.fx;
 
 import com.lacuna.mod.network.FxPayload;
-import com.lacuna.mod.util.SafeRun;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -22,7 +21,8 @@ public final class FxHandlers {
         if (handler == null || Minecraft.getInstance().level == null) {
             return;
         }
-        SafeRun.run("fx_" + payload.kind(), () -> handler.accept(payload));
+        // a failing handler costs this one effect only: it is logged and the kind keeps working (FxGuard, not SafeRun)
+        FxGuard.run("fx_" + payload.kind(), () -> handler.accept(payload));
     }
 
     /** Called once from the client entry point: every feature registers its effect kinds here. */

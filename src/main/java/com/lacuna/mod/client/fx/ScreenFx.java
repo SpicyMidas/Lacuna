@@ -1,7 +1,6 @@
 package com.lacuna.mod.client.fx;
 
 import com.lacuna.mod.Lacuna;
-import com.lacuna.mod.util.SafeRun;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -118,7 +117,7 @@ public final class ScreenFx {
     }
 
     public static void onCameraAngles(ViewportEvent.ComputeCameraAngles event) {
-        if (shakeTicks <= 0 || SafeRun.isDisabled(FEATURE)) {
+        if (shakeTicks <= 0) {
             return;
         }
         float t = (float) ((Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getGameTime() : 0)
@@ -138,7 +137,7 @@ public final class ScreenFx {
         if (OVERLAYS.isEmpty() && flashTicks <= 0) {
             return;
         }
-        SafeRun.run(FEATURE, () -> {
+        FxGuard.run(FEATURE, () -> {
             float partial = delta.getGameTimeDeltaPartialTick(false);
             float s = scale();
             if (s <= 0.0F) {
@@ -157,8 +156,12 @@ public final class ScreenFx {
                     RenderSystem.defaultBlendFunc();
                     RenderSystem.setShaderColor(((o.rgb >> 16) & 0xFF) / 255.0F, ((o.rgb >> 8) & 0xFF) / 255.0F,
                             (o.rgb & 0xFF) / 255.0F, Mth.clamp(a, 0.0F, 1.0F));
-                    g.blit(VIGNETTE, 0, 0, 0, 0.0F, 0.0F, w, h, w, h);
-                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    try {
+                        g.blit(VIGNETTE, 0, 0, 0, 0.0F, 0.0F, w, h, w, h);
+                    } finally {
+                        // never leave the tint behind: it would colour everything drawn after it
+                        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+                    }
                 } else {
                     g.fill(0, 0, w, h, FxDraw.argb(a, o.rgb));
                 }

@@ -3,12 +3,15 @@ package com.lacuna.mod.client.fx;
 import com.lacuna.mod.Lacuna;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.function.Function;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Effect render types. All use {@code POSITION_TEX_COLOR} quads (see {@link FxDraw}), never write depth, cull nothing
@@ -19,6 +22,9 @@ import net.minecraft.resources.ResourceLocation;
  *   <li>{@link #beam()} / {@link #glowShader()}: procedural core shaders (premultiplied, ONE/ONE), with an
  *       automatic textured fallback when the shader did not load.</li>
  * </ul>
+ * Every type that renders in depth order also has a depth-only twin ({@link #depthTwin}), drawn by {@link FxManager}
+ * after the colour under Fabulous graphics so the transparency shader sorts effects by their own depth instead of the
+ * depth of the opaque surface behind them.
  */
 public final class FxRenderTypes {
     /** Soft radial alpha mask. */
@@ -35,15 +41,29 @@ public final class FxRenderTypes {
     private static final RenderStateShard.ShaderStateShard BEAM_SHADER = new RenderStateShard.ShaderStateShard(FxShaders::beam);
     private static final RenderStateShard.ShaderStateShard GLOW_SHADER = new RenderStateShard.ShaderStateShard(FxShaders::glow);
 
-    private static final Function<ResourceLocation, RenderType> ADDITIVE = Util.memoize(tex -> RenderType.create(
+    /** Effect render type -> its depth-only twin (render thread only). */
+    private static final Map<RenderType, RenderType> DEPTH_TWINS = new IdentityHashMap<>();
+    private static final Function<ResourceLocation, RenderType> DEPTH = Util.memoize(tex -> RenderType.create(
+            "lacuna_depth_" + tex.getPath(), DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 1536, false, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(POS_TEX_COLOR)
+                    .setTextureState(new RenderStateShard.TextureStateShard(tex, false, false))
+                    .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
+                    .setWriteMaskState(RenderStateShard.DEPTH_WRITE)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
+                    .setOutputState(RenderStateShard.PARTICLES_TARGET)
+                    .createCompositeState(false)));
+
+    private static final Function<ResourceLocation, RenderType> ADDITIVE = Util.memoize(tex -> twin(RenderType.create(
             "lacuna_additive_" + tex.getPath(), DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 1536, false, false,
-            state(tex, RenderStateShard.LIGHTNING_TRANSPARENCY, POS_TEX_COLOR, RenderStateShard.LEQUAL_DEPTH_TEST)));
+            state(tex, RenderStateShard.LIGHTNING_TRANSPARENCY, POS_TEX_COLOR, RenderStateShard.LEQUAL_DEPTH_TEST)), tex));
     private static final Function<ResourceLocation, RenderType> ADDITIVE_THROUGH = Util.memoize(tex -> RenderType.create(
             "lacuna_additive_through_" + tex.getPath(), DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 1536, false, false,
             state(tex, RenderStateShard.LIGHTNING_TRANSPARENCY, POS_TEX_COLOR, RenderStateShard.NO_DEPTH_TEST)));
-    private static final Function<ResourceLocation, RenderType> SHADE = Util.memoize(tex -> RenderType.create(
+    private static final Function<ResourceLocation, RenderType> SHADE = Util.memoize(tex -> twin(RenderType.create(
             "lacuna_shade_" + tex.getPath(), DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 1536, false, true,
-            state(tex, RenderStateShard.TRANSLUCENT_TRANSPARENCY, POS_TEX_COLOR, RenderStateShard.LEQUAL_DEPTH_TEST)));
+            state(tex, RenderStateShard.TRANSLUCENT_TRANSPARENCY, POS_TEX_COLOR, RenderStateShard.LEQUAL_DEPTH_TEST)), tex));
 
     private static final RenderType BEAM_SHADED = RenderType.create("lacuna_beam", DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormat.Mode.QUADS, 1536, false, false,
@@ -67,6 +87,26 @@ public final class FxRenderTypes {
                     .createCompositeState(false));
 
     private FxRenderTypes() {}
+
+    private static RenderType twin(RenderType type, ResourceLocation mask) {
+        DEPTH_TWINS.put(type, DEPTH.apply(mask));
+        return type;
+    }
+
+    /**
+     * The depth-only twin of an effect render type (same texture, so fully transparent texels write nothing), or null for
+     * types that must not write depth (seen-through effects) or that are not Lacuna effect types.
+     */
+    @Nullable
+    public static RenderType depthTwin(RenderType type) {
+        if (type == BEAM_SHADED) {
+            return DEPTH.apply(BEAM);
+        }
+        if (type == GLOW_SHADED) {
+            return DEPTH.apply(GLOW);
+        }
+        return DEPTH_TWINS.get(type);
+    }
 
     private static RenderType.CompositeState state(ResourceLocation tex, RenderStateShard.TransparencyStateShard transparency,
                                                    RenderStateShard.ShaderStateShard shader, RenderStateShard.DepthTestStateShard depth) {

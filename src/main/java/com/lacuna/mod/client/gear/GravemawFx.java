@@ -2,6 +2,7 @@ package com.lacuna.mod.client.gear;
 
 import com.lacuna.mod.client.fx.ClientFx;
 import com.lacuna.mod.client.fx.FxDraw;
+import com.lacuna.mod.client.fx.FxGuard;
 import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
@@ -10,13 +11,12 @@ import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.gear.GravemawGreatswordItem;
 import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModParticles;
-import com.lacuna.mod.util.SafeRun;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import java.util.HashMap;
+import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Gravemaw Greatsword visuals (client): shadow gathering onto the blade and a growing ground aura while any player
@@ -37,6 +37,8 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
  */
 public final class GravemawFx {
     private static final String FEATURE = "gravemaw_fx";
+    /** The running charge aura of each charging player (one aura effect each). */
+    private static final Map<Integer, ChargeAura> AURAS = new HashMap<>();
     private static final int VIOLET = 0x9B5CFF;
     private static final int PALE = 0xE6D2FF;
 
@@ -59,14 +61,25 @@ public final class GravemawFx {
     public static void onClientTick(ClientTickEvent.Post event) {
         Minecraft mc = Minecraft.getInstance();
         ClientLevel level = mc.level;
-        if (level == null || mc.isPaused()) {
+        if (level == null) {
+            AURAS.clear();
             return;
         }
-        SafeRun.run(FEATURE, () -> {
+        if (mc.isPaused()) {
+            return;
+        }
+        FxGuard.run(FEATURE, () -> {
             RandomSource r = level.random;
             for (Player p : level.players()) {
                 if (!charging(p)) {
                     continue;
+                }
+                ChargeAura aura = AURAS.get(p.getId());
+                if (aura == null || aura.stale(level.getGameTime())) {
+                    // the ground aura is an ordinary effect: isolated, and depth-sorted under Fabulous graphics
+                    aura = new ChargeAura(p.getId(), level.getGameTime());
+                    AURAS.put(p.getId(), aura);
+                    FxManager.add(aura);
                 }
                 float f = chargeOf(p, 0.0F);
                 Vec3 blade = p.position().add(0, 1.3, 0).add(p.getLookAngle().multiply(1, 0, 1).scale(0.5));
@@ -92,42 +105,57 @@ public final class GravemawFx {
         });
     }
 
-    public static void onRenderLevel(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            return;
+    /** Violet rings and a soft pool of shadow light under a charging player; ends when the charge does. */
+    private static final class ChargeAura implements ClientFx {
+        private final int playerId;
+        /** Game time of the last tick: an aura the manager dropped stops ticking and is replaced. */
+        private long seen;
+
+        ChargeAura(int playerId, long now) {
+            this.playerId = playerId;
+            this.seen = now;
         }
-        Minecraft mc = Minecraft.getInstance();
-        ClientLevel level = mc.level;
-        PoseStack pose = event.getPoseStack();
-        if (level == null || pose == null) {
-            return;
+
+        boolean stale(long now) {
+            return now - seen > 3L;
         }
-        SafeRun.run(FEATURE, () -> {
-            float partial = event.getPartialTick().getGameTimeDeltaPartialTick(false);
-            Vec3 cam = event.getCamera().getPosition();
-            MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
-            boolean any = false;
-            for (Player p : level.players()) {
-                if (!charging(p)) {
-                    continue;
-                }
-                any = true;
-                float f = chargeOf(p, partial);
-                float t = (level.getGameTime() + partial) * 0.25F;
-                float pulse = f >= 1.0F ? 0.75F + 0.25F * Mth.sin(t * 2.0F) : 1.0F;
-                Vec3 feet = p.getPosition(partial).add(0, 0.04, 0).subtract(cam);
-                VertexConsumer ring = buffers.getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
-                FxDraw.ground(pose.last(), ring, feet, 0.9F + 2.4F * f, FxDraw.argb((0.25F + 0.55F * f) * pulse, VIOLET));
-                FxDraw.ground(pose.last(), ring, feet.add(0, 0.01, 0), (0.6F + 1.4F * f) * (0.9F + 0.1F * Mth.sin(t)),
-                        FxDraw.argb(0.3F * f * pulse, PALE));
-                VertexConsumer glow = buffers.getBuffer(FxRenderTypes.additive(FxRenderTypes.GLOW));
-                FxDraw.ground(pose.last(), glow, feet, 1.2F + 2.0F * f, FxDraw.argb(0.18F * f * pulse, VIOLET));
+
+        @Nullable
+        private Player player() {
+            ClientLevel level = Minecraft.getInstance().level;
+            return level != null && level.getEntity(playerId) instanceof Player p && charging(p) ? p : null;
+        }
+
+        @Override
+        public boolean tick() {
+            ClientLevel level = Minecraft.getInstance().level;
+            if (level != null && player() != null) {
+                seen = level.getGameTime();
+                return true;
             }
-            if (any) {
-                buffers.endBatch();
-                RenderSystem.defaultBlendFunc();
+            AURAS.remove(playerId, this);
+            return false;
+        }
+
+        @Override
+        public void render(FxRenderContext ctx) {
+            Player p = player();
+            if (p == null) {
+                return;
             }
-        });
+            float partial = ctx.partialTick();
+            float f = chargeOf(p, partial);
+            float t = (ctx.level().getGameTime() + partial) * 0.25F;
+            float pulse = f >= 1.0F ? 0.75F + 0.25F * Mth.sin(t * 2.0F) : 1.0F;
+            PoseStack.Pose pose = ctx.pose().last();
+            Vec3 feet = ctx.rel(p.getPosition(partial)).add(0, 0.04, 0);
+            VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
+            FxDraw.ground(pose, ring, feet, 0.9F + 2.4F * f, FxDraw.argb((0.25F + 0.55F * f) * pulse, VIOLET));
+            FxDraw.ground(pose, ring, feet.add(0, 0.01, 0), (0.6F + 1.4F * f) * (0.9F + 0.1F * Mth.sin(t)),
+                    FxDraw.argb(0.3F * f * pulse, PALE));
+            VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.GLOW));
+            FxDraw.ground(pose, glow, feet, 1.2F + 2.0F * f, FxDraw.argb(0.18F * f * pulse, VIOLET));
+        }
     }
 
     private static void ready(FxPayload p) {
