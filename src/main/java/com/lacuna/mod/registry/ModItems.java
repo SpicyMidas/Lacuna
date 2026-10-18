@@ -177,6 +177,10 @@ public final class ModItems {
             com.lacuna.mod.gear.QuickeningWandItem::new,
             new Item.Properties().durability(Balance.QUICKENING_DURABILITY).rarity(Rarity.RARE));
 
+    // ------------------------------------------------------------------ Comically Large Bag
+    public static final DeferredItem<com.lacuna.mod.bag.ComicallyLargeBagItem> COMICALLY_LARGE_BAG = item("comically_large_bag",
+            com.lacuna.mod.bag.ComicallyLargeBagItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant());
+
     private ModItems() {}
 
     /**

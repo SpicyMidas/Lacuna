@@ -79,6 +79,7 @@ public final class Lacuna {
         AnvilRepairs.add(ModItems.DEPARTURE_SHARD, () -> net.minecraft.world.item.Items.ENDER_PEARL, Balance.SHARD_REPAIR_PER_PEARL);
         AnvilRepairs.add(ModItems.EMBER_TRIANGLE, ModItems.EMBER, Balance.EMBER_TRIANGLE_REPAIR_PER_EMBER);
         NeoForge.EVENT_BUS.addListener(AnvilRepairs::onAnvilUpdate);
+        com.lacuna.mod.bag.BagEvents.register(NeoForge.EVENT_BUS);
         if (SmokeRunner.isActive()) {
             SmokeRunner.register(NeoForge.EVENT_BUS);
         }
