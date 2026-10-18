@@ -92,7 +92,8 @@ public final class SolarSky {
             boost = 0.0F;
         }
         if (focusVignette > 0.01F) {
-            ScreenFx.hold("solar_focus", 0xFFA030, focusVignette, true);
+            // the sun's colour by day, a softer white light by night (SunLight as of the last frame)
+            ScreenFx.hold("solar_focus", SunLight.lit(0xFFA030, 0.0F), focusVignette * (0.5F + 0.5F * SunLight.up), true);
         }
         if (strikeVignette > 0.01F) {
             ScreenFx.hold("solar_strike", 0xFFE2A0, strikeVignette, true);
@@ -123,9 +124,14 @@ public final class SolarSky {
             return;
         }
         ClientLevel level = mc.level;
-        float clear = 1.0F - level.getRainLevel(pt);
-        double angle = level.getTimeOfDay(pt) * Math.PI * 2.0;
-        Vec3 sun = new Vec3(-Math.sin(angle), Math.cos(angle), 0.0).scale(100.0);
+        // the flare sits on the sun as drawn (SunLight: vanilla's sun direction), takes its sunrise / sunset colour and
+        // sinks out of sight with it
+        SunLight.update(level, pt);
+        float clear = (1.0F - level.getRainLevel(pt)) * SunLight.up;
+        if (clear <= 0.003F) {
+            return;
+        }
+        Vec3 sun = new Vec3(SunLight.dirX * 100.0, SunLight.dirY * 100.0, 0.0);
         float t = (level.getGameTime() % 24000L) + pt;
 
         PoseStack pose = new PoseStack();
@@ -134,12 +140,14 @@ public final class SolarSky {
         Camera camera = event.getCamera();
         // a vast golden wash that tints the sky around the sun (covers rather than adds, so it stays gold by day)
         VertexConsumer wash = buffers.getBuffer(SolarRenderTypes.skyWash());
-        FxDraw.billboard(pose.last(), wash, camera, sun, 70.0F + 50.0F * b, 0.0F, FxDraw.argb(0.42F * b * clear, 0xFFA640));
+        FxDraw.billboard(pose.last(), wash, camera, sun, 70.0F + 50.0F * b, 0.0F, FxDraw.argb(0.42F * b * clear, SunLight.shade(0xFFA640, 0.0F)));
         buffers.endBatch();
         // the flaring sun: a crown of turning rays and a white-hot disc
         VertexConsumer corona = buffers.getBuffer(SolarRenderTypes.skyCorona());
-        FxDraw.billboard(pose.last(), corona, camera, sun, 18.0F + 26.0F * b, t * 0.0015F, FxDraw.argb(0.85F * b * clear, 0xFFC860));
-        FxDraw.billboard(pose.last(), corona, camera, sun, 9.0F + 7.0F * b, -t * 0.002F, FxDraw.argb(0.8F * b * clear, 0xFFF2D0));
+        FxDraw.billboard(pose.last(), corona, camera, sun, 18.0F + 26.0F * b, t * 0.0015F,
+                FxDraw.argb(0.85F * b * clear, SunLight.shade(0xFFC860, 0.2F)));
+        FxDraw.billboard(pose.last(), corona, camera, sun, 9.0F + 7.0F * b, -t * 0.002F,
+                FxDraw.argb(0.8F * b * clear, SunLight.shade(0xFFF2D0, 0.7F)));
         buffers.endBatch();
         RenderSystem.defaultBlendFunc();
     }

@@ -374,12 +374,9 @@ public class SunsFuryEntity extends Projectile {
         return distanceSqr < max * max;
     }
 
+    /** The flying spear's trail; while focusing the renderer skips the frustum test (its light starts at the sun). */
     @Override
     public AABB getBoundingBoxForCulling() {
-        if (isFocusing()) {
-            // the light cone leans toward the sun (up to ~40 degrees) and its shafts start on a ring 42 blocks wide
-            return new AABB(getX() - 130, getY() - 4, getZ() - 130, getX() + 130, getY() + 270, getZ() + 130);
-        }
         return getBoundingBox().inflate(2.0);
     }
 

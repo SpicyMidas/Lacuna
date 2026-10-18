@@ -8,6 +8,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -49,6 +50,18 @@ public class SunsFuryRenderer extends EntityRenderer<SunsFuryEntity> {
      */
     static boolean tooCloseToShow(SunsFuryEntity spear, Vec3 camera) {
         return !spear.isFocusing() && spear.tickCount < 4 && spear.position().distanceToSqr(camera) < 3.5 * 3.5;
+    }
+
+    /**
+     * While it focuses, the spear's light reaches from the sun's disc (wherever the sun is in the sky) down to the
+     * target: draw it whenever it is in range, even with the target itself out of view.
+     */
+    @Override
+    public boolean shouldRender(SunsFuryEntity spear, Frustum frustum, double camX, double camY, double camZ) {
+        if (spear.isFocusing()) {
+            return spear.shouldRender(camX, camY, camZ);
+        }
+        return super.shouldRender(spear, frustum, camX, camY, camZ);
     }
 
     @Override
