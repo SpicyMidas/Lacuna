@@ -177,6 +177,12 @@ public final class ModItems {
             com.lacuna.mod.gear.QuickeningWandItem::new,
             new Item.Properties().durability(Balance.QUICKENING_DURABILITY).rarity(Rarity.RARE));
 
+    // ------------------------------------------------------------------ Starcaller Trumpet (calls a falling star)
+    public static final DeferredItem<com.lacuna.mod.star.StarcallerTrumpetItem> STARCALLER_TRUMPET = item("starcaller_trumpet",
+            com.lacuna.mod.star.StarcallerTrumpetItem::new,
+            new Item.Properties().durability(com.lacuna.mod.star.Starfall.TRUMPET_DURABILITY).rarity(Rarity.RARE));
+    public static final DeferredItem<Item> STAR_FRAGMENT = item("star_fragment", Item::new, new Item.Properties().rarity(Rarity.UNCOMMON));
+
     private ModItems() {}
 
     /**

@@ -47,5 +47,6 @@ public final class LacunaClient {
         com.lacuna.mod.client.eclipse.EclipseClient.register(modBus, NeoForge.EVENT_BUS);
         com.lacuna.mod.client.portal.ForgottenPortalClient.register(modBus, NeoForge.EVENT_BUS);
         com.lacuna.mod.client.debug.ClientDemo.register(NeoForge.EVENT_BUS);
+        com.lacuna.mod.client.star.StarClient.register(modBus, NeoForge.EVENT_BUS);
     }
 }
