@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0 — revision 7 (player feedback)
+
+- **Wand of Quickening:** the spark of life is now a shader projectile: a glowing pink orb with a white-hot heart that
+  flies from the wand to the item along a corkscrewing arc, trailing a ribbon of light, and bursts into a ring of light
+  and hearts.
+- **Divine glass** is much rarer: clusters in 1 of 40 Forgotten Plains chunks (was 18), smaller patches, one shard per
+  cluster; fewer shards in chests; the Last Merchant asks 4 rubies a shard.
+- **Ruby ore** no longer shines/animates, like every other ore (hand-drawn base frame).
+<!-- rev7 -->
+
 ## 0.6.0 — revision 6 (player feedback)
 
 - **Slashes like vanilla:** the Eclipser and the Gravemaw Greatsword sweep exactly like a vanilla sword (same rules,
