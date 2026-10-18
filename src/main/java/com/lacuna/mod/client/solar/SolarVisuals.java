@@ -249,7 +249,7 @@ public final class SolarVisuals {
         Vec3 target = spear.getPosition(pt);
         Vec3 rt = ctx.rel(target);
 
-        // 1-3. the gathered sunlight, straight from the sun's disc, only while the sun is above the horizon
+        // 1-3. the gathered sunlight, from the sun's disc, only while the sun is above the horizon
         if (SunLight.up > 0.003F) {
             sunlight(pose, ctx, rt, p, e, t, SunLight.up);
         }
@@ -293,7 +293,7 @@ public final class SolarVisuals {
      * (orange at sunrise, warm white high up); {@code sun} fades it out as the sun sinks below the horizon.
      */
     private static void sunlight(PoseStack.Pose pose, FxRenderContext ctx, Vec3 rt, double p, float e, float t, float sun) {
-        double far = Math.min(320.0, 0.6 * Minecraft.getInstance().gameRenderer.getDepthFar());
+        double far = Math.min(320.0, 0.75 * Minecraft.getInstance().gameRenderer.getDepthFar());
         double sx = SunLight.dirX;
         double sy = SunLight.dirY;
         // the sun's centre, and the midpoint used as the control point of the straight sun-to-target layers
@@ -317,7 +317,7 @@ public final class SolarVisuals {
         // 2. soft sunbeams, turning slowly; as the light concentrates they narrow, brighten and gain a bright filament
         // (the ring lies across the sun's direction, spanned by (0, 0, 1) and dir x (0, 0, 1) = (sy, -sx, 0))
         double ring = Mth.lerp(e, 64.0F, 3.0F);
-        double lens = Mth.lerp(e, 80.0F, 120.0F);
+        double lens = Math.min(Mth.lerp(e, 80.0F, 120.0F), 0.45 * far);
         double disc = SunLight.DISC * Mth.lerp(e, 0.8F, 0.2F);
         float spin = t * 0.008F + e * 1.4F;
         float sunWidth = (float) (far * SunLight.DISC * Mth.lerp(e, 0.7F, 0.35F));
@@ -333,7 +333,7 @@ public final class SolarVisuals {
             double az = cos * disc * far;
             // the ring it swings out through (kept above the ground while the sun is low)
             double kx = rt.x + sx * lens + sin * ring * sy;
-            double ky = Math.max(rt.y + sy * lens - sin * ring * sx, rt.y + 4.0);
+            double ky = Math.max(rt.y + sy * lens - sin * ring * sx, rt.y + 4.0 + 0.2 * ring);
             double kz = rt.z + cos * ring;
             float flicker = (0.82F + 0.18F * Mth.sin(t * 0.5F + i * 1.7F) * Mth.sin(t * 0.23F + i)) * sun;
             shaft(pose, beam, rt, kx, ky, kz, ax, ay, az, Mth.lerp(e, 3.2F, 1.0F), sunWidth, (0.32F + 0.48F * e) * flicker,
