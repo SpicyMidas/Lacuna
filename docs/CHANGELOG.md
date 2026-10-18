@@ -8,6 +8,10 @@
 - **Divine glass** is much rarer: clusters in 1 of 40 Forgotten Plains chunks (was 18), smaller patches, one shard per
   cluster; fewer shards in chests; the Last Merchant asks 4 rubies a shard.
 - **Ruby ore** no longer shines/animates, like every other ore (hand-drawn base frame).
+- **Sun's Fury:** during the focus the converging sunbeams start on the sun's disc wherever it is drawn in the sky,
+  sunrise and sunset included, take its colour (warm white high up, vanilla sunrise orange near the horizon) and curve
+  in through a shrinking ring onto the target; while the sun is below the horizon there are no rays, only the white
+  target marker (like the Magnifying Glass at night), and the rays come back as the sun rises.
 <!-- rev7 -->
 
 ## 0.6.0 — revision 6 (player feedback)
