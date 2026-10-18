@@ -2,16 +2,18 @@ package com.lacuna.mod.gear;
 
 import com.lacuna.mod.Balance;
 import com.lacuna.mod.LacunaConfig;
+import com.lacuna.mod.fx.LacunaFx;
+import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.util.Sfx;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,7 +30,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 /**
  * Wand of Quickening: like the Pyrrhic Scepter it is paid for in health (2, refused when too weak, free in creative).
@@ -36,7 +37,8 @@ import org.joml.Vector3f;
  * {@link AnimatedItemEntity} for 40 s, then falls asleep again as exactly the same stack.
  */
 public class QuickeningWandItem extends Item {
-    private static final DustParticleOptions LIFE_THREAD = new DustParticleOptions(new Vector3f(1.0F, 0.42F, 0.78F), 0.8F);
+    /** Client effect kind of the spark of life flying to the item. */
+    public static final String BOLT_FX = "quickening_bolt";
 
     public QuickeningWandItem(Properties properties) {
         super(properties);
@@ -93,13 +95,15 @@ public class QuickeningWandItem extends Item {
             player.setHealth(player.getHealth() - Balance.QUICKENING_HEALTH_COST);
         }
         Sfx.at(player, SoundEvents.PLAYER_HURT, 0.45F, 1.7F);
-        Vec3 chest = player.position().add(0.0, player.getBbHeight() * 0.6, 0.0);
+        // the spark of life flies from the wand to the item (client shader orb, client/gear/QuickeningFx)
+        Vec3 right = look.cross(new Vec3(0.0, 1.0, 0.0));
+        right = right.lengthSqr() < 1.0E-6 ? Vec3.ZERO : right.normalize();
+        Vec3 tip = player.getEyePosition().add(look.scale(0.7)).add(right.scale(hand == InteractionHand.MAIN_HAND ? 0.35 : -0.35))
+                .add(0.0, -0.3, 0.0);
         Vec3 heart = animated.position().add(0.0, 0.4, 0.0);
-        int steps = Math.max(4, (int) (chest.distanceTo(heart) * 3.0));
-        for (int i = 1; i < steps; i++) {
-            Vec3 p = chest.lerp(heart, i / (double) steps);
-            server.sendParticles(LIFE_THREAD, p.x, p.y, p.z, 1, 0.02, 0.02, 0.02, 0.0);
-        }
+        LacunaFx.send(server, tip, FxPayload.line(BOLT_FX, tip, heart).withEntity(animated.getId())
+                .withParams(player.getId(), player.getRandom().nextFloat() * Mth.TWO_PI, 0.0F));
+        Sfx.at(player, SoundEvents.AMETHYST_BLOCK_CHIME, 0.7F, 1.6F);
         AnimatedItemEntity.enforceCap(server, player, animated);
         player.displayClientMessage(Component.translatable("lacuna.quickening.awake", animated.getMainHandItem().getHoverName())
                 .withStyle(ChatFormatting.LIGHT_PURPLE), true);
