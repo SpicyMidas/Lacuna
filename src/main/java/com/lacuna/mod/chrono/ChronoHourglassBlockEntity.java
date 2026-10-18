@@ -175,7 +175,7 @@ public class ChronoHourglassBlockEntity extends BlockEntity {
             return;
         }
         remaining--;
-        accelerator.tick(level, pos, this);
+        accelerator.tick(level, pos);
         if (remaining <= 0) {
             remaining = 0;
             runTotal = 0;

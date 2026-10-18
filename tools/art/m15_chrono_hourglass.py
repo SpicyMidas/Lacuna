@@ -14,7 +14,7 @@ from texlib import c, new, noise_fill, ramp, rng, save
 WOOD = ramp("#24161A", "#3A2424", "#523328", "#6B4632")
 GOLD = ramp("#6E4A0E", "#A8741A", "#DCA531", "#F6D46A", "#FFF1B0")
 CHRONO = ramp("#2E2858", "#4A6AD8", "#7FB8F0", "#C8F0FF")
-SAND = ramp("#A87A3E", "#C8984F", "#DEB565", "#EECF86", "#FBE7B4")
+SAND = ramp("#B47A26", "#D69A36", "#EBB84F", "#F7D47A", "#FFEDB5")
 GLINT = c("#B8E6FF")
 
 
@@ -84,7 +84,7 @@ def glass():
     r = rng("chrono_hourglass_glass")
     for y in range(16):
         for x in range(16):
-            px[x, y] = (205, 232, 255, 34 + (8 if r.random() < 0.2 else 0))
+            px[x, y] = (205, 232, 255, 22 + (8 if r.random() < 0.2 else 0))
     for y in range(1, 15):
         px[5, y] = (255, 255, 255, 150 if 2 < y < 13 else 110)
         if 3 < y < 11:

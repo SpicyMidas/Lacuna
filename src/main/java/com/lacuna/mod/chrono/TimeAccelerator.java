@@ -62,7 +62,7 @@ public final class TimeAccelerator {
         nextScan = Long.MIN_VALUE;
     }
 
-    void tick(ServerLevel level, BlockPos base, ChronoHourglassBlockEntity self) {
+    void tick(ServerLevel level, BlockPos base) {
         int extra = Math.max(0, Balance.HOURGLASS_SPEED - 1);
         if (extra == 0) {
             return;
