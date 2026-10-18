@@ -1,0 +1,26 @@
+# Chrono Hourglass look check: one idle (all sand below), one half run, one just fed; then a close-up and a top view.
+world lacuna_hourglass flat
+wait 60
+hud off
+cmd time set noon
+cmd gamemode spectator
+cmd setblock 3 -60 0 lacuna:chrono_hourglass[half=lower]
+cmd setblock 3 -59 0 lacuna:chrono_hourglass[half=upper]
+cmd setblock 3 -60 2 lacuna:chrono_hourglass[half=lower]
+cmd setblock 3 -59 2 lacuna:chrono_hourglass[half=upper]
+cmd data merge block 3 -60 2 {remaining:6000,run_total:12000}
+cmd setblock 3 -60 -2 lacuna:chrono_hourglass[half=lower]
+cmd setblock 3 -59 -2 lacuna:chrono_hourglass[half=upper]
+cmd data merge block 3 -60 -2 {remaining:11800,run_total:12000}
+cmd setblock 4 -60 1 minecraft:furnace[lit=true]
+wait 40
+cmd tp @s -0.5 -58.9 0.5 facing 3.5 -59 0.5
+wait 60
+shot hourglass_row
+cmd tp @s 1.6 -58.7 3.4 facing 3.5 -59.1 2.5
+wait 30
+shot hourglass_close
+cmd tp @s 4.6 -57.2 3.8 facing 3.5 -59.2 2.5
+wait 30
+shot hourglass_above
+quit

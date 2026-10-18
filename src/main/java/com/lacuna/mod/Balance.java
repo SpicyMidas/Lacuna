@@ -400,4 +400,21 @@ public final class Balance {
     public static final int ANIMATED_FEED_INTERVAL = 100;
     public static final int ANIMATED_BLINK_INTERVAL = 60;
     public static final int ANIMATED_LEAP_WINDUP = 3;
+
+    // ------------------------------------------------------------------ Chrono Hourglass (chrono/ChronoHourglassBlockEntity)
+    /** Sand time bought by one Chronal Shard (ticks). */
+    public static final int HOURGLASS_TICKS_PER_SHARD = 1200;
+    /** Most time the hourglass can hold (ticks). */
+    public static final int HOURGLASS_MAX_TICKS = 12000;
+    /** Local tick speed multiplier while the sand runs (4 = block entities tick 3 extra times per tick). */
+    public static final int HOURGLASS_SPEED = 4;
+    /** Reach around the hourglass: horizontal radius and vertical reach above/below its two blocks. */
+    public static final int HOURGLASS_RADIUS = 4;
+    public static final int HOURGLASS_VERTICAL = 3;
+    /** At most this many ticking block entities are sped up by one hourglass. */
+    public static final int HOURGLASS_MAX_BLOCK_ENTITIES = 48;
+    /** Block entities in reach are looked up again this often (ticks). */
+    public static final int HOURGLASS_SCAN_INTERVAL = 20;
+    /** Upper bound on extra random ticks per game tick (guards against a huge randomTickSpeed gamerule). */
+    public static final int HOURGLASS_MAX_RANDOM_TICKS = 32;
 }

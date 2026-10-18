@@ -34,5 +34,10 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("forgotten_portal",
                     () -> BlockEntityType.Builder.of(ForgottenPortalBlockEntity::new, ModBlocks.FORGOTTEN_PORTAL.get()).build(null));
 
+    @SuppressWarnings("DataFlowIssue")
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.lacuna.mod.chrono.ChronoHourglassBlockEntity>> CHRONO_HOURGLASS =
+            BLOCK_ENTITIES.register("chrono_hourglass", () -> BlockEntityType.Builder.of(
+                    com.lacuna.mod.chrono.ChronoHourglassBlockEntity::new, ModBlocks.CHRONO_HOURGLASS.get()).build(null));
+
     private ModBlockEntities() {}
 }

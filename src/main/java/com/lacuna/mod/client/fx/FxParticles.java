@@ -56,6 +56,8 @@ public final class FxParticles {
     public static final Style UMBRAL_WISP = new Style(10, 18, 0.09F, 0.0F, 0.9F, true, true, false, 0.0F, 0.2F, 1.0F, false, 0xA874FF, 0.1F);
     public static final Style MIST = new Style(120, 220, 2.6F, -0.0004F, 0.995F, false, false, false, 0.004F, 1.4F, 0.32F, false, 0xFFFFFF, 0.04F);
 
+    public static final Style CHRONO_TICK = new Style(16, 26, 0.09F, -0.006F, 0.92F, true, true, true, 0.0F, 0.6F, 0.95F, false, 0xFFFFFF, 0.04F);
+
     private FxParticles() {}
 
     public static void register(RegisterParticleProvidersEvent event) {
@@ -70,6 +72,7 @@ public final class FxParticles {
         provider(event, ModParticles.MIST.get(), MIST);
         provider(event, ModParticles.UMBRAL_WISP.get(), UMBRAL_WISP);
         com.lacuna.mod.client.gear.EmberDust.registerProviders(event);
+        provider(event, ModParticles.CHRONO_TICK.get(), CHRONO_TICK);
     }
 
     private static void provider(RegisterParticleProvidersEvent event, SimpleParticleType type, Style style) {

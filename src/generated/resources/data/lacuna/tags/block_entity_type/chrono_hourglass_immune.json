@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "lacuna:chrono_hourglass",
+      "required": false
+    },
+    {
+      "id": "minecraft:mob_spawner",
+      "required": false
+    },
+    {
+      "id": "minecraft:trial_spawner",
+      "required": false
+    },
+    {
+      "id": "minecraft:vault",
+      "required": false
+    },
+    {
+      "id": "minecraft:end_gateway",
+      "required": false
+    },
+    {
+      "id": "lacuna:forgotten_portal",
+      "required": false
+    },
+    {
+      "id": "lacuna:arrival_anchor",
+      "required": false
+    },
+    {
+      "id": "lacuna:null_lantern",
+      "required": false
+    },
+    {
+      "id": "lacuna:updraft_spring",
+      "required": false
+    }
+  ]
+}

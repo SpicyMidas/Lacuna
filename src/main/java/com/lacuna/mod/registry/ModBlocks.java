@@ -183,6 +183,13 @@ public final class ModBlocks {
                     .noCollission().noOcclusion().strength(-1.0F, 3600000.0F).noLootTable().lightLevel(s -> 11)
                     .sound(SoundType.GLASS).pushReaction(PushReaction.BLOCK).isValidSpawn(Blocks::never)));
 
+    // ------------------------------------------------------------------ Chrono Hourglass (two blocks tall, chrono/)
+    public static final DeferredBlock<com.lacuna.mod.chrono.ChronoHourglassBlock> CHRONO_HOURGLASS = block("chrono_hourglass",
+            () -> new com.lacuna.mod.chrono.ChronoHourglassBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD)
+                    .strength(1.5F, 6.0F).sound(SoundType.GLASS).noOcclusion().pushReaction(PushReaction.BLOCK)
+                    .isValidSpawn(Blocks::never).isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false)
+                    .isViewBlocking((s, l, p) -> false)));
+
     private static BlockBehaviour.Properties civicProps(MapColor color, SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(color).strength(2.5F, 6.0F).sound(sound).noOcclusion()
                 .pushReaction(PushReaction.BLOCK).ignitedByLava();

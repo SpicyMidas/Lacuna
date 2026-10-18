@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "lacuna:block/chrono_hourglass_lower"
+    },
+    "half=upper": {
+      "model": "lacuna:block/chrono_hourglass_upper"
+    }
+  }
+}
