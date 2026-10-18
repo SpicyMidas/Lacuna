@@ -230,7 +230,7 @@ public final class SolarVisuals {
 
     private static final int SHAFTS = 7;
     /** Pieces of each sunlight shaft (closer together near the target, where the camera usually is). */
-    private static final int SEGMENTS = 8;
+    private static final int SEGMENTS = 12;
     private static final double[] PX = new double[SEGMENTS + 1];
     private static final double[] PY = new double[SEGMENTS + 1];
     private static final double[] PZ = new double[SEGMENTS + 1];
@@ -258,8 +258,8 @@ public final class SolarVisuals {
         // light on the ground, in the sun's colour by day and in white light by night (like the Divine Magnifying Glass)
         float ring = (float) SunsFuryEntity.ringRadius(e);
         int gold = SunLight.lit(GOLD, 0.0F);
-        int warm = SunLight.lit(WARM, 0.3F);
-        int pale = SunLight.lit(PALE, 0.6F);
+        int warm = SunLight.lit(WARM, 0.15F);
+        int pale = SunLight.lit(PALE, 0.35F);
         Vec3 ground = ctx.rel(new Vec3(target.x, target.y + 0.06, target.z));
         VertexConsumer marks = ctx.buffers().getBuffer(SolarRenderTypes.ring());
         groundMark(pose, marks, ground.add(0, 0.02, 0), ring * 1.9F, SolarRenderTypes.POOL, FxDraw.argb(0.2F + 0.65F * e, gold));
@@ -287,107 +287,130 @@ public final class SolarVisuals {
     /**
      * The sunlight of the focus, leaving the sun exactly where vanilla draws it this frame: the sky is drawn at infinity
      * with the same camera rotation, so a point {@code far} blocks from the camera along {@link SunLight}'s direction
-     * lands on the sun's disc. Every shaft starts on the disc (spread over it at first, gathering to its centre as the
-     * light concentrates), glides with the sun through the time sweep (low and orange at sunrise, high and warm white
-     * towards noon) and converges on the target; {@code sun} fades it all out as the sun sinks below the horizon.
+     * lands on the sun's disc. Like light through a magnifying glass, the sunbeams leave the disc, swing out through a
+     * wide ring around the sun-to-target axis and converge on the target; as the light concentrates the ring shrinks
+     * until they gather into one beam. All of it glides with the sun through the time sweep in the sun's colour
+     * (orange at sunrise, warm white high up); {@code sun} fades it out as the sun sinks below the horizon.
      */
     private static void sunlight(PoseStack.Pose pose, FxRenderContext ctx, Vec3 rt, double p, float e, float t, float sun) {
         double far = Math.min(320.0, 0.6 * Minecraft.getInstance().gameRenderer.getDepthFar());
         double sx = SunLight.dirX;
         double sy = SunLight.dirY;
+        // the sun's centre, and the midpoint used as the control point of the straight sun-to-target layers
         double cx = sx * far;
         double cy = sy * far;
+        double mx = (cx + rt.x) * 0.5;
+        double my = (cy + rt.y) * 0.5;
+        double mz = rt.z * 0.5;
         int amber = SunLight.shade(AMBER, 0.0F);
         int gold = SunLight.shade(GOLD, 0.0F);
-        int warm = SunLight.shade(WARM, 0.25F);
-        int pale = SunLight.shade(PALE, 0.6F);
-        int white = SunLight.shade(WHITE, 0.85F);
+        int warm = SunLight.shade(WARM, 0.1F);
+        int pale = SunLight.shade(PALE, 0.3F);
+        int white = SunLight.shade(WHITE, 0.5F);
 
         // 1. a vast faint cone of gathered sunlight from the sun narrowing onto the target (covers: keeps its colour on
         // a bright sky)
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
-        shaft(pose, over, cx, cy, 0.0, rt, (float) (far * Mth.lerp(e, 0.3F, 0.06F)), Mth.lerp(e, 20.0F, 1.6F),
-                (0.04F + 0.1F * e) * sun, (0.1F + 0.32F * e) * sun, amber, gold, 0);
+        shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, Mth.lerp(e, 20.0F, 1.6F), (float) (far * Mth.lerp(e, 0.3F, 0.06F)),
+                (0.1F + 0.32F * e) * sun, (0.04F + 0.1F * e) * sun, gold, amber, 0);
 
-        // 2. soft sunbeams leaving the sun's disc, turning slowly and converging on the target; as the light
-        // concentrates they gather to the centre of the disc, narrow, brighten and gain a bright filament
-        // (the disc's plane is spanned by (0, 0, 1) and dir x (0, 0, 1) = (sy, -sx, 0))
-        double spread = SunLight.DISC * Mth.lerp(e, 0.95F, 0.25F);
+        // 2. soft sunbeams, turning slowly; as the light concentrates they narrow, brighten and gain a bright filament
+        // (the ring lies across the sun's direction, spanned by (0, 0, 1) and dir x (0, 0, 1) = (sy, -sx, 0))
+        double ring = Mth.lerp(e, 64.0F, 3.0F);
+        double lens = Mth.lerp(e, 80.0F, 120.0F);
+        double disc = SunLight.DISC * Mth.lerp(e, 0.8F, 0.2F);
         float spin = t * 0.008F + e * 1.4F;
-        float startWidth = (float) (far * SunLight.DISC * Mth.lerp(e, 0.9F, 0.35F));
+        float sunWidth = (float) (far * SunLight.DISC * Mth.lerp(e, 0.7F, 0.35F));
         float lines = (float) SolarMath.ease((e - 0.35) / 0.65);
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
         for (int i = 0; i < SHAFTS; i++) {
             double ang = i * Math.PI * 2.0 / SHAFTS + spin;
-            double across = Math.sin(ang) * spread;
-            double ax = (sx + across * sy) * far;
-            double ay = (sy - across * sx) * far;
-            double az = Math.cos(ang) * spread * far;
+            double cos = Math.cos(ang);
+            double sin = Math.sin(ang);
+            // where it leaves the sun's disc
+            double ax = (sx + sin * disc * sy) * far;
+            double ay = (sy - sin * disc * sx) * far;
+            double az = cos * disc * far;
+            // the ring it swings out through (kept above the ground while the sun is low)
+            double kx = rt.x + sx * lens + sin * ring * sy;
+            double ky = Math.max(rt.y + sy * lens - sin * ring * sx, rt.y + 4.0);
+            double kz = rt.z + cos * ring;
             float flicker = (0.82F + 0.18F * Mth.sin(t * 0.5F + i * 1.7F) * Mth.sin(t * 0.23F + i)) * sun;
-            shaft(pose, beam, ax, ay, az, rt, startWidth, Mth.lerp(e, 3.2F, 1.0F), (0.1F + 0.16F * e) * flicker,
-                    (0.32F + 0.48F * e) * flicker, gold, warm, 2);
+            shaft(pose, beam, rt, kx, ky, kz, ax, ay, az, Mth.lerp(e, 3.2F, 1.0F), sunWidth, (0.32F + 0.48F * e) * flicker,
+                    (0.1F + 0.16F * e) * flicker, warm, gold, 2);
             if (lines > 0.01F) {
-                shaft(pose, beam, ax, ay, az, rt, (float) (far * 0.004), 0.25F, 0.15F * lines * flicker, 0.55F * lines * flicker,
-                        pale, white, 0);
+                shaft(pose, beam, rt, kx, ky, kz, ax, ay, az, 0.25F, (float) (far * 0.004), 0.55F * lines * flicker,
+                        0.15F * lines * flicker, white, pale, 0);
             }
         }
 
-        // 3. the focus beam forming from the sun's centre in the last moments: the light is concentrated
+        // 3. the focus beam forming straight from the sun's centre in the last moments: the light is concentrated
         float focus = (float) SolarMath.ease((p - 0.55) / 0.45);
         if (focus > 0.002F) {
             float quiver = 0.85F + 0.15F * Mth.sin(t * 2.7F);
             float a = focus * sun;
-            shaft(pose, over, cx, cy, 0.0, rt, (float) (far * 0.02) * focus, 3.5F * focus, 0.3F * a, 0.3F * a, gold, gold, 0);
-            shaft(pose, beam, cx, cy, 0.0, rt, 1.4F * focus * quiver, 1.4F * focus * quiver, 0.9F * a, 0.9F * a, pale, pale, 0);
-            shaft(pose, beam, cx, cy, 0.0, rt, 0.45F * focus, 0.45F * focus, a, a, white, white, 0);
+            shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, 3.5F * focus, (float) (far * 0.02) * focus, 0.3F * a, 0.3F * a, gold, gold, 0);
+            shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 1.4F * focus * quiver, 1.4F * focus * quiver, 0.9F * a, 0.9F * a, pale, pale, 0);
+            shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 0.45F * focus, 0.45F * focus, a, a, white, white, 0);
         }
     }
 
     /**
-     * Camera-facing ribbon from the camera-relative point {@code (ax, ay, az)} to {@code b} in {@link #SEGMENTS} pieces
-     * sharing their edges (closer together near {@code b}), with width, alpha and colour interpolated along it; it
-     * fades out where it passes within a few blocks of the camera, so a shaft falling right past the eyes never fills
-     * the screen. u runs {@code u0}..{@code u0 + 1} across ({@code u0 = 2}: soft sunbeam), v = blocks from {@code b}.
-     * No allocation.
+     * Camera-facing ribbon along the quadratic Bezier curve from the camera-relative target {@code t} through control
+     * point {@code k} to {@code a} (on the sun), in {@link #SEGMENTS} pieces sharing their edges (closer together near
+     * the target), with width, alpha and colour interpolated from the target end ({@code ...T}) to the sun end
+     * ({@code ...S}); it fades out where it passes within a few blocks of the camera, so a shaft falling right past the
+     * eyes never fills the screen. u runs {@code u0}..{@code u0 + 1} across ({@code u0 = 2}: soft sunbeam), v = blocks
+     * along from the target. No allocation.
      */
-    private static void shaft(PoseStack.Pose pose, VertexConsumer vc, double ax, double ay, double az, Vec3 b, float widthA, float widthB,
-                              float alphaA, float alphaB, int rgbA, int rgbB, int u0) {
-        double dx = ax - b.x;
-        double dy = ay - b.y;
-        double dz = az - b.z;
-        double length = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (length < 1.0E-4 || Math.max(alphaA, alphaB) <= 0.002F) {
+    private static void shaft(PoseStack.Pose pose, VertexConsumer vc, Vec3 t, double kx, double ky, double kz, double ax, double ay,
+                              double az, float widthT, float widthS, float alphaT, float alphaS, int rgbT, int rgbS, int u0) {
+        if (Math.max(alphaT, alphaS) <= 0.002F) {
             return;
         }
+        double along = 0.0;
         for (int i = 0; i <= SEGMENTS; i++) {
-            double s = (double) i / SEGMENTS;
-            s *= s;
-            double x = b.x + dx * s;
-            double y = b.y + dy * s;
-            double z = b.z + dz * s;
+            double q = (double) i / SEGMENTS;
+            q *= q;
+            double r = 1.0 - q;
+            double x = r * r * t.x + 2.0 * q * r * kx + q * q * ax;
+            double y = r * r * t.y + 2.0 * q * r * ky + q * q * ay;
+            double z = r * r * t.z + 2.0 * q * r * kz + q * q * az;
+            if (i > 0) {
+                double ex = x - PX[i - 1];
+                double ey = y - PY[i - 1];
+                double ez = z - PZ[i - 1];
+                along += Math.sqrt(ex * ex + ey * ey + ez * ez);
+            }
             PX[i] = x;
             PY[i] = y;
             PZ[i] = z;
-            // across the ribbon: perpendicular to it and to the view ray to this point
+            // across the ribbon: perpendicular to the curve and to the view ray to this point
+            double dx = r * (kx - t.x) + q * (ax - kx);
+            double dy = r * (ky - t.y) + q * (ay - ky);
+            double dz = r * (kz - t.z) + q * (az - kz);
             double cx = dy * z - dz * y;
             double cy = dz * x - dx * z;
             double cz = dx * y - dy * x;
             double len = Math.sqrt(cx * cx + cy * cy + cz * cz);
             if (len < 1.0E-6) {
-                boolean vertical = Math.abs(dy) > 0.99 * length;
+                boolean vertical = Math.abs(dy) > 0.99 * Math.sqrt(dx * dx + dy * dy + dz * dz);
                 cx = vertical ? 0.0 : -dz;
                 cy = vertical ? dz : 0.0;
                 cz = vertical ? -dy : dx;
-                len = Math.max(1.0E-6, Math.sqrt(cx * cx + cy * cy + cz * cz));
+                len = Math.sqrt(cx * cx + cy * cy + cz * cz);
+                if (len < 1.0E-9) {
+                    return;
+                }
             }
-            double half = Mth.lerp(s, widthB, widthA) * 0.5 / len;
+            double half = Mth.lerp(q, widthT, widthS) * 0.5 / len;
             SX[i] = cx * half;
             SY[i] = cy * half;
             SZ[i] = cz * half;
             double distance = Math.sqrt(x * x + y * y + z * z);
             float near = (float) SolarMath.ease((distance - 1.5) / 6.0);
-            SC[i] = FxDraw.argb(Mth.lerp((float) s, alphaB, alphaA) * near, SunLight.mix(rgbB, rgbA, (float) s));
-            SV[i] = (float) (s * length);
+            SC[i] = FxDraw.argb(Mth.lerp((float) q, alphaT, alphaS) * near, SunLight.mix(rgbT, rgbS, (float) q));
+            SV[i] = (float) along;
         }
         float u1 = u0 + 1.0F;
         for (int i = 0; i < SEGMENTS; i++) {

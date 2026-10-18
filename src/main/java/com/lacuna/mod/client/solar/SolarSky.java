@@ -147,7 +147,7 @@ public final class SolarSky {
         FxDraw.billboard(pose.last(), corona, camera, sun, 18.0F + 26.0F * b, t * 0.0015F,
                 FxDraw.argb(0.85F * b * clear, SunLight.shade(0xFFC860, 0.2F)));
         FxDraw.billboard(pose.last(), corona, camera, sun, 9.0F + 7.0F * b, -t * 0.002F,
-                FxDraw.argb(0.8F * b * clear, SunLight.shade(0xFFF2D0, 0.7F)));
+                FxDraw.argb(0.8F * b * clear, SunLight.shade(0xFFF2D0, 0.45F)));
         buffers.endBatch();
         RenderSystem.defaultBlendFunc();
     }
