@@ -17,6 +17,13 @@
   furnaces, smokers, brewing stands, hoppers, campfires and other ticking blocks, crops and saplings (extra random
   ticks), baby animals and breeding cooldowns. Players are never affected; overlapping hourglasses don't stack.
   A redstone signal pauses it, a comparator reads the time left, and breaking it refunds unspent shards.
+- **Comically Large Bag** (new): right-click a creature, minecart, boat or armour stand to put it in the bag, or
+  sneak + right-click a block (chests, barrels, shulker boxes, furnaces... keep every item, enchantment and component).
+  Use it on a block face to let it out: an entity comes back as the very same entity (same UUID, name, owner,
+  inventory, trades), not a copy. Too much nested loot (data over 64 KB or more than 4 filled shulker boxes, bundles or
+  full bags inside) is refused: "Too much stuff, the bag isn't so large after all…". Players, bosses, multipart mobs,
+  unbreakable and two-block blocks are refused; spawners need an operator in creative. A full bag can't be destroyed
+  or lost in the void. Drawn comically large in hand.
 <!-- rev7 -->
 
 ## 0.6.0 — revision 6 (player feedback)

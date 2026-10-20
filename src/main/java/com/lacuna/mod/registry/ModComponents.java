@@ -45,5 +45,9 @@ public final class ModComponents {
             COMPONENTS.registerComponentType("guild_contract",
                     b -> b.persistent(com.lacuna.mod.village.ContractData.CODEC).networkSynchronized(com.lacuna.mod.village.ContractData.STREAM_CODEC));
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.lacuna.mod.bag.BagContents>> BAG_CONTENTS =
+            COMPONENTS.registerComponentType("bag_contents",
+                    b -> b.persistent(com.lacuna.mod.bag.BagContents.CODEC).networkSynchronized(com.lacuna.mod.bag.BagContents.STREAM_CODEC).cacheEncoding());
+
     private ModComponents() {}
 }

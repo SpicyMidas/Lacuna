@@ -1,0 +1,12 @@
+{
+  "values": [
+    "minecraft:ender_dragon",
+    "minecraft:wither",
+    "minecraft:warden",
+    "minecraft:elder_guardian",
+    "lacuna:echo",
+    "lacuna:reflection",
+    "lacuna:clockwork_decoy",
+    "lacuna:animated_item"
+  ]
+}

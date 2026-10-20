@@ -1,0 +1,6 @@
+{
+  "parent": "lacuna:item/comically_large_bag",
+  "textures": {
+    "layer0": "lacuna:item/comically_large_bag_full"
+  }
+}
