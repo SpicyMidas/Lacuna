@@ -61,6 +61,8 @@ public final class TimeAccelerator {
     private static final Set<BlockEntityType<?>> BROKEN = ConcurrentHashMap.newKeySet();
     /** Block entities already sped up this game tick (by any hourglass): stacking hourglasses never goes past x4. */
     private static final LongOpenHashSet SPED_THIS_TICK = new LongOpenHashSet();
+    /** Hourglasses that already ran this game tick: their boxes have had their random and weather ticks (no stacking). */
+    private static final List<BlockPos> RAN_THIS_TICK = new ArrayList<>();
     private static ResourceKey<Level> stampLevel;
     private static long stampTime = Long.MIN_VALUE;
 
@@ -80,6 +82,7 @@ public final class TimeAccelerator {
             stampTime = now;
             stampLevel = level.dimension();
             SPED_THIS_TICK.clear();
+            RAN_THIS_TICK.clear();
             LivingHaste.newTick();
         }
         if (now >= nextScan) {
@@ -101,6 +104,17 @@ public final class TimeAccelerator {
             BlockPos p = tickers.get(level.getRandom().nextInt(tickers.size()));
             level.sendParticles(ModParticles.CHRONO_TICK.get(), p.getX() + 0.5, p.getY() + 1.05, p.getZ() + 0.5, 1, 0.25, 0.05, 0.25, 0.004);
         }
+        RAN_THIS_TICK.add(base.immutable());
+    }
+
+    /** Inside the box of an hourglass that already ran this tick: its picks covered this spot, overlaps never stack. */
+    private static boolean covered(BlockPos p) {
+        for (BlockPos other : RAN_THIS_TICK) {
+            if (inBox(p, other)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // ------------------------------------------------------------------ block entities
@@ -206,7 +220,7 @@ public final class TimeAccelerator {
             if (p.getX() == base.getX() && p.getZ() == base.getZ() && (p.getY() == base.getY() || p.getY() == base.getY() + 1)) {
                 continue;
             }
-            if (level.isOutsideBuildHeight(p) || !level.shouldTickBlocksAt(p)) {
+            if (level.isOutsideBuildHeight(p) || covered(p) || !level.shouldTickBlocksAt(p)) {
                 continue;
             }
             BlockState state = level.getBlockState(p);
@@ -250,8 +264,8 @@ public final class TimeAccelerator {
             if (!level.shouldTickBlocksAt(column)) {
                 continue;
             }
-            int dy = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z) - 1 - base.getY();
-            if (dy >= -v && dy <= 1 + v) {
+            int top = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z) - 1;
+            if (top - base.getY() >= -v && top - base.getY() <= 1 + v && !covered(new BlockPos(x, top, z))) {
                 level.tickPrecipitation(column);
             }
         }
