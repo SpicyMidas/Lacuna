@@ -113,6 +113,59 @@ public final class BagCapture {
         return stack.has(ModComponents.BAG_CONTENTS.get());
     }
 
+    /** Stacks of items inside that make the bag "stuffed" (a third of a chest). */
+    private static final int STUFFED_STACKS = 9;
+    /** Bounding-box volume (blocks³) from which a creature alone stuffs the bag (horse-sized and up; a cow is 1.1). */
+    private static final float STUFFED_VOLUME = 1.5F;
+    private static final java.util.Map<CompoundTag, Boolean> STUFFED = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
+
+    /** 0 empty, 1 full, 2 stuffed: a big creature, or a creature or container holding a lot of items. */
+    public static int fullness(ItemStack stack) {
+        BagContents contents = contents(stack);
+        if (contents == null) {
+            return 0;
+        }
+        return STUFFED.computeIfAbsent(contents.data(), data -> stuffed(contents)) ? 2 : 1;
+    }
+
+    private static boolean stuffed(BagContents contents) {
+        CompoundTag data = contents.data();
+        if (contents.isEntity()) {
+            EntityType<?> type = EntityType.byString(data.getString("id")).orElse(null);
+            if (type != null) {
+                var dims = type.getDimensions();
+                if (dims.width() * dims.width() * dims.height() >= STUFFED_VOLUME) {
+                    return true;
+                }
+            }
+        }
+        return itemStacks(data, 0) >= STUFFED_STACKS;
+    }
+
+    /** Item stacks anywhere in the saved data (compounds with an item id and a count), nested containers included. */
+    private static int itemStacks(Tag tag, int depth) {
+        if (depth > 12) {
+            return 0;
+        }
+        int n = 0;
+        if (tag instanceof CompoundTag c) {
+            if (c.contains("id", Tag.TAG_STRING) && c.contains("count")) {
+                n++;
+            }
+            for (String key : c.getAllKeys()) {
+                Tag child = c.get(key);
+                if (child instanceof CompoundTag || child instanceof ListTag) {
+                    n += itemStacks(child, depth + 1);
+                }
+            }
+        } else if (tag instanceof ListTag list) {
+            for (Tag child : list) {
+                n += itemStacks(child, depth + 1);
+            }
+        }
+        return n;
+    }
+
     // ================================================================================================ entities
 
     /** Right click with an empty bag on a creature, cart or boat. */

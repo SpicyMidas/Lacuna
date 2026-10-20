@@ -50,8 +50,11 @@ LANG = {
 
 def build(g):
     g.item(BAG, "Comically Large Bag", "Sacco Comicamente Grande", extra={"display": DISPLAY},
-           overrides=[{"predicate": {"lacuna:full": 1}, "model": mod(f"item/{BAG}_full")}])
+           overrides=[{"predicate": {"lacuna:full": 0.5}, "model": mod(f"item/{BAG}_full")},
+                      {"predicate": {"lacuna:full": 1}, "model": mod(f"item/{BAG}_stuffed")}])
     g.item_model(f"{BAG}_full", {"parent": mod(f"item/{BAG}"), "textures": {"layer0": mod(f"item/{BAG}_full")}})
+    # stuffed: a horse-sized creature, or a creature/container holding 9+ stacks (bag/BagCapture#fullness)
+    g.item_model(f"{BAG}_stuffed", {"parent": mod(f"item/{BAG}"), "textures": {"layer0": mod(f"item/{BAG}_stuffed")}})
     for key, (en, it) in LANG.items():
         g.name(key, en, it)
 

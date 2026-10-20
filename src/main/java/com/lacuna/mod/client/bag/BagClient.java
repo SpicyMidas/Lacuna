@@ -18,7 +18,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
-/** Client side of the Comically Large Bag: the bulging {@code lacuna:full} model and an always-visible contents line. */
+/** Client side of the Comically Large Bag: the {@code lacuna:full} models (0 empty, 0.5 full, 1 stuffed) and an always-visible contents line. */
 public final class BagClient {
     private BagClient() {}
 
@@ -30,7 +30,7 @@ public final class BagClient {
 
     private static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> SafeRun.run("item_properties", () -> ItemProperties.register(ModItems.COMICALLY_LARGE_BAG.get(),
-                Lacuna.id("full"), (stack, level, entity, seed) -> BagCapture.isFull(stack) ? 1.0F : 0.0F)));
+                Lacuna.id("full"), (stack, level, entity, seed) -> BagCapture.fullness(stack) * 0.5F)));
     }
 
     private static void onTooltip(ItemTooltipEvent event) {

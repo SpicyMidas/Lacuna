@@ -59,6 +59,7 @@ FULL = [
 
 
 def paint():
-    for name, rows in (("comically_large_bag", EMPTY), ("comically_large_bag_full", FULL)):
+    # placeholders: the hand-drawn pouches in tools/art/hand/item replace all three
+    for name, rows in (("comically_large_bag", EMPTY), ("comically_large_bag_full", FULL), ("comically_large_bag_stuffed", FULL)):
         assert len(rows) == 16 and all(len(r) == 16 for r in rows), name
         save(from_ascii(rows, PALETTE), f"item/{name}")

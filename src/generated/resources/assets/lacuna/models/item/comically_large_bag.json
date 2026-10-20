@@ -56,6 +56,12 @@
     {
       "model": "lacuna:item/comically_large_bag_full",
       "predicate": {
+        "lacuna:full": 0.5
+      }
+    },
+    {
+      "model": "lacuna:item/comically_large_bag_stuffed",
+      "predicate": {
         "lacuna:full": 1
       }
     }
