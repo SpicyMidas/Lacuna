@@ -227,7 +227,10 @@ public class ChronoHourglassBlock extends BaseEntityBlock {
                 Balance.HOURGLASS_TICKS_PER_SHARD / 20, Balance.HOURGLASS_MAX_TICKS / 1200).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("block.lacuna.chrono_hourglass.use2", Balance.HOURGLASS_SPEED,
                 Balance.HOURGLASS_RADIUS).withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("block.lacuna.chrono_hourglass.use4", Balance.HOURGLASS_FLUID_SPEED,
+                Balance.HOURGLASS_PLAYER_SPEED).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("block.lacuna.chrono_hourglass.use3").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("block.lacuna.chrono_hourglass.use5").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     /** Placement helper for structures and commands: both halves at once (mirrors {@link DoublePlantBlock#placeAt}). */

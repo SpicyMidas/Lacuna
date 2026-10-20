@@ -90,7 +90,19 @@ def build(g):
     g.tag("block_entity_type", "lacuna:chrono_hourglass_immune", *[{"id": i, "required": False} for i in (
         "lacuna:chrono_hourglass", "minecraft:mob_spawner", "minecraft:trial_spawner", "minecraft:vault",
         "minecraft:end_gateway", "lacuna:forgotten_portal", "lacuna:arrival_anchor", "lacuna:null_lantern",
-        "lacuna:updraft_spring")])
+        "lacuna:updraft_spring", "minecraft:piston", "minecraft:sculk_sensor", "minecraft:calibrated_sculk_sensor",
+        "minecraft:sculk_shrieker")])
+    # blocks whose random and scheduled ticks an hourglass never hurries: portals (piglins spawn on random ticks),
+    # spawners, hourglasses and redstone parts that are not signal sources (signal sources are skipped in code), so
+    # circuits keep their timing
+    g.tag("block", "lacuna:chrono_hourglass_immune", *[{"id": i, "required": False} for i in (
+        "lacuna:chrono_hourglass", "lacuna:forgotten_portal", "lacuna:arrival_anchor", "lacuna:null_lantern",
+        "lacuna:updraft_spring", "minecraft:nether_portal", "minecraft:end_portal", "minecraft:end_gateway",
+        "minecraft:spawner", "minecraft:trial_spawner", "minecraft:vault", "minecraft:redstone_lamp",
+        "minecraft:dispenser", "minecraft:dropper", "minecraft:crafter", "minecraft:command_block",
+        "minecraft:chain_command_block", "minecraft:repeating_command_block", "minecraft:tripwire",
+        "minecraft:big_dripleaf", "minecraft:big_dripleaf_stem", "minecraft:sculk_shrieker", "minecraft:piston",
+        "minecraft:sticky_piston", "minecraft:moving_piston", "minecraft:piston_head")])
 
     g.shaped(BID, ["GUG", "#C#", "GSG"],
              {"G": "minecraft:gold_ingot", "U": "lacuna:umbral_steel_ingot", "#": "minecraft:glass",
@@ -102,8 +114,16 @@ def build(g):
     for key, en, it in [
         (f"block.lacuna.{BID}.use", "Use a Chronal Shard: +%s s of sand, up to %s min (sneak: pour in the whole stack)",
          "Usa una scheggia cronale: +%s s di sabbia, fino a %s min (accovacciato: versa tutta la pila)"),
-        (f"block.lacuna.{BID}.use2", "While the sand runs, time within %2$s blocks flows %1$sx faster: furnaces, crops, young animals",
-         "Mentre la sabbia scorre, il tempo entro %2$s blocchi scorre %1$sx più veloce: fornaci, colture, cuccioli"),
+        (f"block.lacuna.{BID}.use2", "While the sand runs, time within %2$s blocks flows %1$sx faster: furnaces, crops, grass, "
+         "saplings, ice melting, copper aging, young animals, eggs",
+         "Mentre la sabbia scorre, il tempo entro %2$s blocchi scorre %1$sx più veloce: fornaci, colture, erba, "
+         "arbusti, ghiaccio che si scioglie, rame che invecchia, cuccioli, uova"),
+        (f"block.lacuna.{BID}.use4", "Water and lava flow %1$sx faster; players heal %2$sx faster and shake off harmful "
+         "effects sooner",
+         "Acqua e lava scorrono %1$sx più veloci; i giocatori guariscono %2$sx più in fretta e smaltiscono prima gli "
+         "effetti negativi"),
+        (f"block.lacuna.{BID}.use5", "Redstone timing, spawners, portals and other hourglasses are never affected",
+         "Tempi della pietrarossa, generatori, portali e altre clessidre non vengono mai alterati"),
         (f"block.lacuna.{BID}.use3", "A redstone signal holds the sand; comparators read the time left",
          "Un segnale di pietrarossa trattiene la sabbia; i comparatori leggono il tempo rimasto"),
         (f"item.lacuna.{BID}.tip", "Every grain is a borrowed second.", "Ogni granello è un secondo preso in prestito."),
