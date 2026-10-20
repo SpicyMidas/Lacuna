@@ -1,0 +1,27 @@
+{
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "lacuna:starlace_cloth"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "H": {
+      "item": "minecraft:goat_horn"
+    },
+    "Z": {
+      "item": "lacuna:zenithite_shard"
+    }
+  },
+  "pattern": [
+    "ZCZ",
+    "GHG",
+    " G "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:starcaller_trumpet"
+  },
+  "type": "minecraft:crafting_shaped"
+}

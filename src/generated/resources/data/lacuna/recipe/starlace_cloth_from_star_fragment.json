@@ -1,0 +1,22 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lacuna:star_fragment"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "minecraft:string"
+    },
+    {
+      "item": "minecraft:string"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "lacuna:starlace_cloth"
+  },
+  "type": "minecraft:crafting_shapeless"
+}
