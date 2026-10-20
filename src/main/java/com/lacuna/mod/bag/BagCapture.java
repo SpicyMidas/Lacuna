@@ -120,10 +120,10 @@ public final class BagCapture {
         if (isFull(bag) || target.level() != player.level()) {
             return InteractionResult.PASS;
         }
-        String refusal = !player.getAbilities().mayBuild ? "lacuna.bag.protected" : entityRefusal(player, target);
+        String refusal = !player.getAbilities().mayBuild ? "lacuna.bag.protected" : entityRefusal(player, target, true);
         for (Entity rider : target.getIndirectPassengers()) {
             if (refusal == null) {
-                refusal = rider instanceof Player ? "lacuna.bag.ridden" : entityRefusal(player, rider);
+                refusal = rider instanceof Player ? "lacuna.bag.ridden" : entityRefusal(player, rider, true);
             }
         }
         if (refusal != null) {
@@ -138,6 +138,7 @@ public final class BagCapture {
         if (!keepLeash) {
             tag.remove(Leashable.LEASH_TAG);
         }
+        stripRiderLeashes(tag);
         // a sleeper wakes up on the way in: the bed it lay in stays behind
         tag.remove("SleepingX");
         tag.remove("SleepingY");
@@ -155,9 +156,9 @@ public final class BagCapture {
         target.getIndirectPassengers().forEach(riders::add);
         target.stopRiding();
         for (int i = riders.size() - 1; i >= 0; i--) {
-            lift(riders.get(i), player);
+            lift(riders.get(i), player, false);
         }
-        lift(target, player);
+        lift(target, player, true);
         ServerLevel level = player.serverLevel();
         level.gameEvent(player, GameEvent.ENTITY_INTERACT, at);
         thwump(level, at, width, height, true);
@@ -166,12 +167,12 @@ public final class BagCapture {
     }
 
     /** Takes a saved entity out of the world without killing it, like a dimension change does. */
-    private static void lift(Entity entity, ServerPlayer player) {
+    private static void lift(Entity entity, ServerPlayer player, boolean root) {
         if (entity instanceof LivingEntity living && living.isSleeping()) {
             living.stopSleeping();
         }
         if (entity instanceof Leashable leashable && leashable.isLeashed()) {
-            leashable.dropLeash(true, leashable.getLeashHolder() != player);
+            leashable.dropLeash(true, !root || leashable.getLeashHolder() != player);
         }
         entity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
         // like Mob#removeAfterChangingDimensions: the stale object keeps no usable copy of anything it carried
@@ -188,8 +189,17 @@ public final class BagCapture {
         }
     }
 
+    /** Riders never keep a lead: theirs drops where they stood (otherwise a lead could come back twice). */
+    private static void stripRiderLeashes(CompoundTag tag) {
+        for (Tag rider : tag.getList("Passengers", Tag.TAG_COMPOUND)) {
+            ((CompoundTag) rider).remove(Leashable.LEASH_TAG);
+            stripRiderLeashes((CompoundTag) rider);
+        }
+    }
+
+    /** Why this entity may not be bagged ({@code capturing}) or let out, or null when it may. */
     @Nullable
-    private static String entityRefusal(ServerPlayer player, Entity entity) {
+    private static String entityRefusal(ServerPlayer player, Entity entity, boolean capturing) {
         if (entity instanceof Player) {
             return "lacuna.bag.no_players";
         }
@@ -206,7 +216,7 @@ public final class BagCapture {
         if (entity.onlyOpCanSetNbt() && !player.canUseGameMasterBlocks()) {
             return "lacuna.bag.op_only";
         }
-        if (entity instanceof OwnableEntity ownable && !player.isCreative()) {
+        if (capturing && entity instanceof OwnableEntity ownable && !player.isCreative()) {
             UUID owner = ownable.getOwnerUUID();
             if (owner != null && !owner.equals(player.getUUID())) {
                 return "lacuna.bag.not_yours";
@@ -232,7 +242,7 @@ public final class BagCapture {
         }
         List<Entity> all = entity.getSelfAndPassengers().toList();
         for (Entity e : all) {
-            String refusal = e instanceof Player ? "lacuna.bag.no_players" : entityRefusal(player, e);
+            String refusal = e instanceof Player ? "lacuna.bag.no_players" : entityRefusal(player, e, false);
             if (refusal != null) {
                 return refuse(player, refusal);
             }
