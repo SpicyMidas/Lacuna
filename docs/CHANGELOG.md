@@ -22,6 +22,11 @@
   right-click tidal wave (translucent shaded water surfaces in the same deep-teal-to-foam colours, crisp foam crests,
   foot lines and rising glints): a swirling bowl with spiral streams, a swaying funnel that widens upward with
   twisting streams and a curling lip, and a geyser whose crown bursts open and falls back as a curtain.
+- **Totem of Confusion** (new): raise it (hold use) and five copies of you appear around you, with your skin, armour,
+  held items, cape and name tag. On a coin flip you either swap places with one of them (a copy takes your spot) or
+  stay put among them. Each copy walks off on its own heading but mirrors exactly what you do: walking, sprinting,
+  jumping, sneaking, swinging, looking. Hostile mobs often switch to a copy. A copy dies in 2 hits and they all fade
+  after 20 s. 3 uses, 45 s cooldown. New advancement "Which One Is Real?".
 <!-- rev8 -->
 
 ## 0.7.0 — revision 7 (player feedback)

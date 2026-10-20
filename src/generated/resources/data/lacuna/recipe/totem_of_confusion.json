@@ -1,0 +1,30 @@
+{
+  "category": "equipment",
+  "key": {
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "M": {
+      "item": "minecraft:armor_stand"
+    },
+    "P": {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "pattern": [
+    " P ",
+    "AMA",
+    "GEG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:totem_of_confusion"
+  },
+  "type": "minecraft:crafting_shaped"
+}

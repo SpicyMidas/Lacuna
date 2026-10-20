@@ -185,6 +185,10 @@ public final class ModItems {
             com.lacuna.mod.star.StarcallerTrumpetItem::new,
             new Item.Properties().durability(com.lacuna.mod.star.Starfall.TRUMPET_DURABILITY).rarity(Rarity.RARE));
     public static final DeferredItem<Item> STAR_FRAGMENT = item("star_fragment", Item::new, new Item.Properties().rarity(Rarity.UNCOMMON));
+    // ------------------------------------------------------------------ Totem of Confusion (five copies of you)
+    public static final DeferredItem<com.lacuna.mod.confusion.TotemOfConfusionItem> TOTEM_OF_CONFUSION = item("totem_of_confusion",
+            com.lacuna.mod.confusion.TotemOfConfusionItem::new,
+            new Item.Properties().durability(com.lacuna.mod.confusion.Confusion.USES).rarity(Rarity.RARE));
 
     private ModItems() {}
 
