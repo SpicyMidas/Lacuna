@@ -24,6 +24,13 @@
   full bags inside) is refused: "Too much stuff, the bag isn't so large after all…". Players, bosses, multipart mobs,
   unbreakable and two-block blocks are refused; spawners need an operator in creative. A full bag can't be destroyed
   or lost in the void. Drawn comically large in hand.
+- **Fixed: effect graphics vanishing in some worlds** (Tidecaller, Gravemaw Greatsword and every other shader effect).
+  One effect throwing an error once switched all effect visuals off for the rest of the session (the attacks still
+  worked, invisible); now a failing effect is dropped and logged on its own and nothing else is affected. Under
+  Fabulous graphics effects were also hidden behind water, glass and clouds; they now sort correctly.
+- **Tidecaller:** the whirlpool and waterspout are rebuilt in Minecraft style: blocky spinning rings textured with the
+  animated vanilla water (tinted with the biome's water colour), pixel-art foam and spray, stepped whirlpool terraces,
+  and vanilla splash, bubble and drip particles with bubble-column and breeze sounds. Same attack as before.
 <!-- rev7 -->
 
 ## 0.6.0 — revision 6 (player feedback)

@@ -203,6 +203,9 @@ public final class TideCurrents {
         Sfx.at(level, center, SoundEvents.AMBIENT_UNDERWATER_ENTER, 1.0F, 0.7F);
         Sfx.at(level, center, SoundEvents.ELDER_GUARDIAN_CURSE, 0.12F, 1.4F);
         Sfx.at(level, player.position(), SoundEvents.TRIDENT_RIPTIDE_3, 0.7F, 0.6F);
+        // the waterspout winding up out of the pool: a low twister whirl over the rising bubble roar
+        Sfx.at(level, center, SoundEvents.BREEZE_WHIRL, 1.2F, 0.55F);
+        Sfx.at(level, center, SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, 1.6F, 0.7F);
     }
 
     // ------------------------------------------------------------------ ticking
@@ -494,6 +497,15 @@ public final class TideCurrents {
             }
             if (age % 40 == 20) {
                 Sfx.at(level, center, SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS, 1.2F, 0.7F);
+            }
+            if (age % 20 == 10) {
+                // the spout: rushing water climbing it, a twister's whirl and its crown raining back onto the pool
+                Vec3 spout = center.add(0.0, 3.0, 0.0);
+                Sfx.at(level, spout, SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, 1.4F, 0.65F + level.random.nextFloat() * 0.2F);
+                Sfx.at(level, spout, SoundEvents.WEATHER_RAIN, 0.5F, 0.8F + level.random.nextFloat() * 0.2F);
+            }
+            if (age % 30 == 15) {
+                Sfx.at(level, center.add(0.0, 2.0, 0.0), SoundEvents.BREEZE_WHIRL, 0.7F, 0.5F + level.random.nextFloat() * 0.15F);
             }
             if (age >= Balance.SICKLE_MAELSTROM_TICKS) {
                 geyser(level, player);
