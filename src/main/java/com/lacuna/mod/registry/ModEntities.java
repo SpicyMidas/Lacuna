@@ -77,6 +77,11 @@ public final class ModEntities {
             "falling_star", () -> EntityType.Builder.<com.lacuna.mod.star.FallingStarEntity>of(com.lacuna.mod.star.FallingStarEntity::new,
                     MobCategory.MISC).sized(0.6F, 0.6F).clientTrackingRange(16).updateInterval(1).fireImmune().noSave().build("falling_star"));
 
+    // ------------------------------------------------------------------ Totem of Confusion (attributes: confusion/Confusion)
+    public static final DeferredHolder<EntityType<?>, EntityType<com.lacuna.mod.confusion.ConfusionCopy>> CONFUSION_COPY = ENTITIES.register(
+            "confusion_copy", () -> EntityType.Builder.<com.lacuna.mod.confusion.ConfusionCopy>of(com.lacuna.mod.confusion.ConfusionCopy::new,
+                    MobCategory.MISC).sized(0.6F, 1.8F).eyeHeight(1.62F).clientTrackingRange(10).updateInterval(2).noSave().build("confusion_copy"));
+
     private ModEntities() {}
 
     /** Mod bus: attribute tables for every living Lacuna entity. */
