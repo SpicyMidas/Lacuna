@@ -75,9 +75,6 @@ public final class TimeAccelerator {
 
     void tick(ServerLevel level, BlockPos base) {
         int extra = Math.max(0, Balance.HOURGLASS_SPEED - 1);
-        if (extra == 0) {
-            return;
-        }
         long now = level.getGameTime();
         if (stampTime != now || stampLevel != level.dimension()) {
             stampTime = now;
@@ -89,13 +86,15 @@ public final class TimeAccelerator {
             scan(level, base);
             nextScan = now + Balance.HOURGLASS_SCAN_INTERVAL;
         }
-        tickBlockEntities(level, extra);
-        randomTicks(level, base, extra);
-        weatherTicks(level, base, extra);
+        if (extra > 0) {
+            tickBlockEntities(level, extra);
+            randomTicks(level, base, extra);
+            weatherTicks(level, base, extra);
+        }
         ScheduledHaste.tick(level, base);
         AABB box = box(base);
         LivingHaste.players(level, box, now);
-        if (now % 20 == 0) {
+        if (extra > 0 && now % 20 == 0) {
             LivingHaste.mobs(level, box, extra * 20);
         }
         if (!tickers.isEmpty() && Math.floorMod(now + base.asLong(), 8L) == 0) {
