@@ -37,7 +37,12 @@
   with a little crater and a few fires only when mobGriefing is on, a screen shake and a flash. It leaves a glowing
   Fallen Star block that breaks into Star Fragments: they repair the trumpet and craft Starlace Cloth (1 fragment + 3
   string = 4 cloth). 32 uses, 30 s cooldown. New advancement "Wish Upon a Star".
-<!-- rev7 -->
+- **Villages:** the civic buildings (village hall, mint, guild hall, schoolhouse) are rebuilt in each village style's
+  vanilla look: plains cobblestone, oak frames and steep stair roofs; desert smooth sandstone with flat stepped roofs;
+  savanna acacia frames with low hipped roofs; taiga cobblestone and spruce with log-edged gables and shutters; snowy
+  stripped spruce under snow-covered stepped roofs. Proper corner stairs and valleys on T and cross-gabled plans,
+  overhangs, panes, door hoods with torches or lanterns, a lantern cupola on the hall and a smoking chimney on the
+  mint. Functional blocks, beds and street connections are unchanged.
 
 ## 0.6.0 — revision 6 (player feedback)
 
