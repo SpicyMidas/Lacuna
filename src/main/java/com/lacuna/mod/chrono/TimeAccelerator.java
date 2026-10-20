@@ -52,6 +52,8 @@ import net.minecraft.world.phys.AABB;
  *   <li>players heal and shake off harmful effects faster, young animals grow up, chickens lay eggs... faster
  *   ({@link LivingHaste}).</li>
  * </ol>
+ * Overlapping hourglasses never stack: each block entity, scheduled tick, player and mob is hurried once per tick, and
+ * random and weather picks skip spots already covered by an hourglass that ran earlier in the same tick.
  */
 public final class TimeAccelerator {
     public static final TagKey<BlockEntityType<?>> IMMUNE = TagKey.create(Registries.BLOCK_ENTITY_TYPE, Lacuna.id("chrono_hourglass_immune"));
