@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0 — revision 8 (player feedback)
+
+- **New hand-drawn textures:** Chrono Hourglass, Starcaller Trumpet, Totem of Confusion, the Star Fragment (now
+  animated, two frames) and the Comically Large Bag in three states.
+- **Comically Large Bag:** empty, full, and stuffed. It shows stuffed when it holds a horse-sized creature or
+  bigger, or a creature or container carrying 9 or more stacks of items (nested containers count).
+<!-- rev8 -->
+
 ## 0.7.0 — revision 7 (player feedback)
 
 - **Wand of Quickening:** the spark of life is now a shader projectile: a glowing pink orb with a white-hot heart that
