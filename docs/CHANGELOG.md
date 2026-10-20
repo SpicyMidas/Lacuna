@@ -11,6 +11,13 @@
   place. The texture pipeline now detects and plays the true order (all 576 frames, 1 tick each): the fast hand
   steps every frame, the slow hand every 12 frames, the gem fades through its colours, and the loop is seamless.
   No pixel changed.
+- **Chrono Hourglass = local tick speed:** while its sand runs, besides furnaces and other block entities (×4),
+  crops and baby animals, it now also speeds up every random tick (grass and mycelium spreading, leaves decaying,
+  ice and snow melting, cactus, cane, bamboo, vines, kelp, copper aging, budding amethyst, fluids too), weather ticks
+  (freezing, snow piling, cauldrons filling), scheduled ticks ×2 (water and lava flow, fire, falling sand, hatching
+  eggs), tadpoles, egg-laying and scute timers, and players: hearts regenerate twice as fast (same food cost) and
+  harmful effects wear off twice as fast (good effects keep their full time). Redstone timing, pistons, spawners,
+  portals and other hourglasses are never affected; overlapping hourglasses never stack.
 <!-- rev8 -->
 
 ## 0.7.0 — revision 7 (player feedback)
