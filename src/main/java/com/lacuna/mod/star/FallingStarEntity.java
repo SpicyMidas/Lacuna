@@ -210,8 +210,9 @@ public class FallingStarEntity extends Projectile {
         return Mth.clamp(t / Starfall.APPEAR_TICKS, 0.0F, 1.0F);
     }
 
+    /** True once the fall has begun (false until the client has the synced start time). */
     public boolean isFalling() {
-        return level().getGameTime() >= fallStart();
+        return fallStart() != 0 && level().getGameTime() >= fallStart();
     }
 
     /** 0..1 through the fall. */
