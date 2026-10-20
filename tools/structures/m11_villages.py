@@ -19,7 +19,7 @@ does (jigsaw pieces are placed with known shapes, so the templates must already 
 
 Vanilla vocabulary per style (palettes counted from the vanilla village NBTs):
   plains:  cobblestone plinth, oak log corner posts, oak plank / white terracotta walls, stripped oak wall plates,
-           steep oak stair roofs with slab ridges and finished gable overhangs, glass panes, oak trapdoor shutters;
+           steep oak stair roofs with slab ridges and finished gable overhangs, glass panes, torches beside a stair hood over the door;
   desert:  smooth sandstone, cut sandstone corners and roof band, flat stepped roofs with slab parapets, jungle button
            beam ends, small window openings, terracotta and glazed terracotta inlays, slab awnings, jungle doors;
   savanna: acacia log frames, acacia planks and orange / yellow terracotta walls, low hipped acacia roofs with a flat
