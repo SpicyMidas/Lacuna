@@ -309,10 +309,11 @@ class Civic:
         flat = p["kind"] == "flat"
         cols = sorted({(x, z) for v in self.vols for x in range(v.x0, v.x1 + 1) for z in range(v.z0, v.z1 + 1)})
         self.cols = cols
-        self.posts = {c for c in cols if self.is_corner(*c)} | set(extra_posts)
+        self.corners = {c for c in cols if self.is_corner(*c)}
         if flat:  # every box keeps its own corner piers, also where it rises above a lower one
             for v in self.vols:
-                self.posts |= {(x, z) for x in (v.x0, v.x1) for z in (v.z0, v.z1)}
+                self.corners |= {(x, z) for x in (v.x0, v.x1) for z in (v.z0, v.z1)}
+        self.posts = self.corners | set(extra_posts)
         lv = {c: self.level(*c) for c in cols}
         # floor
         for (x, z) in cols:
@@ -340,8 +341,8 @@ class Civic:
             o = self.outward(x, z)
             axis = "x" if o in ("north", "south") else "z"
             for y in (ys or wh):
-                if p["window"] == "opening":
-                    self.set(x, y, z, "air")
+                if p["window"] == "opening":  # vanilla desert: plain holes, some with a potted cactus
+                    self.set(x, y, z, p["pot"] if (x + z) % 3 == 0 else "air")
                 else:
                     self.connected(x, y, z, p["window"])
                 if p["shutter"]:
@@ -456,7 +457,7 @@ class Civic:
             edge = any((x + dx, z + dz) not in lv or lv[(x + dx, z + dz)][0] < y for dx in (-1, 0, 1) for dz in (-1, 0, 1))
             self.set(x, y, z, p["plate"] if edge else p["roof"])
             if edge:
-                if (x, z) in self.posts:
+                if (x, z) in self.corners:
                     self.set(x, y + 1, z, p["post"])
                 else:
                     self.slab(x, y + 1, z, p["ridge"])
@@ -502,6 +503,24 @@ class Civic:
         else:
             for z in (zc - 1, zc + 1):
                 self.wall_torch(0, 2, z, "west")
+
+    def front_details(self):
+        """Flower pots beside the step, a glazed terracotta medallion over desert doors, ice lamps in the snow."""
+        p, zc = self.p, self.zc
+        dz = 2 if p["porch_posts"] else 1
+        for z, pot in ((zc - dz, p["pot"]), (zc + dz, p["pot2"])):
+            if self.get(0, 0, z) is None:
+                self.set(0, 0, z, pot)
+        if p["kind"] == "flat":
+            for y in range(self.H, 2, -1):
+                if self.get(1, y, zc) == mc(self.wall):
+                    self.set(1, y, zc, "lime_glazed_terracotta", {"facing": "west"})
+                    break
+        if self.v == "snowy":
+            for z in (1, self.W):
+                if self.get(0, 0, z) is None and self.get(0, 1, z) is None:
+                    self.set(0, 0, z, "packed_ice")
+                    self.lantern(0, 1, z)
 
     def cupola(self, cx, cz):
         """A small open lantern turret on the ridge (the civic mark of the hall)."""
@@ -638,6 +657,7 @@ def village_hall(Template, v):
     if not flat:
         b.tie_beam(6, 2, 8)
     b.entrance()
+    b.front_details()
     # carpet runner from the door to the council table
     for x in range(2, 5):
         b.set(x, 1, zc, p["carpet"])
@@ -685,6 +705,7 @@ def mint(Template, v):
     b.shell(windows=[(1, 2), (1, 6), (3, 1), (7, 1), (3, 7), (7, 7), (9, 4)], door=(1, zc),
             extra_posts=((5, 1), (5, 7)), gable_windows=gable)
     b.entrance()
+    b.front_details()
     # teller's counter with bars, opening in the middle
     for z in range(2, 7):
         if z == zc:
@@ -726,6 +747,7 @@ def guild_hall(Template, v):
     if not flat:
         b.tie_beam(8, 2, 8)
     b.entrance()
+    b.front_details()
     # one board per guild along the back wall, each under its banner
     for i, (guild, color, pattern) in enumerate(GUILDS):
         z = 3 + i * 2
@@ -766,6 +788,7 @@ def schoolhouse(Template, v):
     if not flat:
         b.tie_beam(5, 2, 8)
     b.entrance()
+    b.front_details()
     # blackboard in front of the back wall, the teacher's lectern before it
     for z in range(3, 8):
         for y in (2, 3):
