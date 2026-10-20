@@ -396,8 +396,9 @@ public class FallingStarEntity extends Projectile {
     }
 
     /**
-     * A small bowl: the struck block and its neighbours (corners only sometimes) and a few blocks under them. Tough
-     * blocks (obsidian and up), unbreakable ones, containers and fluids are left alone; grass at the rim is scorched.
+     * A small bowl: the struck block and its neighbours (corners only sometimes) and a few blocks beside the centre one
+     * level down. Tough blocks (obsidian and up), unbreakable ones, containers and fluids are left alone; grass at the
+     * rim is scorched.
      */
     private boolean crater(ServerLevel server, BlockPos centre, @Nullable Entity owner) {
         List<BlockPos> bowl = new ArrayList<>();
@@ -407,7 +408,8 @@ public class FallingStarEntity extends Projectile {
                 if (!corner || random.nextFloat() < 0.5F) {
                     bowl.add(centre.offset(dx, 0, dz));
                 }
-                if (dx == 0 && dz == 0 || !corner && random.nextFloat() < 0.5F) {
+                // a few deeper bites around the centre; the centre itself stays, so the star rests in plain view
+                if (!corner && (dx != 0 || dz != 0) && random.nextFloat() < 0.35F) {
                     bowl.add(centre.offset(dx, -1, dz));
                 }
             }

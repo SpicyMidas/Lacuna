@@ -235,8 +235,8 @@ final class FallingStarFx implements ClientFx {
         if (n < 2) {
             return;
         }
+        // one render type at a time: the shared buffer source ends a batch when another type is requested
         VertexConsumer outer = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.BEAM));
-        VertexConsumer inner = ctx.buffers().getBuffer(FxRenderTypes.beam());
         float along = 0.0F;
         for (int i = 0; i < n - 1; i++) {
             Vec3 a = pts.get(i);
@@ -244,16 +244,28 @@ final class FallingStarFx implements ClientFx {
             float ta = i / (float) (n - 1);
             float tb = (i + 1) / (float) (n - 1);
             float len = (float) a.distanceTo(b);
-            float wa = (1.0F - ta) * (1.0F - ta);
-            float wb = (1.0F - tb) * (1.0F - tb);
-            FxDraw.ribbon(pose, outer, a, b, 1.6F * s * (0.25F + 0.75F * wa), 1.6F * s * (0.25F + 0.75F * wb),
+            FxDraw.ribbon(pose, outer, a, b, 1.6F * s * (0.25F + 0.75F * taper(ta)), 1.6F * s * (0.25F + 0.75F * taper(tb)),
                     FxDraw.argb(0.55F * fade * (1.0F - ta), mix(GOLD, EMBER, ta)), FxDraw.argb(0.55F * fade * (1.0F - tb), mix(GOLD, EMBER, tb)),
                     along, along + len);
-            FxDraw.ribbon(pose, inner, a, b, 0.55F * s * wa + 0.02F, 0.55F * s * wb + 0.02F,
+            along += len;
+        }
+        VertexConsumer inner = ctx.buffers().getBuffer(FxRenderTypes.beam());
+        along = 0.0F;
+        for (int i = 0; i < n - 1; i++) {
+            Vec3 a = pts.get(i);
+            Vec3 b = pts.get(i + 1);
+            float ta = i / (float) (n - 1);
+            float tb = (i + 1) / (float) (n - 1);
+            float len = (float) a.distanceTo(b);
+            FxDraw.ribbon(pose, inner, a, b, 0.55F * s * taper(ta) + 0.02F, 0.55F * s * taper(tb) + 0.02F,
                     FxDraw.argb(fade * (1.0F - ta), mix(WHITE_HOT, AMBER, ta)), FxDraw.argb(fade * (1.0F - tb), mix(WHITE_HOT, AMBER, tb)),
                     along, along + len);
             along += len;
         }
+    }
+
+    private static float taper(float t) {
+        return (1.0F - t) * (1.0F - t);
     }
 
     /** A faint ring where the star will strike, pulsing faster and brighter as it comes. */

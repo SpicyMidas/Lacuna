@@ -10,12 +10,15 @@ cmd give @s lacuna:starcaller_trumpet
 cmd summon minecraft:pig 0 -60 14 {NoAI:1b}
 cmd tp @s 0 -60 -20
 wait 40
-cmd tp @s 0 -60 -20 facing 0 -59.4 14
+cmd tp @s 0 -60 -20 facing 0 -61 14
 wait 5
 select 0
 use on
 wait 12
+hud on
+wait 1
 shot star_toot
+hud off
 use off
 look 0 -30
 wait 2
