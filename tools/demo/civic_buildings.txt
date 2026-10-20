@@ -1,0 +1,71 @@
+# The four civic buildings of every village style side by side on flat ground (raw templates: the entrance step and the
+# villager spots show as jigsaw blocks), one street-side view per style plus close-ups of the plains hall and guild hall.
+world lacuna_civic_buildings flat civicb
+wait 100
+hud off
+cmd time set 3000
+cmd gamerule doDaylightCycle false
+cmd gamemode spectator
+cmd tp @s -20 -40 28
+wait 60
+cmd place template lacuna:village/plains/village_hall 0 -60 0
+cmd place template lacuna:village/plains/mint 0 -60 16
+cmd place template lacuna:village/plains/guild_hall 0 -60 30
+cmd place template lacuna:village/plains/schoolhouse 0 -60 46
+wait 60
+cmd tp @s -24 -46 -10 facing 6 -56 26
+wait 200
+shot civicb_plains
+cmd tp @s -13 -51 -7 facing 5 -55 5
+wait 80
+shot civicb_plains_hall
+cmd tp @s -12 -51 24 facing 6 -55 35
+wait 80
+shot civicb_plains_guild
+cmd tp @s 26 -44 64 facing 6 -56 30
+wait 120
+shot civicb_plains_back
+cmd tp @s 180 -40 28
+wait 60
+cmd place template lacuna:village/desert/village_hall 200 -60 0
+cmd place template lacuna:village/desert/mint 200 -60 16
+cmd place template lacuna:village/desert/guild_hall 200 -60 30
+cmd place template lacuna:village/desert/schoolhouse 200 -60 46
+wait 60
+cmd tp @s 176 -46 -10 facing 206 -56 26
+wait 200
+shot civicb_desert
+cmd tp @s 380 -40 28
+wait 60
+cmd place template lacuna:village/savanna/village_hall 400 -60 0
+cmd place template lacuna:village/savanna/mint 400 -60 16
+cmd place template lacuna:village/savanna/guild_hall 400 -60 30
+cmd place template lacuna:village/savanna/schoolhouse 400 -60 46
+wait 60
+cmd tp @s 376 -46 -10 facing 406 -56 26
+wait 200
+shot civicb_savanna
+cmd tp @s 580 -40 28
+wait 60
+cmd place template lacuna:village/taiga/village_hall 600 -60 0
+cmd place template lacuna:village/taiga/mint 600 -60 16
+cmd place template lacuna:village/taiga/guild_hall 600 -60 30
+cmd place template lacuna:village/taiga/schoolhouse 600 -60 46
+wait 60
+cmd tp @s 576 -46 -10 facing 606 -56 26
+wait 200
+shot civicb_taiga
+cmd tp @s 780 -40 28
+wait 60
+cmd place template lacuna:village/snowy/village_hall 800 -60 0
+cmd place template lacuna:village/snowy/mint 800 -60 16
+cmd place template lacuna:village/snowy/guild_hall 800 -60 30
+cmd place template lacuna:village/snowy/schoolhouse 800 -60 46
+wait 60
+cmd tp @s 776 -46 -10 facing 806 -56 26
+wait 200
+shot civicb_snowy
+cmd tp @s 788 -51 -7 facing 805 -55 5
+wait 80
+shot civicb_snowy_hall
+quit

@@ -68,7 +68,7 @@ STYLES = {
                   fill="spruce_planks", kind="gable", verge="spruce_log", step="cobblestone_stairs", door="spruce_door",
                   window="glass_pane", shutter="spruce_trapdoor", fence="spruce_fence", chair="spruce_stairs",
                   accent="mossy_cobblestone", carpet="purple_carpet", chimney="cobblestone", banner="purple", base_h=2,
-                  porch_posts=True, light="lantern", pot="potted_fern", pot2="potted_spruce_sapling", flat=False),
+                  porch_posts=False, light="lantern", pot="potted_fern", pot2="potted_spruce_sapling", flat=False),
     "snowy": dict(base="diorite", floor="spruce_planks", wall="spruce_planks", hall_wall="spruce_planks",
                   post="stripped_spruce_log", plate="stripped_spruce_log", gable="spruce_planks", roof="spruce_stairs",
                   ridge="spruce_slab", fill="spruce_planks", kind="stepped", verge=None, step="diorite_stairs",
@@ -698,6 +698,7 @@ def mint(Template, v):
     b = Civic(Template, v, "mint", D=9, W=7, H=3)
     p, zc = b.p, b.zc
     flat = p["kind"] == "flat"
+    b.base_h = 2  # a stone ground course: the workshop with the furnace
     if v == "taiga":
         b.wall = "cobblestone"
     b.volume(1, 9, 1, 7, ridge="z")
