@@ -37,6 +37,10 @@ public final class ConfusionClient {
         modBus.addListener(ConfusionClient::onClientSetup);
         forgeBus.addListener(ConfusionClient::onClientTick);
         FxHandlers.register(Confusion.FX_RAISE, ConfusionClient::onRaise);
+        ConfusionCopy.setOwnedLocally(copy -> {
+            LocalPlayer player = Minecraft.getInstance().player;
+            return player != null && player.getUUID().equals(copy.ownerId());
+        });
     }
 
     private static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {

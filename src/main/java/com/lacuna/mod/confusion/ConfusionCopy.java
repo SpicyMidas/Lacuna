@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.WeakHashMap;
+import java.util.function.Predicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
@@ -80,6 +81,8 @@ public class ConfusionCopy extends LivingEntity {
 
     /** Copies present on this client (client thread only): while the local player owns one, it streams its input. */
     private static final Set<ConfusionCopy> CLIENT_COPIES = Collections.newSetFromMap(new WeakHashMap<>());
+    /** Client hook (set by client/confusion): true for the local player's own copies, which their crosshair passes through. */
+    private static Predicate<ConfusionCopy> ownedLocally = copy -> false;
 
     private final NonNullList<ItemStack> hands = NonNullList.withSize(2, ItemStack.EMPTY);
     private final NonNullList<ItemStack> armor = NonNullList.withSize(4, ItemStack.EMPTY);
@@ -159,6 +162,16 @@ public class ConfusionCopy extends LivingEntity {
             }
         }
         return false;
+    }
+
+    public static void setOwnedLocally(Predicate<ConfusionCopy> test) {
+        ownedLocally = test;
+    }
+
+    /** The owner aims and swings through their own copies (at the mob behind them); everyone else hits them. */
+    @Override
+    public boolean isPickable() {
+        return super.isPickable() && !(level().isClientSide && ownedLocally.test(this));
     }
 
     @Override
