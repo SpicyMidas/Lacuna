@@ -132,8 +132,9 @@ final class TideSpout {
 
     /**
      * Sets ring {@code row} of a shell: centre (cx, cy, cz) camera-relative, radius r, turned by {@code turn} radians,
-     * profile slope (dr, dy) for the normal; t / a: ramp position and alpha, with {@code w * stream[i]} lighter water on
-     * the streams (the streams follow the mesh's own columns, so a turn that changes with height makes them wind).
+     * profile slope (dr, dy) for the normal; t / a: ramp position and alpha, lighter and denser water on the streams and
+     * deeper water between them, weighted by {@code w} (the streams follow the mesh's own columns, so a turn that changes
+     * with height makes them wind).
      */
     private static void ring(Shell s, int row, double cx, double cy, double cz, double r, double turn, double dr, double dy,
                              float t, float a, float w, float[] stream) {
@@ -142,13 +143,14 @@ final class TideSpout {
         double nu = len < 1.0E-6 ? 0.0 : -dr / len;
         double ct = Math.cos(turn);
         double st = Math.sin(turn);
+        s.axis(row, cx, cz);
         for (int i = 0; i < s.sides; i++) {
             double cos = s.cos[i] * ct - s.sin[i] * st;
             double sin = s.sin[i] * ct + s.cos[i] * st;
             double x = cx + cos * r;
             double z = cz + sin * r;
-            float k = stream == null ? 0.0F : w * stream[i];
-            s.set(row, i, x, cy, z, tone(t + 0.2F * k, a * (1.0F + 0.3F * k), edge(x, cy, z, cos * nr, nu, sin * nr)));
+            float k = stream == null ? 0.0F : w * (stream[i] - 0.3F);
+            s.set(row, i, x, cy, z, tone(t + 0.32F * k, a * (1.0F + 0.45F * k), edge(x, cy, z, cos * nr, nu, sin * nr)));
         }
     }
 
@@ -164,6 +166,8 @@ final class TideSpout {
         private final float[] y;
         private final float[] z;
         private final int[] argb;
+        /** Each ring's axis (x, z), camera-relative: tells the near and far sides of a crest line apart. */
+        private final float[] axis;
 
         Shell(int rows, int sides) {
             this.sides = sides;
@@ -178,6 +182,12 @@ final class TideSpout {
             this.y = new float[n];
             this.z = new float[n];
             this.argb = new int[n];
+            this.axis = new float[rows * 2];
+        }
+
+        void axis(int row, double cx, double cz) {
+            axis[row * 2] = (float) cx;
+            axis[row * 2 + 1] = (float) cz;
         }
 
         void set(int row, int i, double px, double py, double pz, int colour) {
@@ -216,16 +226,27 @@ final class TideSpout {
             }
         }
 
-        /** The wave's crest line round ring {@code row}: camera-facing ribbon segments through its vertices. */
-        void crest(VertexConsumer vc, PoseStack.Pose pose, int row, float width, int colour) {
+        /**
+         * The wave's crest line round ring {@code row}: camera-facing ribbon segments through its vertices. Round a column
+         * ({@code throughWater}) the far side of the ring is seen through the water, dimmer, so the two halves do not stack
+         * into a solid white band.
+         */
+        void crest(VertexConsumer vc, PoseStack.Pose pose, int row, float width, int colour, boolean throughWater) {
             if ((colour >>> 24) < VISIBLE) {
                 return;
             }
+            int far = FxDraw.withAlpha(colour, 0.45F);
+            float rx = axis[row * 2];
+            float rz = axis[row * 2 + 1];
             Vec3 first = at(row, 0);
             Vec3 prev = first;
             for (int i = 1; i <= sides; i++) {
                 Vec3 next = i == sides ? first : at(row, i);
-                FxDraw.ribbon(pose, vc, prev, next, width, colour, 0.0F, 1.0F);
+                double mx = (prev.x + next.x) * 0.5;
+                double mz = (prev.z + next.z) * 0.5;
+                // outward from the ring's axis along the view ray: that side faces away from the camera
+                boolean back = throughWater && (mx - rx) * mx + (mz - rz) * mz > 0.0;
+                FxDraw.ribbon(pose, vc, prev, next, width, back ? far : colour, 0.0F, 1.0F);
                 prev = next;
             }
         }
@@ -267,9 +288,9 @@ final class TideSpout {
         /** Height of the neck above the eye: below it the spout flares into a foot drawing up the pool. */
         private static final double NECK = 0.45;
         /** The crown: the funnel's top flares out and curls over like the wave's lip (radius, height past the top). */
-        private static final double[][] CROWN = {{0.3, 0.22}, {0.7, 0.32}, {1.0, 0.18}, {1.12, -0.12}};
-        private static final float[] CROWN_T = {0.58F, 0.75F, 0.9F, 1.0F};
-        private static final float[] CROWN_A = {0.55F, 0.64F, 0.6F, 0.3F};
+        private static final double[][] CROWN = {{0.22, 0.3}, {0.5, 0.52}, {0.78, 0.44}, {0.9, 0.14}};
+        private static final float[] CROWN_T = {0.5F, 0.66F, 0.8F, 0.92F};
+        private static final float[] CROWN_A = {0.48F, 0.54F, 0.5F, 0.26F};
         private static final int TOP = 2 + FUNNEL;
         private static final int SPOUT_ROWS = TOP + 1 + CROWN.length;
         /** The streams wind this far round the funnel from neck to top, and the whole spout spins this fast. */
@@ -434,6 +455,7 @@ final class TideSpout {
                 double nr = -dy / len;
                 double nu = dr / len;
                 float a = POOL_A[j] * env;
+                pool.axis(j, c.x, c.z);
                 // log-spiral streams: turning the pattern makes them run in towards the eye
                 double phase = ARM_WIND * Math.log(f) + time * POOL_SPIN;
                 for (int i = 0; i < POOL_SIDES; i++) {
@@ -450,9 +472,9 @@ final class TideSpout {
 
         /** The wave's crest on the swell at the rim, its foam foot, and foam arms riding the streams into the eye. */
         private void poolFoam(VertexConsumer light, PoseStack.Pose pose, Vec3 c, float time, float env) {
-            pool.crest(light, pose, CREST_ROW, 1.0F, FxDraw.argb(0.22F * env, CYAN));
-            pool.crest(light, pose, CREST_ROW, 0.42F, FxDraw.argb(0.7F * env, FOAM));
-            pool.crest(light, pose, POOL.length - 1, 0.55F, FxDraw.argb(0.4F * env, FOAM));
+            pool.crest(light, pose, CREST_ROW, 1.0F, FxDraw.argb(0.22F * env, CYAN), false);
+            pool.crest(light, pose, CREST_ROW, 0.42F, FxDraw.argb(0.7F * env, FOAM), false);
+            pool.crest(light, pose, POOL.length - 1, 0.55F, FxDraw.argb(0.4F * env, FOAM), false);
             for (int k = 0; k < ARMS; k++) {
                 double base = Mth.TWO_PI * k / ARMS + time * POOL_SPIN;
                 double px = 0.0;
@@ -518,8 +540,9 @@ final class TideSpout {
                     a = 0.46F;
                     w = 0.5F;
                 } else if (j <= TOP) {
-                    t = 0.24F + 0.2F * (float) rowF[j];
-                    a = 0.36F;
+                    // the wave's body water, lightening towards the crown like the wave towards its crest
+                    t = 0.2F + 0.16F * (float) rowF[j];
+                    a = 0.38F;
                     w = 1.0F;
                 } else {
                     t = CROWN_T[j - TOP - 1];
@@ -534,10 +557,10 @@ final class TideSpout {
 
         /** The wave's crest along the crown, a foam foot round the neck and glints streaming up the streams. */
         private void spoutFoam(VertexConsumer light, PoseStack.Pose pose, Vec3 c, float time, float env, double h) {
-            spout.crest(light, pose, TOP + 2, 1.0F, FxDraw.argb(0.22F * env, CYAN));
-            spout.crest(light, pose, TOP + 3, 0.42F, FxDraw.argb(0.75F * env, FOAM));
-            spout.crest(light, pose, TOP + 4, 0.22F, FxDraw.argb(0.5F * env, FOAM));
-            spout.crest(light, pose, 1, 0.55F, FxDraw.argb(0.45F * env, FOAM));
+            spout.crest(light, pose, TOP + 2, 1.0F, FxDraw.argb(0.22F * env, CYAN), true);
+            spout.crest(light, pose, TOP + 3, 0.42F, FxDraw.argb(0.75F * env, FOAM), true);
+            spout.crest(light, pose, TOP + 4, 0.22F, FxDraw.argb(0.5F * env, FOAM), true);
+            spout.crest(light, pose, 1, 0.55F, FxDraw.argb(0.45F * env, FOAM), true);
             double k = 0.6 + 0.4 * env;
             double eye = c.y + bowl(0.0, env);
             for (int n = 0; n < GLINTS; n++) {
@@ -572,9 +595,9 @@ final class TideSpout {
         private static final float[] FALL = streams(SIDES, 6);
         private static final int COLUMN = 12;
         /** The crown bursting open at the top, curling over like the wave's lip (radius, height past the top, x open). */
-        private static final double[][] CROWN = {{0.55, 0.45}, {1.3, 0.65}, {1.9, 0.35}, {2.15, -0.25}};
-        private static final float[] CROWN_T = {0.58F, 0.75F, 0.9F, 1.0F};
-        private static final float[] CROWN_A = {0.55F, 0.64F, 0.6F, 0.3F};
+        private static final double[][] CROWN = {{0.5, 0.5}, {1.2, 0.75}, {1.8, 0.45}, {2.1, -0.2}};
+        private static final float[] CROWN_T = {0.5F, 0.66F, 0.8F, 0.92F};
+        private static final float[] CROWN_A = {0.48F, 0.54F, 0.5F, 0.26F};
         private static final int TOP = COLUMN;
         private static final int ROWS = TOP + 1 + CROWN.length;
         private static final int CURTAIN = 6;
@@ -709,11 +732,11 @@ final class TideSpout {
             }
 
             VertexConsumer light = ctx.buffers().getBuffer(light());
-            column.crest(light, pose, TOP + 2, 1.0F, FxDraw.argb(0.22F * fade, CYAN));
-            column.crest(light, pose, TOP + 3, 0.42F, FxDraw.argb(0.75F * fade, FOAM));
-            column.crest(light, pose, TOP + 4, 0.22F, FxDraw.argb(0.5F * fade, FOAM));
-            column.crest(light, pose, 0, 0.55F, FxDraw.argb(0.45F * fade, FOAM));
-            sheen.crest(light, pose, 1, 0.55F, FxDraw.argb(0.45F * (1.0F - spread) * fade, FOAM));
+            column.crest(light, pose, TOP + 2, 1.0F, FxDraw.argb(0.22F * fade, CYAN), true);
+            column.crest(light, pose, TOP + 3, 0.42F, FxDraw.argb(0.75F * fade, FOAM), true);
+            column.crest(light, pose, TOP + 4, 0.22F, FxDraw.argb(0.5F * fade, FOAM), true);
+            column.crest(light, pose, 0, 0.55F, FxDraw.argb(0.45F * fade, FOAM), true);
+            sheen.crest(light, pose, 1, 0.55F, FxDraw.argb(0.45F * (1.0F - spread) * fade, FOAM), false);
             // glints rushing up the column on its streams
             for (int n = 0; n < GLINTS; n++) {
                 float q = (time * 0.09F + n * 0.618F) % 1.0F;
@@ -756,8 +779,8 @@ final class TideSpout {
                 float w;
                 if (j <= TOP) {
                     float pulse = 0.5F + 0.5F * Mth.sin((float) rowY[j] * 1.4F - time * 1.5F);
-                    t = 0.28F + 0.2F * f + 0.1F * pulse;
-                    a = 0.4F + 0.05F * pulse;
+                    t = 0.22F + 0.18F * f + 0.12F * pulse;
+                    a = 0.4F + 0.06F * pulse;
                     w = 1.0F;
                 } else {
                     t = CROWN_T[j - TOP - 1];
