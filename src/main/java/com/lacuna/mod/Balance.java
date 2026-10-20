@@ -417,4 +417,14 @@ public final class Balance {
     public static final int HOURGLASS_SCAN_INTERVAL = 20;
     /** Upper bound on extra random ticks per game tick (guards against a huge randomTickSpeed gamerule). */
     public static final int HOURGLASS_MAX_RANDOM_TICKS = 32;
+    /** Players in reach heal (natural regeneration) and shake off harmful effects this many times faster. */
+    public static final int HOURGLASS_PLAYER_SPEED = 2;
+    /** Scheduled fluid ticks in reach (water and lava spreading) come this many times sooner. */
+    public static final int HOURGLASS_FLUID_SPEED = 2;
+    /** Scheduled block ticks in reach (fire, falling blocks, frogspawn, sniffer eggs...; never redstone) come this many times sooner. */
+    public static final int HOURGLASS_SCHEDULED_SPEED = 2;
+    /** At most this many scheduled ticks are brought forward by one hourglass per game tick. */
+    public static final int HOURGLASS_MAX_SCHEDULED_TICKS = 48;
+    /** Chunks holding more scheduled ticks than this are not searched (a huge contraption must not cost every tick). */
+    public static final int HOURGLASS_MAX_TICK_QUEUE = 4096;
 }
