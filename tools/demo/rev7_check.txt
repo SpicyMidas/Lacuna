@@ -1,0 +1,30 @@
+# Revision 7 boot check: Sun's Fury focus across sunrise, the Wand of Quickening bolt, the Chrono Hourglass
+world lacuna_rev7 flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd time set 22600
+look -90 -8
+wait 20
+cmd summon lacuna:suns_fury ~16 ~3 ~ {Motion:[0.0d,-1.0d,0.0d]}
+wait 14
+shot r7_sun_predawn
+wait 12
+shot r7_sun_sunrise
+wait 6
+shot r7_sun_rising
+look 0 20
+cmd setblock ~2 ~1 ~4 lacuna:chrono_hourglass[half=upper]
+cmd setblock ~2 ~ ~4 lacuna:chrono_hourglass[half=lower]
+cmd item replace entity @s weapon.mainhand with lacuna:quickening_wand
+cmd item replace entity @s weapon.offhand with minecraft:iron_sword
+wait 20
+use on
+wait 3
+use off
+shot r7_wand_bolt
+wait 3
+shot r7_wand_burst
+wait 20
+quit
