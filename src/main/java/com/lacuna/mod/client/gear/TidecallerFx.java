@@ -29,35 +29,36 @@ import net.minecraft.world.phys.Vec3;
  *   <li>{@code tide_wave}: a translucent blue-green breaking wave with a curling lip, a white foam crest, water
  *       streaming up its back and a wet wake behind it; it rolls over the terrain along the same path the server
  *       wave follows ({@link TideCurrents#path}) and crashes at its end. Dense splash, falling water and bubbles.</li>
- *   <li>{@code tide_maelstrom} / {@code tide_geyser}: the whirlpool, its waterspout and the closing geyser, built from
- *       vanilla water sprites and pixel-art foam in {@link TideSpout}.</li>
+ *   <li>{@code tide_maelstrom} / {@code tide_geyser}: the whirlpool, its waterspout and the closing geyser, drawn
+ *       exactly like the wave (same palette, render types and foam crests) in {@link TideSpout}.</li>
  * </ul>
  */
 public final class TidecallerFx {
-    private static final int DEEP = 0x0B3F5E;
-    private static final int TEAL = 0x1C8CA3;
-    private static final int CYAN = 0x5ED6E6;
-    private static final int PALE = 0xB9F1F7;
-    private static final int FOAM = 0xF0FDFF;
-    private static final int GLINT = 0x9CF0FF;
+    // the tide's palette, shared with the whirlpool, waterspout and geyser (TideSpout)
+    static final int DEEP = 0x0B3F5E;
+    static final int TEAL = 0x1C8CA3;
+    static final int CYAN = 0x5ED6E6;
+    static final int PALE = 0xB9F1F7;
+    static final int FOAM = 0xF0FDFF;
+    static final int GLINT = 0x9CF0FF;
 
     private TidecallerFx() {}
 
     public static void register() {
         FxHandlers.register(TideCurrents.WAVE_FX, p -> FxManager.add(new Wave(p)));
-        // the maelstrom's whirlpool and waterspout and the closing geyser are drawn like vanilla water (TideSpout)
+        // the maelstrom's whirlpool and waterspout and the closing geyser are drawn in the wave's style (TideSpout)
         FxHandlers.register(TideCurrents.MAELSTROM_FX, p -> FxManager.add(new TideSpout.Maelstrom(p)));
         FxHandlers.register(TideCurrents.GEYSER_FX, p -> FxManager.add(new TideSpout.Geyser(p)));
     }
 
     // ------------------------------------------------------------------ helpers
 
-    private static boolean isSelf(FxPayload p) {
+    static boolean isSelf(FxPayload p) {
         Player player = Minecraft.getInstance().player;
         return player != null && player.getId() == p.entityId();
     }
 
-    private static float smooth(float t) {
+    static float smooth(float t) {
         t = Mth.clamp(t, 0.0F, 1.0F);
         return t * t * (3.0F - 2.0F * t);
     }
