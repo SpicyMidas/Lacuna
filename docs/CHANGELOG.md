@@ -12,6 +12,11 @@
   sunrise and sunset included, take its colour (warm white high up, vanilla sunrise orange near the horizon) and curve
   in through a shrinking ring onto the target; while the sun is below the horizon there are no rays, only the white
   target marker (like the Magnifying Glass at night), and the rays come back as the sun rises.
+- **Chrono Hourglass** (new, two blocks tall): a 3D hourglass with see-through glass bulbs and animated sand. Feed it
+  Chronal Shards (60 s each, up to 10 min; sneak to pour the whole stack) and everything within 4 blocks runs ×4 faster:
+  furnaces, smokers, brewing stands, hoppers, campfires and other ticking blocks, crops and saplings (extra random
+  ticks), baby animals and breeding cooldowns. Players are never affected; overlapping hourglasses don't stack.
+  A redstone signal pauses it, a comparator reads the time left, and breaking it refunds unspent shards.
 <!-- rev7 -->
 
 ## 0.6.0 — revision 6 (player feedback)
