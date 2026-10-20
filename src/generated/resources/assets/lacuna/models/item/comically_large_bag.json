@@ -1,0 +1,67 @@
+{
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -90,
+        25
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "translation": [
+        1.13,
+        1.0,
+        1.13
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ],
+      "translation": [
+        0,
+        4,
+        3.5
+      ]
+    }
+  },
+  "overrides": [
+    {
+      "model": "lacuna:item/comically_large_bag_full",
+      "predicate": {
+        "lacuna:full": 1
+      }
+    }
+  ],
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lacuna:item/comically_large_bag"
+  }
+}
