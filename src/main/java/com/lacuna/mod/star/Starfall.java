@@ -15,7 +15,6 @@ public final class Starfall {
     public static final String FEATURE = "starfall";
     /** FxPayload kinds (client/star/StarClient). */
     public static final String FX_IMPACT = "starfall_impact";
-    public static final String FX_CALL = "starfall_call";
     public static final String ADVANCEMENT = "lacuna/wish_upon_a_star";
     public static final ResourceKey<DamageType> DAMAGE = ResourceKey.create(Registries.DAMAGE_TYPE, Lacuna.id("falling_star"));
 
