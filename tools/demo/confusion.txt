@@ -1,0 +1,43 @@
+# Totem of Confusion: the raise (seen from the front, then first person), five copies of the player appear, then the
+# player walks and sneaks: the copies mirror it, each fanning out on its own heading.
+world lacuna_confusion flat
+wait 60
+hud off
+cmd time set 6000
+cmd gamerule doDaylightCycle false
+cmd gamerule sendCommandFeedback false
+cmd give @s lacuna:totem_of_confusion
+cmd item replace entity @s armor.chest with minecraft:iron_chestplate
+cmd tp @s 0 -60 0 0 0
+wait 40
+select 0
+camera front
+wait 2
+use on
+wait 8
+shot confusion_raise_front
+use off
+wait 4
+camera first
+wait 2
+use on
+wait 8
+shot confusion_raise_fp
+wait 10
+use off
+wait 45
+camera back
+look 0 35
+wait 10
+shot confusion_copies
+forward on
+wait 12
+shot confusion_walk1
+wait 12
+shot confusion_walk2
+forward off
+sneak on
+wait 6
+shot confusion_sneak
+sneak off
+quit

@@ -222,7 +222,7 @@ public class ConfusionCopy extends LivingEntity {
         float yaw = owner.getYRot() + heading;
         setYRot(yaw);
         setXRot(owner.getXRot());
-        setYHeadRot(owner.getYHeadRot() + heading);
+        setYHeadRot(yaw);
         setSprinting(owner.isSprinting());
         setShiftKeyDown(owner.isShiftKeyDown());
         mirroredSpeed = owner.getSpeed();
