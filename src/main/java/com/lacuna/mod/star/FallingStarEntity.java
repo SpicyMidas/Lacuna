@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -26,6 +28,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -62,6 +66,8 @@ import org.joml.Vector3f;
  *       drop when there is no ground to hold it).</li>
  * </ol>
  * The server moves it; the client only eases toward the synced positions and draws it (client/star). Never saved.
+ * Stars also fall on their own on clear nights ({@link NaturalStarfall}, {@link #fallFromSky}): those come with a far
+ * twinkle instead of the fanfare, and no caller.
  */
 public class FallingStarEntity extends Projectile {
     private static final EntityDataAccessor<Integer> DATA_FALL_START = SynchedEntityData.defineId(FallingStarEntity.class,
@@ -83,6 +89,8 @@ public class FallingStarEntity extends Projectile {
     private Vec3 callerPos = Vec3.ZERO;
     private int age;
     private boolean struck;
+    /** A star nobody called ({@link NaturalStarfall}): no fanfare, no caller, its own death message. */
+    private boolean natural;
 
     // client easing toward the server position
     private int lerpSteps;
@@ -133,6 +141,46 @@ public class FallingStarEntity extends Projectile {
         server.addFreshEntity(star);
         fanfare(server, caller);
         return true;
+    }
+
+    /**
+     * A star nobody called ({@link NaturalStarfall}): it twinkles into being at {@code start} and falls on
+     * {@code point}, with no fanfare. Both spots must already be checked (simulated, open sky between them).
+     */
+    public static void fallFromSky(ServerLevel server, Vec3 start, Vec3 point) {
+        FallingStarEntity star = new FallingStarEntity(ModEntities.FALLING_STAR.get(), server);
+        star.natural = true;
+        star.setPos(start.x, start.y, start.z);
+        star.aim = point;
+        star.callerPos = start;
+        star.entityData.set(DATA_AIM, point.toVector3f());
+        star.entityData.set(DATA_FALL_START, (int) server.getGameTime() + Starfall.APPEAR_TICKS);
+        server.addFreshEntity(star);
+    }
+
+    /**
+     * A starting point high above {@code point} and far out to one side, with open sky all the way down and a simulated
+     * chunk under it (so the star ticks from the start), or null when none of a few directions works.
+     */
+    @Nullable
+    public static Vec3 skyStart(ServerLevel server, Vec3 point, RandomSource r) {
+        double first = r.nextDouble() * Math.PI * 2.0;
+        for (int i = 0; i < 6; i++) {
+            double a = first + i * (Math.PI / 3.0);
+            double slant = Mth.lerp(r.nextDouble(), Starfall.NATURAL_SLANT_MIN, Starfall.NATURAL_SLANT_MAX);
+            double height = Mth.lerp(r.nextDouble(), Starfall.NATURAL_HEIGHT_MIN, Starfall.NATURAL_HEIGHT_MAX);
+            Vec3 start = point.add(Math.cos(a) * slant, height, Math.sin(a) * slant);
+            if (!server.isPositionEntityTicking(BlockPos.containing(start.x, point.y, start.z))) {
+                continue;
+            }
+            Vec3 from = point.add(start.subtract(point).normalize().scale(0.75));
+            BlockHitResult hit = server.clip(new ClipContext(from, start, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
+                    CollisionContext.empty()));
+            if (hit.getType() == HitResult.Type.MISS) {
+                return start;
+            }
+        }
+        return null;
     }
 
     /** Where the star aims on a creature: a little below its centre, so the blast is felt where it stands. */
@@ -248,7 +296,11 @@ public class FallingStarEntity extends Projectile {
     private void serverTick(ServerLevel server) {
         age++;
         if (age <= Starfall.APPEAR_TICKS) {
-            fanfareTail(server);
+            if (natural) {
+                twinkle(server);
+            } else {
+                fanfareTail(server);
+            }
             return;
         }
         int k = age - Starfall.APPEAR_TICKS;
@@ -317,6 +369,16 @@ public class FallingStarEntity extends Projectile {
         }
     }
 
+    /** A star nobody called: a far twinkle as it appears high in the sky, heard well beyond the landing spot. */
+    private void twinkle(ServerLevel server) {
+        if (age == 1) {
+            Sfx.at(server, position(), SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR, 8.0F, 1.2F);
+        } else if (age == Starfall.APPEAR_TICKS) {
+            Sfx.at(server, position(), SoundEvents.AMETHYST_BLOCK_RESONATE, 8.0F, 1.4F);
+            Sfx.at(server, position(), SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR, 8.0F, 0.9F);
+        }
+    }
+
     // ------------------------------------------------------------------ impact
 
     private void strike(ServerLevel server, Vec3 at, @Nullable BlockHitResult hit) {
@@ -348,7 +410,8 @@ public class FallingStarEntity extends Projectile {
     /** Damage with falloff, knockback and burning for every creature in the blast; the locked-on one takes it all. */
     private void blast(ServerLevel server, Vec3 at, @Nullable Entity owner) {
         double reach = Starfall.BLAST_RADIUS + 1.0;
-        DamageSource source = ModDamageTypes.source(server, Starfall.DAMAGE, this, owner != null ? owner : this);
+        DamageSource source = natural ? skySource(server, at)
+                : ModDamageTypes.source(server, Starfall.DAMAGE, this, owner != null ? owner : this);
         List<LivingEntity> hit = server.getEntitiesOfClass(LivingEntity.class, new AABB(at, at).inflate(reach + 1.0),
                 e -> e.isAlive() && !e.isSpectator());
         for (LivingEntity e : hit) {
@@ -382,6 +445,14 @@ public class FallingStarEntity extends Projectile {
             e.push(away.x * strength, 0.25 + 0.3 * strength, away.z * strength);
             e.hurtMarked = true;
         }
+    }
+
+    /** A star nobody called: a source with no entity, so the death message names no caller. */
+    private static DamageSource skySource(ServerLevel server, Vec3 at) {
+        var registry = server.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE);
+        Holder<DamageType> type = registry.getHolder(Starfall.NATURAL_DAMAGE).map(h -> (Holder<DamageType>) h)
+                .orElseGet(() -> registry.getHolderOrThrow(DamageTypes.MAGIC));
+        return new DamageSource(type, at);
     }
 
     /** The solid block the star struck, or the first one up to 3 blocks under the impact (none in mid-air). */

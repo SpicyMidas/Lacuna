@@ -30,6 +30,7 @@ CONTENT_MODULES = [
     "m06_utility", "m07_gear", "m08_wood", "m09_mobs", "m10_biomes_structures", "m11_villages", "m12_polish", "m13_fx",
     "m14_quickening",
     "m15_chrono_hourglass", "m15_bag", "m15_starcaller",
+    "m16_natural_stars",
 ]
 
 

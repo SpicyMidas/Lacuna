@@ -86,6 +86,11 @@ public final class LacunaConfig {
     public static final ModConfigSpec.BooleanValue VILLAGES_GUILDS;
     public static final ModConfigSpec.BooleanValue VILLAGES_CIVIC_BUILDINGS;
 
+    // ---------------------------------------------------------------- starfall (natural Fallen Stars) and the Starlace Bandage
+    public static final ModConfigSpec.BooleanValue NATURAL_STARS;
+    public static final ModConfigSpec.DoubleValue NATURAL_STAR_CHANCE;
+    public static final ModConfigSpec.BooleanValue STARLACE_BANDAGE_ENABLED;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -182,6 +187,15 @@ public final class LacunaConfig {
         VILLAGES_GUILDS = B.define("guilds", true);
         VILLAGES_CIVIC_BUILDINGS = B.comment("Add the village hall, mint, guild hall and schoolhouse to newly generated vanilla villages.")
                 .define("civicBuildings", true);
+        B.pop();
+
+        B.push("starfall");
+        NATURAL_STARS = B.comment("On clear nights in the overworld a star now and then falls near a player, leaving a Fallen Star.")
+                .define("naturalStars", true);
+        NATURAL_STAR_CHANCE = B.comment("Chance, per player and per clear night, that a star falls near them (0 = never, 1 = every night).")
+                .defineInRange("naturalChancePerNight", com.lacuna.mod.star.Starfall.NATURAL_CHANCE_PER_NIGHT, 0.0, 1.0);
+        STARLACE_BANDAGE_ENABLED = B.comment("Starlace Bandages can mummify creatures (shears always unwrap them).")
+                .define("starlaceBandage", true);
         B.pop();
 
         SPEC = B.build();

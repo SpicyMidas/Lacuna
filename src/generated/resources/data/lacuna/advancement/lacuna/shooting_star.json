@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.shooting_star.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:star_fragment"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.shooting_star.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "code"
+    ]
+  ]
+}
