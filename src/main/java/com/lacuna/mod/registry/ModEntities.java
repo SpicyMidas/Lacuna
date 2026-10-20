@@ -72,6 +72,11 @@ public final class ModEntities {
             "animated_item", () -> EntityType.Builder.<com.lacuna.mod.gear.AnimatedItemEntity>of(com.lacuna.mod.gear.AnimatedItemEntity::new,
                     MobCategory.MISC).sized(0.5F, 0.9F).eyeHeight(0.6F).clientTrackingRange(8).build("animated_item"));
 
+    // ------------------------------------------------------------------ Starcaller Trumpet
+    public static final DeferredHolder<EntityType<?>, EntityType<com.lacuna.mod.star.FallingStarEntity>> FALLING_STAR = ENTITIES.register(
+            "falling_star", () -> EntityType.Builder.<com.lacuna.mod.star.FallingStarEntity>of(com.lacuna.mod.star.FallingStarEntity::new,
+                    MobCategory.MISC).sized(0.6F, 0.6F).clientTrackingRange(16).updateInterval(1).fireImmune().noSave().build("falling_star"));
+
     private ModEntities() {}
 
     /** Mod bus: attribute tables for every living Lacuna entity. */

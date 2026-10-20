@@ -31,6 +31,12 @@
 - **Tidecaller:** the whirlpool and waterspout are rebuilt in Minecraft style: blocky spinning rings textured with the
   animated vanilla water (tinted with the biome's water colour), pixel-art foam and spray, stepped whirlpool terraces,
   and vanilla splash, bubble and drip particles with bubble-column and breeze sounds. Same attack as before.
+- **Starcaller Trumpet** (new): blow it like a goat horn and a small falling star streaks down from the sky at an
+  angle with a glowing trail and a whistle. It locks on to the creature under your crosshair and follows it, or falls on
+  the block you looked at (up to 96 blocks). The impact is a small blast (8 damage at the centre, knockback, burning),
+  with a little crater and a few fires only when mobGriefing is on, a screen shake and a flash. It leaves a glowing
+  Fallen Star block that breaks into Star Fragments: they repair the trumpet and craft Starlace Cloth (1 fragment + 3
+  string = 4 cloth). 32 uses, 30 s cooldown. New advancement "Wish Upon a Star".
 <!-- rev7 -->
 
 ## 0.6.0 — revision 6 (player feedback)

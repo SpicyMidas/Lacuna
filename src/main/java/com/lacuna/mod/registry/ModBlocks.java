@@ -189,6 +189,11 @@ public final class ModBlocks {
                     .strength(1.5F, 6.0F).sound(SoundType.GLASS).noOcclusion().pushReaction(PushReaction.BLOCK)
                     .isValidSpawn(Blocks::never).isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false)
                     .isViewBlocking((s, l, p) -> false)));
+    // ------------------------------------------------------------------ Starcaller Trumpet: what a called star leaves behind
+    public static final DeferredBlock<com.lacuna.mod.star.FallenStarBlock> FALLEN_STAR = block("fallen_star",
+            () -> new com.lacuna.mod.star.FallenStarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F, 6.0F)
+                    .sound(SoundType.AMETHYST).lightLevel(s -> 12).noOcclusion().requiresCorrectToolForDrops()
+                    .pushReaction(PushReaction.DESTROY).isValidSpawn(Blocks::never)));
 
     private static BlockBehaviour.Properties civicProps(MapColor color, SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(color).strength(2.5F, 6.0F).sound(sound).noOcclusion()

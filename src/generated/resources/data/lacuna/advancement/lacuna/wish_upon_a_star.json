@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.wish_upon_a_star.description"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:starcaller_trumpet"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.wish_upon_a_star.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "code"
+    ]
+  ]
+}

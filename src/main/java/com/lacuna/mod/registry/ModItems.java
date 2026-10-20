@@ -180,6 +180,11 @@ public final class ModItems {
     // ------------------------------------------------------------------ Comically Large Bag
     public static final DeferredItem<com.lacuna.mod.bag.ComicallyLargeBagItem> COMICALLY_LARGE_BAG = item("comically_large_bag",
             com.lacuna.mod.bag.ComicallyLargeBagItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON).fireResistant());
+    // ------------------------------------------------------------------ Starcaller Trumpet (calls a falling star)
+    public static final DeferredItem<com.lacuna.mod.star.StarcallerTrumpetItem> STARCALLER_TRUMPET = item("starcaller_trumpet",
+            com.lacuna.mod.star.StarcallerTrumpetItem::new,
+            new Item.Properties().durability(com.lacuna.mod.star.Starfall.TRUMPET_DURABILITY).rarity(Rarity.RARE));
+    public static final DeferredItem<Item> STAR_FRAGMENT = item("star_fragment", Item::new, new Item.Properties().rarity(Rarity.UNCOMMON));
 
     private ModItems() {}
 
