@@ -399,7 +399,6 @@ class Civic:
                 for z in range(v.z0 - 1, v.z1 + 2):
                     if (x, z) not in cols:
                         cols[(x, z)] = self.level(x, z)
-        cap = None
 
         def L(c):
             return cols[c][3] if c in cols else None
@@ -526,7 +525,7 @@ class Civic:
         """A small open lantern turret on the ridge (the civic mark of the hall)."""
         p = self.p
         cells = [(cx + dx, cz + dz) for dx in (-1, 0, 1) for dz in (-1, 0, 1)]
-        tops = {c: self.roof_cols[c][0] + (1 if p["kind"] == "stepped" else 0) for c in cells}
+        tops = {c: self.roof_cols[c][0] for c in cells}  # stairs, slabs or (stepped) the planks under the snow
         base = max(tops.values()) + (0 if p["kind"] == "gable" else 1)
         for (x, z) in cells:
             for y in range(tops[(x, z)] + 1, base + 1):
