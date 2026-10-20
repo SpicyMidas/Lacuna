@@ -236,7 +236,9 @@ public class ConfusionCopy extends LivingEntity {
         setYRot(yaw);
         setXRot(owner.getXRot());
         setYHeadRot(yaw);
-        setSprinting(owner.isSprinting());
+        if (isSprinting() != owner.isSprinting()) {
+            setSprinting(owner.isSprinting()); // only on change: it re-adds a synced speed modifier
+        }
         setShiftKeyDown(owner.isShiftKeyDown());
         mirroredSpeed = owner.getSpeed();
         mirroredJump = owner.getAttributeValue(Attributes.JUMP_STRENGTH);
