@@ -1,0 +1,76 @@
+{
+  "display": {
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        -20,
+        5
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ],
+      "translation": [
+        -5,
+        4,
+        -3
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -20,
+        5
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ],
+      "translation": [
+        -5,
+        4,
+        -3
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ],
+      "translation": [
+        0,
+        4,
+        1
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ],
+      "translation": [
+        0,
+        4,
+        1
+      ]
+    }
+  },
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lacuna:item/totem_of_confusion"
+  }
+}

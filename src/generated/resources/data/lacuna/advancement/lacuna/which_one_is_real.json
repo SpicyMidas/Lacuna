@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.which_one_is_real.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:totem_of_confusion"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.which_one_is_real.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "code"
+    ]
+  ]
+}
