@@ -59,5 +59,11 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<String>> VILLAGER_GUILD = ATTACHMENTS.register("villager_guild",
             () -> AttachmentType.builder(() -> "").serialize(Codec.STRING, s -> !s.isEmpty()).build());
 
+    /** Starlace Bandage wraps on a creature (mummy/Mummification); saved once it is a finished mummy, synced to clients. */
+    public static final Supplier<AttachmentType<com.lacuna.mod.mummy.Mummy>> MUMMY = ATTACHMENTS.register("mummy",
+            () -> AttachmentType.builder(() -> com.lacuna.mod.mummy.Mummy.NONE)
+                    .serialize(com.lacuna.mod.mummy.Mummy.CODEC, com.lacuna.mod.mummy.Mummy::done)
+                    .sync(com.lacuna.mod.mummy.Mummy.STREAM_CODEC).build());
+
     private ModAttachments() {}
 }

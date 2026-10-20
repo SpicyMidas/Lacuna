@@ -185,6 +185,9 @@ public final class ModItems {
             com.lacuna.mod.star.StarcallerTrumpetItem::new,
             new Item.Properties().durability(com.lacuna.mod.star.Starfall.TRUMPET_DURABILITY).rarity(Rarity.RARE));
     public static final DeferredItem<Item> STAR_FRAGMENT = item("star_fragment", Item::new, new Item.Properties().rarity(Rarity.UNCOMMON));
+    // ------------------------------------------------------------------ Starlace Bandage (mummifies creatures)
+    public static final DeferredItem<com.lacuna.mod.mummy.StarlaceBandageItem> STARLACE_BANDAGE = item("starlace_bandage",
+            com.lacuna.mod.mummy.StarlaceBandageItem::new, new Item.Properties());
 
     private ModItems() {}
 

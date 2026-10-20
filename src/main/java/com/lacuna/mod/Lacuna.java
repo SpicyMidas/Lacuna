@@ -81,6 +81,7 @@ public final class Lacuna {
         NeoForge.EVENT_BUS.addListener(AnvilRepairs::onAnvilUpdate);
         com.lacuna.mod.bag.BagEvents.register(NeoForge.EVENT_BUS);
         com.lacuna.mod.star.NaturalStarfall.register(NeoForge.EVENT_BUS);
+        com.lacuna.mod.mummy.Mummification.register(NeoForge.EVENT_BUS);
         if (SmokeRunner.isActive()) {
             SmokeRunner.register(NeoForge.EVENT_BUS);
         }

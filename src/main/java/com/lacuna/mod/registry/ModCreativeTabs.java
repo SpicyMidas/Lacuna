@@ -32,6 +32,7 @@ public final class ModCreativeTabs {
             ModItems.QUICKENING_WAND,
             ModItems.EMBER_TRIANGLE,
             ModItems.STARCALLER_TRUMPET,
+            ModItems.STARLACE_BANDAGE,
             ModItems.UMBRAL_STEEL_SWORD, ModItems.UMBRAL_STEEL_PICKAXE, ModItems.UMBRAL_STEEL_AXE, ModItems.UMBRAL_STEEL_SHOVEL, ModItems.UMBRAL_STEEL_HOE,
             ModItems.RUBY_SWORD, ModItems.RUBY_PICKAXE, ModItems.RUBY_AXE, ModItems.RUBY_SHOVEL, ModItems.RUBY_HOE,
             ModItems.STARLACE_HELMET, ModItems.STARLACE_CHESTPLATE, ModItems.STARLACE_LEGGINGS, ModItems.STARLACE_BOOTS,
