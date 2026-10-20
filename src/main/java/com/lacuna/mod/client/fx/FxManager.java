@@ -35,6 +35,8 @@ import org.jetbrains.annotations.Nullable;
  * Bounded (oldest effects are dropped past {@link #MAX}); cleared on logout.
  */
 public final class FxManager {
+    /** Diagnostics key of the render pass ({@link FxGuard}); nothing switches the manager off any more. */
+    public static final String FEATURE = "client_fx";
     private static final int MAX = 384;
     private static final int BUFFER_BYTES = 262_144;
     private static final List<ClientFx> ACTIVE = new ArrayList<>();
@@ -130,7 +132,7 @@ public final class FxManager {
         }
         iterating = true;
         try {
-            if (!FxGuard.run("fx render pass", () -> render(event, mc, pose))) {
+            if (!FxGuard.run(FEATURE, () -> render(event, mc, pose))) {
                 releaseBuffers();
             }
         } finally {

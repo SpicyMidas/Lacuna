@@ -363,9 +363,12 @@ final class TideSpout {
                 float depth = 0.5F + 0.5F * i / (rings - 1.0F);
                 float a = (0.85F - 0.05F * i) * env * (i == rings - 1 ? 0.6F : 1.0F);
                 annulus(vc, pose, c, y, rIn, rOut, segments, turn, sp.still(), STILL_DENSITY, look.tint(depth, a), 1, 0);
-                // foam arms: every fourth face, one face further round on each ring, so the arms wind into the eye
-                annulus(vc, pose, c, y + 0.01, rIn + w * 0.15, rOut - w * 0.15, segments, turn, sp.foam(), STILL_DENSITY,
-                        look.white(0.9F * env), 4, i);
+                // foam arms: every third face, one face further round on each ring, so the arms wind into the eye
+                annulus(vc, pose, c, y + 0.01, rIn + w * 0.15, rOut - w * 0.25, segments, turn, sp.foam(), STILL_DENSITY,
+                        look.white(0.9F * env), 3, i);
+                // a foam lip along the edge of every terrace (the pool is water over water: the lips make the steps read)
+                annulus(vc, pose, c, y + 0.012, rOut - w * 0.2, rOut, segments, turn, sp.foam(), STILL_DENSITY,
+                        look.white(0.85F * env), 1, 0);
                 if (i < rings - 1) {
                     // the step down to the next ring: water spilling inward over the edge
                     band(vc, pose, c, y, rOut, terrace(i + 1, env), rOut, segments, turn, sp.flow(), FLOW_DENSITY, false,
