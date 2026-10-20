@@ -24,7 +24,9 @@ GLOW_THREAD = (255, 196, 92, 255)
 GLOW_GLINT = (196, 176, 255, 255)
 GLOW_EYE = (226, 214, 255, 255)
 
-SIZES = [(32, 32), (64, 32), (64, 64), (64, 128), (128, 64), (128, 128)]
+# the documented entity texture sizes; a 128x128 or 64x128 creature takes the 64x64 wraps, each wrap pixel then
+# covering exactly 2x2 (or 1x2) of its own, still on its pixel grid
+SIZES = [(32, 32), (64, 32), (64, 64), (128, 64)]
 SPACING = 4  # one strip (highlight, body, shadow) and its seam, on average
 
 
