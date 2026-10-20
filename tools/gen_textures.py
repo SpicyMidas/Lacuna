@@ -23,7 +23,7 @@ ART_MODULES = ["m01_ruby_glass", "m02_forgotten_land", "m03_magnifier", "m04_ecl
                "m06_utility", "m07_gear", "m08_wood", "m09_mobs", "m10_biomes_structures", "m11_villages", "m13_fx",
                "m14_ember", "m14_quickening",
                "m15_chrono_hourglass", "m15_bag", "m15_starcaller",
-               "m16_pocket_watch_frames", "m16_confusion"]
+               "m16_pocket_watch_frames", "m16_confusion", "m16_starlace_bandage"]
 
 
 HAND = os.path.join(HERE, "art", "hand")

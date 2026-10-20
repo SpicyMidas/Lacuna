@@ -5,6 +5,8 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -20,7 +22,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /**
  * Fallen Star: what a called star leaves where it struck. A small lump of charred star-stone around a glowing core
  * (light 12) that sheds glints; mined with any pickaxe it breaks into 1-3 Star Fragments (Silk Touch keeps it whole).
- * It needs solid ground under it, like a torch.
+ * It needs solid ground under it, like a torch. It chimes softly now and then, so it can be found by ear.
  */
 public class FallenStarBlock extends Block {
     public static final MapCodec<FallenStarBlock> CODEC = simpleCodec(FallenStarBlock::new);
@@ -68,6 +70,10 @@ public class FallenStarBlock extends Block {
         if (random.nextInt(12) == 0) {
             level.addParticle(ParticleTypes.SMOKE, x + (random.nextDouble() - 0.5) * 0.5, y + 0.1, z + (random.nextDouble() - 0.5) * 0.5,
                     0.0, 0.03, 0.0);
+        }
+        // a faint crystal chime now and then, so a star that fell out of sight can be found by ear
+        if (random.nextInt(3) == 0) {
+            level.playLocalSound(x, y, z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.5F, 1.3F + random.nextFloat() * 0.5F, false);
         }
     }
 }

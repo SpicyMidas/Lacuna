@@ -27,7 +27,17 @@
   stay put among them. Each copy walks off on its own heading but mirrors exactly what you do: walking, sprinting,
   jumping, sneaking, swinging, looking. Hostile mobs often switch to a copy. A copy dies in 2 hits and they all fade
   after 20 s. 3 uses, 45 s cooldown. New advancement "Which One Is Real?".
-<!-- rev8 -->
+- **Shooting stars (natural):** on clear overworld nights (never the first), now and then a star falls 24-64 blocks
+  from a player on open natural ground, away from villages, structures and bases, leaving a Fallen Star. Roughly one
+  every 3 nights (config `starfall.naturalChancePerNight`, toggle `starfall.naturalStars`). Nearby players get a hint
+  with the direction ("A star falls beyond the hills, to the north-east…"), the whistle plays, and Fallen Stars chime
+  faintly so you can find them. New advancement "Shooting Star".
+- **Starlace Bandage** (new; 3 Starlace Cloth + 1 string = 3): wrap a mob to mummify it: 1 bandage for peaceful mobs,
+  2 for hostile or large ones, 3 for large hostile ones. A mummy is wrapped in glowing starlace bandages, can't move,
+  attack or make sounds, takes half damage, doesn't burn in the sun, never despawns and can still be pushed. Shears
+  unwrap it exactly as it was (bandages come back half the time). Players, bosses and other people's pets are
+  refused. New advancement "It's a Wrap".
+
 
 ## 0.7.0 — revision 7 (player feedback)
 

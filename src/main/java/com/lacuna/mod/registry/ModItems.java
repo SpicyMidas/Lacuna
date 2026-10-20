@@ -189,6 +189,9 @@ public final class ModItems {
     public static final DeferredItem<com.lacuna.mod.confusion.TotemOfConfusionItem> TOTEM_OF_CONFUSION = item("totem_of_confusion",
             com.lacuna.mod.confusion.TotemOfConfusionItem::new,
             new Item.Properties().durability(com.lacuna.mod.confusion.Confusion.USES).rarity(Rarity.RARE));
+    // ------------------------------------------------------------------ Starlace Bandage (mummifies creatures)
+    public static final DeferredItem<com.lacuna.mod.mummy.StarlaceBandageItem> STARLACE_BANDAGE = item("starlace_bandage",
+            com.lacuna.mod.mummy.StarlaceBandageItem::new, new Item.Properties());
 
     private ModItems() {}
 
