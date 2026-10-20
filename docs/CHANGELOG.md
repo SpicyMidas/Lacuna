@@ -18,6 +18,10 @@
   eggs), tadpoles, egg-laying and scute timers, and players: hearts regenerate twice as fast (same food cost) and
   harmful effects wear off twice as fast (good effects keep their full time). Redstone timing, pistons, spawners,
   portals and other hourglasses are never affected; overlapping hourglasses never stack.
+- **Tidecaller tornado, in the wave's style:** the whirlpool, waterspout and geyser are drawn exactly like the main
+  right-click tidal wave (translucent shaded water surfaces in the same deep-teal-to-foam colours, crisp foam crests,
+  foot lines and rising glints): a swirling bowl with spiral streams, a swaying funnel that widens upward with
+  twisting streams and a curling lip, and a geyser whose crown bursts open and falls back as a curtain.
 <!-- rev8 -->
 
 ## 0.7.0 — revision 7 (player feedback)
