@@ -68,7 +68,7 @@ public class QuickeningWandItem extends Item {
             }
             return InteractionResultHolder.fail(wand);
         }
-        if (!(level instanceof ServerLevel server)) {
+        if (!(level instanceof ServerLevel server) || !(player instanceof ServerPlayer serverPlayer)) {
             return InteractionResultHolder.success(wand);
         }
 
@@ -107,9 +107,7 @@ public class QuickeningWandItem extends Item {
         LacunaFx.send(server, tip, FxPayload.line(BOLT_FX, tip, heart).withEntity(target.getId())
                 .withParams(player.getId(), player.getRandom().nextFloat() * Mth.TWO_PI, flight));
         Sfx.at(player, SoundEvents.AMETHYST_BLOCK_CHIME, 0.7F, 1.6F);
-        if (player instanceof ServerPlayer serverPlayer) {
-            QuickeningBolt.launch(server, serverPlayer, target, flight, paid, tossed);
-        }
+        QuickeningBolt.launch(server, serverPlayer, target, flight, paid, tossed);
         player.getCooldowns().addCooldown(this, Balance.QUICKENING_COOLDOWN);
         player.awardStat(Stats.ITEM_USED.get(this));
         wand.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));

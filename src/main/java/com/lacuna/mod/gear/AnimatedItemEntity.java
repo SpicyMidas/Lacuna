@@ -613,6 +613,11 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
         channel = power;
     }
 
+    /** Ticks of life it has left before it falls asleep. */
+    int lifeLeft() {
+        return life;
+    }
+
     private void tickSpecial() {
         if (!(level() instanceof ServerLevel server)) {
             return;

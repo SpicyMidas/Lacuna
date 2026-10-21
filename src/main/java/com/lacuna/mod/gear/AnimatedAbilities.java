@@ -111,7 +111,9 @@ public final class AnimatedAbilities {
             (level, user, stack, target) -> LacunaConfig.get(LacunaConfig.ECLIPSER_ENABLED) && ChargeMath.canDash(EclipserItem.charge(stack)),
             AnimatedAbilities::eclipseCue, AnimatedAbilities::eclipse);
     private static final Ability TIDE = new Ability("tide", 2.0, 12.0, 0.3F, ALWAYS, AnimatedAbilities::tideCue, AnimatedAbilities::tide);
-    private static final Ability STAR = new Ability("star", 4.0, 48.0, 0.5F, ALWAYS, NO_CUE, AnimatedAbilities::star);
+    /** The star needs a few seconds to fall: never called by an item about to fall asleep. */
+    private static final Ability STAR = new Ability("star", 4.0, 48.0, 0.5F,
+            (level, user, stack, target) -> user.lifeLeft() > Starfall.APPEAR_TICKS + Starfall.FALL_TICKS + 40, NO_CUE, AnimatedAbilities::star);
     private static final Ability SUN = new Ability("sun", 3.0, 18.0, 0.3F,
             (level, user, stack, target) -> LacunaConfig.get(LacunaConfig.SUNS_FURY_ENABLED) && !ModDimensions.isForgottenLand(level),
             AnimatedAbilities::sunCue, AnimatedAbilities::sun);
