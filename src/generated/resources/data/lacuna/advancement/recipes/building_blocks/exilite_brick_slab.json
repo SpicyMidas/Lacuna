@@ -1,0 +1,32 @@
+{
+  "criteria": {
+    "has_item": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:exilite_bricks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "lacuna:exilite_brick_slab"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "parent": "minecraft:recipes/root",
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_item"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "lacuna:exilite_brick_slab"
+    ]
+  }
+}

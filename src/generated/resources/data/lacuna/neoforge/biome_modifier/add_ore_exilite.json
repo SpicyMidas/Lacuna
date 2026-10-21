@@ -1,0 +1,6 @@
+{
+  "biomes": "#lacuna:is_forgotten_land",
+  "features": "lacuna:ore_exilite",
+  "step": "underground_ores",
+  "type": "neoforge:add_features"
+}

@@ -4,7 +4,6 @@ import com.lacuna.mod.registry.ModParticles;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -109,8 +108,8 @@ public class ForgottenPortalBlock extends Block implements EntityBlock {
             level.addParticle(ModParticles.LIGHT_MOTE.get(), x, y, z, (random.nextDouble() - 0.5) * 0.01,
                     0.008 + random.nextDouble() * 0.015, (random.nextDouble() - 0.5) * 0.01);
         } else {
-            // small violet motes like a vanilla portal's (the Forgotten Land fog banks read as a pale smear here)
-            level.addParticle(ParticleTypes.REVERSE_PORTAL, x, y, z, 0.0, 0.02 + random.nextDouble() * 0.02, 0.0);
+            // now and then a pale rift spark of the totem rises off the surface (Lacuna's own, no vanilla portal motes)
+            level.addParticle(ModParticles.RIFT_SPARK.get(), x, y, z, 0.0, 0.02 + random.nextDouble() * 0.02, 0.0);
         }
         if (random.nextInt(100) == 0) {
             // the void hums, low

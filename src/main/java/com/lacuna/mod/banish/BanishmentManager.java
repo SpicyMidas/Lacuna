@@ -17,15 +17,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -178,6 +175,7 @@ public final class BanishmentManager {
         BanishmentSavedData.get(server).put(new BanishmentSavedData.Record(id, Level.OVERWORLD, origin, returnAt, drift,
                 moved.getUUID(), moved instanceof Player, safe));
         effects(fl, moved.position());
+        BanishFx.arrival(fl, moved); // the totem goes off for whoever lands, like a totem of undying
         if (moved instanceof ServerPlayer player) {
             player.displayClientMessage(Component.translatable("lacuna.banish.arrived"), false);
         }
@@ -218,12 +216,9 @@ public final class BanishmentManager {
         return moved;
     }
 
+    /** Both ends of every crossing: Lacuna's own particles in the totem's palette, the rift, the sounds ({@link BanishFx}). */
     private static void effects(ServerLevel level, Vec3 pos) {
-        level.sendParticles(ParticleTypes.REVERSE_PORTAL, pos.x, pos.y + 1.0, pos.z, 40, 0.5, 1.0, 0.5, 0.05);
-        com.lacuna.mod.fx.LacunaFx.send(level, pos, com.lacuna.mod.network.FxPayload.at("rift", pos).withColor(0xFFA8C4FF));
-        level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0F, 0.6F);
-        level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 0.7F, 0.6F);
-        level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.PORTAL_TRAVEL, SoundSource.PLAYERS, 0.15F, 1.4F);
+        BanishFx.travel(level, pos);
     }
 
     /** SafeRun restore step: every online player inside the Forgotten Land goes home, without the timer logic. */

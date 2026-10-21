@@ -192,6 +192,8 @@ public final class ModItems {
     // ------------------------------------------------------------------ Starlace Bandage (mummifies creatures)
     public static final DeferredItem<com.lacuna.mod.mummy.StarlaceBandageItem> STARLACE_BANDAGE = item("starlace_bandage",
             com.lacuna.mod.mummy.StarlaceBandageItem::new, new Item.Properties());
+    // ------------------------------------------------------------------ Exilite (the totem's own stone, fl/Exilite)
+    public static final DeferredItem<Item> EXILITE_SHARD = item("exilite_shard", Item::new, new Item.Properties().rarity(Rarity.UNCOMMON));
 
     private ModItems() {}
 

@@ -1,0 +1,17 @@
+{
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "lacuna:exilite_brick_slab"
+    }
+  },
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:chiseled_exilite"
+  },
+  "type": "minecraft:crafting_shaped"
+}

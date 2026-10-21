@@ -39,7 +39,7 @@ public final class RiteFx {
         }
     }
 
-    /** Pale vortex: three tilted rings spinning inward around a flare, motes spiralling into the centre. */
+    /** Pale vortex: three tilted rings spinning inward around a flare, rift sparks spiralling into the centre. */
     private static final class Rift implements ClientFx {
         private static final int LIFE = 30;
         private final Vec3 at;
@@ -61,7 +61,7 @@ public final class RiteFx {
                     double rad = 1.6 + r.nextDouble() * 0.8;
                     Vec3 p = at.add(Math.cos(a) * rad, (r.nextDouble() - 0.5) * 2.0, Math.sin(a) * rad);
                     Vec3 v = at.subtract(p).scale(0.12).add(-Math.sin(a) * 0.12, 0, Math.cos(a) * 0.12);
-                    level.addParticle(ModParticles.LIGHT_MOTE.get(), p.x, p.y, p.z, v.x, v.y, v.z);
+                    level.addParticle(ModParticles.RIFT_SPARK.get(), p.x, p.y, p.z, v.x, v.y, v.z);
                 }
             }
             return ++age < LIFE;

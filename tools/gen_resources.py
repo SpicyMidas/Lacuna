@@ -31,6 +31,7 @@ CONTENT_MODULES = [
     "m14_quickening",
     "m15_chrono_hourglass", "m15_bag", "m15_starcaller",
     "m16_confusion", "m16_natural_stars", "m16_starlace_bandage",
+    "m17_exile",
 ]
 
 

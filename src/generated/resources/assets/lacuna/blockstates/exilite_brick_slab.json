@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "lacuna:block/exilite_brick_slab"
+    },
+    "type=double": {
+      "model": "lacuna:block/exilite_bricks"
+    },
+    "type=top": {
+      "model": "lacuna:block/exilite_brick_slab_top"
+    }
+  }
+}

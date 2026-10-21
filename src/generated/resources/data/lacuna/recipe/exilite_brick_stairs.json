@@ -1,0 +1,18 @@
+{
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "lacuna:exilite_bricks"
+    }
+  },
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "result": {
+    "count": 4,
+    "id": "lacuna:exilite_brick_stairs"
+  },
+  "type": "minecraft:crafting_shaped"
+}

@@ -41,7 +41,7 @@ public final class HeldAuras {
 
     private static void build() {
         built = true;
-        put(ModItems.TOTEM_OF_BANISHING.get(), () -> ParticleTypes.REVERSE_PORTAL, 0.22F, 0.0);
+        put(ModItems.TOTEM_OF_BANISHING.get(), () -> ModParticles.RIFT_SPARK.get(), 0.22F, 0.0);
         put(ModItems.SUNS_FURY.get(), () -> ModParticles.SOLAR_GLINT.get(), 0.12F, 0.01);
         put(ModItems.DIVINE_MAGNIFYING_GLASS.get(), () -> ModParticles.LIGHT_MOTE.get(), 0.07F, 0.01);
         put(ModItems.GRAVEMAW_GREATSWORD.get(), () -> ModParticles.UMBRAL_WISP.get(), 0.12F, 0.02);

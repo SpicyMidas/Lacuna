@@ -194,6 +194,19 @@ public final class ModBlocks {
             () -> new com.lacuna.mod.star.FallenStarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F, 6.0F)
                     .sound(SoundType.AMETHYST).lightLevel(s -> 12).noOcclusion().requiresCorrectToolForDrops()
                     .pushReaction(PushReaction.DESTROY).isValidSpawn(Blocks::never)));
+    // ------------------------------------------------------------------ Exilite: the totem's own stone, deep in the Forgotten Land (fl/Exilite)
+    public static final DeferredBlock<DropExperienceBlock> EXILITE_ORE = block("exilite_ore", () -> new DropExperienceBlock(
+            UniformInt.of(4, 8), com.lacuna.mod.fl.Exilite.ore()));
+    public static final DeferredBlock<Block> EXILITE = block("exilite", () -> new Block(com.lacuna.mod.fl.Exilite.stone()));
+    public static final DeferredBlock<Block> POLISHED_EXILITE = block("polished_exilite", () -> new Block(com.lacuna.mod.fl.Exilite.stone()));
+    public static final DeferredBlock<Block> EXILITE_BRICKS = block("exilite_bricks", () -> new Block(com.lacuna.mod.fl.Exilite.stone()));
+    public static final DeferredBlock<Block> CHISELED_EXILITE = block("chiseled_exilite", () -> new Block(com.lacuna.mod.fl.Exilite.stone()));
+    public static final DeferredBlock<StairBlock> EXILITE_BRICK_STAIRS = block("exilite_brick_stairs", () -> new StairBlock(
+            EXILITE_BRICKS.get().defaultBlockState(), com.lacuna.mod.fl.Exilite.stone()));
+    public static final DeferredBlock<SlabBlock> EXILITE_BRICK_SLAB = block("exilite_brick_slab", () -> new SlabBlock(
+            com.lacuna.mod.fl.Exilite.stone()));
+    public static final DeferredBlock<WallBlock> EXILITE_BRICK_WALL = block("exilite_brick_wall", () -> new WallBlock(
+            com.lacuna.mod.fl.Exilite.stone().forceSolidOn()));
 
     private static BlockBehaviour.Properties civicProps(MapColor color, SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(color).strength(2.5F, 6.0F).sound(sound).noOcclusion()

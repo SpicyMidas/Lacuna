@@ -1,0 +1,17 @@
+{
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "lacuna:polished_exilite"
+    }
+  },
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "result": {
+    "count": 4,
+    "id": "lacuna:exilite_bricks"
+  },
+  "type": "minecraft:crafting_shaped"
+}
