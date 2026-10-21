@@ -71,6 +71,10 @@ public final class PossessionClient {
     private static int hostSinceSync;
     private static float struggle;
     private static int struggleTimer;
+    /** Degrees the possessed player's own mouse turned away from the shadow's look since the last tick. */
+    private static float mouseFight;
+    private static float lastYaw;
+    private static float lastPitch;
 
     private PossessionClient() {}
 
@@ -127,6 +131,8 @@ public final class PossessionClient {
                     return;
                 }
                 if (!possessed) {
+                    lastYaw = mc.player.getYRot();
+                    lastPitch = mc.player.getXRot();
                     ScreenFx.flash(0x12041F, 0.5F, 14);
                     ScreenFx.shake(1.2F, 8);
                     PossessionOverlay.onEnter();
@@ -180,6 +186,9 @@ public final class PossessionClient {
             reset();
             return;
         }
+        if (mc.isPaused()) {
+            return;
+        }
         SafeRun.run(FEATURE, () -> {
             if (hostId >= 0 && ++sinceSync > 20) {
                 hostId = -1; // the server stopped telling us: we are back in our own body
@@ -217,12 +226,10 @@ public final class PossessionClient {
     }
 
     private static void hostTick(Minecraft mc) {
-        LocalPlayer player = mc.player;
-        float dy = Math.abs(Mth.wrapDegrees(forcedYaw - player.getYRot()));
-        float dp = Math.abs(forcedPitch - player.getXRot());
-        if (dy > 20.0F || dp > 20.0F) {
-            struggle += 0.6F; // looking away from where the shadow wants to look
+        if (mouseFight > 3.0F) {
+            struggle += Math.min(1.2F, mouseFight * 0.08F); // turning the view away from where the shadow looks
         }
+        mouseFight = 0.0F;
         if (++struggleTimer >= 2) {
             struggleTimer = 0;
             if (struggle > 0.0F) {
@@ -344,14 +351,26 @@ public final class PossessionClient {
                 }
             }
             if (possessed && !mc.isPaused()) {
+                // own mouse movement since the last frame that turned the view further from the shadow's look
+                float before = gap(lastYaw, lastPitch);
+                float after = gap(player.getYRot(), player.getXRot());
+                if (after > before + 0.25F) {
+                    mouseFight += after - before;
+                }
                 // a possessed player's view is pulled back to where the shadow looks (frame-rate independent)
                 float dt = Math.min(event.getPartialTick().getGameTimeDeltaTicks(), 5.0F);
                 float k = 1.0F - (float) Math.pow(1.0F - Balance.POSSESS_LOOK_PULL, dt);
                 float dy = Mth.wrapDegrees(forcedYaw - player.getYRot()) * k;
                 float dp = (forcedPitch - player.getXRot()) * k;
                 player.turn(dy / 0.15, dp / 0.15);
+                lastYaw = player.getYRot();
+                lastPitch = player.getXRot();
             }
         }, PossessionClient::reset);
+    }
+
+    private static float gap(float yaw, float pitch) {
+        return Math.abs(Mth.wrapDegrees(forcedYaw - yaw)) + Math.abs(forcedPitch - pitch);
     }
 
     private static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
