@@ -113,7 +113,8 @@ public class StarcallerTrumpetItem extends Item {
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.TOOT_HORN;
+        // drawn and raised like a bow
+        return UseAnim.BOW;
     }
 
     @Override

@@ -6,9 +6,9 @@ BAG = "comically_large_bag"
 # Held comically large: three times the usual size in third person, nearly double in first person (lowered so it
 # does not hide the crosshair), a big lump on the ground. GUI and item frames keep the normal icon size.
 DISPLAY = {
-    "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 4, 3.5], "scale": [1.5, 1.5, 1.5]},
-    "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 1.0, 1.13], "scale": [1.25, 1.25, 1.25]},
-    "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.9, 0.9, 0.9]},
+    "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 3.5, 2], "scale": [1.05, 1.05, 1.05]},
+    "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 2.2, 1.13], "scale": [0.9, 0.9, 0.9]},
+    "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.65, 0.65, 0.65]},
 }
 
 LANG = {

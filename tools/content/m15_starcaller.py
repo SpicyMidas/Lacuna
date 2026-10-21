@@ -4,17 +4,12 @@ from gen_resources import loot_ore, mod
 from content.m12_polish import adv, code
 
 # vanilla goat horn hand poses (models/item/goat_horn.json and tooting_goat_horn.json): the trumpet is held the same way
+# held like a bow (vanilla item/bow display), and blown with the bow draw pose (StarcallerTrumpetItem: UseAnim.BOW)
 HELD = {
-    "thirdperson_righthand": {"rotation": [0, 180, 0], "translation": [0, 3, 1], "scale": [0.55, 0.55, 0.55]},
-    "thirdperson_lefthand": {"rotation": [0, 0, 0], "translation": [0, 3, 1], "scale": [0.55, 0.55, 0.55]},
+    "thirdperson_righthand": {"rotation": [-80, 260, -40], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
+    "thirdperson_lefthand": {"rotation": [-80, -280, 40], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
     "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
     "firstperson_lefthand": {"rotation": [0, 90, -25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
-}
-TOOTING = {
-    "thirdperson_righthand": {"rotation": [0, -125, 0], "translation": [-1, 2, 2], "scale": [0.5, 0.5, 0.5]},
-    "thirdperson_lefthand": {"rotation": [0, 55, 0], "translation": [-1, 2, 2], "scale": [0.5, 0.5, 0.5]},
-    "firstperson_righthand": {"rotation": [0, -55, -5], "translation": [-1, -2.5, -7.5]},
-    "firstperson_lefthand": {"rotation": [0, 115, 5], "translation": [0, -2.5, -7.5]},
 }
 GLOW = {"block_light": 15, "sky_light": 15, "ambient_occlusion": False}
 
@@ -30,11 +25,7 @@ def build(g):
 
 
 def trumpet(g):
-    g.item("starcaller_trumpet", "Starcaller Trumpet", "Tromba Richiamastelle",
-           overrides=[{"predicate": {"tooting": 1}, "model": "lacuna:item/starcaller_trumpet_tooting"}],
-           extra={"display": HELD})
-    g.item_model("starcaller_trumpet_tooting", {"parent": "minecraft:item/generated",
-                                                "textures": {"layer0": "lacuna:item/starcaller_trumpet"}, "display": TOOTING})
+    g.item("starcaller_trumpet", "Starcaller Trumpet", "Tromba Richiamastelle", extra={"display": HELD})
     g.shaped("starcaller_trumpet", ["ZCZ", "GHG", " G "],
              {"Z": "lacuna:zenithite_shard", "C": "lacuna:starlace_cloth", "G": "minecraft:gold_ingot", "H": "minecraft:goat_horn"},
              "lacuna:starcaller_trumpet", category="equipment", unlock="minecraft:goat_horn")

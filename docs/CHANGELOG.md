@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0 — revision 9 (player feedback)
+
+- **Starcaller Trumpet** is held and blown like a bow.
+- **Comically Large Bag** is drawn smaller in hand (still big: about twice a normal item in third person).
+- **Village Coin** is back to the normal item size everywhere.
+- **Totem of Confusion:** you now swap places with a copy 3 times in 4 (was half the time).
+<!-- rev9 -->
+
 ## 0.8.0 — revision 8 (player feedback)
 
 - **New hand-drawn textures:** Chrono Hourglass, Starcaller Trumpet, Totem of Confusion, the Star Fragment (now
