@@ -447,4 +447,13 @@ public final class Balance {
     /** Wake push as a fraction of the shove at the edge of the cut zone (fades to 30% of that at the outer edge). */
     public static final double ECLIPSE_GUST_FACTOR = 0.55;
     public static final double ECLIPSE_GUST_LIFT = 0.12;
+    // ------------------------------------------------------------------ Comically Large Bag: players (bag/BaggedPlayers)
+    /** How long a bagged player stays in the bag before wriggling free on their own (ticks). */
+    public static final int BAG_PLAYER_TICKS = 300;
+    /** After getting out, nobody can bag that player again for this long (ticks). */
+    public static final int BAG_PLAYER_COOLDOWN_TICKS = 600;
+    /** Each struggle (jump, attack or sneak press inside the bag) shaves this much off the time left (ticks). */
+    public static final int BAG_STRUGGLE_TICKS = 5;
+    /** At most one struggle counts per this many ticks (no macro speedruns out of the bag). */
+    public static final int BAG_STRUGGLE_INTERVAL = 4;
 }

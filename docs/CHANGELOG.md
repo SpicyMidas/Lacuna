@@ -27,6 +27,10 @@
   the Tidecaller's tidal wave and maelstrom, a Starcaller star, a fleeting Sun's Fury spear, Pyrrhic Scepter bolts,
   a smaller Ember Triangle wave (rarely, only against groups) and the Magnifying Glass sunbeam. Echo Dagger hits echo.
   They wear their durability like a player would; bows still shoot, Heartwood arrows still root.
+- **Bag a player** (Comically Large Bag, PvP on): they ride along in the sack for 15 s, invisible, untouchable and
+  unable to act, seeing from your right hip through a burlap "inside of the bag" overlay that sways with your walk,
+  with muffled sounds and a countdown. Struggling (jump, attack, use, sneak) shortens it. They pop out beside you when
+  time is up, when you use the bag on a block, or if either of you leaves, and can't be bagged again for 30 s.
 <!-- rev9 -->
 
 ## 0.8.0 — revision 8 (player feedback)

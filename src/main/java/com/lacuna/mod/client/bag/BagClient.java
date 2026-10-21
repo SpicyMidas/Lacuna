@@ -26,6 +26,7 @@ public final class BagClient {
         modBus.addListener(BagClient::onClientSetup);
         // after GenericTooltips (normal priority) folded the usage lines: what is inside always shows
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, BagClient::onTooltip);
+        BagPlayerClient.register(modBus);
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {
@@ -50,6 +51,12 @@ public final class BagClient {
             }
             HolderLookup.Provider lookup = registries;
             Component what = SafeRun.call(BagCapture.FEATURE + "_tooltip", () -> BagCapture.describe(contents, lookup), Component.literal("?"));
+            if (contents.isPlayer()) {
+                // "Steve (for 12 s)": the carry's end is a game time, so the countdown runs right here in the tooltip
+                long left = Minecraft.getInstance().level == null ? 0L : contents.data().getLong("until") - Minecraft.getInstance().level.getGameTime();
+                what = left > 0L ? Component.translatable("lacuna.bag.player_for", what, (left + 19L) / 20L)
+                        : Component.translatable("lacuna.bag.player_out", what);
+            }
             line = Component.translatable("lacuna.bag.contains", what.copy().withStyle(ChatFormatting.WHITE)).withStyle(ChatFormatting.GOLD);
         }
         tooltip.add(Math.min(1, tooltip.size()), line);

@@ -15,11 +15,11 @@ import org.jetbrains.annotations.Nullable;
  * Delegates to another sound instance with its volume scaled. PlaySoundEvent fires before the instance is
  * resolved, so the volume can only be read lazily (here, when the engine asks for it after resolving).
  */
-final class MuffledSound implements SoundInstance {
+public final class MuffledSound implements SoundInstance {
     private final SoundInstance delegate;
     private final float factor;
 
-    MuffledSound(SoundInstance delegate, float factor) {
+    public MuffledSound(SoundInstance delegate, float factor) {
         this.delegate = delegate;
         this.factor = factor;
     }
