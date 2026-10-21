@@ -912,7 +912,7 @@ final class TideSpout {
                 float g = (float) j / (CURTAIN - 1);
                 double y = Mth.lerp(g, lipY, h * 0.2);
                 curtain.v(j, (float) y);
-                lathe(curtain, j, c.x, c.c(y), c.z, lipR + 0.4 * g, 0.4, -(lipY - h * 0.2), FxDraw.argb(0.75F * (1.0F - g) * fade * open, body));
+                lathe(curtain, j, c.x, c.y + y, c.z, lipR + 0.4 * g, 0.4, -(lipY - h * 0.2), FxDraw.argb(0.75F * (1.0F - g) * fade * open, body));
             }
             // the spray skirt bursting out at the foot
             for (int j = 0; j < SKIRT; j++) {

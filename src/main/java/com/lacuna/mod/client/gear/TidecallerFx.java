@@ -29,18 +29,20 @@ import net.minecraft.world.phys.Vec3;
  *   <li>{@code tide_wave}: a translucent blue-green breaking wave with a curling lip, a white foam crest, water
  *       streaming up its back and a wet wake behind it; it rolls over the terrain along the same path the server
  *       wave follows ({@link TideCurrents#path}) and crashes at its end. Dense splash, falling water and bubbles.</li>
- *   <li>{@code tide_maelstrom} / {@code tide_geyser}: the whirlpool, its waterspout and the closing geyser, drawn
- *       exactly like the wave (same palette, render types and foam crests) in {@link TideSpout}.</li>
+ *   <li>{@code tide_maelstrom} / {@code tide_geyser}: the whirlpool under its waterspout and the closing geyser
+ *       ({@link TideSpout}, drawn with the {@code tide_vortex} shader).</li>
  * </ul>
+ * Every colour is the local water's ({@link TideWater}: vanilla's biome water blend, sampled where the effect appears;
+ * the wave re-samples it as it rolls on), and the splashes and drips are tinted with it.
  */
 public final class TidecallerFx {
-    // the tide's palette, shared with the whirlpool, waterspout and geyser (TideSpout)
-    static final int DEEP = 0x0B3F5E;
-    static final int TEAL = 0x1C8CA3;
-    static final int CYAN = 0x5ED6E6;
-    static final int PALE = 0xB9F1F7;
-    static final int FOAM = 0xF0FDFF;
-    static final int GLINT = 0x9CF0FF;
+    // the tide's palette slots (TideWater): every colour comes from the local water
+    private static final int DEEP = TideWater.DEEP;
+    private static final int TEAL = TideWater.BODY;
+    private static final int CYAN = TideWater.LIGHT;
+    private static final int PALE = TideWater.PALE;
+    private static final int FOAM = TideWater.FOAM;
+    private static final int GLINT = TideWater.GLINT;
 
     private TidecallerFx() {}
 
@@ -104,6 +106,7 @@ public final class TidecallerFx {
         private final float crashTime;
         private final int life;
         private final double[][] paths = new double[COLUMNS + 1][];
+        private final TideWater water;
         private int age;
         private boolean crashed;
 
@@ -126,6 +129,7 @@ public final class TidecallerFx {
                 Vec3 from = new Vec3(start.x, Double.isNaN(y) ? origin.y : y, start.z);
                 paths[j] = level == null ? new double[] {origin.y} : TideCurrents.path(level, from, dir, length + 3.0, false);
             }
+            this.water = TideWater.at(level, origin);
             if (isSelf(p)) {
                 ScreenFx.shake(1.6F, 12);
             }
@@ -168,6 +172,11 @@ public final class TidecallerFx {
         public boolean tick() {
             ClientLevel level = Minecraft.getInstance().level;
             if (level != null) {
+                // the wave takes the colour of the water it rolls through
+                if (age % 10 == 5) {
+                    water.resample(level, pointAt(0.0, front(age), 0.5));
+                }
+                water.ease(0.12F);
                 if (age <= crashTime) {
                     spray(level);
                 } else if (!crashed) {
@@ -187,24 +196,25 @@ public final class TidecallerFx {
                 double dj = d - lag(s);
                 // forward splash skidding off the foot of the wave
                 Vec3 foot = pointAt(s, dj + 1.3, 0.1);
-                level.addParticle(ParticleTypes.SPLASH, foot.x, foot.y, foot.z, dir.x * 0.3 + side.x * (r.nextDouble() - 0.5) * 0.2,
-                        0.0, dir.z * 0.3 + side.z * (r.nextDouble() - 0.5) * 0.2);
+                water.splash(foot.x, foot.y, foot.z, dir.x * 0.3 + side.x * (r.nextDouble() - 0.5) * 0.2, 0.12 + r.nextDouble() * 0.12,
+                        dir.z * 0.3 + side.z * (r.nextDouble() - 0.5) * 0.2, TideWater.LIGHT);
                 // spray thrown off the crest
                 Vec3 crest = pointAt(s, dj + 0.2, h * (1.0 - 0.4 * s * s));
-                level.addParticle(ParticleTypes.SPLASH, crest.x, crest.y, crest.z, 0.0, 0.0, 0.0);
+                water.splash(crest.x, crest.y, crest.z, dir.x * 0.15 + (r.nextDouble() - 0.5) * 0.1, 0.1 + r.nextDouble() * 0.15,
+                        dir.z * 0.15 + (r.nextDouble() - 0.5) * 0.1, r.nextBoolean() ? TideWater.PALE : TideWater.FOAM);
             }
             for (int i = 0; i < 3; i++) {
                 double s = r.nextDouble() * 2.0 - 1.0;
                 double dj = d - lag(s);
                 Vec3 lip = pointAt(s, dj + 0.85, h * 0.6 * (1.0 - 0.4 * s * s));
-                level.addParticle(ParticleTypes.FALLING_WATER, lip.x, lip.y, lip.z, 0.0, 0.0, 0.0);
+                water.drip(lip.x, lip.y, lip.z);
                 Vec3 body = pointAt(s, dj - 0.6 - r.nextDouble(), h * (0.2 + r.nextDouble() * 0.5));
                 level.addParticle(bubble(level, body.x, body.y, body.z), body.x, body.y, body.z, dir.x * 0.08, 0.06, dir.z * 0.08);
             }
             if ((age & 1) == 0) {
                 double s = r.nextDouble() * 2.0 - 1.0;
                 Vec3 glint = pointAt(s, d - lag(s) - 0.5, h * 0.7);
-                level.addParticle(ParticleTypes.DOLPHIN, glint.x, glint.y, glint.z, 0.0, 0.0, 0.0);
+                water.particle(ParticleTypes.DOLPHIN, glint.x, glint.y, glint.z, 0.0, 0.0, 0.0, TideWater.GLINT);
             }
         }
 
@@ -215,14 +225,14 @@ public final class TidecallerFx {
                 double s = r.nextDouble() * 2.0 - 1.0;
                 double dj = length - lag(s);
                 Vec3 at = pointAt(s, dj + r.nextDouble() * 1.2, 0.2 + r.nextDouble() * 1.8);
-                level.addParticle(ParticleTypes.SPLASH, at.x, at.y, at.z, dir.x * (0.15 + r.nextDouble() * 0.2), 0.0,
-                        dir.z * (0.15 + r.nextDouble() * 0.2));
+                water.splash(at.x, at.y, at.z, dir.x * (0.15 + r.nextDouble() * 0.2), 0.15 + r.nextDouble() * 0.25,
+                        dir.z * (0.15 + r.nextDouble() * 0.2), TideDroplets.spraySlot(r));
                 if (i % 3 == 0) {
-                    level.addParticle(ParticleTypes.FALLING_WATER, at.x, at.y + 0.6, at.z, 0.0, 0.0, 0.0);
+                    water.drip(at.x, at.y + 0.6, at.z);
                     level.addParticle(bubble(level, at.x, at.y, at.z), at.x, at.y, at.z, 0.0, 0.08, 0.0);
                 }
                 if (i % 6 == 0) {
-                    level.addParticle(ParticleTypes.CLOUD, at.x, at.y, at.z, dir.x * 0.06, 0.03, dir.z * 0.06);
+                    water.particle(ParticleTypes.CLOUD, at.x, at.y, at.z, dir.x * 0.06, 0.03, dir.z * 0.06, TideWater.FOAM);
                 }
             }
         }
@@ -266,17 +276,17 @@ public final class TidecallerFx {
             }
 
             // translucent water: the hollow face under the lip, then the back and the lip
-            VertexConsumer water = ctx.buffers().getBuffer(FxRenderTypes.shade(FxRenderTypes.BEAM));
+            VertexConsumer sheet = ctx.buffers().getBuffer(FxRenderTypes.shade(FxRenderTypes.BEAM));
             for (int j = 0; j < COLUMNS; j++) {
                 for (int k = 0; k < FACE.length - 1; k++) {
-                    fill(water, pose, face[j][k], face[j][k + 1], face[j + 1][k + 1], face[j + 1][k],
-                            FxDraw.argb(FACE_A[k] * alpha[j], FACE_RGB[k]), FxDraw.argb(FACE_A[k + 1] * alpha[j], FACE_RGB[k + 1]),
-                            FxDraw.argb(FACE_A[k + 1] * alpha[j + 1], FACE_RGB[k + 1]), FxDraw.argb(FACE_A[k] * alpha[j + 1], FACE_RGB[k]));
+                    fill(sheet, pose, face[j][k], face[j][k + 1], face[j + 1][k + 1], face[j + 1][k],
+                            FxDraw.argb(FACE_A[k] * alpha[j], water.get(FACE_RGB[k])), FxDraw.argb(FACE_A[k + 1] * alpha[j], water.get(FACE_RGB[k + 1])),
+                            FxDraw.argb(FACE_A[k + 1] * alpha[j + 1], water.get(FACE_RGB[k + 1])), FxDraw.argb(FACE_A[k] * alpha[j + 1], water.get(FACE_RGB[k])));
                 }
                 for (int k = 0; k < BODY.length - 1; k++) {
-                    fill(water, pose, body[j][k], body[j][k + 1], body[j + 1][k + 1], body[j + 1][k],
-                            FxDraw.argb(BODY_A[k] * alpha[j], BODY_RGB[k]), FxDraw.argb(BODY_A[k + 1] * alpha[j], BODY_RGB[k + 1]),
-                            FxDraw.argb(BODY_A[k + 1] * alpha[j + 1], BODY_RGB[k + 1]), FxDraw.argb(BODY_A[k] * alpha[j + 1], BODY_RGB[k]));
+                    fill(sheet, pose, body[j][k], body[j][k + 1], body[j + 1][k + 1], body[j + 1][k],
+                            FxDraw.argb(BODY_A[k] * alpha[j], water.get(BODY_RGB[k])), FxDraw.argb(BODY_A[k + 1] * alpha[j], water.get(BODY_RGB[k + 1])),
+                            FxDraw.argb(BODY_A[k + 1] * alpha[j + 1], water.get(BODY_RGB[k + 1])), FxDraw.argb(BODY_A[k] * alpha[j + 1], water.get(BODY_RGB[k])));
                 }
             }
 
@@ -285,22 +295,22 @@ public final class TidecallerFx {
             for (int j = 0; j < COLUMNS; j++) {
                 float a0 = alpha[j];
                 float a1 = alpha[j + 1];
-                FxDraw.ribbon(pose, light, body[j][4], body[j + 1][4], 1.0F, 1.0F, FxDraw.argb(0.22F * a0, CYAN),
-                        FxDraw.argb(0.22F * a1, CYAN), 0.0F, 1.0F);
-                FxDraw.ribbon(pose, light, body[j][5], body[j + 1][5], 0.42F, 0.42F, FxDraw.argb(0.75F * a0, FOAM),
-                        FxDraw.argb(0.75F * a1, FOAM), 0.0F, 1.0F);
-                FxDraw.ribbon(pose, light, body[j][7], body[j + 1][7], 0.22F, 0.22F, FxDraw.argb(0.5F * a0, FOAM),
-                        FxDraw.argb(0.5F * a1, FOAM), 0.0F, 1.0F);
+                FxDraw.ribbon(pose, light, body[j][4], body[j + 1][4], 1.0F, 1.0F, FxDraw.argb(0.22F * a0, water.get(CYAN)),
+                        FxDraw.argb(0.22F * a1, water.get(CYAN)), 0.0F, 1.0F);
+                FxDraw.ribbon(pose, light, body[j][5], body[j + 1][5], 0.42F, 0.42F, FxDraw.argb(0.75F * a0, water.get(FOAM)),
+                        FxDraw.argb(0.75F * a1, water.get(FOAM)), 0.0F, 1.0F);
+                FxDraw.ribbon(pose, light, body[j][7], body[j + 1][7], 0.22F, 0.22F, FxDraw.argb(0.5F * a0, water.get(FOAM)),
+                        FxDraw.argb(0.5F * a1, water.get(FOAM)), 0.0F, 1.0F);
                 FxDraw.ribbon(pose, light, face[j][0].add(0, 0.06, 0), face[j + 1][0].add(0, 0.06, 0), 0.55F, 0.55F,
-                        FxDraw.argb(0.45F * a0, FOAM), FxDraw.argb(0.45F * a1, FOAM), 0.0F, 1.0F);
+                        FxDraw.argb(0.45F * a0, water.get(FOAM)), FxDraw.argb(0.45F * a1, water.get(FOAM)), 0.0F, 1.0F);
             }
             for (int n = 0; n < 7; n++) {
                 int j = 1 + n * (COLUMNS - 2) / 6;
                 float q = (time * 0.09F + n * 0.618F) % 1.0F;
                 Vec3 a = along(body[j], q);
                 Vec3 b = along(body[j], Math.min(1.0F, q + 0.18F));
-                FxDraw.ribbon(pose, light, a, b, 0.12F, 0.08F, FxDraw.argb(0.0F, GLINT),
-                        FxDraw.argb(0.5F * Mth.sin(q * Mth.PI) * alpha[j], GLINT), 0.0F, 1.0F);
+                FxDraw.ribbon(pose, light, a, b, 0.12F, 0.08F, FxDraw.argb(0.0F, water.get(GLINT)),
+                        FxDraw.argb(0.5F * Mth.sin(q * Mth.PI) * alpha[j], water.get(GLINT)), 0.0F, 1.0F);
             }
         }
 
@@ -333,7 +343,7 @@ public final class TidecallerFx {
                     float e1 = (float) (1.0 - Math.pow(lateral(j + 1), 4));
                     fill(vc, pose, point(j, a, 0.04).subtract(cam), point(j, b, 0.04).subtract(cam),
                             point(j + 1, b, 0.04).subtract(cam), point(j + 1, a, 0.04).subtract(cam),
-                            FxDraw.argb(wa * e0, TEAL), FxDraw.argb(wb * e0, TEAL), FxDraw.argb(wb * e1, TEAL), FxDraw.argb(wa * e1, TEAL));
+                            FxDraw.argb(wa * e0, water.get(TEAL)), FxDraw.argb(wb * e0, water.get(TEAL)), FxDraw.argb(wb * e1, water.get(TEAL)), FxDraw.argb(wa * e1, water.get(TEAL)));
                 }
             }
         }
