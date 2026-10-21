@@ -22,6 +22,11 @@ def build(g):
            "Mira a un oggetto a terra, o tienine uno nella mano secondaria.")
     g.name("lacuna.quickening.too_weak", "Your heart is too faint to share.", "Il tuo cuore è troppo debole per essere condiviso.")
     g.name("lacuna.quickening.awake", "%s comes to life!", "%s prende vita!")
+    g.name("lacuna.quickening.lost", "The spark of life found nothing to wake, and your heart flows back.",
+           "La scintilla di vita non ha trovato nulla da risvegliare, e il tuo cuore ti ritorna.")
+    g.name("item.lacuna.quickening_wand.use5",
+           "Bows, greatswords, the Eclipser, sickles, trumpets and other gifted items sometimes use their own powers",
+           "Archi, spadoni, l'Eclipser, falcetti, trombe e altri oggetti dotati a volte usano i propri poteri")
 
     g.shaped("quickening_wand", [" E ", "DBD", " B "],
              {"E": "lacuna:echo_fragment", "D": "lacuna:silk_dust", "B": "minecraft:blaze_rod"},

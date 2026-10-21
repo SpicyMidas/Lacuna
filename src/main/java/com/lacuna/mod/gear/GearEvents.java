@@ -34,6 +34,9 @@ public final class GearEvents {
         bus.addListener(EmberWave::onServerStopped);
         bus.addListener(AnimatedItemEntity::onIncomingDamage);
         bus.addListener(AnimatedItemEntity::onMobGriefing);
+        bus.addListener(QuickeningBolt::onServerTick);
+        bus.addListener(QuickeningBolt::onServerStopping);
+        bus.addListener(QuickeningBolt::onEntityJoin);
         StarlaceSet.register(bus);
     }
 

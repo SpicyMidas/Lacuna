@@ -6,6 +6,7 @@ import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.gear.QuickeningBolt;
 import com.lacuna.mod.gear.QuickeningWandItem;
 import com.lacuna.mod.network.FxPayload;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -18,12 +19,15 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Wand of Quickening visuals ({@value QuickeningWandItem#BOLT_FX}): the spark of life leaves the wand as a glowing
  * shader orb (soft pink halo, white-hot heart, flickering), flies to the item along a gentle spiralling arc trailing a
- * tapering ribbon of light, follows the item if it already hops away, and bursts on arrival in a ring of light with a
- * few hearts. Purely visual: the item is woken on the server as before.
+ * tapering ribbon of light, follows the item wherever it moves (a tossed off-hand item is chased through the air), and
+ * bursts on arrival in a ring of light with a few hearts. The flight time comes with the payload (computed on the server
+ * by {@link QuickeningBolt#flightTicks}, the same rule this side falls back on), so the burst lands on the tick the
+ * server wakes the item; an item that vanishes early (the spark is lost) gets a small grey fizzle instead.
  */
 public final class QuickeningFx {
     private static final int PINK = 0xFF6BC7;
@@ -48,8 +52,11 @@ public final class QuickeningFx {
         private int trailCount;
         private Vec3 last;
         private Vec3 prev;
+        /** Where the item was last seen (it is gone once it wakes). */
+        private Vec3 lastEnd;
         private int age;
         private int burstAge = -1;
+        private boolean fizzle;
 
         Bolt(FxPayload p) {
             this.targetId = p.entityId();
@@ -65,16 +72,24 @@ public final class QuickeningFx {
                 from = self.getEyePosition().add(look.scale(0.9)).add(right.scale(0.45)).add(up.scale(-0.35));
             }
             this.start = from;
-            this.flight = Mth.clamp((int) Math.ceil(from.distanceTo(fallbackEnd) / 0.85), 5, 24);
+            // the server's flight time, never the first-person start above: both sides must agree on the tick of impact
+            this.flight = p.p2() >= 1.0F ? Math.round(p.p2()) : QuickeningBolt.flightTicks(p.a().distanceTo(p.b()));
+            this.lastEnd = fallbackEnd;
             this.spin = p.p1();
             this.last = from;
             this.prev = from;
         }
 
-        private Vec3 end(float partial) {
+        @Nullable
+        private Entity target() {
             ClientLevel level = Minecraft.getInstance().level;
             Entity e = level != null ? level.getEntity(targetId) : null;
-            return e != null ? e.getPosition(partial).add(0.0, e.getBbHeight() * 0.6, 0.0) : fallbackEnd;
+            return e != null && !e.isRemoved() ? e : null;
+        }
+
+        private Vec3 end(float partial) {
+            Entity e = target();
+            return e != null ? e.getPosition(partial).add(0.0, Math.max(0.25, e.getBbHeight() * 0.6), 0.0) : lastEnd;
         }
 
         /** The orb on its arc at progress {@code t}: an ease-in flight bowed upwards with a slow corkscrew. */
@@ -109,6 +124,11 @@ public final class QuickeningFx {
                 return burstAge < 10;
             }
             prev = last;
+            if (target() != null) {
+                lastEnd = end(1.0F);
+            } else if (age < flight - 2) {
+                fizzle = true; // the item is gone long before the spark could reach it
+            }
             Vec3 end = end(1.0F);
             last = at(Math.min(1.0F, age / (float) flight), end);
             System.arraycopy(trail, 0, trail, 1, TRAIL - 1);
@@ -118,8 +138,15 @@ public final class QuickeningFx {
                 level.addParticle(ParticleTypes.END_ROD, last.x, last.y, last.z, (r.nextDouble() - 0.5) * 0.02,
                         (r.nextDouble() - 0.5) * 0.02, (r.nextDouble() - 0.5) * 0.02);
             }
-            if (age >= flight) {
+            if (age >= flight || fizzle) {
                 burstAge = 0;
+                if (fizzle) {
+                    for (int i = 0; i < 6; i++) {
+                        level.addParticle(ParticleTypes.SMOKE, last.x, last.y, last.z, (r.nextDouble() - 0.5) * 0.05, 0.03,
+                                (r.nextDouble() - 0.5) * 0.05);
+                    }
+                    return true;
+                }
                 for (int i = 0; i < 3; i++) {
                     level.addParticle(ParticleTypes.HEART, end.x + (r.nextDouble() - 0.5) * 0.5, end.y + 0.2 + r.nextDouble() * 0.3,
                             end.z + (r.nextDouble() - 0.5) * 0.5, 0.0, 0.05, 0.0);
@@ -137,7 +164,7 @@ public final class QuickeningFx {
             PoseStack.Pose pose = ctx.pose().last();
             float pt = ctx.partialTick();
             float time = ctx.time(age);
-            Vec3 head = burstAge >= 0 ? end(pt) : prev.lerp(last, pt);
+            Vec3 head = burstAge >= 0 ? (fizzle ? last : end(pt)) : prev.lerp(last, pt);
             // tapering ribbon of light through the last positions
             if (trailCount > 1) {
                 VertexConsumer vc = ctx.buffers().getBuffer(FxRenderTypes.beam());
@@ -164,8 +191,12 @@ public final class QuickeningFx {
                 FxDraw.billboard(pose, ring, ctx.camera(), c, 0.32F + 0.05F * Mth.sin(time * 0.9F), time * 0.2F,
                         FxDraw.argb(0.45F, ROSE));
             } else {
-                // the burst: a flash and a widening ring of light that fades
+                // the burst: a flash and a widening ring of light that fades (a lost spark only gutters out)
                 float f = (burstAge + pt) / 10.0F;
+                if (fizzle) {
+                    FxDraw.billboard(pose, glow, ctx.camera(), c, 0.4F * (1.0F - f), 0.0F, FxDraw.argb(0.5F * (1.0F - f), ROSE));
+                    return;
+                }
                 FxDraw.billboard(pose, glow, ctx.camera(), c, 0.5F + 0.9F * f, 0.0F, FxDraw.argb(0.9F * (1.0F - f), PINK));
                 FxDraw.billboard(pose, glow, ctx.camera(), c, 0.35F * (1.0F - f), 0.0F, FxDraw.argb(1.0F - f, WHITE));
                 VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
