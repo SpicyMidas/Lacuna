@@ -41,6 +41,12 @@
   upward with foam bands and a bright rim. At its base: a spray cascade, a dark-eyed whirlpool with spiral arms and
   foam flecks, droplets flung off and bits of the ground torn up. At the end it thins into a writhing rope, lifts off
   and the cloud dissolves as the geyser fires; under a low ceiling it shrinks to fit.
+- **Star Rock** replaces the Fallen Star lump: a falling star now leaves a full block that cools through three
+  stages. **Molten Star Rock** (glowing animated lava-like crust, hot to stand on, smokes and sizzles; water or rain
+  cools it at once) drops 1-2 Star Fragments and rarely (3%) a Solar Flare Fragment; after 1-2 minutes it becomes
+  **Prime Star Rock** (dark stone with glittering star crystals that glow and twinkle at night, the faint chime) with the
+  normal 1-3 fragments (+ Fortune); after about 3 days it goes out as the **Extinguished Block of the Star**, grey
+  cratered moon rock, 0-1 fragment. Silk Touch keeps each stage. Old Fallen Stars load as Prime Star Rock.
 <!-- rev9 -->
 
 ## 0.8.0 — revision 8 (player feedback)
