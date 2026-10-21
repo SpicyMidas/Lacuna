@@ -150,7 +150,7 @@ Built:
 - Umbral Iron: ores (stone hardness 4.0, deepslate 5.5 — deepslate value not in spec, vanilla +1.5 convention),
   raw/ingot/nugget, storage + raw blocks, recipes (smelt/blast, 9⇄1), ore worldgen Y −64..0, size 6, 3/chunk.
   `UMBRAL` tier (iron level, 900 uses, 6.5 speed, ench. 12) for the M7 tool set.
-- Eclipser (`SwordItem` with its own tier so durability is 250, total damage 7, speed 1.6, repair with umbral
+- Eclipser (`SwordItem` with its own tier so durability is 250, total damage 8, speed 1.6, repair with umbral
   ingots, only Unbreaking via `supportsEnchantment`/`isPrimaryItemFor`). Charge in data component
   `lacuna:eclipse_charge` {charge, last_hit}: +10 per hit at most every 5 ticks, reset on any damage taken
   (`LivingDamageEvent.Post`), −2/s after 8 s idle, action bar `Eclipse N%`, 4 textures via predicate

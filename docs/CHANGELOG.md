@@ -6,6 +6,11 @@
 - **Comically Large Bag** is drawn smaller in hand (still big: about twice a normal item in third person).
 - **Village Coin** is back to the normal item size everywhere.
 - **Totem of Confusion:** you now swap places with a copy 3 times in 4 (was half the time).
+- **Eclipser:** 8 attack damage. The dash hits much harder (15.6 at the lowest charge up to 30 at full) and now hits
+  every creature along the whole path exactly once, even several lined up one behind another (a swing just before the
+  dash no longer swallows the dash damage). Like a fast train pushing the air away, cut enemies are thrown sideways off
+  the line with a lift, and creatures just beside the path get shoved by the gust without damage; a V-shaped wake of
+  wind lines, puffs and dust follows you, with wind-burst sounds.
 <!-- rev9 -->
 
 ## 0.8.0 — revision 8 (player feedback)
