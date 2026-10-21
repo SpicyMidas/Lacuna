@@ -43,8 +43,7 @@ public class PyrrhicScepterItem extends Item {
             if (!player.getAbilities().instabuild) {
                 player.setHealth(player.getHealth() - Balance.SCEPTER_HEALTH_COST);
             }
-            float damage = Balance.BOLT_BASE_DAMAGE + (1.0F - player.getHealth() / player.getMaxHealth()) * Balance.BOLT_MISSING_HEALTH_DAMAGE;
-            PyrrhicBoltEntity bolt = new PyrrhicBoltEntity(level, player, damage);
+            PyrrhicBoltEntity bolt = new PyrrhicBoltEntity(level, player, boltDamage(player));
             bolt.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, Balance.BOLT_SPEED, 0.0F);
             level.addFreshEntity(bolt);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 0.8F, 1.3F);
@@ -52,6 +51,11 @@ public class PyrrhicScepterItem extends Item {
             stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
+    }
+
+    /** The bolt hits harder the more of its wielder's health is missing (after the price is paid). */
+    public static float boltDamage(LivingEntity user) {
+        return Balance.BOLT_BASE_DAMAGE + (1.0F - user.getHealth() / user.getMaxHealth()) * Balance.BOLT_MISSING_HEALTH_DAMAGE;
     }
 
     @Override

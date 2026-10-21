@@ -26,6 +26,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -160,8 +161,15 @@ public final class TideCurrents {
 
     /** Tidal Wave: a curling wall of water rolls forward from the caster's feet. */
     public static void startWave(ServerLevel level, Player player) {
-        Vec3 dir = facing(player);
-        Vec3 feet = player.position();
+        startWave(level, player, player.getUUID(), facing(player));
+    }
+
+    /**
+     * Tidal Wave cast by any creature (an animated sickle) along the horizontal unit vector {@code dir}. {@code owner}
+     * is the player whose friends it spares and who is credited (the caster itself when it is a player).
+     */
+    public static void startWave(ServerLevel level, LivingEntity caster, @Nullable UUID owner, Vec3 dir) {
+        Vec3 feet = caster.position();
         double y0 = surface(level, feet.x, feet.z, feet.y, 0.6, 3);
         Vec3 origin = new Vec3(feet.x, Double.isNaN(y0) ? feet.y : y0, feet.z);
         double[] path = path(level, origin, dir, Balance.SICKLE_WAVE_RANGE, true);
@@ -169,8 +177,8 @@ public final class TideCurrents {
         if (WAVES.size() >= MAX_ACTIVE) {
             WAVES.remove(0);
         }
-        WAVES.add(new Wave(level.dimension(), player.getUUID(), origin, dir, path, length));
-        LacunaFx.send(level, origin, FxPayload.line(WAVE_FX, origin, origin.add(dir)).withEntity(player.getId())
+        WAVES.add(new Wave(level.dimension(), owner, caster.getUUID(), origin, dir, path, length));
+        LacunaFx.send(level, origin, FxPayload.line(WAVE_FX, origin, origin.add(dir)).withEntity(caster.getId())
                 .withParams((float) length, (float) Balance.SICKLE_WAVE_SPEED, (float) Balance.SICKLE_WAVE_HALF_WIDTH));
         // the water gathers and surges: a heavy splash, the riptide's rush and a muffled underwater swell
         Sfx.at(level, origin, SoundEvents.GENERIC_SPLASH, 1.2F, 0.7F);
@@ -190,19 +198,24 @@ public final class TideCurrents {
         } else {
             at = player.position().add(facing(player).scale(Balance.SICKLE_MAELSTROM_FALLBACK)).add(0, 1.0, 0);
         }
+        startMaelstrom(level, player, player.getUUID(), at);
+    }
+
+    /** Maelstrom opened by any creature (an animated sickle) at {@code at}; {@code owner} as for {@link #startWave}. */
+    public static void startMaelstrom(ServerLevel level, LivingEntity caster, @Nullable UUID owner, Vec3 at) {
         double y = surface(level, at.x, at.z, at.y, 0.5, 12);
         Vec3 center = new Vec3(at.x, Double.isNaN(y) ? at.y : y, at.z);
         if (MAELSTROMS.size() >= MAX_ACTIVE) {
             MAELSTROMS.remove(0);
         }
-        MAELSTROMS.add(new Maelstrom(level.dimension(), player.getUUID(), center));
-        LacunaFx.send(level, center, FxPayload.at(MAELSTROM_FX, center).withEntity(player.getId())
+        MAELSTROMS.add(new Maelstrom(level.dimension(), owner, center));
+        LacunaFx.send(level, center, FxPayload.at(MAELSTROM_FX, center).withEntity(caster.getId())
                 .withParams((float) Balance.SICKLE_MAELSTROM_RADIUS, Balance.SICKLE_MAELSTROM_TICKS, 0.0F));
         Sfx.at(level, center, SoundEvents.CONDUIT_ACTIVATE, 1.4F, 0.8F);
         Sfx.at(level, center, SoundEvents.BUBBLE_COLUMN_WHIRLPOOL_AMBIENT, 2.0F, 0.6F);
         Sfx.at(level, center, SoundEvents.AMBIENT_UNDERWATER_ENTER, 1.0F, 0.7F);
         Sfx.at(level, center, SoundEvents.ELDER_GUARDIAN_CURSE, 0.12F, 1.4F);
-        Sfx.at(level, player.position(), SoundEvents.TRIDENT_RIPTIDE_3, 0.7F, 0.6F);
+        Sfx.at(level, caster.position(), SoundEvents.TRIDENT_RIPTIDE_3, 0.7F, 0.6F);
         // the waterspout winding up out of the pool: a low twister whirl over the rising bubble roar
         Sfx.at(level, center, SoundEvents.BREEZE_WHIRL, 1.2F, 0.55F);
         Sfx.at(level, center, SoundEvents.BUBBLE_COLUMN_UPWARDS_AMBIENT, 1.6F, 0.7F);
@@ -288,15 +301,18 @@ public final class TideCurrents {
     }
 
     @Nullable
-    private static Player owner(ServerLevel level, UUID id) {
-        return level.getPlayerByUUID(id);
+    private static Player owner(ServerLevel level, @Nullable UUID id) {
+        return id == null ? null : level.getPlayerByUUID(id);
     }
 
     // ------------------------------------------------------------------ the tidal wave
 
     private static final class Wave {
         final ResourceKey<Level> dimension;
+        @Nullable
         final UUID owner;
+        /** Whoever sent it (the owner, or an animated sickle): the damage is theirs. */
+        final UUID caster;
         final Vec3 origin;
         final Vec3 dir;
         final Vec3 side;
@@ -309,9 +325,10 @@ public final class TideCurrents {
         boolean charged;
         int age;
 
-        Wave(ResourceKey<Level> dimension, UUID owner, Vec3 origin, Vec3 dir, double[] path, double length) {
+        Wave(ResourceKey<Level> dimension, @Nullable UUID owner, UUID caster, Vec3 origin, Vec3 dir, double[] path, double length) {
             this.dimension = dimension;
             this.owner = owner;
+            this.caster = caster;
             this.origin = origin;
             this.dir = dir;
             this.side = new Vec3(-dir.z, 0.0, dir.x);
@@ -348,7 +365,8 @@ public final class TideCurrents {
             Vec3 a = at(from - 2.5, 0.0);
             Vec3 b = at(to + 1.0, 0.0);
             AABB box = new AABB(a.x, y - 1.0, a.z, b.x, y + Balance.SICKLE_WAVE_HEIGHT + 0.5, b.z).inflate(hw + 1.0, 0.0, hw + 1.0);
-            DamageSource source = ModDamageTypes.source(level, ModDamageTypes.TIDAL_WAVE, player);
+            Entity sender = level.getEntity(caster);
+            DamageSource source = ModDamageTypes.source(level, ModDamageTypes.TIDAL_WAVE, sender != null ? sender : player);
             for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box, e -> e.isAlive() && !e.isSpectator())) {
                 double rx = e.getX() - origin.x;
                 double rz = e.getZ() - origin.z;
@@ -363,7 +381,7 @@ public final class TideCurrents {
                 if (e.isOnFire()) {
                     e.extinguishFire(); // the wave puts out anyone it washes over, friends included
                 }
-                if (spared(player, e)) {
+                if (e == sender || spared(player, e)) {
                     continue;
                 }
                 if (hit.add(e.getId())) {
@@ -375,7 +393,7 @@ public final class TideCurrents {
                     level.sendParticles(ParticleTypes.SPLASH, c.x, c.y, c.z, 16, 0.35, 0.4, 0.35, 0.25);
                     level.sendParticles(ParticleTypes.BUBBLE_POP, c.x, c.y, c.z, 6, 0.3, 0.4, 0.3, 0.05);
                     Sfx.at(level, c, SoundEvents.PLAYER_SPLASH, 0.6F, 1.1F + level.random.nextFloat() * 0.3F);
-                    if (!charged && player != null) {
+                    if (!charged && player != null && caster.equals(owner)) {
                         charged = true;
                         TidecallerSickleItem.gainTide(player);
                     }
@@ -465,11 +483,12 @@ public final class TideCurrents {
 
     private static final class Maelstrom {
         final ResourceKey<Level> dimension;
+        @Nullable
         final UUID owner;
         final Vec3 center;
         int age;
 
-        Maelstrom(ResourceKey<Level> dimension, UUID owner, Vec3 center) {
+        Maelstrom(ResourceKey<Level> dimension, @Nullable UUID owner, Vec3 center) {
             this.dimension = dimension;
             this.owner = owner;
             this.center = center;

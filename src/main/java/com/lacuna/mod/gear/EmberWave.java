@@ -76,13 +76,21 @@ public final class EmberWave {
 
     /** The triangle flares in the caster's hand; the wave follows {@link Balance#EMBER_TRIANGLE_WINDUP} ticks later. */
     public static void start(ServerLevel level, Player player) {
+        start(level, player, player.getUUID(), Balance.EMBER_TRIANGLE_RADIUS);
+    }
+
+    /**
+     * A cast by any creature (an animated triangle) with its own {@code radius}. {@code owner} is the player whose
+     * friends it spares and whose foes it hunts (the caster itself when it is a player); the kills are the caster's.
+     */
+    public static void start(ServerLevel level, LivingEntity caster, @Nullable UUID owner, double radius) {
         if (CASTS.size() >= MAX_ACTIVE) {
             CASTS.remove(0);
         }
-        CASTS.add(new Cast(level.dimension(), player.getUUID(), player.getYRot()));
-        Vec3 at = player.position();
-        LacunaFx.send(level, at, FxPayload.at(WINDUP_FX, at).withEntity(player.getId())
-                .withParams(Balance.EMBER_TRIANGLE_WINDUP, player.getYRot(), 0.0F));
+        CASTS.add(new Cast(level.dimension(), owner, caster.getUUID(), caster.getYRot(), radius));
+        Vec3 at = caster.position();
+        LacunaFx.send(level, at, FxPayload.at(WINDUP_FX, at).withEntity(caster.getId())
+                .withParams(Balance.EMBER_TRIANGLE_WINDUP, caster.getYRot(), 0.0F));
         // a rising hum over a crackling fire and the breath of a blaze
         play(level, at, SoundEvents.BEACON_POWER_SELECT, 1.0F, 1.3F);
         play(level, at, SoundEvents.FIRE_AMBIENT, 1.6F, 0.7F);
@@ -162,37 +170,43 @@ public final class EmberWave {
     }
 
     @Nullable
-    private static Player owner(ServerLevel level, UUID id) {
-        return level.getPlayerByUUID(id);
+    private static Player owner(ServerLevel level, @Nullable UUID id) {
+        return id == null ? null : level.getPlayerByUUID(id);
     }
 
     // ------------------------------------------------------------------ one cast
 
     private static final class Cast {
         final ResourceKey<Level> dimension;
+        @Nullable
         final UUID owner;
+        final UUID caster;
         final float yaw;
+        final double radius;
         final Set<Integer> done = new HashSet<>();
         Vec3 origin;
         /** Starts at -1: the cast's first server tick is the same tick as the use and does not count. */
         int age = -1;
         int loud;
 
-        Cast(ResourceKey<Level> dimension, UUID owner, float yaw) {
+        Cast(ResourceKey<Level> dimension, @Nullable UUID owner, UUID caster, float yaw, double radius) {
             this.dimension = dimension;
             this.owner = owner;
+            this.caster = caster;
             this.yaw = yaw;
+            this.radius = radius;
         }
 
         boolean tick(ServerLevel level) {
             int windup = Balance.EMBER_TRIANGLE_WINDUP;
             Player player = owner(level, owner);
+            LivingEntity sender = level.getEntity(caster) instanceof LivingEntity living ? living : null;
             if (age < windup) {
                 age++;
-                if (player == null || !player.isAlive()) {
+                if (sender == null || !sender.isAlive()) {
                     return false; // the caster died or left: the flare gutters out
                 }
-                Vec3 at = player.position();
+                Vec3 at = sender.position();
                 if (age == 2) {
                     play(level, at, SoundEvents.BEACON_POWER_SELECT, 0.8F, 1.65F);
                 } else if (age == 4) {
@@ -202,12 +216,12 @@ public final class EmberWave {
                 if (age < windup) {
                     return true;
                 }
-                release(level, player);
+                release(level, sender);
             }
             int t = age - windup;
             age++;
             loud = 0;
-            sweep(level, player, radius(t, Balance.EMBER_TRIANGLE_RADIUS, Balance.EMBER_TRIANGLE_WAVE_TICKS));
+            sweep(level, player, sender, radius(t, radius, Balance.EMBER_TRIANGLE_WAVE_TICKS));
             if (t == 3) {
                 play(level, origin, SoundEvents.FIRE_AMBIENT, 2.0F, 0.55F); // the roar of the front
             } else if (t == 7) {
@@ -224,12 +238,12 @@ public final class EmberWave {
         }
 
         /** The front leaves the caster's feet: a boom, a burst of fire and a hiss of quenched heat. */
-        private void release(ServerLevel level, Player player) {
-            Vec3 feet = player.position();
+        private void release(ServerLevel level, LivingEntity sender) {
+            Vec3 feet = sender.position();
             double y = TideCurrents.surface(level, feet.x, feet.z, feet.y, 0.6, 3);
             origin = new Vec3(feet.x, Double.isNaN(y) ? feet.y : y, feet.z);
-            LacunaFx.send(level, origin, FxPayload.at(WAVE_FX, origin).withEntity(player.getId())
-                    .withParams((float) Balance.EMBER_TRIANGLE_RADIUS, Balance.EMBER_TRIANGLE_WAVE_TICKS, yaw));
+            LacunaFx.send(level, origin, FxPayload.at(WAVE_FX, origin).withEntity(sender.getId())
+                    .withParams((float) radius, Balance.EMBER_TRIANGLE_WAVE_TICKS, yaw));
             play(level, origin, SoundEvents.WARDEN_SONIC_BOOM, 0.4F, 0.7F);
             play(level, origin, SoundEvents.GENERIC_EXPLODE, 1.2F, 0.5F);
             play(level, origin, SoundEvents.FIRECHARGE_USE, 1.3F, 0.75F);
@@ -238,7 +252,7 @@ public final class EmberWave {
         }
 
         /** Catches everything the front has reached that stands on (or just above) the ground it runs over. */
-        private void sweep(ServerLevel level, @Nullable Player player, double r) {
+        private void sweep(ServerLevel level, @Nullable Player player, @Nullable LivingEntity sender, double r) {
             AABB box = new AABB(origin, origin).inflate(r + 2.0, 0.0, r + 2.0)
                     .expandTowards(0.0, Balance.EMBER_TRIANGLE_REACH_UP + 4.0, 0.0).expandTowards(0.0, -6.0, 0.0);
             for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, box, e -> e.isAlive() && !done.contains(e.getId()))) {
@@ -246,7 +260,7 @@ public final class EmberWave {
                 double dz = e.getZ() - origin.z;
                 double flat = Math.sqrt(dx * dx + dz * dz);
                 double reach = Math.max(0.0, flat - e.getBbWidth() * 0.5);
-                if (reach > r || !isTarget(player, e)) {
+                if (reach > r || e == sender || !isTarget(player, e)) {
                     continue;
                 }
                 // the front hugs the terrain: only what stands near the ground it is running over is caught
@@ -259,12 +273,12 @@ public final class EmberWave {
                     continue;
                 }
                 done.add(e.getId());
-                pulverize(level, player, e);
+                pulverize(level, player, sender, e);
             }
         }
 
-        private void pulverize(ServerLevel level, @Nullable Player player, LivingEntity e) {
-            DamageSource source = ModDamageTypes.source(level, ModDamageTypes.PULVERIZED, player);
+        private void pulverize(ServerLevel level, @Nullable Player player, @Nullable LivingEntity sender, LivingEntity e) {
+            DamageSource source = ModDamageTypes.source(level, ModDamageTypes.PULVERIZED, sender != null ? sender : player);
             if (e.isInvulnerableTo(source)) {
                 return;
             }
@@ -294,7 +308,7 @@ public final class EmberWave {
             if (!(e instanceof Player)) {
                 e.remove(Entity.RemovalReason.KILLED); // no corpse: only the dust remains
             }
-            if (player != null) {
+            if (player != null && player == sender) {
                 LacunaAdvancements.award(player, ADVANCEMENT);
             }
         }

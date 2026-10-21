@@ -116,7 +116,7 @@ public class FallingStarEntity extends Projectile {
      * Calls a star down on {@code aim}. Returns false (nothing happens) when the spot is outside the simulated area or
      * no star could reach it from the sky.
      */
-    public static boolean call(ServerLevel server, Player caller, StarcallerTrumpetItem.Aim aim) {
+    public static boolean call(ServerLevel server, LivingEntity caller, StarcallerTrumpetItem.Aim aim) {
         LivingEntity target = aim.target();
         Vec3 point = target != null ? aimPoint(target) : aim.point();
         if (!server.isPositionEntityTicking(BlockPos.containing(point))) {
@@ -194,7 +194,7 @@ public class FallingStarEntity extends Projectile {
      * when terrain blocks the way or the spot is not simulated; with a roof overhead the star starts just under it.
      */
     @Nullable
-    private static Vec3 startFor(ServerLevel server, Player caller, Vec3 point) {
+    private static Vec3 startFor(ServerLevel server, LivingEntity caller, Vec3 point) {
         RandomSource r = caller.getRandom();
         Vec3 flat = new Vec3(point.x - caller.getX(), 0.0, point.z - caller.getZ());
         if (flat.lengthSqr() < 1.0E-4) {
@@ -230,7 +230,7 @@ public class FallingStarEntity extends Projectile {
     }
 
     /** The trumpet's blast: a bright horn call over a chord of plucked light. */
-    private static void fanfare(ServerLevel server, Player caller) {
+    private static void fanfare(ServerLevel server, LivingEntity caller) {
         Vec3 at = caller.getEyePosition();
         Sfx.at(server, at, SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(1), 5.0F, 1.5F);
         Sfx.at(server, at, SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(5), 2.5F, 1.26F);
@@ -388,7 +388,9 @@ public class FallingStarEntity extends Projectile {
         struck = true;
         Entity owner = getOwner();
         boolean wet = !server.getFluidState(BlockPos.containing(at)).isEmpty();
-        boolean griefing = server.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+        // a star called by a creature (an animated trumpet) asks the usual mob-griefing question for it
+        boolean griefing = owner == null || owner instanceof Player ? server.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)
+                : net.neoforged.neoforge.event.EventHooks.canEntityGrief(server, owner);
         blast(server, at, owner);
         BlockPos ground = groundAt(server, at, hit);
         boolean cratered = false;
