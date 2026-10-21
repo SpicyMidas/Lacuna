@@ -217,6 +217,7 @@ public final class BaggedPlayers {
         if (target.containerMenu != target.inventoryMenu) {
             target.closeContainer();
         }
+        Vec3 at = target.position();
         if (!target.startRiding(bagger, true)) {
             return BagCapture.refuse(bagger, "lacuna.bag.slippery");
         }
@@ -241,8 +242,8 @@ public final class BaggedPlayers {
         bagger.serverLevel().getChunkSource().broadcastAndSend(bagger, new ClientboundSetPassengersPacket(bagger));
         sendState(target, carry, true);
         ServerLevel level = bagger.serverLevel();
-        level.gameEvent(bagger, GameEvent.ENTITY_INTERACT, target.position());
-        BagCapture.thwump(level, target.position(), 0.6F, 1.8F, true);
+        level.gameEvent(bagger, GameEvent.ENTITY_INTERACT, at);
+        BagCapture.thwump(level, at, 0.6F, 1.8F, true);
         bagger.displayClientMessage(Component.translatable("lacuna.bag.bagged", target.getDisplayName()).withStyle(ChatFormatting.GOLD), true);
         return InteractionResult.SUCCESS;
     }
