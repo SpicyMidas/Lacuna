@@ -138,13 +138,13 @@ final class TideSpout {
         /** Pool rings (fractions of the radius) and their density: a dark dense eye, the swell (CREST) and its foot. */
         private static final float[] POOL = {0.02F, 0.06F, 0.11F, 0.17F, 0.24F, 0.32F, 0.41F, 0.51F, 0.62F, 0.73F, 0.82F, 0.88F,
                 0.94F, 1.0F};
-        private static final float[] POOL_A = {0.9F, 0.84F, 0.76F, 0.68F, 0.62F, 0.58F, 0.55F, 0.55F, 0.58F, 0.62F, 0.72F, 0.68F,
-                0.4F, 0.0F};
+        private static final float[] POOL_A = {0.9F, 0.85F, 0.75F, 0.62F, 0.52F, 0.46F, 0.42F, 0.42F, 0.44F, 0.48F, 0.52F, 0.46F,
+                0.25F, 0.0F};
         private static final float CREST = 0.86F;
         private static final int POOL_SIDES = 48;
         private static final int SKIRT_ROWS = 6;
         private static final int SKIRT_SIDES = 32;
-        private static final int BASE_PUFFS = 10;
+        private static final int BASE_PUFFS = 16;
         private static final int TOP_PUFFS = 14;
         private static final int CLIMBERS = 48;
         private static final double NECK = 0.4;
@@ -271,7 +271,7 @@ final class TideSpout {
         /** Funnel radius at height fraction f: a flared foot, a narrow waist, widening up into a flare under the cloud. */
         private double coreRadius(double f, float t, float touch, float rope) {
             double top = smooth((f - 0.78) / 0.22);
-            double r = NECK + 1.25 * Math.pow(Math.max(0.0, f), 1.7) + 1.8 * top * top;
+            double r = NECK + 1.45 * Math.pow(Math.max(0.0, f), 1.6) + 1.7 * top * top;
             r += 0.8 * (1.0F - smooth(f / 0.08)) * touch;
             r *= 1.0 + 0.07 * Math.sin(f * height * 1.25 - t * 0.42);
             r *= Mth.lerp(rope, 1.0, 0.22 + 0.55 * top * top);
@@ -281,7 +281,7 @@ final class TideSpout {
         /** Height of the whirlpool above the water at fraction f of its radius: a low eye rising to a swell. */
         private static double bowl(double f, float env) {
             double lift = f <= CREST ? (f / CREST) * (f / CREST) : 1.0 - TidecallerFx.smooth((float) ((f - CREST) / (1.0 - CREST)));
-            return 0.04 + 0.38 * lift * env;
+            return 0.04 + 0.24 * lift * env;
         }
 
         // ---------------------------------------------------------------- ticking: particles and droplets
@@ -396,7 +396,7 @@ final class TideSpout {
                 }
             }
             // wakes circling in over the pool (counter-clockwise from above, like the server pull)
-            for (int i = 0; i < 2; i++) {
+            {
                 double a = r.nextDouble() * Mth.TWO_PI;
                 double rad = radius * (0.25 + 0.7 * r.nextDouble());
                 double x = center.x + Math.cos(a) * rad;
@@ -404,7 +404,7 @@ final class TideSpout {
                 double y = center.y + bowl(rad / radius, env) + 0.05;
                 double spin = 0.16 + 0.2 * (1.0 - rad / radius);
                 water.particle(ParticleTypes.FISHING, x, y, z, -Math.sin(a) * spin - Math.cos(a) * 0.06, 0.01,
-                        Math.cos(a) * spin - Math.sin(a) * 0.06, TideWater.PALE);
+                        Math.cos(a) * spin - Math.sin(a) * 0.06, TideWater.LIGHT);
             }
             if ((age & 1) == 0) {
                 double a = r.nextDouble() * Mth.TWO_PI;
@@ -552,12 +552,12 @@ final class TideSpout {
             double rise = (0.85 + 0.15 * Math.sin(t * 0.27)) * touch * scale;
             for (int j = 0; j < SKIRT_ROWS; j++) {
                 double s = (double) j / (SKIRT_ROWS - 1);
-                double rho = (0.75 + 2.2 * Math.pow(s, 0.75)) * scale;
-                double y = 2.4 * (1.0 - Math.pow(1.0 - s, 2.2)) * (1.0 - 0.3 * s * s * s) * rise;
-                double rho2 = (1.5 + 3.0 * s) * scale;
-                double y2 = (1.1 * Math.sin(Math.PI * Math.pow(s, 0.8)) + 0.04) * touch * scale;
-                int col = FxDraw.argb((float) (0.78 * Math.pow(1.0 - s, 0.6)) * env, body);
-                int col2 = FxDraw.argb((float) (0.5 * Math.sin(Math.PI * s)) * env, body);
+                double rho = (0.8 + 2.6 * Math.pow(s, 0.75)) * scale;
+                double y = 3.0 * (1.0 - Math.pow(1.0 - s, 2.2)) * (1.0 - 0.3 * s * s * s) * rise;
+                double rho2 = (1.6 + 3.4 * s) * scale;
+                double y2 = (1.4 * Math.sin(Math.PI * Math.pow(s, 0.8)) + 0.04) * touch * scale;
+                int col = FxDraw.argb((float) (0.88 * Math.pow(1.0 - s, 0.5)) * env, body);
+                int col2 = FxDraw.argb((float) (0.62 * Math.sin(Math.PI * s)) * env, body);
                 skirt.v(j, (float) (s * 8.0));
                 spray.v(j, (float) (s * 8.0 + 3.0));
                 double ny = j == 0 ? 0.2 : 0.6 - s;
@@ -699,8 +699,9 @@ final class TideSpout {
                     double u = (double) i / CANOPY_SIDES * 6.0 - spin;
                     float n1 = noise(u, canopyRho[j] * 0.5 + t * 0.01, 6);
                     float n2 = noise(u * 2.0 + 3.0, canopyRho[j] * 0.9 - t * 0.015, 12);
-                    double rho = canopyRho[j] + 0.6 * s * (n2 - 0.5) * scale;
-                    double y = canopyY[j] + (low ? -0.6 * s * n1 * n1 : 0.55 * (1.0 - 0.5 * s) * n1) * scale;
+                    float n3 = noise(u * 3.0 + 7.0, canopyRho[j] * 1.4 + t * 0.02, 18);
+                    double rho = canopyRho[j] + (0.9 * s * (n2 - 0.5) + 0.35 * s * (n3 - 0.5)) * scale;
+                    double y = canopyY[j] + (low ? -0.7 * s * n1 * n1 - 0.25 * s * n3 : 0.6 * (1.0 - 0.5 * s) * n1 + 0.3 * n3) * scale;
                     canopy.set(j, i, cx0 + cos * rho, cy0 + y, cz0 + sin * rho, cos * nr, nu, sin * nr, colour);
                 }
             }
@@ -719,10 +720,10 @@ final class TideSpout {
                 for (int i = 0; i < BASE_PUFFS; i++) {
                     float p = (t * 0.012F + (float) i / BASE_PUFFS) % 1.0F;
                     double a = Mth.TWO_PI * i / BASE_PUFFS + t * 0.045 + p * 1.5;
-                    double rho = (1.4 + 2.4 * p) * scale;
-                    float size = (float) ((0.55 + 0.9 * p) * scale);
-                    float alpha = 0.42F * Mth.sin(p * Mth.PI) * base;
-                    e.square((float) (bx + Math.cos(a) * rho), (float) (by + (0.25 + 1.9 * p) * scale), (float) (bz + Math.sin(a) * rho), size,
+                    double rho = (1.2 + 2.6 * p) * scale;
+                    float size = (float) ((0.7 + 1.1 * p) * scale);
+                    float alpha = 0.5F * Mth.sin(p * Mth.PI) * base;
+                    e.square((float) (bx + Math.cos(a) * rho), (float) (by + (0.2 + 2.4 * p) * scale), (float) (bz + Math.sin(a) * rho), size,
                             FxDraw.argb(alpha, mist), TideMesh.PUFF, i * 2.0F);
                 }
             }
@@ -819,11 +820,11 @@ final class TideSpout {
 
         /** Column radius at fraction f of its height: a little narrower at the top, wobbling as it roars. */
         private static double columnRadius(double f, float time) {
-            return 1.15 - 0.25 * f + 0.05 * Mth.sin(time * 1.3F + (float) f * 6.0F);
+            return 1.15 - 0.4 * f + 0.07 * Mth.sin(time * 1.3F + (float) f * 6.0F);
         }
 
         private float open(float time) {
-            return Mth.clamp((time - RISE + 1.0F) / 6.0F, 0.0F, 1.0F);
+            return Mth.clamp((time - 1.0F) / 6.0F, 0.0F, 1.0F);
         }
 
         @Override
@@ -882,6 +883,7 @@ final class TideSpout {
                     crown.emit(e, 0, CROWN.length - 1);
                     curtain.emit(e, 0, CURTAIN - 1);
                 }
+                mist(e, c, time, h, fade, open, burst);
             }
             drops.render(e, ctx.cam(), ctx.partialTick(), water, 1.0F);
         }
@@ -929,6 +931,29 @@ final class TideSpout {
                 double y = j == 1 ? 0.14 : 0.03;
                 ring.v(j, (float) (j * 3.0 + time * 0.2));
                 lathe(ring, j, c.x, c.y + y, c.z, Math.max(0.2, rho), 1.0, 0.2, FxDraw.argb(j == 1 ? 0.75F * (1.0F - spread) * fade : 0.0F, body));
+            }
+        }
+
+        /** Spray mist boiling round the foot and bursting off the crown (the shader's pixel puffs). */
+        private void mist(TideMesh.Emitter e, Vec3 c, float time, float h, float fade, float open, float burst) {
+            int pale = water.get(TideWater.PALE);
+            int foam = water.get(TideWater.FOAM);
+            for (int i = 0; i < 12; i++) {
+                float h1 = hash(i, 5);
+                double a = Mth.TWO_PI * i / 12 + time * 0.03;
+                double rho = 1.1 + (0.8 + 2.2 * h1) * burst;
+                float size = 0.7F + 0.9F * h1 + 0.5F * burst;
+                e.square((float) (c.x + Math.cos(a) * rho), (float) (c.y + 0.3 + 1.4 * hash(i, 9) * (1.0F - 0.4F * burst)),
+                        (float) (c.z + Math.sin(a) * rho), size, FxDraw.argb(0.55F * fade * (1.0F - 0.5F * burst), pale), TideMesh.PUFF, i * 2.0F);
+            }
+            if (open > 0.0F) {
+                double lip = columnRadius(1.0, time) + 1.2 * open;
+                for (int i = 0; i < 10; i++) {
+                    double a = Mth.TWO_PI * i / 10 - time * 0.04;
+                    float size = 0.6F + 0.7F * hash(i, 13) + 0.4F * open;
+                    e.square((float) (c.x + Math.cos(a) * lip), (float) (c.y + h + 0.5 * open + 0.4 * hash(i, 17)),
+                            (float) (c.z + Math.sin(a) * lip), size, FxDraw.argb(0.5F * fade * open, foam), TideMesh.PUFF, (30 + i) * 2.0F);
+                }
             }
         }
 

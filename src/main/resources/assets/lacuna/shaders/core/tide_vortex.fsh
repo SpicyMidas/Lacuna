@@ -112,19 +112,23 @@ void main() {
         bool jet = mode > 0.5;
         // stretched height: a feature rises faster the higher it gets
         float g = log(1.0 + 0.11 * v) / 0.11;
-        float px = 10.0;
-        float x = u * px + v * (jet ? 0.3 : 0.8) + t * (jet ? 0.05 : 0.06);
+        float px = 14.0;
+        float x = u * px + v * (jet ? 0.2 : 1.0) + t * (jet ? 0.05 : 0.08);
         float y = g - t * (jet ? 0.75 : 0.32);
-        float n = fbm(snap(vec2(x, y * 0.32), vec2(4.0, 5.0)), px);
+        float n = fbm(snap(vec2(x, y * 0.3), vec2(3.0, 6.0)), px);
+        // thin pixel threads of white water between the broad streaks
+        float fine = vnoise(snap(vec2(x * 3.0, y * 0.9), vec2(1.0, 2.0)), px * 3.0);
         float m = vnoise(vec2(x * 0.5, y * 0.1 + 7.0), px * 0.5);
-        float streak = steps(smoothstep(jet ? 0.5 : 0.56, jet ? 0.64 : 0.7, n), 3.0);
+        float streak = steps(smoothstep(jet ? 0.5 : 0.55, jet ? 0.63 : 0.68, n), 3.0);
+        float thread = step(0.8, fine) * (1.0 - streak);
         float b = fract(g * 0.16 - t * (jet ? 0.12 : 0.05) + 0.12 * sin(u * TAU));
         float band = smoothstep(0.86, 0.92, b) * (1.0 - smoothstep(0.95, 1.0, b));
-        col = mix(deep, body, 0.2 + 0.7 * steps(m, 4.0));
-        col = mix(col, lightc, rim * 0.75);
-        col = mix(col, foam, streak * (0.55 + 0.45 * rim));
+        col = mix(deep, body, 0.1 + 0.65 * steps(m, 4.0));
+        col = mix(col, lightc, rim * 0.7);
+        col = mix(col, pale, thread * 0.6);
+        col = mix(col, foam, streak * (0.6 + 0.4 * rim));
         col = mix(col, pale, band * 0.35);
-        alpha = a * clamp(0.34 + 0.52 * rim + 0.38 * streak + 0.15 * band + (jet ? 0.12 : 0.0), 0.0, 1.0);
+        alpha = a * clamp(0.36 + 0.5 * rim + 0.38 * streak + 0.2 * thread + 0.15 * band + (jet ? 0.12 : 0.0), 0.0, 1.0);
     } else if (mode < 1.5) {
         float g = log(1.0 + 0.11 * v) / 0.11;
         float px = 8.0;
@@ -136,16 +140,18 @@ void main() {
         col = mix(col, pale, rim * 0.5);
         alpha = a * keep * (0.28 + 0.6 * rim);
     } else if (mode < 2.5) {
-        float px = 10.0;
+        float px = 16.0;
         float lr = log(max(v, 0.3));
-        float x = u * px - lr * px * 0.3 + t * 0.04;
-        float y = v * 0.55 + t * 0.02;
-        x += 1.3 * (vnoise(vec2(x * 0.5, y * 0.6 + t * 0.004), px * 0.5) - 0.5);
-        float n = fbm(snap(vec2(x, y), vec2(3.0, 3.0)), px);
-        vec3 dark = mix(vec3(lum * 0.5), deep, 0.45);
-        vec3 bright = mix(vec3(lum * 1.25), lightc, 0.25);
-        col = mix(dark, bright, steps(smoothstep(0.35, 0.85, n), 4.0) * (0.45 + 0.55 * rim));
-        alpha = cover(n, a) * 0.94;
+        float x = u * px - lr * px * 0.12 + t * 0.05;
+        float y = v * 1.0 + t * 0.025;
+        x += 1.6 * (vnoise(vec2(x * 0.25, y * 0.4 + t * 0.004), px * 0.25) - 0.5);
+        float n = fbm(snap(vec2(x, y), vec2(2.0, 2.0)), px);
+        float lumps = vnoise(snap(vec2(x * 2.0, y * 2.0), vec2(2.0, 2.0)), px * 2.0);
+        n = n * 0.75 + lumps * 0.25;
+        vec3 dark = mix(vec3(lum * 0.45), deep, 0.4);
+        vec3 bright = mix(vec3(lum * 1.35), lightc, 0.2);
+        col = mix(dark, bright, steps(smoothstep(0.32, 0.78, n), 4.0) * (0.4 + 0.6 * rim));
+        alpha = cover(n, a) * 0.95;
     } else if (mode < 3.5) {
         float f = v / 16.0;
         float lf = log(max(f, 0.01));
@@ -157,12 +163,13 @@ void main() {
         float fleck = step(0.74, fl) * (0.4 + 0.6 * arm);
         float eye = 1.0 - smoothstep(0.02, 0.3, f);
         float crest = smoothstep(0.78, 0.85, f) * (1.0 - smoothstep(0.88, 0.95, f));
-        crest *= 0.55 + 0.45 * vnoise(snap(vec2(u * 40.0 - t * 0.2, f * 10.0), vec2(2.0, 1.0)), 40.0);
-        col = mix(body, deep, eye * 0.85);
-        col = mix(col, lightc, steps(arm, 3.0) * 0.4 * (0.3 + 0.7 * f));
-        col = mix(col, foam, clamp(fleck * 0.9 + steps(crest, 3.0), 0.0, 1.0));
-        col = mix(col, lightc, rim * 0.3);
-        alpha = a * clamp(0.6 + 0.25 * arm + 0.35 * fleck + 0.4 * crest, 0.0, 1.0);
+        // the swell's foam is torn into flecks, never a solid ring
+        crest *= step(0.5, vnoise(snap(vec2(u * 48.0 - t * 0.2, f * 14.0 + t * 0.03), vec2(2.0, 2.0)), 48.0));
+        col = mix(mix(body, deep, 0.35), deep, eye * 0.8);
+        col = mix(col, lightc, steps(arm, 3.0) * 0.45 * (0.3 + 0.7 * f));
+        col = mix(col, foam, clamp(fleck * 0.9 + crest * 0.8, 0.0, 1.0));
+        col = mix(col, lightc, rim * 0.1);
+        alpha = a * clamp(0.5 + 0.3 * arm + 0.4 * fleck + 0.35 * crest, 0.0, 1.0);
     } else if (mode < 4.5) {
         float px = 14.0;
         float x = u * px + v * 0.9 + t * 0.08;
@@ -170,19 +177,19 @@ void main() {
         float n = fbm(snap(vec2(x, y), vec2(3.0, 3.0)), px);
         col = mix(pale, foam, smoothstep(0.45, 0.85, n));
         col = mix(col, lightc, (1.0 - rim) * 0.3);
-        alpha = cover(n, a) * (0.5 + 0.4 * rim) * min(1.0, a * 2.0);
+        alpha = cover(n, a) * (0.65 + 0.35 * rim) * min(1.0, a * 2.2);
     } else if (mode < 5.5) {
         col = body;
         alpha = a;
     } else if (mode < 6.5) {
         float seed = floor(v * 0.5);
-        vec2 q = (floor(vec2(u, v - seed * 2.0) * 10.0) + 0.5) / 10.0;
+        vec2 q = (floor(vec2(u, v - seed * 2.0) * 14.0) + 0.5) / 14.0;
         float d = length(q - 0.5) * 2.0;
         float n = vnoise(q * 4.0 + vec2(seed * 7.13, seed * 3.71 + t * 0.02), 100000.0);
         float edge = 0.5 + 0.4 * n;
-        float mask = 1.0 - smoothstep(edge - 0.05, edge + 0.05, d);
+        float mask = 1.0 - step(edge, d);
         col = body * (0.82 + 0.36 * n);
-        alpha = a * mask * (1.0 - 0.45 * d);
+        alpha = a * mask * steps(1.0 - 0.6 * d * d, 3.0);
     } else {
         float px = 16.0;
         float x = u * px + t * 0.01;
