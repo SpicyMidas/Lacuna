@@ -45,8 +45,9 @@ public final class ChargeMath {
         return 5 + (int) Math.max(0, Math.min(2, Math.round((distance - 4.0) / 5.0)));
     }
 
+    /** Damage the dash deals to every creature it passes: 15.6 at the minimum charge (20) up to 30 at full charge. */
     public static float dashDamage(int charge) {
-        return (float) Math.min(20.0, 6.0 + 0.14 * clamp(charge));
+        return (float) Math.min(30.0, 12.0 + 0.18 * clamp(charge));
     }
 
     public static int durabilityCost(int charge) {

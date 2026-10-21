@@ -69,7 +69,7 @@ public final class Balance {
 
     // ---------------------------------------------------------------- umbral steel / eclipser (M4)
     public static final int ECLIPSER_DURABILITY = 250;
-    public static final int ECLIPSER_ATTACK_DAMAGE = 7; // including base 1
+    public static final int ECLIPSER_ATTACK_DAMAGE = 8; // including base 1 (the tooltip shows 8)
     public static final float ECLIPSER_ATTACK_SPEED = 1.6F;
     public static final int ECLIPSE_CHARGE_PER_HIT = 10;
     public static final int ECLIPSE_MAX_CHARGE = 100;
@@ -81,9 +81,9 @@ public final class Balance {
     public static final double ECLIPSE_DASH_PER_CHARGE = 0.10;
     public static final double ECLIPSE_DASH_MAX = 14.0;
     public static final double ECLIPSE_DASH_RADIUS = 1.5;
-    public static final float ECLIPSE_DAMAGE_BASE = 6.0F;
-    public static final float ECLIPSE_DAMAGE_PER_CHARGE = 0.14F;
-    public static final float ECLIPSE_DAMAGE_MAX = 20.0F;
+    public static final float ECLIPSE_DAMAGE_BASE = 12.0F;
+    public static final float ECLIPSE_DAMAGE_PER_CHARGE = 0.18F;
+    public static final float ECLIPSE_DAMAGE_MAX = 30.0F;
     public static final int ECLIPSE_DURABILITY_BASE = 5;
     public static final int ECLIPSE_DURABILITY_SCALE = 15;
     public static final int ECLIPSE_COOLDOWN = 400;

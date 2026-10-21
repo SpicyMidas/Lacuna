@@ -36,8 +36,8 @@ class ChargeMathTest {
         assertEquals(6.0, ChargeMath.dashDistance(20, 14.0), 1e-9);
         assertEquals(14.0, ChargeMath.dashDistance(100, 14.0), 1e-9);
         assertEquals(10.0, ChargeMath.dashDistance(100, 10.0), 1e-9);
-        assertEquals(8.8F, ChargeMath.dashDamage(20), 1e-5);
-        assertEquals(20.0F, ChargeMath.dashDamage(100), 1e-5);
+        assertEquals(15.6F, ChargeMath.dashDamage(20), 1e-5);
+        assertEquals(30.0F, ChargeMath.dashDamage(100), 1e-5);
         assertEquals(8, ChargeMath.durabilityCost(20));
         assertEquals(20, ChargeMath.durabilityCost(100));
         assertEquals(56, ChargeMath.shadowWalkTicks(20));
