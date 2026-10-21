@@ -130,6 +130,9 @@ public final class BagCapture {
 
     private static boolean stuffed(BagContents contents) {
         CompoundTag data = contents.data();
+        if (contents.isPlayer()) {
+            return data.getInt("stacks") >= STUFFED_STACKS; // a player hauling a third of a chest bulges the bag
+        }
         if (contents.isEntity()) {
             EntityType<?> type = EntityType.byString(data.getString("id")).orElse(null);
             if (type != null) {
@@ -513,6 +516,9 @@ public final class BagCapture {
         if (contents == null) {
             return InteractionResult.PASS;
         }
+        if (contents.isPlayer()) {
+            return BaggedPlayers.releaseWithBag(player, bag, context); // letting a player go is never refused
+        }
         if (!player.getAbilities().mayBuild) {
             return refuse(player, "lacuna.bag.protected");
         }
@@ -593,7 +599,7 @@ public final class BagCapture {
         return InteractionResult.FAIL;
     }
 
-    private static InteractionResult refuse(ServerPlayer player, String key) {
+    static InteractionResult refuse(ServerPlayer player, String key) {
         player.displayClientMessage(Component.translatable(key).withStyle(ChatFormatting.YELLOW), true);
         Sfx.at(player, SoundEvents.BUNDLE_REMOVE_ONE, 0.7F, 0.5F);
         return InteractionResult.FAIL;
@@ -602,7 +608,7 @@ public final class BagCapture {
     // ================================================================================================ fx
 
     /** The comedic "thwump": a heavy sack sound, a puff of air, leather scraps and a cloud of poof. */
-    private static void thwump(ServerLevel level, Vec3 at, float width, float height, boolean in) {
+    static void thwump(ServerLevel level, Vec3 at, float width, float height, boolean in) {
         double cy = at.y + height * 0.5;
         int puffs = 14 + Mth.clamp((int) (width * height * 8.0F), 0, 30);
         level.sendParticles(ParticleTypes.POOF, at.x, cy, at.z, puffs, width * 0.45, height * 0.4, width * 0.45, 0.04);
@@ -628,6 +634,14 @@ public final class BagCapture {
      */
     public static void guardDropped(ItemStack stack, ItemEntity item) {
         if (!isFull(stack) || !(item.level() instanceof ServerLevel level)) {
+            return;
+        }
+        BagContents contents = contents(stack);
+        if (contents != null && contents.isPlayer()) {
+            // a dropped bag lets its player go (BaggedPlayers notices next tick); the token then empties itself
+            if (BaggedPlayers.checkToken(stack)) {
+                item.setItem(stack.copy());
+            }
             return;
         }
         if (item.getAge() != -32768) {
@@ -668,6 +682,9 @@ public final class BagCapture {
             what = named(what, data, registries);
             int riders = riders(data);
             return riders > 0 ? Component.translatable("lacuna.bag.riders", what, riders) : what;
+        }
+        if (contents.isPlayer()) {
+            return Component.literal(data.getString("name"));
         }
         if (contents.isBlock()) {
             BlockState state = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), data.getCompound(KEY_STATE));

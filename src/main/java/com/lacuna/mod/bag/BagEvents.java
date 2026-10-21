@@ -23,6 +23,7 @@ public final class BagEvents {
     public static void register(IEventBus bus) {
         bus.addListener(BagEvents::onInteractAt);
         bus.addListener(BagEvents::onInteract);
+        BaggedPlayers.register(bus);
     }
 
     private static void onInteractAt(PlayerInteractEvent.EntityInteractSpecific event) {
@@ -48,6 +49,11 @@ public final class BagEvents {
             return null; // item frames, paintings and the like keep their usual behaviour
         }
         if (player instanceof ServerPlayer serverPlayer && !player.level().isClientSide()) {
+            if (target instanceof ServerPlayer targetPlayer) {
+                // players are not taken out of the world: they ride along in the bag for a while (BaggedPlayers)
+                return SafeRun.call(BaggedPlayers.FEATURE, () -> BaggedPlayers.capture(serverPlayer, stack, targetPlayer),
+                        InteractionResult.FAIL, BaggedPlayers::releaseAll);
+            }
             return SafeRun.call(BagCapture.FEATURE, () -> BagCapture.captureEntity(serverPlayer, stack, target), InteractionResult.FAIL);
         }
         return InteractionResult.SUCCESS;

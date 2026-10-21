@@ -63,11 +63,20 @@ public class ComicallyLargeBagItem extends Item {
         return false;
     }
 
+    /** A bag still holding a player whose carry is over (let out, or lost to a crash) turns back into an empty bag. */
+    @Override
+    public void inventoryTick(ItemStack stack, net.minecraft.world.level.Level level, net.minecraft.world.entity.Entity entity, int slot, boolean selected) {
+        if (!level.isClientSide() && BagCapture.isFull(stack)) {
+            SafeRun.run(BaggedPlayers.FEATURE, () -> BaggedPlayers.checkToken(stack));
+        }
+    }
+
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.lacuna.comically_large_bag.lore").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("item.lacuna.comically_large_bag.use").withStyle(ChatFormatting.AQUA));
         tooltip.add(Component.translatable("item.lacuna.comically_large_bag.use2").withStyle(ChatFormatting.AQUA));
         tooltip.add(Component.translatable("item.lacuna.comically_large_bag.use3").withStyle(ChatFormatting.AQUA));
+        tooltip.add(Component.translatable("item.lacuna.comically_large_bag.use4").withStyle(ChatFormatting.AQUA));
     }
 }

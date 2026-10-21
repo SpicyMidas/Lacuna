@@ -427,4 +427,14 @@ public final class Balance {
     public static final int HOURGLASS_MAX_SCHEDULED_TICKS = 48;
     /** Chunks holding more scheduled ticks than this are not searched (a huge contraption must not cost every tick). */
     public static final int HOURGLASS_MAX_TICK_QUEUE = 4096;
+
+    // ------------------------------------------------------------------ Comically Large Bag: players (bag/BaggedPlayers)
+    /** How long a bagged player stays in the bag before wriggling free on their own (ticks). */
+    public static final int BAG_PLAYER_TICKS = 300;
+    /** After getting out, nobody can bag that player again for this long (ticks). */
+    public static final int BAG_PLAYER_COOLDOWN_TICKS = 600;
+    /** Each struggle (jump, attack or sneak press inside the bag) shaves this much off the time left (ticks). */
+    public static final int BAG_STRUGGLE_TICKS = 5;
+    /** At most one struggle counts per this many ticks (no macro speedruns out of the bag). */
+    public static final int BAG_STRUGGLE_INTERVAL = 4;
 }

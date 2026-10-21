@@ -26,5 +26,6 @@ public final class LacunaNetwork {
                 com.lacuna.mod.gear.StarlaceSet.onStepRequest(player, payload);
             }
         });
+        com.lacuna.mod.bag.BagPlayerNet.register(registrar);
     }
 }
