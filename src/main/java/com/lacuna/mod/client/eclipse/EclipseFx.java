@@ -35,6 +35,7 @@ import org.joml.Vector3f;
  *       dashing player it also starts the {@link DashDriver} and a dark screen flash.</li>
  *   <li>{@code eclipse_hit}: crossing X-slashes on a cut entity, a crimson flare and sparks (camera shake for the
  *       dasher).</li>
+ *   <li>{@code eclipse_gust} and the air wake along the dash: {@link EclipseWakeFx}.</li>
  *   <li>{@code eclipse_end} / {@code shadow_walk_end}: a shockwave of shadows where the dash ends / Shadow Walk ends.</li>
  * </ul>
  */
@@ -54,6 +55,7 @@ public final class EclipseFx {
         FxHandlers.register("eclipse_hit", EclipseFx::hit);
         FxHandlers.register("eclipse_end", p -> end(p, false));
         FxHandlers.register("shadow_walk_end", p -> end(p, true));
+        EclipseWakeFx.register();
     }
 
     private static boolean isSelf(FxPayload p) {
@@ -78,6 +80,7 @@ public final class EclipseFx {
             slim = s.model() == PlayerSkin.Model.SLIM;
         }
         FxManager.add(new DashFx(p.a(), p.b(), Math.max(1, (int) p.p0()), Mth.clamp(p.p1() / 100.0F, 0.0F, 1.0F), p.p2(), skin, slim));
+        EclipseWakeFx.dash(p.a(), p.b(), (int) p.p0(), Mth.clamp(p.p1() / 100.0F, 0.0F, 1.0F));
     }
 
     private static void hit(FxPayload p) {
