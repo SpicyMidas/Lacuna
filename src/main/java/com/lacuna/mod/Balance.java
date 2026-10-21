@@ -427,4 +427,24 @@ public final class Balance {
     public static final int HOURGLASS_MAX_SCHEDULED_TICKS = 48;
     /** Chunks holding more scheduled ticks than this are not searched (a huge contraption must not cost every tick). */
     public static final int HOURGLASS_MAX_TICK_QUEUE = 4096;
+
+    // ---------------------------------------------------------------- eclipser dash air wake
+    /** Vertical margin added to the dasher's box when sweeping the dash for victims (horizontal reach: ECLIPSE_DASH_RADIUS). */
+    public static final double ECLIPSE_DASH_VERTICAL_MARGIN = 0.6;
+    /** Sideways speed (blocks/tick) given to a cut creature: base + per block/tick of dash speed + extra at full charge. */
+    public static final double ECLIPSE_SHOVE_BASE = 0.35;
+    public static final double ECLIPSE_SHOVE_PER_SPEED = 0.18;
+    public static final double ECLIPSE_SHOVE_PER_CHARGE = 0.25;
+    /** Upward lift of a cut creature, plus the extra at full charge. */
+    public static final double ECLIPSE_SHOVE_LIFT = 0.28;
+    public static final double ECLIPSE_SHOVE_LIFT_PER_CHARGE = 0.12;
+    /** Drag along the dash direction, as a fraction of the sideways shove. */
+    public static final double ECLIPSE_SHOVE_DRAG = 0.3;
+    /** Bosses only feel this fraction of the shove. */
+    public static final double ECLIPSE_SHOVE_BOSS = 0.25;
+    /** Width of the air wake beside the cut zone: creatures there are pushed aside without damage. */
+    public static final double ECLIPSE_GUST_WIDTH = 1.75;
+    /** Wake push as a fraction of the shove at the edge of the cut zone (fades to 30% of that at the outer edge). */
+    public static final double ECLIPSE_GUST_FACTOR = 0.55;
+    public static final double ECLIPSE_GUST_LIFT = 0.12;
 }
