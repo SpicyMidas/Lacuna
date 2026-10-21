@@ -4,255 +4,74 @@ import com.lacuna.mod.Balance;
 import com.lacuna.mod.client.fx.ClientFx;
 import com.lacuna.mod.client.fx.FxDraw;
 import com.lacuna.mod.client.fx.FxRenderContext;
-import com.lacuna.mod.client.fx.FxRenderTypes;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.gear.TideCurrents;
 import com.lacuna.mod.network.FxPayload;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * The Tidecaller's Maelstrom and its closing geyser, drawn exactly like the Tidal Wave ({@link TidecallerFx}).
- * <p>
- * Same palette, same two render types and the same treatment as the wave: smooth translucent water shaded per vertex
- * in {@code shade(BEAM)} (deep blue-green where you look straight into the water, pale and denser where the surface
- * turns away from the eye, lighter streams winding through it) and crisp additive foam lines on the crests with glints
- * streaming up the water in {@code additive(BEAM)} (the nearest-filtered beam mask: no soft glow, hard alpha cut-off).
- * Every surface is a {@link Shell}, a ring-by-ring surface of revolution rebuilt in place each frame; an effect is two
- * draw calls, batched with the wave's, and both types have Fabulous depth twins like the wave.
+ * The Tidecaller's Maelstrom (whirlpool + waterspout) and its closing geyser, in the colour of the local water
+ * ({@link TideWater}) and drawn with the {@code tide_vortex} shader ({@link TideRenderTypes}): one depth-sorted batch
+ * per effect (plus its Fabulous depth twin), every surface a {@link TideMesh} updated in place once per frame.
  * <ul>
- *   <li>{@code tide_maelstrom}: a whirlpool bowl around a dark eye with spiral streams and foam arms turning in, and a
- *       foam-crested swell at the rim; from the eye a waterspout twists up - a flared foot, a narrow neck and a swaying
- *       funnel widening upward, streams of water winding up it and a curling foam crown like the wave's lip. Vanilla
- *       particles: splashes flung off the spout, bubbles whirling up it, water dripping from the crown, wakes circling
- *       the pool.</li>
- *   <li>{@code tide_geyser}: the spout collapses into a column of water that shoots up and bursts into a curling foam
- *       crown with a falling curtain; a foam line races out over the ground and leaves a wet sheen, like the wave's
- *       wake.</li>
+ *   <li>{@code tide_maelstrom}: a dark storm canopy gathers over the pool and a funnel ropes down from it to touch the
+ *       water. The funnel is not a cone: its axis bends, leans with the drifting cloud and snakes with a kink that
+ *       travels up it; its waist is narrow, its foot flares into the water and its top flares into the cloud; its
+ *       cross-section is lobed and twists. Two layers - a dense fast core with helical foam streaks rushing up (faster
+ *       near the top) and a slower torn spray sheath - and a fresnel rim make it read round. At its foot a bushy spray
+ *       cascade boils out over a whirlpool whose arms and foam flecks spiral into a dark eye under a raised foam swell;
+ *       mist puffs churn round the base and the canopy. Pixel droplets ride the funnel up and are flung off, spray is
+ *       thrown from the cascade, water and bits of the bed (vanilla block particles) are torn up and rain drips from
+ *       the cloud. At the end the funnel thins into a writhing rope, lifts off the water and the cloud dissolves.</li>
+ *   <li>{@code tide_geyser}: the whirlpool bursts into a column of water blasting up (the same shader), a torn crown
+ *       curling over into a falling curtain, a spray skirt and a foam ring racing out, with a burst of droplets.</li>
  * </ul>
  */
 final class TideSpout {
-    private static final int DEEP = TidecallerFx.DEEP;
-    private static final int TEAL = TidecallerFx.TEAL;
-    private static final int CYAN = TidecallerFx.CYAN;
-    private static final int PALE = TidecallerFx.PALE;
-    private static final int FOAM = TidecallerFx.FOAM;
-    private static final int GLINT = TidecallerFx.GLINT;
-    /** The water ramp: 0 deep eye, 0.25 the wave's body, 0.5 its lighter water, 0.75 the crest, 1 foam. */
-    private static final int[] RAMP = {DEEP, TEAL, CYAN, PALE, FOAM};
-    /** Lowest vertex alpha (0..255) that survives the core shader's 0.1 alpha cut-off on the beam mask's centre. */
-    private static final int VISIBLE = 27;
-
     private TideSpout() {}
 
-    // ------------------------------------------------------------------ the wave's look
+    // ------------------------------------------------------------------ helpers
 
-    /** The wave's water (translucent, depth-sorted). */
-    private static RenderType water() {
-        return FxRenderTypes.shade(FxRenderTypes.BEAM);
+    private static float smooth(double t) {
+        return TidecallerFx.smooth((float) t);
     }
 
-    /** The wave's foam and glints (additive, beam mask across each line). */
-    private static RenderType light() {
-        return FxRenderTypes.additive(FxRenderTypes.BEAM);
+    private static float hash(int x, int y) {
+        int h = x * 0x27D4EB2D ^ y * 0x165667B1;
+        h ^= h >>> 15;
+        h *= 0x85EBCA6B;
+        h ^= h >>> 13;
+        h *= 0xC2B2AE35;
+        h ^= h >>> 16;
+        return (h & 0xFFFFFF) / 16777216.0F;
     }
 
-    private static int mix(int a, int b, float t) {
-        int r = (int) Mth.lerp(t, (a >> 16) & 0xFF, (b >> 16) & 0xFF);
-        int g = (int) Mth.lerp(t, (a >> 8) & 0xFF, (b >> 8) & 0xFF);
-        int bl = (int) Mth.lerp(t, a & 0xFF, b & 0xFF);
-        return (r << 16) | (g << 8) | bl;
+    /** Value noise 0..1, periodic in x every {@code period} cells. */
+    private static float noise(double x, double y, int period) {
+        int ix = Mth.floor(x);
+        int iy = Mth.floor(y);
+        float fx = (float) (x - ix);
+        float fy = (float) (y - iy);
+        float wx = fx * fx * (3.0F - 2.0F * fx);
+        float wy = fy * fy * (3.0F - 2.0F * fy);
+        int x0 = Math.floorMod(ix, period);
+        int x1 = Math.floorMod(ix + 1, period);
+        return Mth.lerp(wy, Mth.lerp(wx, hash(x0, iy), hash(x1, iy)), Mth.lerp(wx, hash(x0, iy + 1), hash(x1, iy + 1)));
     }
-
-    private static int ramp(float t) {
-        float x = Mth.clamp(t, 0.0F, 1.0F) * (RAMP.length - 1);
-        int i = Math.min(RAMP.length - 2, (int) x);
-        return mix(RAMP[i], RAMP[i + 1], x - i);
-    }
-
-    /**
-     * Water at ramp position t and alpha a, seen at {@code edge} (0 face-on .. 1 grazing): like real water it turns
-     * paler and denser where the surface turns away from the eye, which gives the columns their round body.
-     */
-    private static int tone(float t, float a, float edge) {
-        float e = edge * edge;
-        return FxDraw.argb(Math.min(0.85F, a * (1.0F + 0.6F * e)), ramp(t + 0.3F * e));
-    }
-
-    /** 1 - |cos| of the angle between the view ray to camera-relative point p and the unit normal n. */
-    private static float edge(double px, double py, double pz, double nx, double ny, double nz) {
-        double len = Math.sqrt(px * px + py * py + pz * pz);
-        return len < 1.0E-4 ? 0.0F : 1.0F - (float) Math.min(1.0, Math.abs((px * nx + py * ny + pz * nz) / len));
-    }
-
-    /** Per-column weight of the lighter streams winding through the water: n soft stripes round a ring. */
-    private static float[] streams(int sides, int n) {
-        float[] s = new float[sides];
-        for (int i = 0; i < sides; i++) {
-            float v = 0.5F + 0.5F * Mth.cos(Mth.TWO_PI * n * i / sides);
-            s[i] = v * v;
-        }
-        return s;
-    }
-
-    private static void vertex(VertexConsumer vc, PoseStack.Pose pose, double x, double y, double z, float u, float v, int argb) {
-        vc.addVertex(pose, (float) x, (float) y, (float) z).setUv(u, v).setColor(argb);
-    }
-
-    /** A foam line lying flat on the water from a to b (beam mask across it), widths wa / wb. */
-    private static void flat(VertexConsumer vc, PoseStack.Pose pose, double ax, double ay, double az, double bx, double by, double bz,
-                             float wa, float wb, int ca, int cb) {
-        if ((ca >>> 24) < VISIBLE && (cb >>> 24) < VISIBLE) {
-            return;
-        }
-        double dx = bx - ax;
-        double dz = bz - az;
-        double len = Math.sqrt(dx * dx + dz * dz);
-        if (len < 1.0E-5) {
-            return;
-        }
-        double sx = -dz / len * 0.5;
-        double sz = dx / len * 0.5;
-        vertex(vc, pose, ax - sx * wa, ay, az - sz * wa, 0.0F, 0.0F, ca);
-        vertex(vc, pose, ax + sx * wa, ay, az + sz * wa, 1.0F, 0.0F, ca);
-        vertex(vc, pose, bx + sx * wb, by, bz + sz * wb, 1.0F, 1.0F, cb);
-        vertex(vc, pose, bx - sx * wb, by, bz - sz * wb, 0.0F, 1.0F, cb);
-    }
-
-    /**
-     * Sets ring {@code row} of a shell: centre (cx, cy, cz) camera-relative, radius r, turned by {@code turn} radians,
-     * profile slope (dr, dy) for the normal; t / a: ramp position and alpha, lighter and denser water on the streams and
-     * deeper water between them, weighted by {@code w} (the streams follow the mesh's own columns, so a turn that changes
-     * with height makes them wind).
-     */
-    private static void ring(Shell s, int row, double cx, double cy, double cz, double r, double turn, double dr, double dy,
-                             float t, float a, float w, float[] stream) {
-        double len = Math.sqrt(dr * dr + dy * dy);
-        double nr = len < 1.0E-6 ? 1.0 : dy / len;
-        double nu = len < 1.0E-6 ? 0.0 : -dr / len;
-        double ct = Math.cos(turn);
-        double st = Math.sin(turn);
-        s.axis(row, cx, cz);
-        for (int i = 0; i < s.sides; i++) {
-            double cos = s.cos[i] * ct - s.sin[i] * st;
-            double sin = s.sin[i] * ct + s.cos[i] * st;
-            double x = cx + cos * r;
-            double z = cz + sin * r;
-            float k = stream == null ? 0.0F : w * (stream[i] - 0.3F);
-            s.set(row, i, x, cy, z, tone(t + 0.32F * k, a * (1.0F + 0.45F * k), edge(x, cy, z, cos * nr, nu, sin * nr)));
-        }
-    }
-
-    /**
-     * A ring-by-ring surface of revolution ({@code rows} rings of {@code sides} vertices), allocated once per effect
-     * and rebuilt in place every frame: camera-relative positions and one colour per vertex.
-     */
-    private static final class Shell {
-        final int sides;
-        final double[] cos;
-        final double[] sin;
-        private final float[] x;
-        private final float[] y;
-        private final float[] z;
-        private final int[] argb;
-        /** Each ring's axis (x, z), camera-relative: tells the near and far sides of a crest line apart. */
-        private final float[] axis;
-
-        Shell(int rows, int sides) {
-            this.sides = sides;
-            this.cos = new double[sides];
-            this.sin = new double[sides];
-            for (int i = 0; i < sides; i++) {
-                cos[i] = Math.cos(Mth.TWO_PI * i / sides);
-                sin[i] = Math.sin(Mth.TWO_PI * i / sides);
-            }
-            int n = rows * sides;
-            this.x = new float[n];
-            this.y = new float[n];
-            this.z = new float[n];
-            this.argb = new int[n];
-            this.axis = new float[rows * 2];
-        }
-
-        void axis(int row, double cx, double cz) {
-            axis[row * 2] = (float) cx;
-            axis[row * 2 + 1] = (float) cz;
-        }
-
-        void set(int row, int i, double px, double py, double pz, int colour) {
-            int k = row * sides + i;
-            x[k] = (float) px;
-            y[k] = (float) py;
-            z[k] = (float) pz;
-            argb[k] = colour;
-        }
-
-        Vec3 at(int row, int i) {
-            int k = row * sides + Math.floorMod(i, sides);
-            return new Vec3(x[k], y[k], z[k]);
-        }
-
-        private void emit(VertexConsumer vc, PoseStack.Pose pose, int k) {
-            vc.addVertex(pose, x[k], y[k], z[k]).setUv(0.5F, 0.5F).setColor(argb[k]);
-        }
-
-        /** The water between rings {@code from} .. {@code to}: the wave's flat fill (the beam mask's centre). */
-        void fill(VertexConsumer vc, PoseStack.Pose pose, int from, int to) {
-            for (int row = from; row < to; row++) {
-                for (int i = 0; i < sides; i++) {
-                    int a = row * sides + i;
-                    int b = row * sides + (i + 1) % sides;
-                    int c = b + sides;
-                    int d = a + sides;
-                    if (Math.max(Math.max(argb[a] >>> 24, argb[b] >>> 24), Math.max(argb[c] >>> 24, argb[d] >>> 24)) < VISIBLE) {
-                        continue;
-                    }
-                    emit(vc, pose, a);
-                    emit(vc, pose, b);
-                    emit(vc, pose, c);
-                    emit(vc, pose, d);
-                }
-            }
-        }
-
-        /**
-         * The wave's crest line round ring {@code row}: camera-facing ribbon segments through its vertices. Round a column
-         * ({@code throughWater}) the far side of the ring is seen through the water, dimmer, so the two halves do not stack
-         * into a solid white band.
-         */
-        void crest(VertexConsumer vc, PoseStack.Pose pose, int row, float width, int colour, boolean throughWater) {
-            if ((colour >>> 24) < VISIBLE) {
-                return;
-            }
-            int far = FxDraw.withAlpha(colour, 0.45F);
-            float rx = axis[row * 2];
-            float rz = axis[row * 2 + 1];
-            Vec3 first = at(row, 0);
-            Vec3 prev = first;
-            for (int i = 1; i <= sides; i++) {
-                Vec3 next = i == sides ? first : at(row, i);
-                double mx = (prev.x + next.x) * 0.5;
-                double mz = (prev.z + next.z) * 0.5;
-                // outward from the ring's axis along the view ray: that side faces away from the camera
-                boolean back = throughWater && (mx - rx) * mx + (mz - rz) * mz > 0.0;
-                FxDraw.ribbon(pose, vc, prev, next, width, back ? far : colour, 0.0F, 1.0F);
-                prev = next;
-            }
-        }
-    }
-
-    // ------------------------------------------------------------------ particles
 
     private static boolean wet(ClientLevel level, double x, double y, double z) {
         return level.getFluidState(BlockPos.containing(x, y, z)).is(FluidTags.WATER);
@@ -263,190 +82,449 @@ final class TideSpout {
         return wet(level, x, y, z) ? ParticleTypes.BUBBLE_COLUMN_UP : ParticleTypes.BUBBLE_POP;
     }
 
+    /** The solid block under the water (the bed) or the ground at the effect, for the torn-up debris; null if none. */
+    @Nullable
+    private static BlockParticleOption bed(@Nullable ClientLevel level, Vec3 c) {
+        if (level == null) {
+            return null;
+        }
+        BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos(Mth.floor(c.x), Mth.floor(c.y + 0.4), Mth.floor(c.z));
+        for (int i = 0; i < 14; i++) {
+            BlockState s = level.getBlockState(m);
+            if (!s.isAir() && s.getFluidState().isEmpty() && !s.getCollisionShape(level, m).isEmpty()) {
+                return new BlockParticleOption(ParticleTypes.BLOCK, s);
+            }
+            m.move(Direction.DOWN);
+        }
+        return null;
+    }
+
+    /** Free height above the effect (centre and four points around it), up to {@code max}. */
+    private static double headroom(@Nullable ClientLevel level, Vec3 c, double max) {
+        if (level == null) {
+            return max;
+        }
+        double best = max;
+        BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
+        for (int k = 0; k < 5; k++) {
+            int dx = k == 1 ? 2 : k == 2 ? -2 : 0;
+            int dz = k == 3 ? 2 : k == 4 ? -2 : 0;
+            m.set(Mth.floor(c.x) + dx, Mth.floor(c.y) + 1, Mth.floor(c.z) + dz);
+            for (int dy = 1; dy <= max + 1; dy++) {
+                if (!level.getBlockState(m).getCollisionShape(level, m).isEmpty()) {
+                    best = Math.min(best, m.getY() - c.y);
+                    break;
+                }
+                m.move(Direction.UP);
+            }
+        }
+        return best;
+    }
+
+    private static double dist(Vec3 a) {
+        Player p = Minecraft.getInstance().player;
+        return p == null ? 1.0E9 : p.position().distanceTo(a);
+    }
+
     // ------------------------------------------------------------------ the maelstrom
 
     static final class Maelstrom implements ClientFx {
-        /** Pool rings as fractions of the radius, from the eye out over the swell at the rim (CREST) to its foot. */
-        private static final float[] POOL = {0.03F, 0.1F, 0.19F, 0.3F, 0.43F, 0.56F, 0.68F, 0.78F, 0.86F, 0.93F, 1.0F};
-        private static final int CREST_ROW = 8;
-        private static final float CREST = POOL[CREST_ROW];
-        /** Ramp position and alpha of each pool ring: a dark eye, the wave's body water, a pale swell fading at its foot. */
-        private static final float[] POOL_T = {0.02F, 0.05F, 0.1F, 0.16F, 0.24F, 0.32F, 0.42F, 0.54F, 0.66F, 0.6F, 0.52F};
-        private static final float[] POOL_A = {0.62F, 0.6F, 0.56F, 0.52F, 0.48F, 0.47F, 0.48F, 0.52F, 0.58F, 0.32F, 0.0F};
-        private static final int POOL_SIDES = 40;
-        private static final int ARMS = 5;
-        /** Spiral winding of the pool's streams and foam arms (radians per e-fold of radius) and their turn rate. */
-        private static final double ARM_WIND = 1.5;
-        private static final float POOL_SPIN = 0.07F;
-        private static final int ARM_STEPS = 18;
-        private static final double ARM_IN = 0.08;
-
-        private static final int SIDES = 24;
-        private static final int STREAMS = 3;
-        private static final float[] STREAM = streams(SIDES, STREAMS);
-        private static final int FUNNEL = 15;
-        /** Height of the neck above the eye: below it the spout flares into a foot drawing up the pool. */
-        private static final double NECK = 0.45;
-        /** The crown: the funnel's top flares out and curls over like the wave's lip (radius, height past the top). */
-        private static final double[][] CROWN = {{0.22, 0.3}, {0.5, 0.52}, {0.78, 0.44}, {0.9, 0.14}};
-        private static final float[] CROWN_T = {0.5F, 0.66F, 0.8F, 0.92F};
-        private static final float[] CROWN_A = {0.48F, 0.54F, 0.5F, 0.26F};
-        private static final int TOP = 2 + FUNNEL;
-        private static final int SPOUT_ROWS = TOP + 1 + CROWN.length;
-        /** The streams wind this far round the funnel from neck to top, and the whole spout spins this fast. */
-        private static final double TWIST = 4.5;
-        private static final float SPIN = 0.28F;
-        private static final int GLINTS = 10;
-        private static final double TOP_HEIGHT = 7.0;
+        private static final int SIDES = 28;
+        private static final int CORE_ROWS = 34;
+        private static final int SHEATH_ROWS = 24;
+        private static final int CANOPY_LOW = 8;
+        private static final int CANOPY_HIGH = 6;
+        private static final int CANOPY_SIDES = 40;
+        /** Pool rings (fractions of the radius) and their density: a dark dense eye, the swell (CREST) and its foot. */
+        private static final float[] POOL = {0.02F, 0.06F, 0.11F, 0.17F, 0.24F, 0.32F, 0.41F, 0.51F, 0.62F, 0.73F, 0.82F, 0.88F,
+                0.94F, 1.0F};
+        private static final float[] POOL_A = {0.9F, 0.85F, 0.75F, 0.62F, 0.52F, 0.46F, 0.42F, 0.42F, 0.44F, 0.48F, 0.52F, 0.46F,
+                0.25F, 0.0F};
+        private static final float CREST = 0.86F;
+        private static final int POOL_SIDES = 48;
+        private static final int SKIRT_ROWS = 6;
+        private static final int SKIRT_SIDES = 32;
+        private static final int BASE_PUFFS = 16;
+        private static final int TOP_PUFFS = 14;
+        private static final int CLIMBERS = 48;
+        private static final double NECK = 0.4;
+        private static final double MAX_HEIGHT = 10.5;
+        private static final double CANOPY_THICKNESS = 2.3;
 
         private final Vec3 center;
         private final float radius;
         private final int duration;
-        private final Shell pool = new Shell(POOL.length, POOL_SIDES);
-        private final Shell spout = new Shell(SPOUT_ROWS, SIDES);
-        private final double[] rowR = new double[SPOUT_ROWS];
-        private final double[] rowY = new double[SPOUT_ROWS];
-        private final double[] rowF = new double[SPOUT_ROWS];
+        private final double height;
+        /** Size of the funnel and its spray relative to a full-height spout (low ceilings make a smaller one). */
+        private final double scale;
+        private final double canopyR;
+        private final float seedA;
+        private final float seedB;
+        private final TideWater water;
+        @Nullable
+        private final BlockParticleOption bedBits;
+        private final TideMesh core = new TideMesh(CORE_ROWS, SIDES, TideMesh.CORE);
+        private final TideMesh sheath = new TideMesh(SHEATH_ROWS, SIDES, TideMesh.SHEATH);
+        private final TideMesh canopy = new TideMesh(CANOPY_LOW + CANOPY_HIGH, CANOPY_SIDES, TideMesh.CANOPY);
+        private final TideMesh pool = new TideMesh(POOL.length, POOL_SIDES, TideMesh.POOL);
+        private final TideMesh skirt = new TideMesh(SKIRT_ROWS, SKIRT_SIDES, TideMesh.SKIRT);
+        private final TideMesh spray = new TideMesh(SKIRT_ROWS, SKIRT_SIDES, TideMesh.SKIRT);
+        private final TideMesh.Emitter emitter = new TideMesh.Emitter();
+        private final TideDroplets drops;
+        private final float[] canopyRho = new float[CANOPY_LOW + CANOPY_HIGH];
+        private final float[] canopyY = new float[CANOPY_LOW + CANOPY_HIGH];
+        // droplets riding up the funnel (relative to the centre): height fraction, angle, spin, rise, radius factor, release
+        private final float[] cf = new float[CLIMBERS];
+        private final float[] ca = new float[CLIMBERS];
+        private final float[] cw = new float[CLIMBERS];
+        private final float[] cv = new float[CLIMBERS];
+        private final float[] ck = new float[CLIMBERS];
+        private final float[] cr = new float[CLIMBERS];
+        private final float[] csz = new float[CLIMBERS];
+        private final int[] cslot = new int[CLIMBERS];
+        private final float[] cx = new float[CLIMBERS];
+        private final float[] cy = new float[CLIMBERS];
+        private final float[] cz = new float[CLIMBERS];
+        private final float[] cpx = new float[CLIMBERS];
+        private final float[] cpy = new float[CLIMBERS];
+        private final float[] cpz = new float[CLIMBERS];
+        private int climbers;
         private int age;
+        private boolean touched;
+        private float builtTime = Float.NaN;
+        private double builtX;
+        private double builtY;
+        private double builtZ;
+        // spine sample (set by spine())
+        private double sox;
+        private double soz;
 
         Maelstrom(FxPayload p) {
             this.center = p.a();
             this.radius = p.p0() > 0.0F ? p.p0() : (float) Balance.SICKLE_MAELSTROM_RADIUS;
             this.duration = p.p1() > 0.0F ? (int) p.p1() : Balance.SICKLE_MAELSTROM_TICKS;
+            ClientLevel level = Minecraft.getInstance().level;
+            this.height = Mth.clamp(headroom(level, center, MAX_HEIGHT + CANOPY_THICKNESS) - CANOPY_THICKNESS, 3.0, MAX_HEIGHT);
+            this.scale = 0.55 + 0.45 * (height - 3.0) / (MAX_HEIGHT - 3.0);
+            this.canopyR = Math.min(6.4, radius * 0.92) * (0.5 + 0.5 * scale);
+            this.water = TideWater.at(level, center);
+            this.bedBits = bed(level, center);
+            this.drops = new TideDroplets(200, center, center.y);
+            int seed = Mth.floor(center.x * 31.0 + center.z * 17.0);
+            this.seedA = hash(seed, 3) * Mth.TWO_PI;
+            this.seedB = hash(seed, 7) * Mth.TWO_PI;
             if (TidecallerFx.isSelf(p)) {
                 ScreenFx.shake(1.2F, 10);
             }
         }
 
-        private float envelope(float time) {
-            return TidecallerFx.smooth(time / 14.0F) * (1.0F - Mth.clamp((time - duration) / 6.0F, 0.0F, 1.0F));
+        // ---------------------------------------------------------------- the life of the spout
+
+        /** The storm cloud gathering (0..1); it dissolves after the end. */
+        private float gather(float t) {
+            return smooth(t / 12.0) * (1.0F - dissolve(t));
         }
 
-        /** Height of the pool above the centre at fraction f of the radius: low at the eye, a swell at the rim. */
+        private float dissolve(float t) {
+            return smooth((t - duration) / 18.0);
+        }
+
+        /** Height fraction of the funnel's tip while it ropes down from the cloud: 1 at the cloud .. 0 touching down. */
+        private float tip(float t) {
+            return 1.0F - smooth((t - 4.0) / 21.0);
+        }
+
+        /** The spray at the foot: starts as the tip nears the water. */
+        private float touch(float t) {
+            return smooth((t - 15.0) / 12.0);
+        }
+
+        /** The rope-out: the funnel thins and writhes over its last ticks. */
+        private float rope(float t) {
+            return smooth((t - (duration - 16.0)) / 16.0);
+        }
+
+        /** After the end the rope's foot lifts off the water back into the cloud. */
+        private float lift(float t) {
+            return smooth((t - duration) / 9.0);
+        }
+
+        private float poolEnv(float t) {
+            return smooth(t / 14.0) * (1.0F - smooth((t - duration) / 6.0));
+        }
+
+        /** Horizontal offset of the funnel's axis at height fraction f (sets sox, soz). */
+        private void spine(double f, float t, float rope) {
+            double lean = (0.85 + 0.6 * rope) * scale;
+            double lx = Math.cos(t * 0.021 + seedA) * lean;
+            double lz = Math.sin(t * 0.017 + seedA * 1.7) * lean;
+            double wx = 0.25 * Math.sin(t * 0.05 + seedB);
+            double wz = 0.25 * Math.cos(t * 0.043 + seedB);
+            // a helical kink travelling up the column
+            double amp = (0.3 + 0.95 * rope) * scale * Math.sin(Math.PI * f);
+            double k = Mth.TWO_PI * (1.1 + 0.5 * rope) * f - t * 0.11;
+            double b = (1.0 - f) * (1.0 - f);
+            sox = wx * b + lx * f * f + amp * Math.cos(k);
+            soz = wz * b + lz * f * f + amp * Math.sin(k);
+        }
+
+        /** Funnel radius at height fraction f: a flared foot, a narrow waist, widening up into a flare under the cloud. */
+        private double coreRadius(double f, float t, float touch, float rope) {
+            double top = smooth((f - 0.78) / 0.22);
+            double r = NECK + 1.45 * Math.pow(Math.max(0.0, f), 1.6) + 1.7 * top * top;
+            r += 0.8 * (1.0F - smooth(f / 0.08)) * touch;
+            r *= 1.0 + 0.07 * Math.sin(f * height * 1.25 - t * 0.42);
+            r *= Mth.lerp(rope, 1.0, 0.22 + 0.55 * top * top);
+            return r * scale;
+        }
+
+        /** Height of the whirlpool above the water at fraction f of its radius: a low eye rising to a swell. */
         private static double bowl(double f, float env) {
             double lift = f <= CREST ? (f / CREST) * (f / CREST) : 1.0 - TidecallerFx.smooth((float) ((f - CREST) / (1.0 - CREST)));
-            return 0.04 + 0.4 * lift * env;
+            return 0.04 + 0.24 * lift * env;
         }
 
-        private double spoutHeight(float time, float env) {
-            return (1.5 + (TOP_HEIGHT - 1.5) * TidecallerFx.smooth(time / 30.0F)) * env;
-        }
-
-        /** Spout radius at fraction f of its height: a narrow neck widening upward like a waterspout. */
-        private static double spoutRadius(double f) {
-            return 0.42 + 1.9 * Math.pow(f, 1.6);
-        }
-
-        /** The spout's centre line at fraction f (relative to the eye), swaying like a twister. */
-        private static Vec3 sway(double f, float time) {
-            return new Vec3(Math.sin(time * 0.11 + f * 2.6) * 0.45 * f, 0.0, Math.cos(time * 0.09 + f * 2.1) * 0.45 * f);
-        }
+        // ---------------------------------------------------------------- ticking: particles and droplets
 
         @Override
         public boolean tick() {
             Minecraft mc = Minecraft.getInstance();
             ClientLevel level = mc.level;
-            if (level != null && age < duration) {
-                particles(level, level.random);
-                // anyone caught inside sees the water close around them
-                Player self = mc.player;
-                if (self != null && self.distanceToSqr(center.x, self.getY(), center.z) < radius * radius
-                        && Math.abs(self.getY() - center.y) < 6.0) {
-                    ScreenFx.hold("tide_maelstrom", 0x0F4F73, 0.45F * envelope(age), true);
+            drops.tick();
+            tickClimbers();
+            if (level != null) {
+                RandomSource r = level.random;
+                if (age < duration) {
+                    particles(level, r);
+                    // anyone caught inside sees the water close around them
+                    Player self = mc.player;
+                    if (self != null && self.distanceToSqr(center.x, self.getY(), center.z) < radius * radius
+                            && Math.abs(self.getY() - center.y) < 6.0) {
+                        ScreenFx.hold("tide_maelstrom", water.raw(TideWater.DEEP), 0.45F * poolEnv(age), true);
+                    }
+                }
+                if (!touched && tip(age) < 0.04F) {
+                    touched = true;
+                    touchdown(level, r);
                 }
             }
-            return ++age < duration + 6;
+            return ++age < duration + 20;
+        }
+
+        /** The funnel's foot hits the water: a ring of spray and torn-up water and bed. */
+        private void touchdown(ClientLevel level, RandomSource r) {
+            double d = dist(center);
+            if (d < 24.0) {
+                ScreenFx.shake((float) (1.4 * (1.0 - d / 24.0)), 8);
+            }
+            for (int i = 0; i < 46; i++) {
+                double a = r.nextDouble() * Mth.TWO_PI;
+                double rad = (0.6 + r.nextDouble() * 1.2) * scale;
+                double out = 0.18 + r.nextDouble() * 0.3;
+                drops.add(center.x + Math.cos(a) * rad, center.y + 0.2, center.z + Math.sin(a) * rad, Math.cos(a) * out - Math.sin(a) * 0.15,
+                        0.35 + r.nextDouble() * 0.45, Math.sin(a) * out + Math.cos(a) * 0.15, 0.05F + r.nextFloat() * 0.06F,
+                        30 + r.nextInt(16), TideDroplets.spraySlot(r));
+                if (i % 3 == 0) {
+                    water.splash(center.x + Math.cos(a) * rad, center.y + 0.3, center.z + Math.sin(a) * rad, Math.cos(a) * out, 0.3 + r.nextDouble() * 0.3,
+                            Math.sin(a) * out, TideWater.LIGHT);
+                }
+                if (i % 5 == 0 && bedBits != null) {
+                    TideWater.spawn(bedBits, center.x + Math.cos(a) * rad * 0.6, center.y + 0.2, center.z + Math.sin(a) * rad * 0.6,
+                            0.0, 0.0, 0.0);
+                }
+            }
         }
 
         private void particles(ClientLevel level, RandomSource r) {
-            float env = envelope(age);
+            float env = poolEnv(age);
+            float touch = touch(age);
+            float rope = rope(age);
             double eye = center.y + bowl(0.0, env);
-            double h = spoutHeight(age, env);
-            // bubbles whirling up the spout on two helices, splashes flung off its wall
-            for (int j = 0; j < 2; j++) {
-                double f = (age * 0.045 + j * 0.5) % 1.0;
-                double a = age * 0.55 + j * Math.PI;
-                Vec3 s = sway(f, age);
-                double rad = spoutRadius(f) * 0.85;
-                double x = center.x + s.x + Math.cos(a) * rad;
-                double y = eye + f * h;
-                double z = center.z + s.z + Math.sin(a) * rad;
-                level.addParticle(rising(level, x, y, z), x, y, z, 0.0, 0.04, 0.0);
-                double ta = a + r.nextDouble() * Mth.TWO_PI;
-                double tf = r.nextDouble();
-                Vec3 ts = sway(tf, age);
-                double tr = spoutRadius(tf);
-                level.addParticle(ParticleTypes.SPLASH, center.x + ts.x + Math.cos(ta) * tr, eye + tf * h, center.z + ts.z + Math.sin(ta) * tr,
-                        -Math.sin(ta) * 0.3, 0.0, Math.cos(ta) * 0.3);
-            }
-            // water raining off the crown
-            for (int i = 0; i < 2; i++) {
+            spine(0.0, age, rope);
+            double bx = center.x + sox;
+            double bz = center.z + soz;
+            if (touch > 0.3F) {
+                // spray thrown off the cascade
+                for (int i = 0; i < 3; i++) {
+                    double a = r.nextDouble() * Mth.TWO_PI;
+                    double rad = (0.7 + r.nextDouble() * 1.1) * scale;
+                    double out = 0.12 + r.nextDouble() * 0.2;
+                    double spin = 0.22 + r.nextDouble() * 0.12;
+                    drops.add(bx + Math.cos(a) * rad, eye + 0.1 + r.nextDouble() * 0.8, bz + Math.sin(a) * rad,
+                            Math.cos(a) * out - Math.sin(a) * spin, 0.22 + r.nextDouble() * 0.36, Math.sin(a) * out + Math.cos(a) * spin,
+                            0.04F + r.nextFloat() * 0.05F, 22 + r.nextInt(14), TideDroplets.spraySlot(r));
+                }
+                // droplets caught by the funnel and carried up it
+                for (int i = 0; i < 2 && climbers < CLIMBERS; i++) {
+                    int k = climbers++;
+                    cf[k] = 0.02F + r.nextFloat() * 0.1F;
+                    ca[k] = r.nextFloat() * Mth.TWO_PI;
+                    cw[k] = 0.2F + r.nextFloat() * 0.2F;
+                    cv[k] = 0.18F + r.nextFloat() * 0.2F;
+                    ck[k] = 1.12F + r.nextFloat() * 0.4F;
+                    cr[k] = 0.35F + r.nextFloat() * 0.6F;
+                    csz[k] = 0.045F + r.nextFloat() * 0.05F;
+                    cslot[k] = TideDroplets.spraySlot(r);
+                    climberPos(k, age);
+                    cpx[k] = cx[k];
+                    cpy[k] = cy[k];
+                    cpz[k] = cz[k];
+                }
+                // a pixel of water torn off the foot, and bits of the bed
                 double a = r.nextDouble() * Mth.TWO_PI;
-                Vec3 s = sway(1.0, age);
-                double rad = spoutRadius(1.0) + 0.3 + r.nextDouble() * 0.6;
-                level.addParticle(ParticleTypes.FALLING_WATER, center.x + s.x + Math.cos(a) * rad, eye + h,
-                        center.z + s.z + Math.sin(a) * rad, 0.0, 0.0, 0.0);
+                double rad = (0.8 + r.nextDouble() * 1.4) * scale;
+                water.splash(bx + Math.cos(a) * rad, eye + 0.2, bz + Math.sin(a) * rad, -Math.sin(a) * 0.3 + Math.cos(a) * 0.1,
+                        0.3 + r.nextDouble() * 0.3, Math.cos(a) * 0.3 + Math.sin(a) * 0.1, r.nextBoolean() ? TideWater.LIGHT : TideWater.PALE);
+                if ((age & 1) == 0 && bedBits != null) {
+                    double b = r.nextDouble() * Mth.TWO_PI;
+                    double br = (0.6 + r.nextDouble() * 1.6) * scale;
+                    var bit = TideWater.spawn(bedBits, bx + Math.cos(b) * br, eye + 0.15, bz + Math.sin(b) * br, 0.0, 0.0, 0.0);
+                    if (bit != null) {
+                        bit.setParticleSpeed(-Math.sin(b) * 0.28 + Math.cos(b) * 0.08, 0.35 + r.nextDouble() * 0.35,
+                                Math.cos(b) * 0.28 + Math.sin(b) * 0.08);
+                    }
+                }
             }
-            // the pool: splashes and wakes circling inward (counter-clockwise from above, like the server pull)
-            for (int i = 0; i < 4; i++) {
+            // rain dripping from the cloud
+            float cloud = gather(age);
+            if (cloud > 0.4F) {
+                spine(1.0, age, rope);
+                for (int i = 0; i < 2; i++) {
+                    double a = r.nextDouble() * Mth.TWO_PI;
+                    double rad = canopyR * (0.35 + 0.6 * r.nextDouble());
+                    water.drip(center.x + sox + Math.cos(a) * rad, eye + height - 0.3, center.z + soz + Math.sin(a) * rad);
+                }
+            }
+            // spray skipping round the pool (counter-clockwise from above, like the server pull)
+            for (int i = 0; i < 2 && env > 0.2F; i++) {
                 double a = r.nextDouble() * Mth.TWO_PI;
-                double rad = radius * (0.2 + 0.8 * r.nextDouble());
-                double x = center.x + Math.cos(a) * rad;
-                double z = center.z + Math.sin(a) * rad;
-                double y = center.y + bowl(rad / radius, env) + 0.05;
+                double rad = radius * (0.25 + 0.7 * r.nextDouble());
                 double spin = 0.16 + 0.2 * (1.0 - rad / radius);
-                double vx = -Math.sin(a) * spin - Math.cos(a) * 0.06;
-                double vz = Math.cos(a) * spin - Math.sin(a) * 0.06;
-                level.addParticle(i < 2 ? ParticleTypes.SPLASH : ParticleTypes.FISHING, x, y, z, vx, i < 2 ? 0.0 : 0.01, vz);
+                drops.add(center.x + Math.cos(a) * rad, center.y + bowl(rad / radius, env) + 0.08, center.z + Math.sin(a) * rad,
+                        -Math.sin(a) * spin - Math.cos(a) * 0.06, 0.1 + r.nextDouble() * 0.1, Math.cos(a) * spin - Math.sin(a) * 0.06,
+                        0.035F + r.nextFloat() * 0.03F, 14, r.nextBoolean() ? TideWater.PALE : TideWater.FOAM);
             }
             if ((age & 1) == 0) {
                 double a = r.nextDouble() * Mth.TWO_PI;
-                double rad = r.nextDouble() * 1.2;
+                double rad = r.nextDouble() * 1.4;
                 double x = center.x + Math.cos(a) * rad;
                 double z = center.z + Math.sin(a) * rad;
-                level.addParticle(rising(level, x, center.y - 0.3, z), x, center.y + 0.1, z, 0.0, 0.06, 0.0);
-            }
-            if (age % 3 == 0) {
-                Vec3 s = sway(1.0, age);
-                level.addParticle(ParticleTypes.CLOUD, center.x + s.x + (r.nextDouble() - 0.5) * 2.0, eye + h + 0.2,
-                        center.z + s.z + (r.nextDouble() - 0.5) * 2.0, 0.0, 0.02, 0.0);
+                level.addParticle(rising(level, x, center.y - 0.3, z), x, center.y - 0.2, z, 0.0, 0.08, 0.0);
             }
         }
+
+        /** Position of climber k (relative to the centre) at time t: on a helix just outside the funnel. */
+        private void climberPos(int k, float t) {
+            float rope = rope(t);
+            spine(cf[k], t, rope);
+            double r = coreRadius(cf[k], t, touch(t), rope) * ck[k] + 0.15;
+            cx[k] = (float) (sox + Math.cos(ca[k]) * r);
+            cy[k] = (float) (bowl(0.0, poolEnv(t)) + cf[k] * height);
+            cz[k] = (float) (soz + Math.sin(ca[k]) * r);
+        }
+
+        private void tickClimbers() {
+            for (int k = 0; k < climbers; ) {
+                cpx[k] = cx[k];
+                cpy[k] = cy[k];
+                cpz[k] = cz[k];
+                cf[k] += cv[k] / (float) height;
+                ca[k] += cw[k];
+                climberPos(k, age + 1);
+                boolean gone = age >= duration + 2;
+                if (cf[k] >= cr[k] || gone) {
+                    // flung off the funnel: keeps its swirl and is thrown outward
+                    double vx = cx[k] - cpx[k];
+                    double vy = cy[k] - cpy[k];
+                    double vz = cz[k] - cpz[k];
+                    double ox = Math.cos(ca[k]) * 0.12;
+                    double oz = Math.sin(ca[k]) * 0.12;
+                    drops.add(center.x + cx[k], center.y + cy[k], center.z + cz[k], vx + ox, vy * 0.6, vz + oz, csz[k], 40, cslot[k]);
+                    int last = --climbers;
+                    cf[k] = cf[last];
+                    ca[k] = ca[last];
+                    cw[k] = cw[last];
+                    cv[k] = cv[last];
+                    ck[k] = ck[last];
+                    cr[k] = cr[last];
+                    csz[k] = csz[last];
+                    cslot[k] = cslot[last];
+                    cx[k] = cx[last];
+                    cy[k] = cy[last];
+                    cz[k] = cz[last];
+                    cpx[k] = cpx[last];
+                    cpy[k] = cpy[last];
+                    cpz[k] = cpz[last];
+                } else {
+                    k++;
+                }
+            }
+        }
+
+        // ---------------------------------------------------------------- drawing
 
         @Override
         public void render(FxRenderContext ctx) {
             float time = ctx.time(age);
-            float env = envelope(time);
-            if (env <= 0.0F) {
+            Vec3 cam = ctx.cam();
+            Vec3 c = ctx.rel(center);
+            if (c.lengthSqr() > 256.0 * 256.0) {
                 return;
             }
-            PoseStack.Pose pose = ctx.pose().last();
-            Vec3 c = ctx.rel(center);
-            buildPool(c, time, env);
-            double h = spoutHeight(time, env);
-            boolean hasSpout = h >= 0.1;
-            if (hasSpout) {
-                buildSpout(c, time, env, h);
+            // the meshes are rebuilt once per frame (the Fabulous depth pass reuses them)
+            if (time != builtTime || cam.x != builtX || cam.y != builtY || cam.z != builtZ) {
+                build(c, time);
+                builtTime = time;
+                builtX = cam.x;
+                builtY = cam.y;
+                builtZ = cam.z;
             }
-            // one batch of water (sorted back to front with the wave's), then one of foam and glints
-            VertexConsumer water = ctx.buffers().getBuffer(water());
-            pool.fill(water, pose, 0, POOL.length - 1);
-            if (hasSpout) {
-                spout.fill(water, pose, 0, SPOUT_ROWS - 1);
+            Camera camera = ctx.camera();
+            TideMesh.Emitter e = emitter.begin(ctx.buffers().getBuffer(TideRenderTypes.vortex()), ctx.pose().last(),
+                    TideRenderTypes.shaded(), camera.getLeftVector(), camera.getUpVector());
+            if (poolEnv(time) > 0.0F) {
+                pool.emit(e, 0, POOL.length - 1);
             }
-            VertexConsumer light = ctx.buffers().getBuffer(light());
-            poolFoam(light, pose, c, time, env);
-            if (hasSpout) {
-                spoutFoam(light, pose, c, time, env, h);
+            float touch = touch(time);
+            if (touch > 0.0F && lift(time) < 1.0F) {
+                skirt.emit(e, 0, SKIRT_ROWS - 1);
+                spray.emit(e, 0, SKIRT_ROWS - 1);
             }
+            if (tip(time) < 0.98F && lift(time) < 0.98F) {
+                core.emit(e, 0, CORE_ROWS - 1);
+                sheath.emit(e, 0, SHEATH_ROWS - 1);
+            }
+            if (gather(time) > 0.0F) {
+                canopy.emit(e, 0, CANOPY_LOW + CANOPY_HIGH - 1);
+            }
+            puffs(e, c, time);
+            float partial = ctx.partialTick();
+            for (int k = 0; k < climbers; k++) {
+                float qx = (float) (c.x + Mth.lerp(partial, cpx[k], cx[k]));
+                float qy = (float) (c.y + Mth.lerp(partial, cpy[k], cy[k]));
+                float qz = (float) (c.z + Mth.lerp(partial, cpz[k], cz[k]));
+                e.square(qx, qy, qz, csz[k], FxDraw.argb(0.92F, water.get(cslot[k])), TideMesh.FLAT, 0.0F);
+            }
+            drops.render(e, cam, partial, water, 1.0F);
         }
 
-        /** The whirlpool: a bowl darkening into the eye, with lighter spiral streams turning inward. */
-        private void buildPool(Vec3 c, float time, float env) {
+        private void build(Vec3 c, float t) {
+            float env = poolEnv(t);
+            float touch = touch(t);
+            float rope = rope(t);
+            buildPool(c, t, env);
+            spine(0.0, t, rope);
+            double eye = bowl(0.0, env);
+            buildSkirt(c.x + sox, c.y + eye, c.z + soz, t, touch, rope);
+            buildFunnel(c, t, eye, touch, rope);
+            buildCanopy(c, t, eye, rope);
+        }
+
+        private void buildPool(Vec3 c, float t, float env) {
+            int body = water.get(TideWater.BODY);
             for (int j = 0; j < POOL.length; j++) {
                 double f = POOL[j];
                 double r = f * radius;
-                double y = c.y + bowl(f, env);
                 int j0 = Math.max(0, j - 1);
                 int j1 = Math.min(POOL.length - 1, j + 1);
                 double dr = (POOL[j1] - POOL[j0]) * radius;
@@ -454,164 +532,246 @@ final class TideSpout {
                 double len = Math.sqrt(dr * dr + dy * dy);
                 double nr = -dy / len;
                 double nu = dr / len;
-                float a = POOL_A[j] * env;
-                pool.axis(j, c.x, c.z);
-                // log-spiral streams: turning the pattern makes them run in towards the eye
-                double phase = ARM_WIND * Math.log(f) + time * POOL_SPIN;
+                int colour = FxDraw.argb(POOL_A[j] * env, body);
+                pool.v(j, (float) (f * 16.0));
                 for (int i = 0; i < POOL_SIDES; i++) {
                     double cos = pool.cos[i];
                     double sin = pool.sin[i];
-                    double x = c.x + cos * r;
-                    double z = c.z + sin * r;
-                    float arm = (float) (0.5 + 0.5 * Math.cos(ARMS * (Mth.TWO_PI * i / POOL_SIDES - phase)));
-                    arm = arm * arm * arm;
-                    pool.set(j, i, x, y, z, tone(POOL_T[j] + 0.18F * arm, a * (1.0F + 0.2F * arm), edge(x, y, z, cos * nr, nu, sin * nr)));
+                    double ripple = 0.04 * f * Math.sin(i * Mth.TWO_PI * 3.0 / POOL_SIDES + t * 0.2 + f * 8.0) * env;
+                    pool.set(j, i, c.x + cos * r, c.y + bowl(f, env) + ripple, c.z + sin * r, cos * nr, nu, sin * nr, colour);
                 }
             }
         }
 
-        /** The wave's crest on the swell at the rim, its foam foot, and foam arms riding the streams into the eye. */
-        private void poolFoam(VertexConsumer light, PoseStack.Pose pose, Vec3 c, float time, float env) {
-            pool.crest(light, pose, CREST_ROW, 1.0F, FxDraw.argb(0.22F * env, CYAN), false);
-            pool.crest(light, pose, CREST_ROW, 0.42F, FxDraw.argb(0.7F * env, FOAM), false);
-            pool.crest(light, pose, POOL.length - 1, 0.55F, FxDraw.argb(0.4F * env, FOAM), false);
-            for (int k = 0; k < ARMS; k++) {
-                double base = Mth.TWO_PI * k / ARMS + time * POOL_SPIN;
-                double px = 0.0;
-                double py = 0.0;
-                double pz = 0.0;
-                float pw = 0.0F;
-                int pc = 0;
-                for (int q = 0; q <= ARM_STEPS; q++) {
-                    double f = ARM_IN * Math.pow(CREST / ARM_IN, (double) q / ARM_STEPS);
-                    double ang = base + ARM_WIND * Math.log(f);
-                    double r = f * radius;
-                    double x = c.x + Math.cos(ang) * r;
-                    double y = c.y + bowl(f, env) + 0.03;
-                    double z = c.z + Math.sin(ang) * r;
-                    float s = (float) (f / CREST);
-                    float w = 0.12F + 0.4F * s;
-                    int col = FxDraw.argb(0.6F * env * Mth.sqrt(Mth.sin(s * Mth.PI)), FOAM);
-                    if (q > 0) {
-                        flat(light, pose, px, py, pz, x, y, z, pw, w, pc, col);
-                    }
-                    px = x;
-                    py = y;
-                    pz = z;
-                    pw = w;
-                    pc = col;
+        /** The spray cascade at the foot: a boiling bell and a lower, wider ring of spray. */
+        private void buildSkirt(double bx, double by, double bz, float t, float touch, float rope) {
+            float env = touch * (1.0F - lift(t)) * (1.0F - 0.35F * rope);
+            int body = water.get(TideWater.BODY);
+            double rise = (0.85 + 0.15 * Math.sin(t * 0.27)) * touch * scale;
+            for (int j = 0; j < SKIRT_ROWS; j++) {
+                double s = (double) j / (SKIRT_ROWS - 1);
+                double rho = (0.8 + 2.6 * Math.pow(s, 0.75)) * scale;
+                double y = 3.0 * (1.0 - Math.pow(1.0 - s, 2.2)) * (1.0 - 0.3 * s * s * s) * rise;
+                double rho2 = (1.6 + 3.4 * s) * scale;
+                double y2 = (1.4 * Math.sin(Math.PI * Math.pow(s, 0.8)) + 0.04) * touch * scale;
+                int col = FxDraw.argb((float) (0.88 * Math.pow(1.0 - s, 0.5)) * env, body);
+                int col2 = FxDraw.argb((float) (0.62 * Math.sin(Math.PI * s)) * env, body);
+                skirt.v(j, (float) (s * 8.0));
+                spray.v(j, (float) (s * 8.0 + 3.0));
+                double ny = j == 0 ? 0.2 : 0.6 - s;
+                for (int i = 0; i < SKIRT_SIDES; i++) {
+                    double cos = skirt.cos[i];
+                    double sin = skirt.sin[i];
+                    double wob = 1.0 + 0.07 * Math.sin(i * Mth.TWO_PI * 3.0 / SKIRT_SIDES + t * 0.21 + s * 3.0);
+                    skirt.set(j, i, bx + cos * rho * wob, by + y, bz + sin * rho * wob, cos, ny, sin, col);
+                    spray.set(j, i, bx + cos * rho2 * wob, by + y2, bz + sin * rho2 * wob, cos * 0.6, 0.8, sin * 0.6, col2);
                 }
             }
         }
 
-        /** The waterspout: foot, neck, a swaying funnel widening upward and the curling crown, one shell. */
-        private void buildSpout(Vec3 c, float time, float env, double h) {
-            double k = 0.6 + 0.4 * env;
-            double eye = bowl(0.0, env);
-            rowR[0] = 1.7 * k;
-            rowY[0] = 0.0;
-            rowF[0] = 0.0;
-            rowR[1] = 0.9 * k;
-            rowY[1] = 0.22;
-            rowF[1] = 0.0;
-            for (int j = 0; j <= FUNNEL; j++) {
-                double f = (double) j / FUNNEL;
-                rowR[2 + j] = spoutRadius(f) * k;
-                rowY[2 + j] = NECK + f * (h - NECK);
-                rowF[2 + j] = f;
+        /** The funnel's core and sheath along the bending spine. */
+        private void buildFunnel(Vec3 c, float t, double eye, float touch, float rope) {
+            float ft = tip(t);
+            float fb = lift(t);
+            double f0 = Math.max(ft, fb);
+            float tipness = smooth(f0 / 0.08);
+            float fade = 1.0F - smooth((fb - 0.6) / 0.4);
+            int body = water.get(TideWater.BODY);
+            // the funnel's flared top darkens into the cloud's grey (the shader reads a darker body as dimmer water)
+            int cloud = water.cloud(1.25F);
+            for (int j = 0; j < CORE_ROWS; j++) {
+                double g = (double) j / (CORE_ROWS - 1);
+                double f = f0 + (1.0 - f0) * g;
+                double taper = Mth.lerp(tipness, 1.0, Math.pow(smooth(g / 0.2), 0.6));
+                float a = 0.86F * (1.0F - 0.3F * smooth((f - 0.86) / 0.14)) * fade
+                        * Mth.lerp(tipness, 1.0F, smooth(g / 0.12)) * smooth(t / 3.0);
+                int tone = TideWater.mix(body, cloud, 0.75F * smooth((f - 0.72) / 0.28));
+                ring(core, j, c, t, eye, f, coreRadius(f, t, touch, rope) * taper, 1.0, 0.0, FxDraw.argb(a, tone), rope, touch);
             }
-            for (int j = 0; j < CROWN.length; j++) {
-                rowR[TOP + 1 + j] = rowR[TOP] + CROWN[j][0] * k;
-                rowY[TOP + 1 + j] = rowY[TOP] + CROWN[j][1] * k;
-                rowF[TOP + 1 + j] = 1.0;
+            double s0 = Math.max(f0, 0.015);
+            double s1 = 0.93;
+            float sheathEnv = touch * (1.0F - 0.85F * rope) * fade;
+            for (int j = 0; j < SHEATH_ROWS; j++) {
+                double g = (double) j / (SHEATH_ROWS - 1);
+                double f = s0 + (s1 - s0) * g;
+                float a = s1 - s0 < 0.05 ? 0.0F : (float) (0.62 * Math.pow(Math.sin(Math.PI * g), 0.7)) * sheathEnv;
+                ring(sheath, j, c, t, eye, f, coreRadius(f, t, touch, rope) * 1.3 + 0.35 * scale, 1.0, 2.1, FxDraw.argb(a, body), rope, touch);
             }
-            for (int j = 0; j < SPOUT_ROWS; j++) {
-                int j0 = Math.max(0, j - 1);
-                int j1 = Math.min(SPOUT_ROWS - 1, j + 1);
-                float t;
-                float a;
-                float w;
-                if (j == 0) {
-                    t = 0.62F;
-                    a = 0.1F;
-                    w = 0.5F;
-                } else if (j == 1) {
-                    t = 0.48F;
-                    a = 0.46F;
-                    w = 0.5F;
-                } else if (j <= TOP) {
-                    // the wave's body water, lightening towards the crown like the wave towards its crest
-                    t = 0.2F + 0.16F * (float) rowF[j];
-                    a = 0.38F;
-                    w = 1.0F;
+        }
+
+        /**
+         * Ring {@code row} of a funnel layer at height fraction f: centred on the spine, perpendicular to it, lobed and
+         * twisting (lobe phase {@code phase} sets the layer apart).
+         */
+        private void ring(TideMesh m, int row, Vec3 c, float t, double eye, double f, double r, double lobes, double phase, int colour,
+                          float rope, float touch) {
+            spine(f, t, rope);
+            double ax = sox;
+            double az = soz;
+            double df = 0.01;
+            spine(Math.min(1.0, f + df), t, rope);
+            double bx = sox;
+            double bz = soz;
+            spine(Math.max(0.0, f - df), t, rope);
+            double tx = bx - sox;
+            double tz = bz - soz;
+            double ty = height * (Math.min(1.0, f + df) - Math.max(0.0, f - df));
+            double tl = Math.sqrt(tx * tx + ty * ty + tz * tz);
+            tx /= tl;
+            ty /= tl;
+            tz /= tl;
+            // frame: e1 = x axis made perpendicular to the tangent, e2 = tangent x e1
+            double e1x = 1.0 - tx * tx;
+            double e1y = -tx * ty;
+            double e1z = -tx * tz;
+            double el = Math.sqrt(e1x * e1x + e1y * e1y + e1z * e1z);
+            e1x /= el;
+            e1y /= el;
+            e1z /= el;
+            double e2x = ty * e1z - tz * e1y;
+            double e2y = tz * e1x - tx * e1z;
+            double e2z = tx * e1y - ty * e1x;
+            // slope of the radius along the axis, for the normal
+            double drds = (coreRadius(Math.min(1.0, f + df), t, touch, rope) - coreRadius(Math.max(0.0, f - df), t, touch, rope))
+                    / Math.max(1.0E-3, ty * tl);
+            double cxr = c.x + ax;
+            double cyr = c.y + eye + f * height;
+            double czr = c.z + az;
+            m.v(row, (float) (f * height));
+            double turn1 = t * 0.13 + f * 4.0 + phase;
+            double turn2 = -t * 0.09 + f * 7.0 + phase * 1.7;
+            for (int i = 0; i < m.sides; i++) {
+                double cos = m.cos[i];
+                double sin = m.sin[i];
+                double th = Mth.TWO_PI * i / m.sides;
+                double lob = 1.0 + lobes * (0.06 * Math.cos(2.0 * th + turn1) + 0.035 * Math.cos(3.0 * th + turn2));
+                double dx = e1x * cos + e2x * sin;
+                double dy = e1y * cos + e2y * sin;
+                double dz = e1z * cos + e2z * sin;
+                double rr = r * lob;
+                double nx = dx - tx * drds;
+                double ny = dy - ty * drds;
+                double nz = dz - tz * drds;
+                double nl = Math.sqrt(nx * nx + ny * ny + nz * nz);
+                m.set(row, i, cxr + dx * rr, cyr + dy * rr, czr + dz * rr, nx / nl, ny / nl, nz / nl, colour);
+            }
+        }
+
+        /** The storm canopy: a lumpy lens of dark cloud round the funnel's top, turning slowly. */
+        private void buildCanopy(Vec3 c, float t, double eye, float rope) {
+            float gather = gather(t);
+            float dissolve = dissolve(t);
+            spine(1.0, t, rope);
+            double cx0 = c.x + sox;
+            double cy0 = c.y + eye + height;
+            double cz0 = c.z + soz;
+            double big = canopyR * (0.4 + 0.6 * smooth(t / 12.0)) * (1.0 + 0.3 * dissolve);
+            double rIn = Math.min(coreRadius(1.0, t, 1.0F, rope) * 0.9, big * 0.7);
+            int rows = CANOPY_LOW + CANOPY_HIGH;
+            for (int j = 0; j < rows; j++) {
+                if (j < CANOPY_LOW) {
+                    double s = (double) j / (CANOPY_LOW - 1);
+                    canopyRho[j] = (float) Mth.lerp(Math.pow(s, 0.85), rIn, big);
+                    canopyY[j] = (float) ((-0.3 + 0.95 * Math.pow(s, 1.6)) * scale);
                 } else {
-                    t = CROWN_T[j - TOP - 1];
-                    a = CROWN_A[j - TOP - 1];
-                    w = 0.4F;
+                    double s = 1.0 - (double) (j - CANOPY_LOW) / (CANOPY_HIGH - 1);
+                    canopyRho[j] = (float) Mth.lerp(s, 0.4, big);
+                    canopyY[j] = (float) ((0.65 + 1.4 * (1.0 - s * s)) * scale);
                 }
-                Vec3 s = sway(rowF[j], time);
-                ring(spout, j, c.x + s.x, c.y + eye + rowY[j], c.z + s.z, rowR[j], time * SPIN - rowF[j] * TWIST,
-                        rowR[j1] - rowR[j0], rowY[j1] - rowY[j0], t, a * env, w, STREAM);
+            }
+            int body = water.get(TideWater.BODY);
+            double spin = t * 0.025;
+            for (int j = 0; j < rows; j++) {
+                boolean low = j < CANOPY_LOW;
+                double s = low ? (double) j / (CANOPY_LOW - 1) : 1.0 - (double) (j - CANOPY_LOW) / (CANOPY_HIGH - 1);
+                float a = (float) (low ? 0.95 - 0.55 * Math.pow(s, 1.5) : 0.35 + 0.5 * (1.0 - s)) * gather;
+                int colour = FxDraw.argb(a, body);
+                int j0 = Math.max(0, j - 1);
+                int j1 = Math.min(rows - 1, j + 1);
+                double dr = canopyRho[j1] - canopyRho[j0];
+                double dy = canopyY[j1] - canopyY[j0];
+                double len = Math.max(1.0E-4, Math.sqrt(dr * dr + dy * dy));
+                double nr = dy / len;
+                double nu = -dr / len;
+                canopy.v(j, canopyRho[j]);
+                for (int i = 0; i < CANOPY_SIDES; i++) {
+                    double cos = canopy.cos[i];
+                    double sin = canopy.sin[i];
+                    double u = (double) i / CANOPY_SIDES * 6.0 - spin;
+                    float n1 = noise(u, canopyRho[j] * 0.5 + t * 0.01, 6);
+                    float n2 = noise(u * 2.0 + 3.0, canopyRho[j] * 0.9 - t * 0.015, 12);
+                    float n3 = noise(u * 3.0 + 7.0, canopyRho[j] * 1.4 + t * 0.02, 18);
+                    double rho = canopyRho[j] + (0.9 * s * (n2 - 0.5) + 0.35 * s * (n3 - 0.5)) * scale;
+                    double y = canopyY[j] + (low ? -0.7 * s * n1 * n1 - 0.25 * s * n3 : 0.6 * (1.0 - 0.5 * s) * n1 + 0.3 * n3) * scale;
+                    canopy.set(j, i, cx0 + cos * rho, cy0 + y, cz0 + sin * rho, cos * nr, nu, sin * nr, colour);
+                }
             }
         }
 
-        /** The wave's crest along the crown, a foam foot round the neck and glints streaming up the streams. */
-        private void spoutFoam(VertexConsumer light, PoseStack.Pose pose, Vec3 c, float time, float env, double h) {
-            spout.crest(light, pose, TOP + 2, 1.0F, FxDraw.argb(0.22F * env, CYAN), true);
-            spout.crest(light, pose, TOP + 3, 0.42F, FxDraw.argb(0.75F * env, FOAM), true);
-            spout.crest(light, pose, TOP + 4, 0.22F, FxDraw.argb(0.5F * env, FOAM), true);
-            spout.crest(light, pose, 1, 0.55F, FxDraw.argb(0.45F * env, FOAM), true);
-            double k = 0.6 + 0.4 * env;
-            double eye = c.y + bowl(0.0, env);
-            for (int n = 0; n < GLINTS; n++) {
-                float q = (time * 0.045F + n * 0.618F) % 1.0F;
-                double column = Mth.TWO_PI * (n % STREAMS) / STREAMS + (n / STREAMS) * 0.17;
-                float bright = 0.5F * Mth.sin(q * Mth.PI) * env;
-                Vec3 a = funnel(c, eye, h, k, q, column, time);
-                Vec3 m = funnel(c, eye, h, k, Math.min(1.0F, q + 0.08F), column, time);
-                Vec3 b = funnel(c, eye, h, k, Math.min(1.0F, q + 0.16F), column, time);
-                FxDraw.ribbon(pose, light, a, m, 0.12F, 0.1F, FxDraw.argb(0.0F, GLINT), FxDraw.argb(0.5F * bright, GLINT), 0.0F, 1.0F);
-                FxDraw.ribbon(pose, light, m, b, 0.1F, 0.08F, FxDraw.argb(0.5F * bright, GLINT), FxDraw.argb(bright, GLINT), 0.0F, 1.0F);
+        /** Mist churning round the cascade and under the cloud (pixel puffs of the shader). */
+        private void puffs(TideMesh.Emitter e, Vec3 c, float t) {
+            float rope = rope(t);
+            float base = touch(t) * (1.0F - lift(t)) * (1.0F - 0.4F * rope);
+            spine(0.0, t, rope);
+            double bx = c.x + sox;
+            double bz = c.z + soz;
+            double by = c.y + bowl(0.0, poolEnv(t));
+            int mist = water.get(TideWater.PALE);
+            if (base > 0.0F) {
+                for (int i = 0; i < BASE_PUFFS; i++) {
+                    float p = (t * 0.012F + (float) i / BASE_PUFFS) % 1.0F;
+                    double a = Mth.TWO_PI * i / BASE_PUFFS + t * 0.045 + p * 1.5;
+                    double rho = (1.2 + 2.6 * p) * scale;
+                    float size = (float) ((0.7 + 1.1 * p) * scale);
+                    float alpha = 0.5F * Mth.sin(p * Mth.PI) * base;
+                    e.square((float) (bx + Math.cos(a) * rho), (float) (by + (0.2 + 2.4 * p) * scale), (float) (bz + Math.sin(a) * rho), size,
+                            FxDraw.argb(alpha, mist), TideMesh.PUFF, i * 2.0F);
+                }
             }
-        }
-
-        /** A point just outside the funnel at fraction f of its height, on the stream that starts at angle {@code column}. */
-        private static Vec3 funnel(Vec3 c, double eye, double h, double k, double f, double column, float time) {
-            Vec3 s = sway(f, time);
-            double r = spoutRadius(f) * k * 1.05;
-            double ang = column + time * SPIN - f * TWIST;
-            return new Vec3(c.x + s.x + Math.cos(ang) * r, eye + NECK + f * (h - NECK), c.z + s.z + Math.sin(ang) * r);
+            float cloud = gather(t);
+            if (cloud > 0.0F) {
+                spine(1.0, t, rope);
+                double big = canopyR * (0.4 + 0.6 * smooth(t / 12.0)) * (1.0 + 0.3 * dissolve(t));
+                double top = c.y + bowl(0.0, poolEnv(t)) + height;
+                for (int i = 0; i < TOP_PUFFS; i++) {
+                    float h1 = hash(i, 11);
+                    float h2 = hash(i, 23);
+                    float h3 = hash(i, 37);
+                    double a = Mth.TWO_PI * i / TOP_PUFFS + t * 0.012 * (1.0 + h1 * 0.5);
+                    double rho = big * (0.45 + 0.6 * h2);
+                    float size = (float) ((1.3 + 1.1 * h1) * (1.0 + 0.1 * Math.sin(t * 0.07 + i)) * scale);
+                    double y = top + (0.1 + 1.7 * h3 + 0.15 * Math.sin(t * 0.05 + i)) * scale;
+                    e.square((float) (c.x + sox + Math.cos(a) * rho), (float) y, (float) (c.z + soz + Math.sin(a) * rho), size,
+                            FxDraw.argb(0.55F * cloud, water.cloud(0.55F + 0.45F * h3)), TideMesh.PUFF, (20 + i) * 2.0F);
+                }
+            }
         }
     }
 
     // ------------------------------------------------------------------ the geyser
 
     static final class Geyser implements ClientFx {
-        private static final int LIFE = 32;
+        private static final int LIFE = 34;
         private static final int RISE = 5;
         private static final int HOLD = 14;
-        private static final int SIDES = 24;
-        private static final float[] STREAM = streams(SIDES, 4);
-        private static final float[] FALL = streams(SIDES, 6);
-        private static final int COLUMN = 12;
-        /** The crown bursting open at the top, curling over like the wave's lip (radius, height past the top, x open). */
-        private static final double[][] CROWN = {{0.5, 0.5}, {1.2, 0.75}, {1.8, 0.45}, {2.1, -0.2}};
-        private static final float[] CROWN_T = {0.5F, 0.66F, 0.8F, 0.92F};
-        private static final float[] CROWN_A = {0.48F, 0.54F, 0.5F, 0.26F};
-        private static final int TOP = COLUMN;
-        private static final int ROWS = TOP + 1 + CROWN.length;
+        private static final int SIDES = 28;
+        private static final int COLUMN = 13;
+        /** The crown bursting open at the top, curling over (radius, height past the top, times "open"). */
+        private static final double[][] CROWN = {{0.0, 0.0}, {0.5, 0.5}, {1.2, 0.75}, {1.8, 0.45}, {2.1, -0.2}};
         private static final int CURTAIN = 6;
-        private static final int GLINTS = 10;
-        private static final int STREAKS = 8;
+        private static final int SKIRT = 5;
+        private static final int RING = 3;
         private final Vec3 center;
         private final float radius;
         private final float height;
-        private final Shell column = new Shell(ROWS, SIDES);
-        private final Shell curtain = new Shell(CURTAIN, SIDES);
-        private final Shell skirt = new Shell(2, SIDES);
-        private final Shell sheen = new Shell(2, 32);
-        private final double[] rowR = new double[ROWS];
-        private final double[] rowY = new double[ROWS];
+        private final TideWater water;
+        private final TideMesh column = new TideMesh(COLUMN, SIDES, TideMesh.JET);
+        private final TideMesh crown = new TideMesh(CROWN.length, SIDES, TideMesh.FALL);
+        private final TideMesh curtain = new TideMesh(CURTAIN, SIDES, TideMesh.FALL);
+        private final TideMesh skirt = new TideMesh(SKIRT, SIDES, TideMesh.SKIRT);
+        private final TideMesh ring = new TideMesh(RING, 40, TideMesh.SKIRT);
+        private final TideMesh.Emitter emitter = new TideMesh.Emitter();
+        private final TideDroplets drops;
         private int age;
 
         Geyser(FxPayload p) {
@@ -619,27 +779,29 @@ final class TideSpout {
             this.radius = p.p0() > 0.0F ? p.p0() : (float) Balance.SICKLE_MAELSTROM_RADIUS;
             this.height = p.p1() > 0.0F ? p.p1() : TideCurrents.GEYSER_HEIGHT;
             Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null) {
-                double dist = mc.player.position().distanceTo(center);
-                if (dist < 18.0) {
-                    ScreenFx.shake((float) (3.0 * (1.0 - dist / 18.0)) + 0.4F, 14);
-                }
-                if (dist < radius) {
-                    ScreenFx.flash(0xCFF5FF, 0.25F, 8);
-                }
-            }
             ClientLevel level = mc.level;
+            this.water = TideWater.at(level, center);
+            this.drops = new TideDroplets(260, center, center.y);
+            double d = dist(center);
+            if (d < 18.0) {
+                ScreenFx.shake((float) (3.0 * (1.0 - d / 18.0)) + 0.4F, 14);
+            }
+            if (d < radius) {
+                ScreenFx.flash(water.raw(TideWater.PALE), 0.25F, 8);
+            }
             if (level != null) {
                 RandomSource r = level.random;
-                for (int i = 0; i < 30; i++) {
+                for (int i = 0; i < 60; i++) {
                     double a = r.nextDouble() * Mth.TWO_PI;
-                    double rad = 0.5 + r.nextDouble() * 2.5;
-                    double x = center.x + Math.cos(a) * rad;
-                    double z = center.z + Math.sin(a) * rad;
-                    level.addParticle(ParticleTypes.SPLASH, x, center.y + 0.2, z, Math.cos(a) * 0.35, 0.0, Math.sin(a) * 0.35);
+                    double rad = 0.4 + r.nextDouble() * 1.2;
+                    double out = 0.15 + r.nextDouble() * 0.35;
+                    drops.add(center.x + Math.cos(a) * rad, center.y + 0.2, center.z + Math.sin(a) * rad, Math.cos(a) * out,
+                            0.3 + r.nextDouble() * 0.6, Math.sin(a) * out, 0.05F + r.nextFloat() * 0.07F, 40, TideDroplets.spraySlot(r));
                     if (i % 3 == 0) {
-                        level.addParticle(ParticleTypes.CLOUD, x, center.y + 0.3, z, Math.cos(a) * 0.12, 0.05, Math.sin(a) * 0.12);
-                        level.addParticle(rising(level, x, center.y - 0.2, z), x, center.y + 0.3, z, 0.0, 0.15, 0.0);
+                        water.splash(center.x + Math.cos(a) * rad, center.y + 0.3, center.z + Math.sin(a) * rad, Math.cos(a) * out,
+                                0.4 + r.nextDouble() * 0.3, Math.sin(a) * out, TideWater.LIGHT);
+                        level.addParticle(rising(level, center.x, center.y - 0.2, center.z), center.x + Math.cos(a) * rad, center.y + 0.3,
+                                center.z + Math.sin(a) * rad, 0.0, 0.15, 0.0);
                     }
                 }
             }
@@ -653,44 +815,51 @@ final class TideSpout {
             if (time < HOLD) {
                 return height * (1.0F + 0.04F * Mth.sin(time * 1.7F));
             }
-            float t = Mth.clamp((time - HOLD) / (LIFE - HOLD), 0.0F, 1.0F);
+            float t = Mth.clamp((time - HOLD) / (LIFE - 4 - HOLD), 0.0F, 1.0F);
             return height * (1.0F - t * t);
         }
 
         /** Column radius at fraction f of its height: a little narrower at the top, wobbling as it roars. */
         private static double columnRadius(double f, float time) {
-            return 1.15 - 0.25 * f + 0.05 * Mth.sin(time * 1.3F + (float) f * 6.0F);
+            return 1.15 - 0.4 * f + 0.07 * Mth.sin(time * 1.3F + (float) f * 6.0F);
+        }
+
+        private float open(float time) {
+            return Mth.clamp((time - 1.0F) / 6.0F, 0.0F, 1.0F);
         }
 
         @Override
         public boolean tick() {
+            drops.tick();
             ClientLevel level = Minecraft.getInstance().level;
             if (level != null && age < HOLD + 6) {
                 RandomSource r = level.random;
                 float h = columnHeight(age);
-                for (int i = 0; i < 8; i++) {
-                    // spray peeling off the column at every height
+                float open = open(age);
+                // spray flung off the crown's lip, raining back down
+                for (int i = 0; i < 6; i++) {
+                    double a = r.nextDouble() * Mth.TWO_PI;
+                    double lip = columnRadius(1.0, age) + 1.6 * open;
+                    double out = 0.08 + r.nextDouble() * 0.25;
+                    drops.add(center.x + Math.cos(a) * lip, center.y + h + 0.4 * open, center.z + Math.sin(a) * lip, Math.cos(a) * out,
+                            0.05 + r.nextDouble() * 0.3, Math.sin(a) * out, 0.05F + r.nextFloat() * 0.06F, 45, TideDroplets.spraySlot(r));
+                }
+                for (int i = 0; i < 3; i++) {
+                    // water peeling off the column at every height
                     double a = r.nextDouble() * Mth.TWO_PI;
                     double y = center.y + r.nextDouble() * h;
-                    double rad = 1.0 + 0.4 * r.nextDouble();
-                    level.addParticle(ParticleTypes.SPLASH, center.x + Math.cos(a) * rad, y, center.z + Math.sin(a) * rad,
-                            Math.cos(a) * 0.25, 0.0, Math.sin(a) * 0.25);
+                    double rad = 1.0 + 0.3 * r.nextDouble();
+                    water.splash(center.x + Math.cos(a) * rad, y, center.z + Math.sin(a) * rad, Math.cos(a) * 0.25, 0.1, Math.sin(a) * 0.25,
+                            r.nextBoolean() ? TideWater.LIGHT : TideWater.PALE);
+                    double b = r.nextDouble() * Mth.TWO_PI;
+                    double br = 0.5 + r.nextDouble() * 2.6;
+                    water.drip(center.x + Math.cos(b) * br, center.y + h * (0.8 + 0.2 * r.nextDouble()), center.z + Math.sin(b) * br);
                 }
-                for (int i = 0; i < 6; i++) {
-                    // the crown rains back down
-                    double a = r.nextDouble() * Mth.TWO_PI;
-                    double rad = 0.5 + r.nextDouble() * 2.6;
-                    level.addParticle(ParticleTypes.FALLING_WATER, center.x + Math.cos(a) * rad, center.y + h * (0.8 + 0.2 * r.nextDouble()),
-                            center.z + Math.sin(a) * rad, 0.0, 0.0, 0.0);
-                }
-                double a = r.nextDouble() * Mth.TWO_PI;
-                level.addParticle(ParticleTypes.CLOUD, center.x + Math.cos(a) * 0.8, center.y + h, center.z + Math.sin(a) * 0.8,
-                        Math.cos(a) * 0.1, 0.02, Math.sin(a) * 0.1);
                 double bx = center.x + (r.nextDouble() - 0.5);
                 double bz = center.z + (r.nextDouble() - 0.5);
                 level.addParticle(rising(level, bx, center.y + 0.5, bz), bx, center.y + 0.5 + r.nextDouble() * h * 0.5, bz, 0.0, 0.1, 0.0);
             }
-            return ++age < LIFE;
+            return ++age < LIFE || drops.count() > 0 && age < LIFE + 30;
         }
 
         @Override
@@ -698,128 +867,107 @@ final class TideSpout {
             float time = ctx.time(age);
             float h = columnHeight(time);
             float fade = 1.0F - Mth.clamp((time - HOLD) / (LIFE - HOLD), 0.0F, 1.0F);
-            if (fade <= 0.0F || h <= 0.05F) {
-                return;
-            }
-            PoseStack.Pose pose = ctx.pose().last();
-            Vec3 c = ctx.rel(center).add(0.0, 0.03, 0.0);
-            float open = Mth.clamp((time - RISE + 1.0F) / 6.0F, 0.0F, 1.0F);
-            float burst = Mth.clamp(time / 8.0F, 0.0F, 1.0F);
-            float spread = Mth.clamp(time / 12.0F, 0.0F, 1.0F);
-            buildColumn(c, time, h, fade, open);
-            boolean falling = open > 0.0F;
-            if (falling) {
-                buildCurtain(c, time, h, fade, open);
-            }
-            // a skirt of water bursting out at the foot
-            double skirtTop = 0.3 + 0.9 * (1.0F - burst);
-            double skirtOut = 1.6 + 2.4 * burst;
-            ring(skirt, 0, c.x, c.y, c.z, 1.2, -time * 0.3, skirtOut - 1.2, skirtTop, 0.45F, 0.5F * fade * (1.0F - 0.5F * burst), 0.5F,
-                    STREAM);
-            ring(skirt, 1, c.x, c.y + skirtTop, c.z, skirtOut, -time * 0.3, skirtOut - 1.2, skirtTop, 0.7F, 0.0F, 0.5F, STREAM);
-            // a foam line racing out over the ground, leaving a wet sheen that dries (the wave's foot and wake)
-            double front = 1.3 + (radius - 0.5) * spread;
-            float wet = 0.24F * (1.0F - spread) * fade;
-            ring(sheen, 0, c.x, c.y + 0.01, c.z, 1.1, 0.0, front - 1.1, 0.0, 0.25F, wet, 0.0F, null);
-            ring(sheen, 1, c.x, c.y + 0.01, c.z, front, 0.0, front - 1.1, 0.0, 0.25F, wet, 0.0F, null);
-
-            VertexConsumer water = ctx.buffers().getBuffer(water());
-            sheen.fill(water, pose, 0, 1);
-            skirt.fill(water, pose, 0, 1);
-            column.fill(water, pose, 0, ROWS - 1);
-            if (falling) {
-                curtain.fill(water, pose, 0, CURTAIN - 1);
-            }
-
-            VertexConsumer light = ctx.buffers().getBuffer(light());
-            column.crest(light, pose, TOP + 2, 1.0F, FxDraw.argb(0.22F * fade, CYAN), true);
-            column.crest(light, pose, TOP + 3, 0.42F, FxDraw.argb(0.75F * fade, FOAM), true);
-            column.crest(light, pose, TOP + 4, 0.22F, FxDraw.argb(0.5F * fade, FOAM), true);
-            column.crest(light, pose, 0, 0.55F, FxDraw.argb(0.45F * fade, FOAM), true);
-            sheen.crest(light, pose, 1, 0.55F, FxDraw.argb(0.45F * (1.0F - spread) * fade, FOAM), false);
-            // glints rushing up the column on its streams
-            for (int n = 0; n < GLINTS; n++) {
-                float q = (time * 0.09F + n * 0.618F) % 1.0F;
-                double col = Mth.TWO_PI * n / GLINTS;
-                float bright = 0.5F * Mth.sin(q * Mth.PI) * fade;
-                Vec3 a = columnPoint(c, h, q, col, time);
-                Vec3 b = columnPoint(c, h, Math.min(1.0F, q + 0.16F), col, time);
-                FxDraw.ribbon(pose, light, a, b, 0.12F, 0.08F, FxDraw.argb(0.0F, GLINT), FxDraw.argb(bright, GLINT), 0.0F, 1.0F);
-            }
-            if (falling) {
-                // foam streaking down the falling curtain
-                for (int n = 0; n < STREAKS; n++) {
-                    float g = (time * 0.08F + n * 0.618F) % 1.0F;
-                    double col = Mth.TWO_PI * n / STREAKS + 0.2;
-                    float bright = 0.4F * Mth.sin(g * Mth.PI) * fade * open;
-                    Vec3 a = curtainPoint(c, h, open, Math.max(0.0F, g - 0.2F), col, time);
-                    Vec3 b = curtainPoint(c, h, open, g, col, time);
-                    FxDraw.ribbon(pose, light, a, b, 0.09F, 0.14F, FxDraw.argb(0.0F, FOAM), FxDraw.argb(bright, FOAM), 0.0F, 1.0F);
+            Camera camera = ctx.camera();
+            TideMesh.Emitter e = emitter.begin(ctx.buffers().getBuffer(TideRenderTypes.vortex()), ctx.pose().last(),
+                    TideRenderTypes.shaded(), camera.getLeftVector(), camera.getUpVector());
+            if (fade > 0.0F && h > 0.05F) {
+                Vec3 c = ctx.rel(center).add(0.0, 0.03, 0.0);
+                float open = open(time);
+                float burst = Mth.clamp(time / 8.0F, 0.0F, 1.0F);
+                float spread = Mth.clamp(time / 12.0F, 0.0F, 1.0F);
+                int body = water.get(TideWater.BODY);
+                build(c, time, h, fade, open, burst, spread, body);
+                ring.emit(e, 0, RING - 1);
+                skirt.emit(e, 0, SKIRT - 1);
+                column.emit(e, 0, COLUMN - 1);
+                if (open > 0.0F) {
+                    crown.emit(e, 0, CROWN.length - 1);
+                    curtain.emit(e, 0, CURTAIN - 1);
                 }
+                mist(e, c, time, h, fade, open, burst);
             }
+            drops.render(e, ctx.cam(), ctx.partialTick(), water, 1.0F);
         }
 
-        /** The column and its crown, one shell; lighter bands rush up it. */
-        private void buildColumn(Vec3 c, float time, float h, float fade, float open) {
-            for (int j = 0; j <= TOP; j++) {
-                double f = (double) j / COLUMN;
-                rowR[j] = columnRadius(f, time);
-                rowY[j] = f * h;
+        private void build(Vec3 c, float time, float h, float fade, float open, float burst, float spread, int body) {
+            for (int j = 0; j < COLUMN; j++) {
+                double f = (double) j / (COLUMN - 1);
+                double r = columnRadius(f, time);
+                double dr = columnRadius(Math.min(1.0, f + 0.05), time) - columnRadius(Math.max(0.0, f - 0.05), time);
+                float a = 0.82F * fade * (j == 0 ? 0.5F : 1.0F);
+                column.v(j, (float) (f * h));
+                lathe(column, j, c.x, c.y + f * h, c.z, r, dr, 0.1 * h, FxDraw.argb(a, body));
             }
+            double top = columnRadius(1.0, time);
             for (int j = 0; j < CROWN.length; j++) {
-                rowR[TOP + 1 + j] = rowR[TOP] + CROWN[j][0] * open;
-                rowY[TOP + 1 + j] = h + CROWN[j][1] * open;
-            }
-            for (int j = 0; j < ROWS; j++) {
+                double r = top + CROWN[j][0] * open;
+                double y = h + CROWN[j][1] * open;
                 int j0 = Math.max(0, j - 1);
-                int j1 = Math.min(ROWS - 1, j + 1);
-                float f = (float) Math.min(1.0, (double) j / COLUMN);
-                float t;
-                float a;
-                float w;
-                if (j <= TOP) {
-                    float pulse = 0.5F + 0.5F * Mth.sin((float) rowY[j] * 1.4F - time * 1.5F);
-                    t = 0.22F + 0.18F * f + 0.12F * pulse;
-                    a = 0.4F + 0.06F * pulse;
-                    w = 1.0F;
-                } else {
-                    t = CROWN_T[j - TOP - 1];
-                    a = CROWN_A[j - TOP - 1];
-                    w = 0.4F;
-                }
-                ring(column, j, c.x, c.y + rowY[j], c.z, rowR[j], time * 0.5 - f * 2.0, rowR[j1] - rowR[j0], rowY[j1] - rowY[j0],
-                        t, a * fade, w, STREAM);
+                int j1 = Math.min(CROWN.length - 1, j + 1);
+                float a = (0.8F - 0.12F * j) * fade * open;
+                crown.v(j, (float) y);
+                lathe(crown, j, c.x, c.y + y, c.z, r, (CROWN[j1][0] - CROWN[j0][0]) * open, (CROWN[j1][1] - CROWN[j0][1]) * open + 1.0E-3,
+                        FxDraw.argb(a, body));
             }
-        }
-
-        /** Water falling back from the crown's lip all round the column, thinning out as it falls. */
-        private void buildCurtain(Vec3 c, float time, float h, float fade, float open) {
-            double top = h + CROWN[CROWN.length - 1][1] * open;
-            double bottom = h * 0.25;
+            double lipY = h + CROWN[CROWN.length - 1][1] * open;
+            double lipR = top + CROWN[CROWN.length - 1][0] * open;
             for (int j = 0; j < CURTAIN; j++) {
                 float g = (float) j / (CURTAIN - 1);
-                double y = Mth.lerp(g, top, bottom);
-                float pulse = 0.5F + 0.5F * Mth.sin((float) y * 1.8F + time * 1.3F);
-                ring(curtain, j, c.x, c.y + y, c.z, curtainRadius(time, open, g), -time * 0.05, 0.35, bottom - top,
-                        0.72F - 0.12F * g, 0.4F * (1.0F - g) * fade * open * (0.85F + 0.3F * pulse), 0.6F, FALL);
+                double y = Mth.lerp(g, lipY, h * 0.2);
+                curtain.v(j, (float) y);
+                lathe(curtain, j, c.x, c.y + y, c.z, lipR + 0.4 * g, 0.4, -(lipY - h * 0.2), FxDraw.argb(0.75F * (1.0F - g) * fade * open, body));
+            }
+            // the spray skirt bursting out at the foot
+            for (int j = 0; j < SKIRT; j++) {
+                double s = (double) j / (SKIRT - 1);
+                double rho = 1.0 + (1.2 + 2.6 * burst) * s;
+                double y = 1.8 * (1.0 - 0.6 * burst) * Math.sin(Math.PI * 0.9 * s);
+                skirt.v(j, (float) (s * 8.0));
+                lathe(skirt, j, c.x, c.y + y, c.z, rho, 1.0, 0.6 - s, FxDraw.argb((float) (0.8 * (1.0 - s)) * (1.0F - 0.6F * burst) * fade, body));
+            }
+            // a ring of foam racing out over the water
+            double front = 1.3 + (radius - 0.5) * spread;
+            for (int j = 0; j < RING; j++) {
+                double rho = front + (j - 1) * 0.55;
+                double y = j == 1 ? 0.14 : 0.03;
+                ring.v(j, (float) (j * 3.0 + time * 0.2));
+                lathe(ring, j, c.x, c.y + y, c.z, Math.max(0.2, rho), 1.0, 0.2, FxDraw.argb(j == 1 ? 0.75F * (1.0F - spread) * fade : 0.0F, body));
             }
         }
 
-        private double curtainRadius(float time, float open, float g) {
-            return columnRadius(1.0, time) + CROWN[CROWN.length - 1][0] * open + 0.35 * g;
+        /** Spray mist boiling round the foot and bursting off the crown (the shader's pixel puffs). */
+        private void mist(TideMesh.Emitter e, Vec3 c, float time, float h, float fade, float open, float burst) {
+            int pale = water.get(TideWater.PALE);
+            int foam = water.get(TideWater.FOAM);
+            for (int i = 0; i < 12; i++) {
+                float h1 = hash(i, 5);
+                double a = Mth.TWO_PI * i / 12 + time * 0.03;
+                double rho = 1.1 + (0.8 + 2.2 * h1) * burst;
+                float size = 0.7F + 0.9F * h1 + 0.5F * burst;
+                e.square((float) (c.x + Math.cos(a) * rho), (float) (c.y + 0.3 + 1.4 * hash(i, 9) * (1.0F - 0.4F * burst)),
+                        (float) (c.z + Math.sin(a) * rho), size, FxDraw.argb(0.55F * fade * (1.0F - 0.5F * burst), pale), TideMesh.PUFF, i * 2.0F);
+            }
+            if (open > 0.0F) {
+                double lip = columnRadius(1.0, time) + 1.2 * open;
+                for (int i = 0; i < 10; i++) {
+                    double a = Mth.TWO_PI * i / 10 - time * 0.04;
+                    float size = 0.6F + 0.7F * hash(i, 13) + 0.4F * open;
+                    e.square((float) (c.x + Math.cos(a) * lip), (float) (c.y + h + 0.5 * open + 0.4 * hash(i, 17)),
+                            (float) (c.z + Math.sin(a) * lip), size, FxDraw.argb(0.5F * fade * open, foam), TideMesh.PUFF, (30 + i) * 2.0F);
+                }
+            }
         }
 
-        private static Vec3 columnPoint(Vec3 c, float h, double f, double col, float time) {
-            double r = columnRadius(f, time) * 1.05;
-            double ang = col + time * 0.5 - f * 2.0;
-            return new Vec3(c.x + Math.cos(ang) * r, c.y + f * h, c.z + Math.sin(ang) * r);
-        }
-
-        private Vec3 curtainPoint(Vec3 c, float h, float open, float g, double col, float time) {
-            double top = h + CROWN[CROWN.length - 1][1] * open;
-            double r = curtainRadius(time, open, g) * 1.03;
-            double ang = col - time * 0.05;
-            return new Vec3(c.x + Math.cos(ang) * r, c.y + Mth.lerp(g, top, h * 0.25), c.z + Math.sin(ang) * r);
+        /** A horizontal ring of a surface of revolution round the column's axis; (dr, dy) is the profile's slope. */
+        private static void lathe(TideMesh m, int row, double cx, double cy, double cz, double r, double dr, double dy, int colour) {
+            double len = Math.sqrt(dr * dr + dy * dy);
+            double nr = len < 1.0E-6 ? 1.0 : dy / len;
+            double nu = len < 1.0E-6 ? 0.0 : -dr / len;
+            for (int i = 0; i < m.sides; i++) {
+                double cos = m.cos[i];
+                double sin = m.sin[i];
+                m.set(row, i, cx + cos * r, cy, cz + sin * r, cos * nr, nu, sin * nr, colour);
+            }
         }
     }
 }

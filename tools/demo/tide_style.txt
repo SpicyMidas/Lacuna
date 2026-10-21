@@ -1,39 +1,49 @@
-# Tidecaller waterspout in the wave's style (Fabulous: copy tools/demo/options.txt to run/options.txt with graphicsMode:2)
-# P = spawn feet. Pool of water z+5..25, maelstrom centre P+(0,-0.11,15). A glass perch keeps the raised camera from falling.
-world lacuna_tide3 flat
+# Tidecaller water in the local water's colour + the waterspout (Fabulous: copy tools/demo/options.txt to run/options.txt
+# with graphicsMode:2). P = spawn feet. Pool of water x-12..12 z+4..28, maelstrom centre P+(0,-0.11,16).
+# A glass perch at P+(0,3,-5) keeps the raised camera from falling.
+world lacuna_tide4 flat
 wait 60
 hud off
 cmd gamerule sendCommandFeedback false
 cmd time set 6000
-cmd fill ~-10 ~-1 ~5 ~10 ~-1 ~25 minecraft:water
-cmd fill ~-1 ~4 ~-2 ~1 ~4 ~0 minecraft:glass
-cmd tp @s ~ ~5 ~-1 0 22
+cmd fill ~-12 ~-1 ~4 ~12 ~-1 ~28 minecraft:water
+cmd fill ~-1 ~2 ~-6 ~1 ~2 ~-4 minecraft:glass
+cmd tp @s ~ ~3 ~-5 0 -3
 wait 30
-# camera now at P+(0,5,-1), standing on the glass
-fx tide_maelstrom ~0 ~-5.11 ~16 ~0 ~-5.11 ~16 7 100 0
+# camera on the perch Q = P+(0,3,-5), 21 blocks from the centre (plains water)
+fx tide_maelstrom ~0 ~-3.11 ~21 ~0 ~-3.11 ~21 7 100 0
 wait 12
-shot ts_top_t12
-wait 16
-shot ts_top_t30
-# the tidal wave alongside (P+(-9,0,3) rolling +z)
-fx tide_wave ~-9 ~-5 ~4 ~-9 ~-5 ~5 14 0.7 2.5
+shot ts_t12
 wait 8
-shot ts_top_wave_t39
-# ground-level side view from P+(-14,0,2)
-cmd tp @s ~-14 ~-5 ~3 -45 -12
+shot ts_t20
+wait 12
+shot ts_t32
+# the tidal wave alongside (P+(-8,0,3) rolling +z)
+fx tide_wave ~-8 ~-3 ~8 ~-8 ~-3 ~9 14 0.7 2.5
+wait 8
+shot ts_wave_t40
+# close, low view from the shore at P+(-14,0,12)
+cmd tp @s ~-14 ~-3 ~17 -74 -14
 wait 14
-shot ts_side_t55
-fx tide_wave ~6 ~ ~1 ~6 ~ ~2 14 0.7 2.5
-wait 9
-shot ts_side_wave_t66
-wait 14
-shot ts_side_t81
-wait 17
-fx tide_geyser ~14 ~-0.11 ~13 ~14 ~-0.11 ~13 7 8 0
-wait 3
+shot ts_close_t54
+wait 36
+shot ts_close_rope_t90
+wait 8
+fx tide_geyser ~14 ~-0.11 ~4 ~14 ~-0.11 ~4 7 8 0
+wait 4
 shot ts_geyser_t4
 wait 6
-shot ts_geyser_t11
-wait 6
-shot ts_geyser_t18
+shot ts_geyser_t10
+# the same spot as a swamp: the water and every tide effect turn swamp-green
+cmd fillbiome ~-20 ~-3 ~-20 ~38 ~4 ~38 minecraft:swamp
+wait 30
+fx tide_maelstrom ~14 ~-0.11 ~4 ~14 ~-0.11 ~4 7 100 0
+wait 30
+fx tide_wave ~9 ~ ~-8 ~9 ~ ~-7 14 0.7 2.5
+wait 8
+shot ts_swamp_t38
+# far away (about 40 blocks), still readable
+cmd tp @s ~-26 ~6 ~-10 -62 -8
+wait 12
+shot ts_swamp_far_t50
 quit

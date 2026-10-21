@@ -25,6 +25,7 @@ public final class ClientSetup {
         modBus.addListener(com.lacuna.mod.client.fx.FxParticles::register);
         modBus.addListener(com.lacuna.mod.client.fx.ScreenFx::registerLayer);
         modBus.addListener(com.lacuna.mod.client.gear.AnimatedItemRenderer::registerLayers);
+        modBus.addListener(com.lacuna.mod.client.gear.TideRenderTypes::onRegisterShaders);
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {
