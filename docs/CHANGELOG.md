@@ -11,6 +11,14 @@
   dash no longer swallows the dash damage). Like a fast train pushing the air away, cut enemies are thrown sideways off
   the line with a lift, and creatures just beside the path get shoved by the gust without damage; a V-shaped wake of
   wind lines, puffs and dust follows you, with wind-burst sounds.
+- **Totem of Banishing:** when you arrive in the Forgotten Land (totem, portal or command) the totem's activation
+  plays on your screen like a totem of undying, with a burst of tumbling bone-and-umber chips and a ring of sparks,
+  once the loading screen and the void have lifted. All the End-style particles of banishment and of the Forgotten
+  Portal are replaced by two new ones in the totem's colours: tumbling stone chips and pale four-point sparks.
+- **Exilite** (new, super rare): an ore deep in the Forgotten Land only (tiny veins, about one per four chunks, near
+  the bottom; diamond pickaxe), in the totem's bone, grey, umber and lichen colours, no ruby. Its shards build a
+  Forgotten Portal Frame (4 shards around crying obsidian, instead of rubies) and a decorative family: Block of
+  Exilite, Polished, Bricks (stairs, slab, wall) and Chiseled Exilite showing the totem's open hand.
 <!-- rev9 -->
 
 ## 0.8.0 — revision 8 (player feedback)
