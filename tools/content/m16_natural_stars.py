@@ -1,5 +1,5 @@
-"""Natural Fallen Stars (star/NaturalStarfall): on clear nights a star now and then falls near a player on its own,
-leaving the same Fallen Star the Starcaller Trumpet calls. Ground tag, damage type, the hint and an advancement."""
+"""Natural falling stars (star/NaturalStarfall): on clear nights a star now and then falls near a player on its own,
+leaving the same molten Star Rock the Starcaller Trumpet calls. Ground tag, damage type, the hint and an advancement."""
 from content.m12_polish import adv, code
 
 DIRECTIONS = {

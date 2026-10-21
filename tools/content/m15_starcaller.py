@@ -1,6 +1,7 @@
 """Starcaller Trumpet: blown like a goat horn, it calls a small falling star (lacuna:falling_star) down on the block or
-creature in the crosshair; the star leaves a glowing Fallen Star block that breaks into Star Fragments."""
-from gen_resources import loot_ore, mod
+creature in the crosshair; the star leaves a Star Rock (molten, then prime, then extinguished) that breaks into Star
+Fragments."""
+from gen_resources import SILK, SURVIVES, loot_ore, mod, pool
 from content.m12_polish import adv, code
 
 # vanilla goat horn hand poses (models/item/goat_horn.json and tooting_goat_horn.json): the trumpet is held the same way
@@ -16,7 +17,10 @@ GLOW = {"block_light": 15, "sky_light": 15, "ambient_occlusion": False}
 
 def build(g):
     trumpet(g)
-    fallen_star(g)
+    star_rock(g)
+    g.item("star_fragment", "Star Fragment", "Frammento di stella")
+    g.name("item.lacuna.star_fragment.tip", "Still warm from the fall. Mends the Starcaller Trumpet, weaves Starlace.",
+           "Ancora caldo della caduta. Ripara la Tromba Richiamastelle, intesse il tessuto stellare.")
     falling_star(g)
     starlace(g)
     adv(g, "wish_upon_a_star", "lacuna:starcaller_trumpet", code(), "root", frame="goal",
@@ -35,8 +39,8 @@ def trumpet(g):
            "Usa: fai cadere una stella dove guardi (fino a %s blocchi)")
     g.name("item.lacuna.starcaller_trumpet.lock", " Aim at a creature: the star locks on and follows it as it falls",
            " Mira a una creatura: la stella la aggancia e la segue mentre cade")
-    g.name("item.lacuna.starcaller_trumpet.blast", " Small blast: up to %s damage, knockback, fire; leaves a Fallen Star",
-           " Piccola esplosione: fino a %s danni, contraccolpo, fuoco; lascia una Stella caduta")
+    g.name("item.lacuna.starcaller_trumpet.blast", " Small blast: up to %s damage, knockback, fire; leaves a Molten Star Rock",
+           " Piccola esplosione: fino a %s danni, contraccolpo, fuoco; lascia una Roccia stellare fusa")
     g.name("item.lacuna.starcaller_trumpet.crater", " Cracks the ground only when mobGriefing is on",
            " Spacca il terreno solo se mobGriefing è attivo")
     g.name("item.lacuna.starcaller_trumpet.cooldown", "Cooldown: %s s", "Ricarica: %s s")
@@ -47,48 +51,53 @@ def trumpet(g):
     g.name("lacuna.starcaller.too_far", "No star can reach that spot.", "Nessuna stella può raggiungere quel punto.")
 
 
-def fallen_star(g):
-    rock = "#rock"
-    core = "#core"
-
-    def faces(tex):
-        return {d: {"texture": tex} for d in ("north", "south", "east", "west", "up", "down")}
-
-    def el(frm, to, tex, rot=None, glow=False):
-        e = {"from": frm, "to": to, "faces": faces(tex)}
-        if rot:
-            e["rotation"] = rot
+def star_rock(g):
+    """The three Star Rock stages a falling star leaves (star/StarRock): Molten (placed by the impact) cools to Prime in
+    a minute or two, Prime burns out to the Extinguished Block of the Star after about three days. Each stage is its own
+    block (own name, loot, Silk Touch item); the old lacuna:fallen_star is aliased to Prime in Java."""
+    # Molten: animated, drawn full bright by the block itself (emissiveRendering, like magma)
+    g.cube("molten_star_rock", "Molten Star Rock", "Roccia stellare fusa", loot=molten_loot())
+    # Prime: the star-stone, with its crystals and glitter laid over it full bright (cutout, neoforge light data)
+    def cube_el(tex, glow=False):
+        e = {"from": [0, 0, 0], "to": [16, 16, 16],
+             "faces": {d: {"texture": tex, "cullface": d} for d in ("north", "south", "east", "west", "up", "down")}}
         if glow:
             e["neoforge_data"] = dict(GLOW)
         return e
+    prime = {"parent": "minecraft:block/block", "render_type": "minecraft:cutout",
+             "textures": {"particle": "lacuna:block/prime_star_rock", "all": "lacuna:block/prime_star_rock",
+                          "glints": "lacuna:block/prime_star_rock_glints"},
+             "elements": [cube_el("#all"), cube_el("#glints", glow=True)]}
+    g.single("prime_star_rock", "Prime Star Rock", "Roccia stellare viva", prime,
+             loot=loot_ore("prime_star_rock", "lacuna:star_fragment", 1, 3, "uniform"))
+    g.cube("extinguished_star_rock", "Extinguished Block of the Star", "Blocco spento della stella",
+           loot=loot_ore("extinguished_star_rock", "lacuna:star_fragment", 0, 1, "none"))
+    for bid in ("molten_star_rock", "prime_star_rock", "extinguished_star_rock"):
+        g.tag("block", "minecraft:mineable/pickaxe", mod(bid))
+        g.tag("block", "lacuna:star_rocks", mod(bid))
+    g.name("item.lacuna.molten_star_rock.tip",
+           "Fresh from the sky: burns to stand on and cools to Prime Star Rock in a minute or two, at once in water or "
+           "rain. Mined now: only 1-2 Star Fragments, rarely a Solar Flare Fragment.",
+           "Appena caduta dal cielo: brucia chi ci sta sopra e si raffredda in Roccia stellare viva in un minuto o due, "
+           "subito nell'acqua o sotto la pioggia. Scavata ora: solo 1-2 frammenti di stella, di rado un frammento di "
+           "brillamento solare.")
+    g.name("item.lacuna.prime_star_rock.tip",
+           "The star at its best: mine it with a pickaxe for 1-3 Star Fragments (Fortune helps). It chimes softly, and "
+           "burns out after about three days.",
+           "La stella al suo meglio: scavala con un piccone per 1-3 frammenti di stella (Fortuna aiuta). Tintinna piano e "
+           "si spegne dopo circa tre giorni.")
+    g.name("item.lacuna.extinguished_star_rock.tip",
+           "A spent star, grey and cratered like the Moon. Mined, it gives at most one Star Fragment.",
+           "Una stella esaurita, grigia e piena di crateri come la Luna. Scavata, dà al massimo un frammento di stella.")
 
-    elements = [
-        el([3, 0, 4], [13, 3, 12], rock),
-        el([4, 3, 5], [11, 5, 11], rock),
-        el([1, 0, 2], [3, 1, 4], rock),
-        el([12, 0, 12], [14, 1, 14], rock),
-        el([6, 3, 6], [10, 8, 10], core, {"origin": [8, 5, 8], "axis": "y", "angle": 45}, glow=True),
-        el([7, 6, 7], [9, 11, 9], core, {"origin": [8, 8, 8], "axis": "z", "angle": 22.5}, glow=True),
-        el([10, 3, 7], [11.5, 6, 8.5], core, {"origin": [10.5, 3, 7.5], "axis": "x", "angle": -22.5}, glow=True),
-    ]
-    model = {"parent": "minecraft:block/block",
-             "textures": {"particle": "lacuna:block/fallen_star", "rock": "lacuna:block/fallen_star",
-                          "core": "lacuna:block/fallen_star_core"},
-             "elements": elements,
-             "display": {"gui": {"rotation": [30, 225, 0], "translation": [0, 3, 0], "scale": [1.0, 1.0, 1.0]},
-                         "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.5, 0.5, 0.5]},
-                         "fixed": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [1.0, 1.0, 1.0]},
-                         "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0], "scale": [0.5, 0.5, 0.5]},
-                         "firstperson_righthand": {"rotation": [0, 45, 0], "translation": [0, 3, 0], "scale": [0.6, 0.6, 0.6]},
-                         "firstperson_lefthand": {"rotation": [0, 225, 0], "translation": [0, 3, 0], "scale": [0.6, 0.6, 0.6]}}}
-    g.single("fallen_star", "Fallen Star", "Stella caduta", model,
-             loot=loot_ore("fallen_star", "lacuna:star_fragment", 1, 3, "uniform"))
-    g.tag("block", "minecraft:mineable/pickaxe", mod("fallen_star"))
-    g.item("star_fragment", "Star Fragment", "Frammento di stella")
-    g.name("item.lacuna.star_fragment.tip", "Still warm from the fall. Mends the Starcaller Trumpet, weaves Starlace.",
-           "Ancora caldo della caduta. Ripara la Tromba Richiamastelle, intesse il tessuto stellare.")
-    g.name("item.lacuna.fallen_star.tip", "Mine it with a pickaxe for Star Fragments.",
-           "Scavala con un piccone per ottenere frammenti di stella.")
+
+def molten_loot():
+    """1-2 Star Fragments (no Fortune: still molten, most of it runs off), plus a 3% Solar Flare Fragment."""
+    table = loot_ore("molten_star_rock", "lacuna:star_fragment", 1, 2, "none")
+    table["pools"].append(pool([{"type": "minecraft:item", "name": "lacuna:solar_flare_fragment"}], conditions=[
+        {"condition": "minecraft:inverted", "term": SILK}, {"condition": "minecraft:random_chance", "chance": 0.03},
+        SURVIVES]))
+    return table
 
 
 def falling_star(g):

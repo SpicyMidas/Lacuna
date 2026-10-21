@@ -23,7 +23,7 @@
                   }
                 }
               ],
-              "name": "lacuna:fallen_star",
+              "name": "lacuna:molten_star_rock",
               "type": "minecraft:item"
             },
             {
@@ -31,19 +31,11 @@
                 {
                   "add": false,
                   "count": {
-                    "max": 3,
+                    "max": 2,
                     "min": 1,
                     "type": "minecraft:uniform"
                   },
                   "function": "minecraft:set_count"
-                },
-                {
-                  "enchantment": "minecraft:fortune",
-                  "formula": "minecraft:uniform_bonus_count",
-                  "function": "minecraft:apply_bonus",
-                  "parameters": {
-                    "bonusMultiplier": 1
-                  }
                 },
                 {
                   "function": "minecraft:explosion_decay"
@@ -57,8 +49,45 @@
         }
       ],
       "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "predicates": {
+                "minecraft:enchantments": [
+                  {
+                    "enchantments": "minecraft:silk_touch",
+                    "levels": {
+                      "min": 1
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "chance": 0.03,
+          "condition": "minecraft:random_chance"
+        },
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "name": "lacuna:solar_flare_fragment",
+          "type": "minecraft:item"
+        }
+      ],
+      "rolls": 1.0
     }
   ],
-  "random_sequence": "lacuna:blocks/fallen_star",
+  "random_sequence": "lacuna:blocks/molten_star_rock",
   "type": "minecraft:block"
 }

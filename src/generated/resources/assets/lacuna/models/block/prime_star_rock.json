@@ -1,0 +1,92 @@
+{
+  "elements": [
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#all"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#all"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#all"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#all"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#all"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#all"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ]
+    },
+    {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#glints"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#glints"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#glints"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#glints"
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#glints"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#glints"
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "neoforge_data": {
+        "ambient_occlusion": false,
+        "block_light": 15,
+        "sky_light": 15
+      },
+      "to": [
+        16,
+        16,
+        16
+      ]
+    }
+  ],
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "all": "lacuna:block/prime_star_rock",
+    "glints": "lacuna:block/prime_star_rock_glints",
+    "particle": "lacuna:block/prime_star_rock"
+  }
+}

@@ -1,5 +1,5 @@
 # Starcaller Trumpet: toot pose, then a star called down on a pig: it twinkles into being, falls across the night sky
-# with its trail, strikes, and leaves a Fallen Star (close-up at the end).
+# with its trail, strikes, and leaves a molten Star Rock (close-up at the end).
 world lacuna_star flat
 wait 60
 hud off
