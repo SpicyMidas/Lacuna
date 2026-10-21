@@ -86,7 +86,7 @@ public final class LacunaConfig {
     public static final ModConfigSpec.BooleanValue VILLAGES_GUILDS;
     public static final ModConfigSpec.BooleanValue VILLAGES_CIVIC_BUILDINGS;
 
-    // ---------------------------------------------------------------- starfall (natural Fallen Stars) and the Starlace Bandage
+    // ---------------------------------------------------------------- starfall (natural falling stars) and the Starlace Bandage
     public static final ModConfigSpec.BooleanValue NATURAL_STARS;
     public static final ModConfigSpec.DoubleValue NATURAL_STAR_CHANCE;
     public static final ModConfigSpec.BooleanValue STARLACE_BANDAGE_ENABLED;
@@ -190,7 +190,7 @@ public final class LacunaConfig {
         B.pop();
 
         B.push("starfall");
-        NATURAL_STARS = B.comment("On clear nights in the overworld a star now and then falls near a player, leaving a Fallen Star.")
+        NATURAL_STARS = B.comment("On clear nights in the overworld a star now and then falls near a player, leaving a molten Star Rock.")
                 .define("naturalStars", true);
         NATURAL_STAR_CHANCE = B.comment("Chance, per player and per clear night, that a star falls near them (0 = never, 1 = every night).")
                 .defineInRange("naturalChancePerNight", com.lacuna.mod.star.Starfall.NATURAL_CHANCE_PER_NIGHT, 0.0, 1.0);

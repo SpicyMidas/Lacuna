@@ -8,7 +8,7 @@ import net.minecraft.world.damagesource.DamageType;
 /**
  * Starcaller Trumpet / falling star tuning and shared ids. Kept here (not in the shared Balance) so the feature stays
  * self-contained: {@link StarcallerTrumpetItem} calls the star, {@link FallingStarEntity} flies and strikes,
- * {@link FallenStarBlock} is what it leaves behind.
+ * {@link StarRock} is what it leaves behind.
  */
 public final class Starfall {
     /** SafeRun feature name (server and client). */

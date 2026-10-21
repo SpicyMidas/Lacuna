@@ -189,11 +189,23 @@ public final class ModBlocks {
                     .strength(1.5F, 6.0F).sound(SoundType.GLASS).noOcclusion().pushReaction(PushReaction.BLOCK)
                     .isValidSpawn(Blocks::never).isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false)
                     .isViewBlocking((s, l, p) -> false)));
-    // ------------------------------------------------------------------ Starcaller Trumpet: what a called star leaves behind
-    public static final DeferredBlock<com.lacuna.mod.star.FallenStarBlock> FALLEN_STAR = block("fallen_star",
-            () -> new com.lacuna.mod.star.FallenStarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.5F, 6.0F)
-                    .sound(SoundType.AMETHYST).lightLevel(s -> 12).noOcclusion().requiresCorrectToolForDrops()
-                    .pushReaction(PushReaction.DESTROY).isValidSpawn(Blocks::never)));
+    // ------------------------------------------------------------------ Star Rock: what a falling star leaves behind, molten -> prime -> extinguished (star/StarRock)
+    public static final DeferredBlock<com.lacuna.mod.star.MoltenStarRockBlock> MOLTEN_STAR_ROCK = block("molten_star_rock",
+            () -> new com.lacuna.mod.star.MoltenStarRockBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE)
+                    .strength(3.0F, 6.0F).sound(SoundType.BASALT).lightLevel(s -> 15).requiresCorrectToolForDrops()
+                    .emissiveRendering((s, l, p) -> true).isValidSpawn((s, l, p, t) -> t.fireImmune())));
+    public static final DeferredBlock<com.lacuna.mod.star.PrimeStarRockBlock> PRIME_STAR_ROCK = block("prime_star_rock",
+            () -> new com.lacuna.mod.star.PrimeStarRockBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD)
+                    .strength(1.5F, 6.0F).sound(SoundType.AMETHYST).lightLevel(s -> 10).requiresCorrectToolForDrops()
+                    .isValidSpawn(Blocks::never)));
+    public static final DeferredBlock<Block> EXTINGUISHED_STAR_ROCK = block("extinguished_star_rock", () -> new Block(
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_GRAY).strength(1.5F, 6.0F).sound(SoundType.TUFF)
+                    .requiresCorrectToolForDrops()));
+    static {
+        // the old 3D Fallen Star lump (block and item) loads as Prime Star Rock in existing worlds
+        ModRegistries.BLOCKS.addAlias(com.lacuna.mod.Lacuna.id("fallen_star"), com.lacuna.mod.Lacuna.id("prime_star_rock"));
+        ModRegistries.ITEMS.addAlias(com.lacuna.mod.Lacuna.id("fallen_star"), com.lacuna.mod.Lacuna.id("prime_star_rock"));
+    }
     // ------------------------------------------------------------------ Exilite: the totem's own stone, deep in the Forgotten Land (fl/Exilite)
     public static final DeferredBlock<DropExperienceBlock> EXILITE_ORE = block("exilite_ore", () -> new DropExperienceBlock(
             UniformInt.of(4, 8), com.lacuna.mod.fl.Exilite.ore()));
