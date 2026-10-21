@@ -40,6 +40,11 @@ public final class ModParticles {
     /** Chrono Hourglass: a tiny pale-blue clock face whose hand sweeps round as it rises and fades. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CHRONO_TICK = simple("chrono_tick");
 
+    /** Banishment: a tumbling bone-and-umber stone chip of the Totem of Banishing, pinwheeling out of a totem burst. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BANISH_MOTE = simple("banish_mote");
+    /** Banishment: a pale four-point spark with a lichen-green halo (the rift, the portal surface, the held totem). */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RIFT_SPARK = simple("rift_spark");
+
     private ModParticles() {}
 
     private static DeferredHolder<ParticleType<?>, SimpleParticleType> simple(String name) {

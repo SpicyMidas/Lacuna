@@ -38,5 +38,6 @@ public final class FxHandlers {
         com.lacuna.mod.client.gear.StarlaceClient.registerFx();
         com.lacuna.mod.client.portal.PortalTransition.register();
         com.lacuna.mod.client.gear.QuickeningFx.register();
+        com.lacuna.mod.client.banish.BanishArrivalFx.register();
     }
 }

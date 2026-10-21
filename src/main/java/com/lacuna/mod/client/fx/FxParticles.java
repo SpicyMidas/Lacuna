@@ -73,6 +73,7 @@ public final class FxParticles {
         provider(event, ModParticles.UMBRAL_WISP.get(), UMBRAL_WISP);
         com.lacuna.mod.client.gear.EmberDust.registerProviders(event);
         provider(event, ModParticles.CHRONO_TICK.get(), CHRONO_TICK);
+        BanishParticles.registerProviders(event);
     }
 
     private static void provider(RegisterParticleProvidersEvent event, SimpleParticleType type, Style style) {
