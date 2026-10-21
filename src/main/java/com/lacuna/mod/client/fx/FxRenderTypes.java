@@ -108,6 +108,15 @@ public final class FxRenderTypes {
         return DEPTH_TWINS.get(type);
     }
 
+    /**
+     * Registers {@code twin} as the depth-only twin of an effect render type defined elsewhere (same vertex format;
+     * render thread only), so the Fabulous depth pass of {@link FxManager} draws it. Returns {@code type}.
+     */
+    public static RenderType withDepthTwin(RenderType type, RenderType twin) {
+        DEPTH_TWINS.put(type, twin);
+        return type;
+    }
+
     private static RenderType.CompositeState state(ResourceLocation tex, RenderStateShard.TransparencyStateShard transparency,
                                                    RenderStateShard.ShaderStateShard shader, RenderStateShard.DepthTestStateShard depth) {
         return RenderType.CompositeState.builder()
