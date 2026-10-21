@@ -395,16 +395,14 @@ final class TideSpout {
                     water.drip(center.x + sox + Math.cos(a) * rad, eye + height - 0.3, center.z + soz + Math.sin(a) * rad);
                 }
             }
-            // wakes circling in over the pool (counter-clockwise from above, like the server pull)
-            {
+            // spray skipping round the pool (counter-clockwise from above, like the server pull)
+            for (int i = 0; i < 2 && env > 0.2F; i++) {
                 double a = r.nextDouble() * Mth.TWO_PI;
                 double rad = radius * (0.25 + 0.7 * r.nextDouble());
-                double x = center.x + Math.cos(a) * rad;
-                double z = center.z + Math.sin(a) * rad;
-                double y = center.y + bowl(rad / radius, env) + 0.05;
                 double spin = 0.16 + 0.2 * (1.0 - rad / radius);
-                water.particle(ParticleTypes.FISHING, x, y, z, -Math.sin(a) * spin - Math.cos(a) * 0.06, 0.01,
-                        Math.cos(a) * spin - Math.sin(a) * 0.06, TideWater.LIGHT);
+                drops.add(center.x + Math.cos(a) * rad, center.y + bowl(rad / radius, env) + 0.08, center.z + Math.sin(a) * rad,
+                        -Math.sin(a) * spin - Math.cos(a) * 0.06, 0.1 + r.nextDouble() * 0.1, Math.cos(a) * spin - Math.sin(a) * 0.06,
+                        0.035F + r.nextFloat() * 0.03F, 14, r.nextBoolean() ? TideWater.PALE : TideWater.FOAM);
             }
             if ((age & 1) == 0) {
                 double a = r.nextDouble() * Mth.TWO_PI;
