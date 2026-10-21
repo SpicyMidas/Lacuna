@@ -79,6 +79,12 @@ def eclipser(g):
     g.name("item.lacuna.eclipser.use", "Use (charge ≥ %s): dash through the dark", "Usa (carica ≥ %s): scatta attraverso il buio")
     g.name("lacuna.eclipser.charge", "Eclipse %s%%", "Eclissi %s%%")
     g.name("lacuna.eclipser.not_enough", "The eclipse is too faint (%s%%)", "L'eclissi è troppo debole (%s%%)")
+    g.name("item.lacuna.eclipser.dash", "Dash: %s to %s damage to everything on its path; the air wake hurls foes aside",
+           "Scatto: da %s a %s danni a tutto ciò che attraversa; la scia d'aria scaglia via i nemici")
+    # the dash applies its own sideways "air wake" shove and must land on every creature exactly once, even one
+    # that was just hit by a melee swing (armour still applies)
+    g.tag("damage_type", "minecraft:no_knockback", "lacuna:eclipse")
+    g.tag("damage_type", "minecraft:bypasses_cooldown", "lacuna:eclipse")
     g.shaped("eclipser", [" U ", "RUR", " S "],
              {"U": "lacuna:umbral_steel_ingot", "R": "lacuna:ruby", "S": "minecraft:stick"},
              "lacuna:eclipser", category="equipment", unlock="lacuna:umbral_steel_ingot")

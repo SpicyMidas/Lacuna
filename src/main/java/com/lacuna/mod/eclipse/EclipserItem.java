@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -130,6 +131,9 @@ public class EclipserItem extends SwordItem {
         tooltip.add(Component.translatable("item.lacuna.eclipser.lore").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         tooltip.add(Component.translatable("lacuna.eclipser.charge", charge(stack)).withStyle(ChatFormatting.DARK_RED));
         tooltip.add(Component.translatable("item.lacuna.eclipser.use", ChargeMath.MIN_DASH).withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable("item.lacuna.eclipser.dash",
+                ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(ChargeMath.dashDamage(ChargeMath.MIN_DASH)),
+                ItemAttributeModifiers.ATTRIBUTE_MODIFIER_FORMAT.format(ChargeMath.dashDamage(ChargeMath.MAX))).withStyle(ChatFormatting.DARK_GRAY));
         tooltip.add(Component.translatable("lacuna.tooltip.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage())
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
