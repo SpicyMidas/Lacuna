@@ -9,9 +9,12 @@ cmd gamerule sendCommandFeedback false
 cmd difficulty easy
 cmd effect give @s lacuna:shadow_walk 90
 wait 10
-cmd tp @s 0.5 -60 0 facing 0.5 -58.4 2.5
-cmd summon minecraft:zombie 0.5 -60 2.5 {ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",count:1}],Rotation:[0f,0f]}
+cmd tp @s 0.5 -60 0
+cmd summon minecraft:zombie 0.5 -60 2.5 {IsBaby:0b,ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",count:1}],Rotation:[0f,0f]}
 cmd summon minecraft:cow 0.5 -60 6.5 {Rotation:[180f,0f]}
+cmd effect give @e[type=minecraft:zombie] minecraft:slowness 3 10 true
+clearchat
+look 0 14
 wait 6
 shot possess_0_walk
 attack
