@@ -31,6 +31,16 @@
   unable to act, seeing from your right hip through a burlap "inside of the bag" overlay that sways with your walk,
   with muffled sounds and a countdown. Struggling (jump, attack, use, sneak) shortens it. They pop out beside you when
   time is up, when you use the bag on a block, or if either of you leaves, and can't be bagged again for 30 s.
+- **Tidecaller water takes the local water colour:** the tidal wave, whirlpool, tornado, geyser, their mist, drips
+  and splashes all use the water colour of the biome they're in (swamp green-grey, warm-ocean turquoise...), with the
+  same shading as before, dimmed in the dark; the rolling wave re-blends as it crosses biomes.
+- **A real tornado:** the maelstrom is rebuilt with its own shader. A dark, lumpy storm cloud gathers first, then the
+  funnel ropes down out of it and touches down with a burst of spray and a screen shake. The funnel bends and leans
+  with the drifting cloud, a kink travels up it, it has a narrow waist, a foot flaring into the water and a top
+  greying into the cloud, a fast dense core inside a torn spray sheath, and pixel streaks and white threads rushing
+  upward with foam bands and a bright rim. At its base: a spray cascade, a dark-eyed whirlpool with spiral arms and
+  foam flecks, droplets flung off and bits of the ground torn up. At the end it thins into a writhing rope, lifts off
+  and the cloud dissolves as the geyser fires; under a low ceiling it shrinks to fit.
 <!-- rev9 -->
 
 ## 0.8.0 — revision 8 (player feedback)
