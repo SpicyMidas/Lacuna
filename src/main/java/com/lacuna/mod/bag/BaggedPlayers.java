@@ -452,10 +452,11 @@ public final class BaggedPlayers {
         Entity vehicle = target.getVehicle();
         if (vehicle != null) {
             target.stopRiding();
-            // the dismount reaches the clients before the teleport below, or the target's client would stay on top
-            if (vehicle.level() instanceof ServerLevel vehicleLevel && !vehicle.isRemoved()) {
-                vehicleLevel.getChunkSource().broadcastAndSend(vehicle, new ClientboundSetPassengersPacket(vehicle));
-            }
+        }
+        // the dismount reaches the clients before the teleport below, or the target's client would stay on top
+        Entity carrier = vehicle != null ? vehicle : bagger;
+        if (carrier != null && carrier.level() instanceof ServerLevel carrierLevel && !carrier.isRemoved()) {
+            carrierLevel.getChunkSource().broadcastAndSend(carrier, new ClientboundSetPassengersPacket(carrier));
         }
         target.refreshDimensions();
         target.setInvisible(target.hasEffect(MobEffects.INVISIBILITY));
@@ -695,7 +696,9 @@ public final class BaggedPlayers {
 
     /** Either side about to change dimension: the target pops out here first, next to the bagger. */
     private static void onTravel(EntityTravelToDimensionEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player && !BY_TARGET.isEmpty()) {
+        // ender pearls travel "to" the same dimension too: those carry the bag along, unless it is the target travelling
+        if (event.getEntity() instanceof ServerPlayer player && !BY_TARGET.isEmpty()
+                && (isBagged(player) || event.getDimension() != player.level().dimension())) {
             releaseInvolving(player);
         }
     }
