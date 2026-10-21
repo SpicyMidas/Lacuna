@@ -1,0 +1,17 @@
+{
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "lacuna:exilite_shard"
+    }
+  },
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:exilite"
+  },
+  "type": "minecraft:crafting_shaped"
+}

@@ -1,0 +1,27 @@
+{
+  "feature": "lacuna:ore_exilite",
+  "placement": [
+    {
+      "chance": 4,
+      "type": "minecraft:rarity_filter"
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "height": {
+        "max_inclusive": {
+          "absolute": -8
+        },
+        "min_inclusive": {
+          "above_bottom": 6
+        },
+        "type": "minecraft:trapezoid"
+      },
+      "type": "minecraft:height_range"
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

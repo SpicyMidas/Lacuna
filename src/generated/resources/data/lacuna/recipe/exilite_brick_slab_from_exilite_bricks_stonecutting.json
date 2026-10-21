@@ -1,0 +1,10 @@
+{
+  "ingredient": {
+    "item": "lacuna:exilite_bricks"
+  },
+  "result": {
+    "count": 2,
+    "id": "lacuna:exilite_brick_slab"
+  },
+  "type": "minecraft:stonecutting"
+}

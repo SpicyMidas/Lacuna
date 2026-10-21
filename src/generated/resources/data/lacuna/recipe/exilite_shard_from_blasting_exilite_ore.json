@@ -1,0 +1,12 @@
+{
+  "category": "misc",
+  "cookingtime": 100,
+  "experience": 1.0,
+  "ingredient": {
+    "item": "lacuna:exilite_ore"
+  },
+  "result": {
+    "id": "lacuna:exilite_shard"
+  },
+  "type": "minecraft:blasting"
+}

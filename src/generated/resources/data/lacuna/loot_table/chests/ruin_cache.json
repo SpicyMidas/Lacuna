@@ -142,6 +142,11 @@
           "name": "lacuna:chronal_shard",
           "type": "minecraft:item",
           "weight": 10
+        },
+        {
+          "name": "lacuna:exilite_shard",
+          "type": "minecraft:item",
+          "weight": 12
         }
       ],
       "rolls": 1.0

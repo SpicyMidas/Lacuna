@@ -1,0 +1,21 @@
+{
+  "category": "building",
+  "key": {
+    "E": {
+      "item": "lacuna:exilite_shard"
+    },
+    "O": {
+      "item": "minecraft:crying_obsidian"
+    }
+  },
+  "pattern": [
+    " E ",
+    "EOE",
+    " E "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:forgotten_portal_frame"
+  },
+  "type": "minecraft:crafting_shaped"
+}

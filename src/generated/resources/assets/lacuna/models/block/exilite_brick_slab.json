@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "lacuna:block/exilite_bricks",
+    "side": "lacuna:block/exilite_bricks",
+    "top": "lacuna:block/exilite_bricks"
+  }
+}
