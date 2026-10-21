@@ -456,4 +456,54 @@ public final class Balance {
     public static final int BAG_STRUGGLE_TICKS = 5;
     /** At most one struggle counts per this many ticks (no macro speedruns out of the bag). */
     public static final int BAG_STRUGGLE_INTERVAL = 4;
+    // ---------------------------------------------------------------- shadow possession (Shadow Walk)
+    /** A shadow walker possesses a creature or player within this many blocks of its eyes. */
+    public static final double POSSESS_REACH = 8.0;
+    /** Struggle points at which the host fights back and the expulsion countdown starts. */
+    public static final float POSSESS_FIGHT_BACK = 20.0F;
+    /** Once a creature fights back you have this long (ticks) before it casts you out. */
+    public static final int POSSESS_EXPEL_TICKS_MOB = 100;
+    /** Once a player fights back you have this long (ticks); every tick they keep struggling it runs twice as fast. */
+    public static final int POSSESS_EXPEL_TICKS_PLAYER = 80;
+    /** No body holds a shadow longer than this (ticks): then it fights back whatever it is. */
+    public static final int POSSESS_MAX_TICKS = 600;
+    /** A possessed player's own movement keys only add this fraction on top of yours (your controls win). */
+    public static final float POSSESS_PLAYER_OWN_INPUT = 0.25F;
+    /** Per-tick fraction by which a possessed player's view is pulled back to where you look. */
+    public static final float POSSESS_LOOK_PULL = 0.55F;
+    /** Creature will (struggle per tick, randomised 0.5..1.5x): base, extra when hostile, per max-health point (capped). */
+    public static final float POSSESS_MOB_WILL_BASE = 0.06F;
+    public static final float POSSESS_MOB_WILL_HOSTILE = 0.12F;
+    public static final float POSSESS_MOB_WILL_PER_HEALTH = 0.004F;
+    public static final float POSSESS_MOB_WILL_HEALTH_CAP = 0.25F;
+    /** Extra will of a creature below half health; a pet of the possessor itself resists only this fraction as much. */
+    public static final float POSSESS_MOB_WILL_WOUNDED = 0.1F;
+    public static final float POSSESS_MOB_WILL_OWN_PET = 0.5F;
+    /** Struggle gained per point of damage the host takes (pain helps it break free). */
+    public static final float POSSESS_PAIN_STRUGGLE = 2.5F;
+    /** Struggle points a fighting player can report per tick at most, and what a refused strike or use is worth. */
+    public static final float POSSESS_PLAYER_STRUGGLE_MAX = 6.0F;
+    public static final float POSSESS_ACTION_STRUGGLE = 4.0F;
+    /** Struggle decays by this per tick, so stray twitches never add up. */
+    public static final float POSSESS_STRUGGLE_DECAY = 0.12F;
+    /** A possessed creature walks at its movement speed times this, clamped to [min, max] blocks per tick. */
+    public static final double POSSESS_MOB_SPEED_SCALE = 0.75;
+    public static final double POSSESS_MOB_SPEED_MIN = 0.08;
+    public static final double POSSESS_MOB_SPEED_MAX = 0.2;
+    /** Sprinting multiplies that speed by this. */
+    public static final double POSSESS_SPRINT = 1.35;
+    /** Ticks between the strikes / ranged attacks you make a host perform, and the ranged attack range. */
+    public static final int POSSESS_MELEE_COOLDOWN = 12;
+    public static final int POSSESS_RANGED_COOLDOWN = 25;
+    public static final double POSSESS_RANGED_RANGE = 32.0;
+    /** After being cast out you cannot possess again for this long (ticks); after leaving on your own, briefly. */
+    public static final int POSSESS_EXPEL_COOLDOWN = 80;
+    public static final int POSSESS_LEAVE_COOLDOWN = 10;
+    /** A player / creature that cast a shadow out cannot be possessed again for this long (ticks). */
+    public static final int POSSESS_HOST_IMMUNITY_PLAYER = 300;
+    public static final int POSSESS_HOST_IMMUNITY_MOB = 60;
+    /** A cast-out shadow is thrown this far out of the host's back. */
+    public static final double POSSESS_EXPEL_DISTANCE = 3.5;
+    /** The Shadow Walk clock stands still while possessing; it resumes afterwards with at least this many ticks. */
+    public static final int POSSESS_RESUME_MIN_TICKS = 30;
 }

@@ -27,5 +27,16 @@ public final class LacunaNetwork {
             }
         });
         com.lacuna.mod.bag.BagPlayerNet.register(registrar);
+        // Shadow Possession (eclipse/Possession): possessor input and host struggle up, possession state down
+        registrar.playToServer(PossessInputPayload.TYPE, PossessInputPayload.STREAM_CODEC, (payload, context) -> {
+            if (context.player() instanceof net.minecraft.server.level.ServerPlayer player) {
+                com.lacuna.mod.eclipse.Possession.onPayload(player, payload);
+            }
+        });
+        registrar.playToClient(PossessSyncPayload.TYPE, PossessSyncPayload.STREAM_CODEC, (payload, context) -> {
+            if (FMLEnvironment.dist.isClient()) {
+                com.lacuna.mod.client.eclipse.PossessionClient.onSync(payload);
+            }
+        });
     }
 }

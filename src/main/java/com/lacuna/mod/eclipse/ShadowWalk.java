@@ -1,5 +1,6 @@
 package com.lacuna.mod.eclipse;
 
+import com.lacuna.mod.Balance;
 import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.LacunaConfig;
 import com.lacuna.mod.fx.LacunaFx;
@@ -17,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.GameType;
@@ -36,10 +38,14 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  * The previous mode lives in a serializable attachment, so it is restored on expiry, removal (milk), death,
  * logout/login, dimension change and server stop. An operator who changed the game mode meanwhile always wins.
  * After restoring, a player stuck in blocks is moved to the nearest safe spot within 16 blocks, else the dash origin.
+ * While shadow walking, a click possesses a creature or player ({@link Possession}); the walk clock stands still
+ * meanwhile ({@link #suspend}/{@link #resume}).
  */
 public final class ShadowWalk {
     public static final String FEATURE = "shadow_walk";
     private static final String FX_FEATURE = "shadow_walk_fx";
+    /** True while {@link #suspend}/{@link #resume} swap the effect themselves (not a walk starting or ending). */
+    private static boolean swapping;
 
     private ShadowWalk() {}
 
@@ -86,6 +92,7 @@ public final class ShadowWalk {
 
     /** Restores the remembered game mode (if we are still the ones who set SPECTATOR) and frees a stuck player. */
     public static void restore(ServerPlayer player) {
+        Possession.onWalkEnding(player);
         if (!player.hasData(ModAttachments.SHADOW_WALK)) {
             return;
         }
@@ -109,6 +116,42 @@ public final class ShadowWalk {
             Teleporter.teleport(player, level, Vec3.atBottomCenterOf(target), player.getYRot(), player.getXRot());
         }
         endBurst(player);
+    }
+
+    /**
+     * Shadow Possession stops the walk clock: the walk (and its effect) last until {@link #resume}. Returns the ticks
+     * that were left (-1 for an endless walk).
+     */
+    static int suspend(ServerPlayer player) {
+        ShadowWalkState state = player.getData(ModAttachments.SHADOW_WALK);
+        long now = player.serverLevel().getGameTime();
+        int left = state.until() == Long.MAX_VALUE ? -1 : (int) Mth.clamp(state.until() - now, 0L, Integer.MAX_VALUE);
+        player.setData(ModAttachments.SHADOW_WALK, new ShadowWalkState(state.previousMode(), Long.MAX_VALUE, state.origin()));
+        swapping = true;
+        try {
+            player.addEffect(new MobEffectInstance(ModEffects.SHADOW_WALK, MobEffectInstance.INFINITE_DURATION, 0, false, false, true));
+        } finally {
+            swapping = false;
+        }
+        return left;
+    }
+
+    /** The walk clock runs again after a possession, with {@code left} ticks (at least a moment; -1 = endless). */
+    static void resume(ServerPlayer player, int left) {
+        if (!isActive(player)) {
+            return;
+        }
+        int ticks = left < 0 ? -1 : Math.max(left, Balance.POSSESS_RESUME_MIN_TICKS);
+        ShadowWalkState state = player.getData(ModAttachments.SHADOW_WALK);
+        long until = ticks < 0 ? Long.MAX_VALUE : player.serverLevel().getGameTime() + ticks;
+        player.setData(ModAttachments.SHADOW_WALK, new ShadowWalkState(state.previousMode(), until, state.origin()));
+        swapping = true;
+        try {
+            player.removeEffect(ModEffects.SHADOW_WALK);
+            player.addEffect(new MobEffectInstance(ModEffects.SHADOW_WALK, ticks < 0 ? MobEffectInstance.INFINITE_DURATION : ticks, 0, false, false, true));
+        } finally {
+            swapping = false;
+        }
     }
 
     /** The shadows scatter when Shadow Walk ends (purely cosmetic, never allowed to break the restore). */
@@ -161,8 +204,8 @@ public final class ShadowWalk {
         ShadowWalkState state = player.getData(ModAttachments.SHADOW_WALK);
         if (!state.active() || player.serverLevel().getGameTime() >= state.until() || !enabled()) {
             restoreQuietly(player);
-        } else if (!SafeRun.isDisabled(FX_FEATURE)) {
-            SafeRun.run(FX_FEATURE, () -> motes(player));
+        } else if (!SafeRun.isDisabled(FX_FEATURE) && !Possession.isPossessing(player)) {
+            SafeRun.run(FX_FEATURE, () -> motes(player)); // a possessing shadow shows as its host's glowing eyes instead
         }
     }
 
@@ -172,8 +215,8 @@ public final class ShadowWalk {
      */
     public static void onEffectAdded(MobEffectEvent.Added event) {
         MobEffectInstance effect = event.getEffectInstance();
-        if (!(event.getEntity() instanceof ServerPlayer player) || effect == null || !effect.getEffect().is(ModEffects.SHADOW_WALK.getKey())
-                || !enabled()) {
+        if (swapping || !(event.getEntity() instanceof ServerPlayer player) || effect == null
+                || !effect.getEffect().is(ModEffects.SHADOW_WALK.getKey()) || !enabled()) {
             return;
         }
         long until = effect.isInfiniteDuration() ? Long.MAX_VALUE : player.serverLevel().getGameTime() + effect.getDuration();
@@ -188,7 +231,7 @@ public final class ShadowWalk {
     }
 
     public static void onEffectRemoved(MobEffectEvent.Remove event) {
-        if (event.getEntity() instanceof ServerPlayer player && event.getEffect().is(ModEffects.SHADOW_WALK.getKey())) {
+        if (!swapping && event.getEntity() instanceof ServerPlayer player && event.getEffect().is(ModEffects.SHADOW_WALK.getKey())) {
             restoreQuietly(player);
         }
     }

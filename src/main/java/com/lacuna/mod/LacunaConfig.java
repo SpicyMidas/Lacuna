@@ -91,6 +91,10 @@ public final class LacunaConfig {
     public static final ModConfigSpec.DoubleValue NATURAL_STAR_CHANCE;
     public static final ModConfigSpec.BooleanValue STARLACE_BANDAGE_ENABLED;
 
+    // ---------------------------------------------------------------- shadow possession (Shadow Walk)
+    public static final ModConfigSpec.BooleanValue SHADOW_POSSESSION_ENABLED;
+    public static final ModConfigSpec.BooleanValue SHADOW_POSSESSION_PLAYERS;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -196,6 +200,13 @@ public final class LacunaConfig {
                 .defineInRange("naturalChancePerNight", com.lacuna.mod.star.Starfall.NATURAL_CHANCE_PER_NIGHT, 0.0, 1.0);
         STARLACE_BANDAGE_ENABLED = B.comment("Starlace Bandages can mummify creatures (shears always unwrap them).")
                 .define("starlaceBandage", true);
+        B.pop();
+
+        B.push("shadowPossession");
+        SHADOW_POSSESSION_ENABLED = B.comment("While shadow walking, clicking a creature or player possesses it: you see through its eyes and steer it "
+                + "until it fights back and casts you out (off: clicking only spectates, as in vanilla).").define("enabled", true);
+        SHADOW_POSSESSION_PLAYERS = B.comment("Players can be possessed too (also requires PvP to be enabled on the server).")
+                .define("players", true);
         B.pop();
 
         SPEC = B.build();

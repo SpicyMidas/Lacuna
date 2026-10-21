@@ -47,7 +47,16 @@
   **Prime Star Rock** (dark stone with glittering star crystals that glow and twinkle at night, the faint chime) with the
   normal 1-3 fragments (+ Fortune); after about 3 days it goes out as the **Extinguished Block of the Star**, grey
   cratered moon rock, 0-1 fragment. Silk Touch keeps each stage. Old Fallen Stars load as Prime Star Rock.
-<!-- rev9 -->
+- **Shadow Possession:** while shadow walking, attack or use a creature or player (within 8 blocks) to possess it:
+  you see through its eyes and drive it with your keys; your attack makes it strike (melee, or its own ranged attack:
+  creepers ignite, ghasts and blazes shoot). A possessed player's own keys only add a quarter on top of yours, their
+  view is pulled to yours and their clicks are blocked. Hosts fight back (players by moving and looking against you,
+  clicking, jumping; creatures by will: hostile, big and wounded ones resist harder): a resistance bar fills, then
+  you have 4-5 s before you're thrown out of their back. Sneak to leave. The Shadow Walk clock pauses while you're
+  inside someone (30 s at most per body). Bosses, other people's pets, mummies, creative players and players without
+  PvP can't be possessed. Violet vignette with a heartbeat, a host HUD, crimson cracks when they fight back; onlookers
+  see violet wisps at the host's eyes. Config `shadowPossession.enabled` / `players`.
+
 
 ## 0.8.0 — revision 8 (player feedback)
 
