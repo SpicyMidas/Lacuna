@@ -52,8 +52,9 @@ import net.neoforged.neoforge.client.model.data.ModelData;
  * glowing green vein). Flat items face the camera Paper-style and flip smoothly toward the way they walk; block
  * items turn with their head. The walk cycle comes from the vanilla walk animation: legs swing opposite with the
  * swinging knee lifting, the body rides on the planted leg (so it bobs), rocks side to side and leans in. Leaps
- * crouch, stretch and land with a squash; attacks chop forward (bows recoil); TNT swells and flashes. The legs
- * sprout over the first ticks of life and shrink away over the last.
+ * crouch, stretch and land with a squash; attacks chop forward (bows recoil); TNT swells and flashes; before a special
+ * power (gear/AnimatedAbilities) the item rears up on its legs and glows. The legs sprout over the first ticks of life
+ * and shrink away over the last.
  */
 public class AnimatedItemRenderer extends EntityRenderer<AnimatedItemEntity> {
     public static final ModelLayerLocation LEGS = new ModelLayerLocation(Lacuna.id("animated_item"), "legs");
@@ -186,6 +187,11 @@ public class AnimatedItemRenderer extends EntityRenderer<AnimatedItemEntity> {
         float sxz = 1.0F / Mth.sqrt(Math.max(0.4F, sy));
         float swell = 1.0F + fuse * 0.15F + Mth.sin(age * 2.2F) * 0.03F * fuse;
         float white = fuse > 0.0F && (((int) (age / 2.5F)) & 1) == 0 ? 0.3F + 0.7F * fuse : 0.0F;
+        // gathering a special power: it rears up (lifted, leaning back) and glows with a soft pulse
+        float rear = smooth(Mth.clamp(Mth.lerp(pt, e.clientPowerO, e.clientPower), 0.0F, 1.0F));
+        if (rear > 0.0F) {
+            white = Math.max(white, rear * (0.22F + 0.14F * Mth.sin(age * 1.3F)));
+        }
         int overlay = LivingEntityRenderer.getOverlayCoords(e, white);
 
         float bodyYaw = Mth.rotLerp(pt, e.yBodyRotO, e.yBodyRot);
@@ -220,20 +226,23 @@ public class AnimatedItemRenderer extends EntityRenderer<AnimatedItemEntity> {
             float scale = (flat ? (upright ? UPRIGHT_SCALE : FLAT_SCALE) : base.isCustomRenderer() ? CUSTOM_SCALE : BLOCK_SCALE)
                     * itemGrow * swell;
             BakedModel model = itemRenderer.getModel(stack, e.level(), e, e.getId());
+            float rearUp = rear * (0.1F + 0.015F * Mth.sin(age * 0.9F));
+            float rearBack = -30.0F * rear;
+            int itemLight = rear > 0.4F ? LightTexture.FULL_BRIGHT : light;
             ps.pushPose();
-            ps.translate(0.0F, hip, 0.0F);
+            ps.translate(0.0F, hip + rearUp, 0.0F);
             if (flat) {
                 // a paper-thin item faces the camera and turns (with a smooth flip) toward where it is going;
                 // its front is -X here, so a positive roll tips it forward
                 float camYaw = entityRenderDispatcher.camera.getYRot();
                 ps.mulPose(Axis.YP.rotationDegrees(-camYaw + flip(e, headYaw, camYaw)));
                 ps.translate(-lunge, 0.0F, 0.0F);
-                ps.mulPose(Axis.ZP.rotationDegrees(lean + waddle + chop));
+                ps.mulPose(Axis.ZP.rotationDegrees(lean + waddle + chop + rearBack));
             } else {
                 // a solid item turns with its head; its front is -Z here
                 ps.mulPose(Axis.YP.rotationDegrees(180.0F - headYaw));
                 ps.translate(0.0F, 0.0F, -lunge);
-                ps.mulPose(Axis.XP.rotationDegrees(-(lean + chop)));
+                ps.mulPose(Axis.XP.rotationDegrees(-(lean + chop + rearBack)));
                 ps.mulPose(Axis.ZP.rotationDegrees(waddle));
             }
             ps.scale(sxz, sy, sxz);
@@ -243,7 +252,7 @@ public class AnimatedItemRenderer extends EntityRenderer<AnimatedItemEntity> {
                 ps.mulPose(Axis.ZP.rotationDegrees(-45.0F));
             }
             ps.translate(-anchor[0], -anchor[1], 0.0F);
-            itemRenderer.render(stack, ItemDisplayContext.FIXED, false, ps, buffers, light, overlay, model);
+            itemRenderer.render(stack, ItemDisplayContext.FIXED, false, ps, buffers, itemLight, overlay, model);
             ps.popPose();
         }
         super.render(e, entityYaw, pt, ps, buffers, light);

@@ -6,9 +6,13 @@ import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.beam.BeamTrace;
+import com.lacuna.mod.gear.AnimatedAbilities;
+import com.lacuna.mod.gear.AnimatedItemEntity;
 import com.lacuna.mod.gear.QuickeningBolt;
 import com.lacuna.mod.gear.QuickeningWandItem;
 import com.lacuna.mod.network.FxPayload;
+import com.lacuna.mod.registry.ModParticles;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -39,6 +43,99 @@ public final class QuickeningFx {
 
     public static void register() {
         FxHandlers.register(QuickeningWandItem.BOLT_FX, p -> FxManager.add(new Bolt(p)));
+        FxHandlers.register(AnimatedAbilities.BEAM_FX, p -> FxManager.add(new SunBeam(p)));
+    }
+
+    /**
+     * An animated Divine Magnifying Glass focusing sunlight on its target ({@value AnimatedAbilities#BEAM_FX}): the
+     * beam follows both creatures and ends where the shared {@link BeamTrace} stops, in the beam's own colour, until the
+     * item stops glowing (the server ended the power) or its time is up.
+     */
+    private static final class SunBeam implements ClientFx {
+        private final int userId;
+        private final int targetId;
+        private final int life;
+        private int age;
+
+        SunBeam(FxPayload p) {
+            this.userId = p.entityId();
+            this.targetId = (int) p.p0();
+            this.life = Math.max(1, (int) p.p1()) + 4;
+        }
+
+        @Nullable
+        private AnimatedItemEntity user() {
+            ClientLevel level = Minecraft.getInstance().level;
+            return level != null && level.getEntity(userId) instanceof AnimatedItemEntity e && !e.isRemoved() ? e : null;
+        }
+
+        @Nullable
+        private Entity target() {
+            ClientLevel level = Minecraft.getInstance().level;
+            Entity e = level != null ? level.getEntity(targetId) : null;
+            return e != null && !e.isRemoved() ? e : null;
+        }
+
+        @Override
+        public boolean tick() {
+            age++;
+            AnimatedItemEntity user = user();
+            ClientLevel level = Minecraft.getInstance().level;
+            if (user == null || target() == null || level == null || age > life || (age > 6 && user.clientPower < 0.5F)) {
+                return false;
+            }
+            BeamTrace trace = trace(user, 1.0F);
+            if (trace != null && trace.hitsSomething()) {
+                Vec3 hit = trace.stop().subtract(trace.look().scale(0.08));
+                level.addParticle(ModParticles.SOLAR_GLINT.get(), hit.x, hit.y, hit.z, 0.0, 0.0, 0.0);
+            }
+            return true;
+        }
+
+        @Nullable
+        private BeamTrace trace(AnimatedItemEntity user, float pt) {
+            Entity target = target();
+            if (target == null) {
+                return null;
+            }
+            Vec3 eye = user.getEyePosition(pt);
+            Vec3 d = target.getPosition(pt).add(0.0, target.getBbHeight() * 0.5, 0.0).subtract(eye);
+            if (d.lengthSqr() < 1.0E-6) {
+                return null;
+            }
+            return BeamTrace.of(user.level(), user, eye, d.normalize(), pt);
+        }
+
+        @Override
+        public void render(FxRenderContext ctx) {
+            AnimatedItemEntity user = user();
+            if (user == null) {
+                return;
+            }
+            float pt = ctx.partialTick();
+            BeamTrace trace = trace(user, pt);
+            if (trace == null) {
+                return;
+            }
+            float t = ctx.time(age);
+            float in = Mth.clamp(t / 4.0F, 0.0F, 1.0F) * Mth.clamp((life - t) / 4.0F, 0.0F, 1.0F);
+            float shimmer = (0.9F + 0.1F * Mth.sin(t * 1.9F)) * in;
+            int rgb = trace.beam().color();
+            Vec3 lens = trace.eye().add(trace.look().scale(0.25));
+            Vec3 a = ctx.rel(lens);
+            Vec3 b = ctx.rel(trace.stop());
+            float len = (float) lens.distanceTo(trace.stop());
+            PoseStack.Pose pose = ctx.pose().last();
+            VertexConsumer beam = ctx.buffers().getBuffer(FxRenderTypes.beam());
+            FxDraw.ribbon(pose, beam, a, b, 0.32F, 0.22F, FxDraw.argb(0.35F * shimmer, rgb), FxDraw.argb(0.5F * shimmer, rgb), 0.0F, len);
+            FxDraw.ribbon(pose, beam, a, b, 0.14F, 0.09F, FxDraw.argb(0.85F * shimmer, rgb), FxDraw.argb(0.95F * shimmer, rgb), 0.0F, len);
+            FxDraw.ribbon(pose, beam, a, b, 0.03F, 0.04F, FxDraw.argb(in, WHITE), FxDraw.argb(in, WHITE), 0.0F, len);
+            VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
+            FxDraw.billboard(pose, glow, ctx.camera(), a, 0.28F * shimmer, t * 0.05F, FxDraw.argb(0.9F * in, WHITE));
+            if (trace.hitsSomething()) {
+                FxDraw.billboard(pose, glow, ctx.camera(), b, 0.5F + 0.08F * Mth.sin(t * 3.1F), -t * 0.04F, FxDraw.argb(0.9F * shimmer, rgb));
+            }
+        }
     }
 
     private static final class Bolt implements ClientFx {

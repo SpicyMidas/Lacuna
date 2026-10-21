@@ -175,6 +175,7 @@ public class QuickeningWandItem extends Item {
         tooltip.add(Component.translatable("item.lacuna.quickening_wand.use", Balance.ANIMATED_LIFETIME / 20)
                 .withStyle(ChatFormatting.LIGHT_PURPLE));
         tooltip.add(Component.translatable("item.lacuna.quickening_wand.use2").withStyle(ChatFormatting.GREEN));
+        tooltip.add(Component.translatable("item.lacuna.quickening_wand.use5").withStyle(ChatFormatting.GREEN));
         tooltip.add(Component.translatable("item.lacuna.quickening_wand.use3", Balance.QUICKENING_MAX_ALIVE).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("item.lacuna.quickening_wand.use4").withStyle(ChatFormatting.DARK_GRAY));
         tooltip.add(Component.translatable("lacuna.tooltip.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage())
