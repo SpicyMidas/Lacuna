@@ -12,7 +12,6 @@ import com.lacuna.mod.util.Sfx;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -45,6 +44,7 @@ import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.MobDespawnEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -157,6 +157,7 @@ public final class Possession {
         bus.addListener(Possession::onTravel);
         bus.addListener(Possession::onLogout);
         bus.addListener(Possession::onServerStopping);
+        bus.addListener(Possession::onDespawn);
     }
 
     public static boolean enabled() {
@@ -729,14 +730,16 @@ public final class Possession {
         }
     }
 
+    /** A possessed creature never despawns (its shadow counts as no player for vanilla). */
+    private static void onDespawn(MobDespawnEvent event) {
+        if (hostLink(event.getEntity()) != null) {
+            event.setResult(MobDespawnEvent.Result.DENY);
+        }
+    }
+
     private static void onServerStopping(ServerStoppingEvent event) {
         releaseAll();
         COOLDOWN.clear();
         IMMUNE.clear();
-    }
-
-    /** For {@link HostControl}: all links, read-only use. */
-    static List<Link> links() {
-        return List.copyOf(BY_POSSESSOR.values());
     }
 }

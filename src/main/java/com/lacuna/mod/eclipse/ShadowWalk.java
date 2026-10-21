@@ -204,8 +204,8 @@ public final class ShadowWalk {
         ShadowWalkState state = player.getData(ModAttachments.SHADOW_WALK);
         if (!state.active() || player.serverLevel().getGameTime() >= state.until() || !enabled()) {
             restoreQuietly(player);
-        } else if (!SafeRun.isDisabled(FX_FEATURE)) {
-            SafeRun.run(FX_FEATURE, () -> motes(player));
+        } else if (!SafeRun.isDisabled(FX_FEATURE) && !Possession.isPossessing(player)) {
+            SafeRun.run(FX_FEATURE, () -> motes(player)); // a possessing shadow shows as its host's glowing eyes instead
         }
     }
 

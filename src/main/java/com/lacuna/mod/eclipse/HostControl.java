@@ -142,6 +142,7 @@ final class HostControl {
     /** Before the creature's own tick: its will held down, the shadow's keys become its motion. */
     static void preTick(Possession.Link link, Mob mob) {
         suppress(mob);
+        mob.setNoActionTime(0);
         float fwd = link.forward;
         float str = link.strafe;
         float len = Mth.sqrt(fwd * fwd + str * str);
