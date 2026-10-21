@@ -230,6 +230,7 @@
   "item.lacuna.echo_fragment": "Frammento d'eco",
   "item.lacuna.echo_fragment.tip": "Un ricordo che ha rifiutato di svanire.",
   "item.lacuna.eclipser": "Eclissatore",
+  "item.lacuna.eclipser.dash": "Scatto: da %s a %s danni a ogni nemico sul percorso; la scia d'aria li scaglia via",
   "item.lacuna.eclipser.lore": "Dove taglia, la luce dimentica di tornare.",
   "item.lacuna.eclipser.use": "Usa (carica ≥ %s): scatta attraverso il buio",
   "item.lacuna.ember": "Brace",

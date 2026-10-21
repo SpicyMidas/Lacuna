@@ -230,6 +230,7 @@
   "item.lacuna.echo_fragment": "Echo Fragment",
   "item.lacuna.echo_fragment.tip": "A memory that refused to fade.",
   "item.lacuna.eclipser": "Eclipser",
+  "item.lacuna.eclipser.dash": "Dash: %s to %s damage to every foe in its path; the air wake hurls them aside",
   "item.lacuna.eclipser.lore": "Where it cuts, the light forgets to return.",
   "item.lacuna.eclipser.use": "Use (charge ≥ %s): dash through the dark",
   "item.lacuna.ember": "Ember",
