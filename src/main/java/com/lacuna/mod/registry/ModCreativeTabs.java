@@ -40,7 +40,7 @@ public final class ModCreativeTabs {
             // materials
             ModItems.RUBY, ModItems.DIVINE_GLASS_SHARD, ModItems.RAW_UMBRAL_STEEL, ModItems.UMBRAL_STEEL_INGOT,
             ModItems.UMBRAL_STEEL_NUGGET, ModItems.ZENITHITE_SHARD, ModItems.STARLACE_CLOTH, ModItems.SOLAR_FLARE_FRAGMENT, ModItems.SOLAR_FLARE,
-            ModItems.STAR_FRAGMENT, ModBlocks.FALLEN_STAR,
+            ModItems.STAR_FRAGMENT, ModBlocks.MOLTEN_STAR_ROCK, ModBlocks.PRIME_STAR_ROCK, ModBlocks.EXTINGUISHED_STAR_ROCK,
             ModItems.EXILITE_SHARD,
             ModItems.CHRONAL_SHARD, ModItems.ECHO_FRAGMENT, ModItems.EMBER, ModItems.CRYSTAL_WILLOW_SHARD, ModItems.SILK_DUST, ModItems.CLOCKWORK_GEAR,
             // villages and creatures

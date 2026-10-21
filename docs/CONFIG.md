@@ -32,7 +32,7 @@ load after registration; they live in `Balance`.
 | forgottenBiomes | marshFog, dunesSlowCrops, updraftSprings, mirrorLabyrinth, lastMerchant, sunkenBell | true | |
 | forgottenBiomes | lastMerchantIntervalTicks | 72000 | ~3 in-game days |
 | township | enabled, laws, council, currency, guilds | true | Townships and their subsystems |
-| starfall | naturalStars | true | On clear nights in the overworld a star now and then falls 24-64 blocks from a player (never the first night, never in villages, structures or near a base), leaving a Fallen Star |
+| starfall | naturalStars | true | On clear nights in the overworld a star now and then falls 24-64 blocks from a player (never the first night, never in villages, structures or near a base), leaving a molten Star Rock (it cools to Prime Star Rock, then burns out after about three days) |
 | starfall | naturalChancePerNight | 0.3 | Chance per player and per clear night (at most one star per player per night) |
 | starfall | starlaceBandage | true | Starlace Bandages mummify creatures (shears always unwrap them) |
 

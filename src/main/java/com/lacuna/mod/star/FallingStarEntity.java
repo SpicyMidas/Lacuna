@@ -62,8 +62,9 @@ import org.joml.Vector3f;
  *       re-aims at the locked-on creature (if any), so it bends after it smoothly and ends exactly on it; without a
  *       creature it ends on the block that was looked at. Terrain in the way stops it early.</li>
  *   <li><b>Impact</b>: a small blast (damage with falloff, knockback, burning), a few blocks of crater and some fire
- *       only when mobGriefing is on, then a glowing {@link FallenStarBlock} rests where it fell (or its fragments
- *       drop when there is no ground to hold it).</li>
+ *       only when mobGriefing is on, then a {@link MoltenStarRockBlock} rests where it fell, to cool through Prime Star
+ *       Rock into the Extinguished Block of the Star ({@link StarRock}; or its fragments drop when there is no ground to
+ *       hold it).</li>
  * </ol>
  * The server moves it; the client only eases toward the synced positions and draws it (client/star). Never saved.
  * Stars also fall on their own on clear nights ({@link NaturalStarfall}, {@link #fallFromSky}): those come with a far
@@ -498,7 +499,7 @@ public class FallingStarEntity extends Projectile {
         Entity breaker = owner != null ? owner : this;
         for (BlockPos p : bowl) {
             BlockState s = server.getBlockState(p);
-            if (s.isAir() || !s.getFluidState().isEmpty() || s.hasBlockEntity() || s.is(ModBlocks.FALLEN_STAR.get())
+            if (s.isAir() || !s.getFluidState().isEmpty() || s.hasBlockEntity() || s.is(StarRock.TAG)
                     || s.getDestroySpeed(server, p) < 0.0F || s.getBlock().getExplosionResistance() > Starfall.CRATER_MAX_RESISTANCE) {
                 continue;
             }
@@ -536,12 +537,12 @@ public class FallingStarEntity extends Projectile {
     }
 
     /**
-     * Sets the Fallen Star down on the first solid surface at or below the impact (looking a few blocks down, e.g.
+     * Sets the molten Star Rock down on the first solid surface at or below the impact (looking a few blocks down, e.g.
      * into the crater); with no ground there (a creature struck in mid-air, open water) its fragments drop instead.
      */
     private void restStar(ServerLevel server, Vec3 at, @Nullable BlockPos ground) {
         BlockPos from = ground != null ? ground.above() : BlockPos.containing(at);
-        BlockState star = ModBlocks.FALLEN_STAR.get().defaultBlockState();
+        BlockState star = ModBlocks.MOLTEN_STAR_ROCK.get().defaultBlockState();
         for (int dy = 1; dy >= -5; dy--) {
             BlockPos p = from.above(dy);
             BlockState s = server.getBlockState(p);

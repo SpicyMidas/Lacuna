@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "lacuna:block/extinguished_star_rock"
+  }
+}

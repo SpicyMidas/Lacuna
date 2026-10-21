@@ -32,8 +32,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Fallen Stars on their own: on a clear night in the overworld a star now and then streaks down near a player and
- * leaves a {@link FallenStarBlock} to find, the same star and impact the Starcaller Trumpet calls (crater and fire only
+ * Falling stars on their own: on a clear night in the overworld a star now and then streaks down near a player and
+ * leaves a molten Star Rock ({@link StarRock}) to find, the same star and impact the Starcaller Trumpet calls (crater and fire only
  * with mobGriefing).
  * <ul>
  *   <li><b>When</b>: during the dark of the night ({@link Starfall#NIGHT_FROM}..{@link Starfall#NIGHT_TO}), with no
@@ -46,7 +46,7 @@ import org.jetbrains.annotations.Nullable;
  *       natural open ground ({@code #lacuna:fallen_star_ground}) under the open sky, in a simulated chunk, never in a
  *       village or a structure, and away from beds, workstations and block entities (a base).</li>
  *   <li><b>Finding it</b>: players around are told which way it fell (action bar); the star itself twinkles, whistles
- *       as it falls and the Fallen Star chimes softly.</li>
+ *       as it falls, the molten Star Rock smokes and sizzles, and once cooled it chimes softly.</li>
  * </ul>
  */
 public final class NaturalStarfall {
