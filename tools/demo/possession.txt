@@ -1,0 +1,34 @@
+# Shadow Possession: shadow walk, click a zombie to possess it, walk it forward and strike the cow, then the zombie
+# fights back (crimson rim and cracks, heartbeat) and casts the shadow out.
+world lacuna_possess flat
+wait 60
+cmd time set 6000
+cmd gamerule doDaylightCycle false
+cmd gamerule doMobSpawning false
+cmd gamerule sendCommandFeedback false
+cmd difficulty easy
+cmd effect give @s lacuna:shadow_walk 90
+wait 10
+cmd tp @s 0.5 -60 0 facing 0.5 -58.4 2.5
+cmd summon minecraft:zombie 0.5 -60 2.5 {ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",count:1}],Rotation:[0f,0f]}
+cmd summon minecraft:cow 0.5 -60 6.5 {Rotation:[180f,0f]}
+wait 6
+shot possess_0_walk
+attack
+wait 20
+shot possess_1_inside
+forward on
+wait 14
+forward off
+attack
+wait 4
+shot possess_2_strike
+wait 70
+shot possess_3_resist
+wait 40
+shot possess_4_fighting
+wait 50
+shot possess_5_cracks
+wait 60
+shot possess_6_expelled
+quit
