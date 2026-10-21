@@ -579,13 +579,16 @@ final class TideSpout {
             float tipness = smooth(f0 / 0.08);
             float fade = 1.0F - smooth((fb - 0.6) / 0.4);
             int body = water.get(TideWater.BODY);
+            // the funnel's flared top darkens into the cloud's grey (the shader reads a darker body as dimmer water)
+            int cloud = water.cloud(1.25F);
             for (int j = 0; j < CORE_ROWS; j++) {
                 double g = (double) j / (CORE_ROWS - 1);
                 double f = f0 + (1.0 - f0) * g;
                 double taper = Mth.lerp(tipness, 1.0, Math.pow(smooth(g / 0.2), 0.6));
-                float a = 0.86F * (1.0F - 0.45F * smooth((f - 0.86) / 0.14)) * fade
+                float a = 0.86F * (1.0F - 0.3F * smooth((f - 0.86) / 0.14)) * fade
                         * Mth.lerp(tipness, 1.0F, smooth(g / 0.12)) * smooth(t / 3.0);
-                ring(core, j, c, t, eye, f, coreRadius(f, t, touch, rope) * taper, 1.0, 0.0, FxDraw.argb(a, body), rope, touch);
+                int tone = TideWater.mix(body, cloud, 0.75F * smooth((f - 0.72) / 0.28));
+                ring(core, j, c, t, eye, f, coreRadius(f, t, touch, rope) * taper, 1.0, 0.0, FxDraw.argb(a, tone), rope, touch);
             }
             double s0 = Math.max(f0, 0.015);
             double s1 = 0.93;

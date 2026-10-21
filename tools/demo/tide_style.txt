@@ -12,11 +12,11 @@ cmd tp @s ~ ~3 ~-5 0 -3
 wait 30
 # camera on the perch Q = P+(0,3,-5), 21 blocks from the centre (plains water)
 fx tide_maelstrom ~0 ~-3.11 ~21 ~0 ~-3.11 ~21 7 100 0
+wait 12
+shot ts_t12
 wait 8
-shot ts_t08
-wait 10
-shot ts_t18
-wait 14
+shot ts_t20
+wait 12
 shot ts_t32
 # the tidal wave alongside (P+(-8,0,3) rolling +z)
 fx tide_wave ~-8 ~-3 ~8 ~-8 ~-3 ~9 14 0.7 2.5
@@ -42,4 +42,8 @@ wait 30
 fx tide_wave ~9 ~ ~-8 ~9 ~ ~-7 14 0.7 2.5
 wait 8
 shot ts_swamp_t38
+# far away (about 40 blocks), still readable
+cmd tp @s ~-26 ~6 ~-10 -62 -8
+wait 12
+shot ts_swamp_far_t50
 quit
