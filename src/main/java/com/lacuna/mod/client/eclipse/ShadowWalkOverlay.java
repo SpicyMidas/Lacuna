@@ -27,7 +27,7 @@ final class ShadowWalkOverlay {
     private ShadowWalkOverlay() {}
 
     static void tick(Minecraft mc) {
-        boolean on = mc.player != null && mc.player.hasEffect(ModEffects.SHADOW_WALK);
+        boolean on = mc.player != null && mc.player.hasEffect(ModEffects.SHADOW_WALK) && !PossessionClient.possessing();
         previous = current;
         current += ((on ? 1.0F : 0.0F) - current) * (on ? 0.25F : 0.14F);
         if (!on && current < 0.003F) {

@@ -31,6 +31,7 @@ public final class EclipseClient {
         forgeBus.addListener(EclipseClient::onClientTick);
         forgeBus.addListener(EclipseClient::onComputeFov);
         forgeBus.addListener(EclipseClient::onLogout);
+        PossessionClient.register(modBus, forgeBus);
     }
 
     private static void onRegisterLayers(RegisterGuiLayersEvent event) {
