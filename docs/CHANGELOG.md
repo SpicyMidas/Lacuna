@@ -19,6 +19,14 @@
   the bottom; diamond pickaxe), in the totem's bone, grey, umber and lichen colours, no ruby. Its shards build a
   Forgotten Portal Frame (4 shards around crying obsidian, instead of rubies) and a decorative family: Block of
   Exilite, Polished, Bricks (stairs, slab, wall) and Chiseled Exilite showing the totem's open hand.
+- **Wand of Quickening:** the item now comes alive exactly when the spark hits it (until then it stays a glimmering
+  dropped item that can't be picked up), and the spark flies about 30% faster. Thrown off-hand items are chased and
+  woken on hit; if the item vanishes mid-flight the spark fizzles and the heart is given back.
+- **Living items use their powers:** animated items with a special right-click now and then use it on their target,
+  after rearing up and glowing: the Gravemaw's crescent wave, the Eclipser's dash (once its own hits charged it),
+  the Tidecaller's tidal wave and maelstrom, a Starcaller star, a fleeting Sun's Fury spear, Pyrrhic Scepter bolts,
+  a smaller Ember Triangle wave (rarely, only against groups) and the Magnifying Glass sunbeam. Echo Dagger hits echo.
+  They wear their durability like a player would; bows still shoot, Heartwood arrows still root.
 <!-- rev9 -->
 
 ## 0.8.0 — revision 8 (player feedback)
