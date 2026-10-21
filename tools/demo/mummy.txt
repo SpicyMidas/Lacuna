@@ -18,7 +18,7 @@ cmd summon minecraft:cow 3 -60 7 {"neoforge:attachments":{"lacuna:mummy":{wraps:
 cmd summon minecraft:sheep 5.5 -60 6 {"neoforge:attachments":{"lacuna:mummy":{wraps:1,needed:1}},NoAI:1b,Silent:1b,Rotation:[150f,0f]}
 cmd summon minecraft:spider 8 -60 6 {"neoforge:attachments":{"lacuna:mummy":{wraps:2,needed:2}},NoAI:1b,Silent:1b,Rotation:[160f,0f]}
 cmd summon minecraft:pig 0.5 -60 2 {NoAI:1b,Rotation:[150f,0f]}
-cmd tp @s 0.5 -60 -4 facing 0.5 -59.6 2
+cmd tp @s 0.5 -60 0 facing 0.5 -59.6 2
 wait 60
 select 0
 use on
@@ -29,7 +29,7 @@ shot mummy_row_day
 cmd tp @s -6 -60 2.5 facing -6 -59 6
 wait 20
 shot mummy_closeup
-cmd tp @s 0.5 -60 -4 facing 0.5 -59.6 2
+cmd tp @s 0.5 -60 0 facing 0.5 -59.6 2
 cmd time set 18000
 wait 30
 shot mummy_row_night

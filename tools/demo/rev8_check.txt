@@ -1,0 +1,51 @@
+# Tidecaller waterspout in the wave's style (Fabulous: copy tools/demo/options.txt to run/options.txt with graphicsMode:2)
+# P = spawn feet. Pool of water z+5..25, maelstrom centre P+(0,-0.11,15). A glass perch keeps the raised camera from falling.
+world lacuna_rev8 flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd time set 6000
+cmd fill ~-10 ~-1 ~5 ~10 ~-1 ~25 minecraft:water
+cmd fill ~-1 ~4 ~-2 ~1 ~4 ~0 minecraft:glass
+cmd tp @s ~ ~5 ~-1 0 22
+wait 30
+# camera now at P+(0,5,-1), standing on the glass
+fx tide_maelstrom ~0 ~-5.11 ~16 ~0 ~-5.11 ~16 7 100 0
+wait 12
+shot ts_top_t12
+wait 16
+shot ts_top_t30
+# the tidal wave alongside (P+(-9,0,3) rolling +z)
+fx tide_wave ~-9 ~-5 ~4 ~-9 ~-5 ~5 14 0.7 2.5
+wait 8
+shot ts_top_wave_t39
+# ground-level side view from P+(-14,0,2)
+cmd tp @s ~-14 ~-5 ~3 -45 -12
+wait 14
+shot ts_side_t55
+fx tide_wave ~6 ~ ~1 ~6 ~ ~2 14 0.7 2.5
+wait 9
+shot ts_side_wave_t66
+wait 14
+shot ts_side_t81
+wait 17
+fx tide_geyser ~14 ~-0.11 ~13 ~14 ~-0.11 ~13 7 8 0
+wait 3
+shot ts_geyser_t4
+wait 6
+shot ts_geyser_t11
+wait 6
+shot ts_geyser_t18
+# Starlace Bandage by hand on a pig, then shears
+cmd give @s lacuna:starlace_bandage 16
+cmd give @s minecraft:shears
+cmd summon minecraft:pig 30.5 -60 2 {NoAI:1b,Rotation:[150f,0f]}
+cmd tp @s 30.5 -60 0 facing 30.5 -59.6 2
+wait 30
+select 0
+use on
+wait 3
+use off
+wait 10
+shot r8_mummy_pig
+quit
