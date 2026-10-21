@@ -11,6 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
@@ -34,7 +35,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Wand of Quickening: like the Pyrrhic Scepter it is paid for in health (2, refused when too weak, free in creative).
  * The dropped item under the crosshair (or, failing that, the item in the off hand, thrown out) wakes up as an
- * {@link AnimatedItemEntity} for 40 s, then falls asleep again as exactly the same stack.
+ * {@link AnimatedItemEntity} for 40 s, then falls asleep again as exactly the same stack. It wakes only when the spark
+ * of life reaches it ({@link QuickeningBolt}): health, cooldown and wear are paid at the cast, the heart is given back
+ * if the spark finds nothing left to wake.
  */
 public class QuickeningWandItem extends Item {
     /** Client effect kind of the spark of life flying to the item. */
@@ -65,48 +68,46 @@ public class QuickeningWandItem extends Item {
             }
             return InteractionResultHolder.fail(wand);
         }
-        if (!(level instanceof ServerLevel server)) {
+        if (!(level instanceof ServerLevel server) || !(player instanceof ServerPlayer serverPlayer)) {
             return InteractionResultHolder.success(wand);
         }
 
         Vec3 look = player.getViewVector(1.0F);
-        AnimatedItemEntity animated;
-        if (dropped != null) {
-            // it wakes up facing whoever woke it
-            float faceYaw = (float) Math.toDegrees(Math.atan2(dropped.getX() - player.getX(), player.getZ() - dropped.getZ()));
-            animated = AnimatedItemEntity.spawn(server, dropped.getItem().copy(), player, dropped.position(), Vec3.ZERO, faceYaw);
-            if (animated == null) {
-                return InteractionResultHolder.fail(wand);
-            }
-            dropped.discard();
+        ItemEntity target;
+        boolean tossed = dropped == null;
+        if (!tossed) {
+            target = dropped;
+            QuickeningBolt.freeze(target);
         } else {
-            // the off-hand item is tossed out in front and lands on its new legs
+            // the off-hand item is tossed out in front as a plain item first: the spark chases it and it wakes on the hit
             Vec3 from = player.position().add(look.x * 0.7, player.getEyeHeight() * 0.6, look.z * 0.7);
-            Vec3 toss = new Vec3(look.x * 0.32, 0.28, look.z * 0.32);
-            animated = AnimatedItemEntity.spawn(server, offhand.copy(), player, from, toss, player.getYRot());
-            if (animated == null) {
+            target = new ItemEntity(server, from.x, from.y, from.z, offhand.copy(), look.x * 0.32, 0.28, look.z * 0.32);
+            target.setThrower(player);
+            QuickeningBolt.freeze(target);
+            if (!server.addFreshEntity(target)) {
                 return InteractionResultHolder.fail(wand);
             }
             player.setItemInHand(InteractionHand.OFF_HAND, ItemStack.EMPTY);
         }
 
-        // the price: one heart, flowing from the wielder into the item along a thread of light
-        if (!creative) {
-            player.setHealth(player.getHealth() - Balance.QUICKENING_HEALTH_COST);
+        // the price, paid at the cast: one heart flows from the wielder into the spark (it flows back if the spark is lost)
+        float paid = creative ? 0.0F : Balance.QUICKENING_HEALTH_COST;
+        if (paid > 0.0F) {
+            player.setHealth(player.getHealth() - paid);
         }
         Sfx.at(player, SoundEvents.PLAYER_HURT, 0.45F, 1.7F);
-        // the spark of life flies from the wand to the item (client shader orb, client/gear/QuickeningFx)
+        // the spark of life flies from the wand to the item (client shader orb, client/gear/QuickeningFx); both sides
+        // use the same flight time, so the item wakes on the very tick the orb bursts on it
         Vec3 right = look.cross(new Vec3(0.0, 1.0, 0.0));
         right = right.lengthSqr() < 1.0E-6 ? Vec3.ZERO : right.normalize();
         Vec3 tip = player.getEyePosition().add(look.scale(0.7)).add(right.scale(hand == InteractionHand.MAIN_HAND ? 0.35 : -0.35))
                 .add(0.0, -0.3, 0.0);
-        Vec3 heart = animated.position().add(0.0, 0.4, 0.0);
-        LacunaFx.send(server, tip, FxPayload.line(BOLT_FX, tip, heart).withEntity(animated.getId())
-                .withParams(player.getId(), player.getRandom().nextFloat() * Mth.TWO_PI, 0.0F));
+        Vec3 heart = target.position().add(0.0, 0.25, 0.0);
+        int flight = QuickeningBolt.flightTicks(tip.distanceTo(heart), tossed ? QuickeningBolt.TOSS_MIN_FLIGHT : QuickeningBolt.MIN_FLIGHT);
+        LacunaFx.send(server, tip, FxPayload.line(BOLT_FX, tip, heart).withEntity(target.getId())
+                .withParams(player.getId(), player.getRandom().nextFloat() * Mth.TWO_PI, flight));
         Sfx.at(player, SoundEvents.AMETHYST_BLOCK_CHIME, 0.7F, 1.6F);
-        AnimatedItemEntity.enforceCap(server, player, animated);
-        player.displayClientMessage(Component.translatable("lacuna.quickening.awake", animated.getMainHandItem().getHoverName())
-                .withStyle(ChatFormatting.LIGHT_PURPLE), true);
+        QuickeningBolt.launch(server, serverPlayer, target, flight, paid, tossed);
         player.getCooldowns().addCooldown(this, Balance.QUICKENING_COOLDOWN);
         player.awardStat(Stats.ITEM_USED.get(this));
         wand.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
@@ -126,7 +127,8 @@ public class QuickeningWandItem extends Item {
         AABB box = new AABB(eye, eye.add(look.scale(reach))).inflate(radius + 0.5);
         ItemEntity best = null;
         double bestScore = Double.MAX_VALUE;
-        for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, box, e -> e.isAlive() && !e.getItem().isEmpty())) {
+        for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, box, e -> e.isAlive() && !e.getItem().isEmpty()
+                && !QuickeningBolt.isFrozen(e))) {
             Vec3 rel = item.position().add(0.0, 0.15, 0.0).subtract(eye);
             double along = rel.dot(look);
             if (along < 0.0 || along > reach) {
@@ -171,6 +173,7 @@ public class QuickeningWandItem extends Item {
         tooltip.add(Component.translatable("item.lacuna.quickening_wand.use", Balance.ANIMATED_LIFETIME / 20)
                 .withStyle(ChatFormatting.LIGHT_PURPLE));
         tooltip.add(Component.translatable("item.lacuna.quickening_wand.use2").withStyle(ChatFormatting.GREEN));
+        tooltip.add(Component.translatable("item.lacuna.quickening_wand.use5").withStyle(ChatFormatting.GREEN));
         tooltip.add(Component.translatable("item.lacuna.quickening_wand.use3", Balance.QUICKENING_MAX_ALIVE).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("item.lacuna.quickening_wand.use4").withStyle(ChatFormatting.DARK_GRAY));
         tooltip.add(Component.translatable("lacuna.tooltip.durability", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage())

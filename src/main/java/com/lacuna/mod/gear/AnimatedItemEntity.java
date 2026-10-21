@@ -117,6 +117,8 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
             SynchedEntityData.defineId(AnimatedItemEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Integer> DATA_LIFE = SynchedEntityData.defineId(AnimatedItemEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_FUSING = SynchedEntityData.defineId(AnimatedItemEntity.class, EntityDataSerializers.BOOLEAN);
+    /** Its special power is gathering or under way (the client rears it up and makes it glow). */
+    private static final EntityDataAccessor<Boolean> DATA_POWER = SynchedEntityData.defineId(AnimatedItemEntity.class, EntityDataSerializers.BOOLEAN);
     /** Entity event: it crouches before a leap (client squash). */
     private static final byte EVENT_CROUCH = 91;
     public static final DustParticleOptions PINK_DUST = new DustParticleOptions(new Vector3f(1.0F, 0.45F, 0.8F), 0.7F);
@@ -158,6 +160,13 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
     private int ownerHurtStamp = Integer.MIN_VALUE;
     /** Magical copies it shot or threw: they fade away after a few seconds, they are never items. */
     private final List<Projectile> conjured = new ArrayList<>();
+    /** The item's own special power ({@link AnimatedAbilities}): cooldown, the cue before it, a power under way. */
+    private int specialCooldown;
+    private int specialCue;
+    @Nullable
+    private LivingEntity specialTarget;
+    @Nullable
+    private AnimatedAbilities.Channel channel;
 
     // ------------------------------------------------------------------ client animation state (never saved)
     public int clientLife = Balance.ANIMATED_LIFETIME;
@@ -168,6 +177,9 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
     public int clientLandTicks;
     public int clientCrouchTicks;
     public int clientFuseTicks;
+    /** 0..1: how far it has reared up, glowing, for its special power. */
+    public float clientPower;
+    public float clientPowerO;
     private boolean clientWasOnGround = true;
     private int clientAirTicks;
     /** Renderer-owned: sprite facing (Paper-style flip toward the walking direction). */
@@ -181,6 +193,7 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
         setDropChance(EquipmentSlot.MAINHAND, 0.0F);
         setCanPickUpLoot(false);
         setPersistenceRequired();
+        this.specialCooldown = Mth.nextInt(random, AnimatedAbilities.FIRST_DELAY_MIN, AnimatedAbilities.FIRST_DELAY_MAX);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -198,6 +211,7 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
         builder.define(DATA_OWNER, Optional.empty());
         builder.define(DATA_LIFE, Balance.ANIMATED_LIFETIME);
         builder.define(DATA_FUSING, false);
+        builder.define(DATA_POWER, false);
     }
 
     @Override
@@ -586,6 +600,58 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
         } else if (k == Kind.HEALER && owner != null) {
             supportOwner(owner);
         }
+        tickSpecial();
+    }
+
+    // ------------------------------------------------------------------ special powers (AnimatedAbilities)
+    /** True while its special power gathers or is under way: the fighting goals hold still. */
+    boolean busy() {
+        return specialCue > 0 || channel != null;
+    }
+
+    void startChannel(AnimatedAbilities.Channel power) {
+        channel = power;
+    }
+
+    /** Ticks of life it has left before it falls asleep. */
+    int lifeLeft() {
+        return life;
+    }
+
+    private void tickSpecial() {
+        if (!(level() instanceof ServerLevel server)) {
+            return;
+        }
+        if (channel != null) {
+            AnimatedAbilities.Channel power = channel;
+            getNavigation().stop();
+            if (!SafeRun.call(AnimatedAbilities.FEATURE, () -> power.tick(server, this), false, () -> channel = null)) {
+                channel = null;
+            }
+        } else if (specialCue > 0) {
+            // the cue: it rears up and glows, facing its target, then the power goes off
+            getNavigation().stop();
+            if (specialTarget != null) {
+                getLookControl().setLookAt(specialTarget, 30.0F, 30.0F);
+            }
+            if (--specialCue <= 0) {
+                LivingEntity target = specialTarget;
+                specialTarget = null;
+                specialCooldown = AnimatedAbilities.perform(server, this, target);
+            }
+        } else if (specialCooldown > 0) {
+            specialCooldown--;
+        } else if ((tickCount + getId()) % AnimatedAbilities.OPPORTUNITY_INTERVAL == 0 && pendingLeap <= 0 && fuse <= 0) {
+            LivingEntity target = getTarget();
+            if (target != null && SafeRun.call(AnimatedAbilities.FEATURE, () -> AnimatedAbilities.roll(server, this, target), false)) {
+                specialTarget = target;
+                specialCue = AnimatedAbilities.CUE_TICKS;
+            }
+        }
+        boolean powered = busy();
+        if (entityData.get(DATA_POWER) != powered) {
+            entityData.set(DATA_POWER, powered);
+        }
     }
 
     private void clientTick() {
@@ -606,6 +672,13 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
         clientVyO = clientVy;
         clientVy += ((float) (getY() - yo) - clientVy) * 0.5F;
         clientFuseTicks = entityData.get(DATA_FUSING) ? clientFuseTicks + 1 : 0;
+        clientPowerO = clientPower;
+        clientPower = Mth.approach(clientPower, entityData.get(DATA_POWER) ? 1.0F : 0.0F, entityData.get(DATA_POWER) ? 0.12F : 0.2F);
+        if (clientPower > 0.3F && !isInvisible() && random.nextInt(3) == 0) {
+            // gathering its power: motes of light rise around it
+            level().addParticle(random.nextBoolean() ? ParticleTypes.END_ROD : ModParticles.LIGHT_MOTE.get(), getRandomX(0.8),
+                    getY() + 0.2 + random.nextDouble() * 0.9, getRandomZ(0.8), 0.0, 0.03 + random.nextDouble() * 0.03, 0.0);
+        }
         if (clientLife > 0 && !isInvisible()) {
             // a faint green-and-pink shimmer of borrowed life
             if (random.nextInt(5) == 0) {
@@ -780,6 +853,8 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
         if (k == Kind.MELEE) {
             // the blade keeps its own gifts (rends, drenches, charges...): hurtEnemy, never the durability cost
             SafeRun.run("animated_item_blade", () -> stack.getItem().hurtEnemy(stack, target, this));
+            float dealt = damage;
+            SafeRun.run(AnimatedAbilities.FEATURE, () -> AnimatedAbilities.afterStrike(this, stack, target, dealt));
             if (stack.canPerformAction(ItemAbilities.SWORD_SWEEP)) {
                 sweep(target, damage);
             }
@@ -1457,7 +1532,7 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
         @Override
         public void tick() {
             LivingEntity target = getTarget();
-            if (target == null) {
+            if (target == null || busy()) {
                 return;
             }
             double range = preferredRange();
@@ -1535,7 +1610,7 @@ public class AnimatedItemEntity extends PathfinderMob implements OwnableEntity {
                 return;
             }
             getLookControl().setLookAt(target, 30.0F, 30.0F);
-            if (pendingLeap > 0) {
+            if (pendingLeap > 0 || busy()) {
                 return;
             }
             double d = distanceToSqr(target);

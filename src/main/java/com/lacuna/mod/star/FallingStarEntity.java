@@ -91,6 +91,11 @@ public class FallingStarEntity extends Projectile {
     private boolean struck;
     /** A star nobody called ({@link NaturalStarfall}): no fanfare, no caller, its own death message. */
     private boolean natural;
+    /**
+     * Called by a creature that may not grief (an animated trumpet): no crater or fires, and should the caller be gone
+     * by the impact, players and pets are spared.
+     */
+    private boolean tame;
 
     // client easing toward the server position
     private int lerpSteps;
@@ -116,7 +121,7 @@ public class FallingStarEntity extends Projectile {
      * Calls a star down on {@code aim}. Returns false (nothing happens) when the spot is outside the simulated area or
      * no star could reach it from the sky.
      */
-    public static boolean call(ServerLevel server, Player caller, StarcallerTrumpetItem.Aim aim) {
+    public static boolean call(ServerLevel server, LivingEntity caller, StarcallerTrumpetItem.Aim aim) {
         LivingEntity target = aim.target();
         Vec3 point = target != null ? aimPoint(target) : aim.point();
         if (!server.isPositionEntityTicking(BlockPos.containing(point))) {
@@ -131,6 +136,7 @@ public class FallingStarEntity extends Projectile {
         star.setPos(start.x, start.y, start.z);
         star.aim = point;
         star.callerPos = caller.getEyePosition();
+        star.tame = !(caller instanceof Player) && !net.neoforged.neoforge.event.EventHooks.canEntityGrief(server, caller);
         if (target != null) {
             star.targetUuid = target.getUUID();
             star.target = target;
@@ -194,7 +200,7 @@ public class FallingStarEntity extends Projectile {
      * when terrain blocks the way or the spot is not simulated; with a roof overhead the star starts just under it.
      */
     @Nullable
-    private static Vec3 startFor(ServerLevel server, Player caller, Vec3 point) {
+    private static Vec3 startFor(ServerLevel server, LivingEntity caller, Vec3 point) {
         RandomSource r = caller.getRandom();
         Vec3 flat = new Vec3(point.x - caller.getX(), 0.0, point.z - caller.getZ());
         if (flat.lengthSqr() < 1.0E-4) {
@@ -230,7 +236,7 @@ public class FallingStarEntity extends Projectile {
     }
 
     /** The trumpet's blast: a bright horn call over a chord of plucked light. */
-    private static void fanfare(ServerLevel server, Player caller) {
+    private static void fanfare(ServerLevel server, LivingEntity caller) {
         Vec3 at = caller.getEyePosition();
         Sfx.at(server, at, SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(1), 5.0F, 1.5F);
         Sfx.at(server, at, SoundEvents.GOAT_HORN_SOUND_VARIANTS.get(5), 2.5F, 1.26F);
@@ -388,7 +394,7 @@ public class FallingStarEntity extends Projectile {
         struck = true;
         Entity owner = getOwner();
         boolean wet = !server.getFluidState(BlockPos.containing(at)).isEmpty();
-        boolean griefing = server.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+        boolean griefing = !tame && server.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
         blast(server, at, owner);
         BlockPos ground = groundAt(server, at, hit);
         boolean cratered = false;
@@ -419,6 +425,9 @@ public class FallingStarEntity extends Projectile {
             boolean locked = e == target;
             if (d > reach && !locked) {
                 continue;
+            }
+            if (tame && owner == null && (e instanceof Player || e instanceof net.minecraft.world.entity.OwnableEntity)) {
+                continue; // its caller is gone: nothing tells friend from foe any more
             }
             float damage = locked ? Starfall.BLAST_DAMAGE : Starfall.damageAt(d);
             boolean affected = damage <= 0.0F || e.hurt(source, damage);

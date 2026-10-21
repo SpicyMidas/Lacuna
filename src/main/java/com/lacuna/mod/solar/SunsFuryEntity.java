@@ -71,6 +71,8 @@ public class SunsFuryEntity extends Projectile {
     private boolean dealtDamage;
     private boolean dryRun;
     private boolean landedLocally;
+    /** A conjured echo (thrown by an animated Sun's Fury): it strikes like the spear, then fades where it lands. */
+    private boolean fleeting;
 
     public SunsFuryEntity(EntityType<? extends SunsFuryEntity> type, Level level) {
         super(type, level);
@@ -144,6 +146,16 @@ public class SunsFuryEntity extends Projectile {
     /** GameTest hook: the strike that follows this focus deals no damage and breaks nothing. */
     public void setDryRun(boolean dryRun) {
         this.dryRun = dryRun;
+    }
+
+    /** Makes this spear a fleeting echo: the impact only, no focus, no solar ray, never saved. */
+    public void setFleeting(boolean fleeting) {
+        this.fleeting = fleeting;
+    }
+
+    @Override
+    public boolean shouldBeSaved() {
+        return !fleeting && super.shouldBeSaved();
     }
 
     // ------------------------------------------------------------------ ticking
@@ -316,6 +328,15 @@ public class SunsFuryEntity extends Projectile {
 
     private void land(Vec3 at, Vec3 velocity) {
         if (isFocusing() || landedLocally) {
+            return;
+        }
+        if (fleeting) {
+            if (level() instanceof ServerLevel server) {
+                server.sendParticles(ModParticles.SOLAR_GLINT.get(), at.x, at.y + 0.1, at.z, 8, 0.3, 0.2, 0.3, 0.03);
+                server.sendParticles(ModParticles.LIGHT_MOTE.get(), at.x, at.y + 0.1, at.z, 10, 0.3, 0.25, 0.3, 0.04);
+                server.playSound(null, at.x, at.y, at.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 0.8F, 1.6F);
+            }
+            discard(); // the echo of the spear fades: no focus, no ray
             return;
         }
         Vec3 dir = velocity.lengthSqr() > 1.0E-6 ? velocity.normalize() : new Vec3(0.0, -1.0, 0.0);

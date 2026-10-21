@@ -6,8 +6,13 @@ import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.beam.BeamTrace;
+import com.lacuna.mod.gear.AnimatedAbilities;
+import com.lacuna.mod.gear.AnimatedItemEntity;
+import com.lacuna.mod.gear.QuickeningBolt;
 import com.lacuna.mod.gear.QuickeningWandItem;
 import com.lacuna.mod.network.FxPayload;
+import com.lacuna.mod.registry.ModParticles;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -18,12 +23,15 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Wand of Quickening visuals ({@value QuickeningWandItem#BOLT_FX}): the spark of life leaves the wand as a glowing
  * shader orb (soft pink halo, white-hot heart, flickering), flies to the item along a gentle spiralling arc trailing a
- * tapering ribbon of light, follows the item if it already hops away, and bursts on arrival in a ring of light with a
- * few hearts. Purely visual: the item is woken on the server as before.
+ * tapering ribbon of light, follows the item wherever it moves (a tossed off-hand item is chased through the air), and
+ * bursts on arrival in a ring of light with a few hearts. The flight time comes with the payload (computed on the server
+ * by {@link QuickeningBolt#flightTicks}, the same rule this side falls back on), so the burst lands on the tick the
+ * server wakes the item; an item that vanishes early (the spark is lost) gets a small grey fizzle instead.
  */
 public final class QuickeningFx {
     private static final int PINK = 0xFF6BC7;
@@ -35,6 +43,99 @@ public final class QuickeningFx {
 
     public static void register() {
         FxHandlers.register(QuickeningWandItem.BOLT_FX, p -> FxManager.add(new Bolt(p)));
+        FxHandlers.register(AnimatedAbilities.BEAM_FX, p -> FxManager.add(new SunBeam(p)));
+    }
+
+    /**
+     * An animated Divine Magnifying Glass focusing sunlight on its target ({@value AnimatedAbilities#BEAM_FX}): the
+     * beam follows both creatures and ends where the shared {@link BeamTrace} stops, in the beam's own colour, until the
+     * item stops glowing (the server ended the power) or its time is up.
+     */
+    private static final class SunBeam implements ClientFx {
+        private final int userId;
+        private final int targetId;
+        private final int life;
+        private int age;
+
+        SunBeam(FxPayload p) {
+            this.userId = p.entityId();
+            this.targetId = (int) p.p0();
+            this.life = Math.max(1, (int) p.p1()) + 4;
+        }
+
+        @Nullable
+        private AnimatedItemEntity user() {
+            ClientLevel level = Minecraft.getInstance().level;
+            return level != null && level.getEntity(userId) instanceof AnimatedItemEntity e && !e.isRemoved() ? e : null;
+        }
+
+        @Nullable
+        private Entity target() {
+            ClientLevel level = Minecraft.getInstance().level;
+            Entity e = level != null ? level.getEntity(targetId) : null;
+            return e != null && !e.isRemoved() ? e : null;
+        }
+
+        @Override
+        public boolean tick() {
+            age++;
+            AnimatedItemEntity user = user();
+            ClientLevel level = Minecraft.getInstance().level;
+            if (user == null || target() == null || level == null || age > life || (age > 6 && user.clientPower < 0.5F)) {
+                return false;
+            }
+            BeamTrace trace = trace(user, 1.0F);
+            if (trace != null && trace.hitsSomething()) {
+                Vec3 hit = trace.stop().subtract(trace.look().scale(0.08));
+                level.addParticle(ModParticles.SOLAR_GLINT.get(), hit.x, hit.y, hit.z, 0.0, 0.0, 0.0);
+            }
+            return true;
+        }
+
+        @Nullable
+        private BeamTrace trace(AnimatedItemEntity user, float pt) {
+            Entity target = target();
+            if (target == null) {
+                return null;
+            }
+            Vec3 eye = user.getEyePosition(pt);
+            Vec3 d = target.getPosition(pt).add(0.0, target.getBbHeight() * 0.5, 0.0).subtract(eye);
+            if (d.lengthSqr() < 1.0E-6) {
+                return null;
+            }
+            return BeamTrace.of(user.level(), user, eye, d.normalize(), pt);
+        }
+
+        @Override
+        public void render(FxRenderContext ctx) {
+            AnimatedItemEntity user = user();
+            if (user == null) {
+                return;
+            }
+            float pt = ctx.partialTick();
+            BeamTrace trace = trace(user, pt);
+            if (trace == null) {
+                return;
+            }
+            float t = ctx.time(age);
+            float in = Mth.clamp(t / 4.0F, 0.0F, 1.0F) * Mth.clamp((life - t) / 4.0F, 0.0F, 1.0F);
+            float shimmer = (0.9F + 0.1F * Mth.sin(t * 1.9F)) * in;
+            int rgb = trace.beam().color();
+            Vec3 lens = trace.eye().add(trace.look().scale(0.25));
+            Vec3 a = ctx.rel(lens);
+            Vec3 b = ctx.rel(trace.stop());
+            float len = (float) lens.distanceTo(trace.stop());
+            PoseStack.Pose pose = ctx.pose().last();
+            VertexConsumer beam = ctx.buffers().getBuffer(FxRenderTypes.beam());
+            FxDraw.ribbon(pose, beam, a, b, 0.32F, 0.22F, FxDraw.argb(0.35F * shimmer, rgb), FxDraw.argb(0.5F * shimmer, rgb), 0.0F, len);
+            FxDraw.ribbon(pose, beam, a, b, 0.14F, 0.09F, FxDraw.argb(0.85F * shimmer, rgb), FxDraw.argb(0.95F * shimmer, rgb), 0.0F, len);
+            FxDraw.ribbon(pose, beam, a, b, 0.03F, 0.04F, FxDraw.argb(in, WHITE), FxDraw.argb(in, WHITE), 0.0F, len);
+            VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
+            FxDraw.billboard(pose, glow, ctx.camera(), a, 0.28F * shimmer, t * 0.05F, FxDraw.argb(0.9F * in, WHITE));
+            if (trace.hitsSomething()) {
+                FxDraw.billboard(pose, glow, ctx.camera(), b, 0.5F + 0.08F * Mth.sin(t * 3.1F), -t * 0.04F, FxDraw.argb(0.9F * shimmer, rgb));
+            }
+        }
     }
 
     private static final class Bolt implements ClientFx {
@@ -48,8 +149,11 @@ public final class QuickeningFx {
         private int trailCount;
         private Vec3 last;
         private Vec3 prev;
+        /** Where the item was last seen (it is gone once it wakes). */
+        private Vec3 lastEnd;
         private int age;
         private int burstAge = -1;
+        private boolean fizzle;
 
         Bolt(FxPayload p) {
             this.targetId = p.entityId();
@@ -65,16 +169,24 @@ public final class QuickeningFx {
                 from = self.getEyePosition().add(look.scale(0.9)).add(right.scale(0.45)).add(up.scale(-0.35));
             }
             this.start = from;
-            this.flight = Mth.clamp((int) Math.ceil(from.distanceTo(fallbackEnd) / 0.85), 5, 24);
+            // the server's flight time, never the first-person start above: both sides must agree on the tick of impact
+            this.flight = p.p2() >= 1.0F ? Math.round(p.p2()) : QuickeningBolt.flightTicks(p.a().distanceTo(p.b()));
+            this.lastEnd = fallbackEnd;
             this.spin = p.p1();
             this.last = from;
             this.prev = from;
         }
 
-        private Vec3 end(float partial) {
+        @Nullable
+        private Entity target() {
             ClientLevel level = Minecraft.getInstance().level;
             Entity e = level != null ? level.getEntity(targetId) : null;
-            return e != null ? e.getPosition(partial).add(0.0, e.getBbHeight() * 0.6, 0.0) : fallbackEnd;
+            return e != null && !e.isRemoved() ? e : null;
+        }
+
+        private Vec3 end(float partial) {
+            Entity e = target();
+            return e != null ? e.getPosition(partial).add(0.0, Math.max(0.25, e.getBbHeight() * 0.6), 0.0) : lastEnd;
         }
 
         /** The orb on its arc at progress {@code t}: an ease-in flight bowed upwards with a slow corkscrew. */
@@ -109,6 +221,11 @@ public final class QuickeningFx {
                 return burstAge < 10;
             }
             prev = last;
+            if (target() != null) {
+                lastEnd = end(1.0F);
+            } else if (age < flight - 2) {
+                fizzle = true; // the item is gone long before the spark could reach it
+            }
             Vec3 end = end(1.0F);
             last = at(Math.min(1.0F, age / (float) flight), end);
             System.arraycopy(trail, 0, trail, 1, TRAIL - 1);
@@ -118,8 +235,15 @@ public final class QuickeningFx {
                 level.addParticle(ParticleTypes.END_ROD, last.x, last.y, last.z, (r.nextDouble() - 0.5) * 0.02,
                         (r.nextDouble() - 0.5) * 0.02, (r.nextDouble() - 0.5) * 0.02);
             }
-            if (age >= flight) {
+            if (age >= flight || fizzle) {
                 burstAge = 0;
+                if (fizzle) {
+                    for (int i = 0; i < 6; i++) {
+                        level.addParticle(ParticleTypes.SMOKE, last.x, last.y, last.z, (r.nextDouble() - 0.5) * 0.05, 0.03,
+                                (r.nextDouble() - 0.5) * 0.05);
+                    }
+                    return true;
+                }
                 for (int i = 0; i < 3; i++) {
                     level.addParticle(ParticleTypes.HEART, end.x + (r.nextDouble() - 0.5) * 0.5, end.y + 0.2 + r.nextDouble() * 0.3,
                             end.z + (r.nextDouble() - 0.5) * 0.5, 0.0, 0.05, 0.0);
@@ -137,7 +261,7 @@ public final class QuickeningFx {
             PoseStack.Pose pose = ctx.pose().last();
             float pt = ctx.partialTick();
             float time = ctx.time(age);
-            Vec3 head = burstAge >= 0 ? end(pt) : prev.lerp(last, pt);
+            Vec3 head = burstAge >= 0 ? (fizzle ? last : end(pt)) : prev.lerp(last, pt);
             // tapering ribbon of light through the last positions
             if (trailCount > 1) {
                 VertexConsumer vc = ctx.buffers().getBuffer(FxRenderTypes.beam());
@@ -164,8 +288,12 @@ public final class QuickeningFx {
                 FxDraw.billboard(pose, ring, ctx.camera(), c, 0.32F + 0.05F * Mth.sin(time * 0.9F), time * 0.2F,
                         FxDraw.argb(0.45F, ROSE));
             } else {
-                // the burst: a flash and a widening ring of light that fades
+                // the burst: a flash and a widening ring of light that fades (a lost spark only gutters out)
                 float f = (burstAge + pt) / 10.0F;
+                if (fizzle) {
+                    FxDraw.billboard(pose, glow, ctx.camera(), c, 0.4F * (1.0F - f), 0.0F, FxDraw.argb(0.5F * (1.0F - f), ROSE));
+                    return;
+                }
                 FxDraw.billboard(pose, glow, ctx.camera(), c, 0.5F + 0.9F * f, 0.0F, FxDraw.argb(0.9F * (1.0F - f), PINK));
                 FxDraw.billboard(pose, glow, ctx.camera(), c, 0.35F * (1.0F - f), 0.0F, FxDraw.argb(1.0F - f, WHITE));
                 VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));

@@ -107,23 +107,30 @@ public class GravemawGreatswordItem extends SwordItem {
         if (charge < Balance.GRAVEMAW_MIN_CHARGE || !(level instanceof ServerLevel server) || !(entity instanceof Player player)) {
             return;
         }
-        SafeRun.run("gravemaw", () -> wave(server, player, stack, charge));
+        SafeRun.run("gravemaw", () -> {
+            wave(server, player, charge, player.getLookAngle().multiply(1, 0, 1).normalize());
+            stack.hurtAndBreak(3, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
+            player.getCooldowns().addCooldown(this, Balance.GRAVEMAW_COOLDOWN);
+        });
     }
 
-    private void wave(ServerLevel level, Player player, ItemStack stack, int charge) {
+    /**
+     * The crescent wave of a {@code charge}-tick charge sent by {@code user} along the horizontal {@code facing}: damage,
+     * knockback, the clients' wave and its sound. Wear and cooldown are the caller's (shared with animated items).
+     */
+    public static void wave(ServerLevel level, LivingEntity user, int charge, Vec3 facing) {
         float damage = Balance.GRAVEMAW_WAVE_BASE + Balance.GRAVEMAW_WAVE_PER_TICK * charge;
-        Vec3 origin = player.position().add(0, player.getBbHeight() * 0.5, 0);
-        Vec3 facing = player.getLookAngle().multiply(1, 0, 1).normalize();
+        Vec3 origin = user.position().add(0, user.getBbHeight() * 0.5, 0);
         double cos = Math.cos(Math.toRadians(Balance.GRAVEMAW_ARC_DEGREES));
         double range = Balance.GRAVEMAW_RANGE;
-        AABB box = player.getBoundingBox().inflate(range, 2.0, range);
-        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, box, e -> e != player && e.isAlive() && !e.isSpectator())) {
+        AABB box = user.getBoundingBox().inflate(range, 2.0, range);
+        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, box, e -> e != user && e.isAlive() && !e.isSpectator())) {
             Vec3 to = target.position().add(0, target.getBbHeight() * 0.5, 0).subtract(origin);
             Vec3 flat = to.multiply(1, 0, 1);
             if (flat.length() > range || flat.lengthSqr() < 1.0E-4 || flat.normalize().dot(facing) < cos) {
                 continue;
             }
-            if (target.hurt(ModDamageTypes.source(level, ModDamageTypes.GRAVEMAW_WAVE, player), damage)) {
+            if (target.hurt(ModDamageTypes.source(level, ModDamageTypes.GRAVEMAW_WAVE, user), damage)) {
                 target.knockback(1.0, -facing.x, -facing.z);
                 Vec3 c = target.position().add(0, target.getBbHeight() * 0.5, 0);
                 level.sendParticles(ModParticles.CRIMSON_SPARK.get(), c.x, c.y, c.z, 10, 0.2, 0.3, 0.2, 0.25);
@@ -132,13 +139,11 @@ public class GravemawGreatswordItem extends SwordItem {
         }
         // the wave itself is drawn by the clients (GravemawFx): a curved wall of umbral energy sweeping 8 blocks out
         float strength = (charge - Balance.GRAVEMAW_MIN_CHARGE) / (float) (Balance.GRAVEMAW_MAX_CHARGE - Balance.GRAVEMAW_MIN_CHARGE);
-        LacunaFx.send(level, player.position(), FxPayload.line("gravemaw_wave", player.position(), player.position().add(facing))
-                .withEntity(player.getId()).withParams(strength, (float) range, (float) Balance.GRAVEMAW_ARC_DEGREES));
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.MACE_SMASH_GROUND_HEAVY, SoundSource.PLAYERS, 1.0F, 0.7F);
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.WARDEN_ATTACK_IMPACT, SoundSource.PLAYERS, 0.8F, 0.6F);
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 0.5F);
-        stack.hurtAndBreak(3, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
-        player.getCooldowns().addCooldown(this, Balance.GRAVEMAW_COOLDOWN);
+        LacunaFx.send(level, user.position(), FxPayload.line("gravemaw_wave", user.position(), user.position().add(facing))
+                .withEntity(user.getId()).withParams(strength, (float) range, (float) Balance.GRAVEMAW_ARC_DEGREES));
+        level.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.MACE_SMASH_GROUND_HEAVY, SoundSource.PLAYERS, 1.0F, 0.7F);
+        level.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.WARDEN_ATTACK_IMPACT, SoundSource.PLAYERS, 0.8F, 0.6F);
+        level.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0F, 0.5F);
     }
 
     @Override

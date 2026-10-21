@@ -46,9 +46,13 @@ public class EchoDaggerItem extends SwordItem {
                 || !(player.getMainHandItem().getItem() instanceof EchoDaggerItem) || !LacunaConfig.get(LacunaConfig.SPECIAL_WEAPONS_ENABLED)) {
             return;
         }
-        LivingEntity target = event.getEntity();
-        QUEUE.add(new PendingEcho(target.getUUID(), target.level().dimension(), player.getUUID(),
-                event.getNewDamage() * Balance.ECHO_DAGGER_FACTOR, player.level().getGameTime() + Balance.ECHO_DAGGER_DELAY));
+        scheduleEcho(player, event.getEntity(), event.getNewDamage());
+    }
+
+    /** The dagger's echo of a {@code damage} hit by {@code attacker} (a player, or an animated dagger): 60 % of it, 10 ticks later. */
+    public static void scheduleEcho(LivingEntity attacker, LivingEntity target, float damage) {
+        QUEUE.add(new PendingEcho(target.getUUID(), target.level().dimension(), attacker.getUUID(),
+                damage * Balance.ECHO_DAGGER_FACTOR, attacker.level().getGameTime() + Balance.ECHO_DAGGER_DELAY));
         com.lacuna.mod.util.Sfx.varied(target, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_HIT, 0.8F, 1.7F, 0.1F);
     }
 
