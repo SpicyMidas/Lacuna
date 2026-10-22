@@ -13,6 +13,7 @@ import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModParticles;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -23,6 +24,7 @@ import net.minecraft.world.phys.Vec3;
  * blast radius ({@link GroundDecal}, so it hugs steps and slopes), in the exilite palette sampled from the user's
  * textures: an umber shadow ring under a pearl-white front, a cream ring trailing behind it, a pale flare at the centre;
  * stone chips and rift sparks thrown off the front as it passes, and a short camera shake for whoever stands in it.
+ * A player who has just landed sees their own arrival wave once the loading screen is gone.
  * The arrival blast ({@code p1} = 1) is a little slower and lingers longer.
  */
 public final class BanishBlastFx {
@@ -32,17 +34,14 @@ public final class BanishBlastFx {
     static final int CREAM = 0xD2C9B2;
     static final int UMBER = 0x7C6C58;
 
+    /** Longest wait behind a loading screen (10 s). */
+    private static final int MAX_WAIT = 200;
+
     private BanishBlastFx() {}
 
     /** From {@code BanishArrivalFx.register()}. */
     public static void register() {
-        FxHandlers.register(TotemBlast.FX, p -> {
-            FxManager.add(new Wave(p));
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null && mc.player.position().distanceToSqr(p.a()) < p.p0() * p.p0()) {
-                ScreenFx.shake(p.p0() > 3.0F ? 2.2F : 1.2F, 10);
-            }
-        });
+        FxHandlers.register(TotemBlast.FX, p -> FxManager.add(new Wave(p)));
     }
 
     private static final class Wave implements ClientFx {
@@ -51,6 +50,9 @@ public final class BanishBlastFx {
         private final int life;
         private final GroundDecal decal = new GroundDecal();
         private int age;
+        private int waited;
+        /** The level it was sent in: the departure wave dies with the old world when its traveller changes dimension. */
+        private final ClientLevel born = Minecraft.getInstance().level;
 
         Wave(FxPayload p) {
             this.at = p.a();
@@ -64,9 +66,25 @@ public final class BanishBlastFx {
             return radius * (1.0F - (1.0F - x) * (1.0F - x) * (1.0F - x));
         }
 
+        /** The arriving player's own copy waits behind the loading screen, so the wave is seen when the world is. */
+        private boolean waiting() {
+            return Minecraft.getInstance().screen instanceof ReceivingLevelScreen && waited < MAX_WAIT;
+        }
+
         @Override
         public boolean tick() {
-            ClientLevel level = Minecraft.getInstance().level;
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level != born) {
+                return false;
+            }
+            if (waiting()) {
+                waited++;
+                return true;
+            }
+            ClientLevel level = mc.level;
+            if (age == 0 && mc.player != null && mc.player.position().distanceToSqr(at) < radius * radius) {
+                ScreenFx.shake(radius > 3.0F ? 2.2F : 1.2F, 10);
+            }
             if (level != null && age < life * 0.7F) {
                 RandomSource r = level.random;
                 float f = front(age + 1);
@@ -87,6 +105,9 @@ public final class BanishBlastFx {
 
         @Override
         public void render(FxRenderContext ctx) {
+            if (waiting() || ctx.level() != born) {
+                return;
+            }
             float t = ctx.time(age);
             float life01 = Mth.clamp(t / life, 0.0F, 1.0F);
             float fade = life01 < 0.1F ? life01 / 0.1F : 1.0F - Mth.clamp((life01 - 0.35F) / 0.65F, 0.0F, 1.0F);
