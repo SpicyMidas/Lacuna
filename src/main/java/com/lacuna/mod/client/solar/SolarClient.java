@@ -6,7 +6,6 @@ import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.util.SafeRun;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -17,7 +16,8 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 
 /**
  * Client wiring of the solar effects (Sun's Fury and the Divine Magnifying Glass): shaders, the sun flare in the
- * sky, the after-particles light pass and the per-tick impact particles. Everything runs inside {@link SafeRun}.
+ * sky, the after-particles pass (ground marks drawn, light queued), the after-level light pass with depth and volume
+ * ({@link SolarVolume}) and the per-tick impact particles. Everything runs inside {@link SafeRun}.
  */
 public final class SolarClient {
     public static final String FEATURE = "solar_fx";
@@ -26,6 +26,7 @@ public final class SolarClient {
 
     public static void register(IEventBus modBus, IEventBus forgeBus) {
         modBus.addListener(SolarRenderTypes::onRegisterShaders);
+        modBus.addListener(SolarVolume::onRegisterShaders);
         modBus.addListener(SolarClient::onClientSetup);
         forgeBus.addListener(SolarClient::onClientTick);
         forgeBus.addListener(SolarClient::onRenderLevel);
@@ -69,7 +70,8 @@ public final class SolarClient {
             }
             SafeRun.run(FEATURE, () -> {
                 RenderSystem.defaultBlendFunc();
-                MultiBufferSource.BufferSource buffers = SolarBuffers.get();
+                SolarBuffers buffers = SolarBuffers.get();
+                SolarVolume.beginFrame(buffers);
                 FxRenderContext ctx = new FxRenderContext(event.getPoseStack(), event.getCamera(), event.getCamera().getPosition(),
                         event.getPartialTick().getGameTimeDeltaPartialTick(false), buffers, mc.level);
                 try {
@@ -77,10 +79,14 @@ public final class SolarClient {
                     MagnifierBeams.render(ctx);
                     SpearCharge.render(ctx);
                 } finally {
-                    buffers.endBatch();
+                    // the ground marks now; the light waits for the late pass (after clouds, weather and the
+                    // Fabulous composite)
+                    buffers.endEarly();
                     RenderSystem.defaultBlendFunc();
                 }
             }, SolarVisuals::clear);
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL) {
+            SafeRun.run(FEATURE, () -> SolarVolume.drawLate(event, SolarBuffers.get()));
         }
     }
 

@@ -30,6 +30,10 @@ import org.jetbrains.annotations.Nullable;
  * <b>over</b> ({@code ONE, ONE_MINUS_SRC_ALPHA}: the light also covers what is behind it, which keeps the gold visible
  * against a bright daytime sky instead of washing out to white). Like {@link FxShaders}, a shader that fails to load
  * is logged and replaced by the framework's beam / glow / textured types.
+ * <p>
+ * The light (columns, sunbeams, the trail, flares and glows) is drawn with depth and volume after the level by
+ * {@link SolarVolume} whenever its shaders loaded: these types then only name it (the swap happens in
+ * {@link SolarBuffers}); the ground marks stay here, after particles.
  */
 public final class SolarRenderTypes {
     /** {@code solar_ring} modes: pass {@code mode * 2} as the u offset of the quad (u = offset + 0..1). */
@@ -46,7 +50,7 @@ public final class SolarRenderTypes {
     private static ShaderInstance ring;
 
     /** Premultiplied "over": src + dst * (1 - src.a). */
-    private static final RenderStateShard.TransparencyStateShard OVER = new RenderStateShard.TransparencyStateShard("lacuna_premultiplied_over",
+    static final RenderStateShard.TransparencyStateShard OVER = new RenderStateShard.TransparencyStateShard("lacuna_premultiplied_over",
             () -> {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
@@ -64,12 +68,17 @@ public final class SolarRenderTypes {
     private static final RenderStateShard.ShaderStateShard POS_TEX_COLOR =
             new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader);
 
-    // world space: after particles, depth-tested, particle target (correct under Fabulous)
-    private static final RenderType COLUMN_ADD = create("lacuna_solar_column", COLUMN_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
+    // world space: after particles, depth-tested, particle target; the light ones are drawn after the level with depth
+    // and volume instead when their SolarVolume twin loaded
+    static final RenderType COLUMN_ADD = create("lacuna_solar_column", COLUMN_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
-    private static final RenderType COLUMN_OVER = create("lacuna_solar_column_over", COLUMN_SHADER, OVER,
+    static final RenderType COLUMN_OVER = create("lacuna_solar_column_over", COLUMN_SHADER, OVER,
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
-    private static final RenderType FLARE_ADD = create("lacuna_solar_flare", CORONA_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
+    static final RenderType SKY_COLUMN_ADD = create("lacuna_solar_sky_column", COLUMN_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
+            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    static final RenderType SKY_COLUMN_OVER = create("lacuna_solar_sky_column_over", COLUMN_SHADER, OVER,
+            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    static final RenderType FLARE_ADD = create("lacuna_solar_flare", CORONA_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
     private static final RenderType RING_ADD = create("lacuna_solar_ring", RING_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
@@ -128,8 +137,8 @@ public final class SolarRenderTypes {
      * order: the covering layers first, then the light that adds on top of them.
      */
     static java.util.List<RenderType> drawOrder() {
-        return java.util.List.of(columnOver(), ringOver(), glowOver(), ring(), column(), FxRenderTypes.beam(), FxRenderTypes.glowShader(),
-                flare());
+        return java.util.List.of(columnOver(), skyColumnOver(), ringOver(), glowOver(), ring(), column(), skyColumn(), FxRenderTypes.beam(),
+                FxRenderTypes.glowShader(), flare());
     }
 
     /** Additive column light (u across, v = blocks along; colour = tint, alpha = intensity), or the beam fallback. */
@@ -140,6 +149,19 @@ public final class SolarRenderTypes {
     /** Column light that also covers the background (keeps its colour on a bright sky). */
     public static RenderType columnOver() {
         return column != null ? COLUMN_OVER : FxRenderTypes.beam();
+    }
+
+    /**
+     * {@link #column()} for sunlight coming down from the sun's disc in the sky: drawn the same, but not fogged like
+     * the terrain (vanilla does not fog the sun either), so the shafts keep leaving the disc at any render distance.
+     */
+    public static RenderType skyColumn() {
+        return column != null ? SKY_COLUMN_ADD : FxRenderTypes.beam();
+    }
+
+    /** {@link #columnOver()} for sunlight from the sky (see {@link #skyColumn()}). */
+    public static RenderType skyColumnOver() {
+        return column != null ? SKY_COLUMN_OVER : FxRenderTypes.beam();
     }
 
     /** Additive starburst flare (u,v 0..1 over a billboard): the corona shader in world space, or the glow fallback. */

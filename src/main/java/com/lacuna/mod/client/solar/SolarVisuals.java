@@ -310,7 +310,7 @@ public final class SolarVisuals {
 
         // 1. a vast faint cone of gathered sunlight from the sun narrowing onto the target (covers: keeps its colour on
         // a bright sky)
-        VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
+        VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.skyColumnOver());
         shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, Mth.lerp(e, 20.0F, 1.6F), (float) (far * Mth.lerp(e, 0.3F, 0.06F)),
                 (0.1F + 0.32F * e) * sun, (0.04F + 0.1F * e) * sun, gold, amber, 0);
 
@@ -322,7 +322,7 @@ public final class SolarVisuals {
         float spin = t * 0.008F + e * 1.4F;
         float sunWidth = (float) (far * SunLight.DISC * Mth.lerp(e, 0.7F, 0.35F));
         float lines = (float) SolarMath.ease((e - 0.35) / 0.65);
-        VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
+        VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.skyColumn());
         for (int i = 0; i < SHAFTS; i++) {
             double ang = i * Math.PI * 2.0 / SHAFTS + spin;
             double cos = Math.cos(ang);

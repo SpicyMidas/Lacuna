@@ -31,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
  *       pixel was sorted at the depth of the opaque surface behind it and any water, ice, glass or cloud behind an effect
  *       was composited on top of it - over the sea a Tidecaller whirlpool all but vanished. Under Fabulous a second,
  *       depth-only pass ({@link FxRenderTypes#depthTwin}) writes the effects' own depth after their colour.</li>
+ *   <li><b>Clouds</b>: in Fast / Fancy the effects are drawn after the clouds and weather ({@link #stage()}), so the
+ *       clouds no longer paint over them regardless of distance.</li>
  * </ul>
  * Bounded (oldest effects are dropped past {@link #MAX}); cleared on logout.
  */
@@ -120,7 +122,7 @@ public final class FxManager {
     }
 
     public static void onRenderLevel(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+        if (event.getStage() != stage()) {
             return;
         }
         // additive particle render types leave their blend function behind: restore the default first
@@ -139,6 +141,16 @@ public final class FxManager {
             flushPending();
             RenderSystem.defaultBlendFunc();
         }
+    }
+
+    /**
+     * Fabulous: after particles, into the particle layer the composite sorts by depth. Fast / Fancy: after the clouds
+     * and weather instead, which there are drawn straight into the main target after particles and write depth:
+     * drawn before them, every cloud painted over the effects whatever its distance; drawn after them, the depth test
+     * keeps near clouds in front and far clouds behind.
+     */
+    private static RenderLevelStageEvent.Stage stage() {
+        return Minecraft.useShaderTransparency() ? RenderLevelStageEvent.Stage.AFTER_PARTICLES : RenderLevelStageEvent.Stage.AFTER_WEATHER;
     }
 
     private static void render(RenderLevelStageEvent event, Minecraft mc, PoseStack pose) {
