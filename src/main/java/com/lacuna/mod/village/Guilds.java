@@ -8,7 +8,6 @@ import com.lacuna.mod.registry.ModComponents;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.registry.ModVillagers;
 import java.util.List;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -56,49 +55,53 @@ public final class Guilds {
         return GuildType.byName(player.getData(ModAttachments.GUILD));
     }
 
-    static void join(ServerLevel level, VillageRecord t, ServerPlayer player, GuildType guild, ItemStack coins) {
-        if (!enabled()) {
-            return;
-        }
-        GuildType current = guildOf(player);
-        if (current != null) {
-            player.displayClientMessage(Component.translatable(current == guild ? "lacuna.guild.already" : "lacuna.guild.other",
-                    Component.translatable("lacuna.guild." + current.getSerializedName())), true);
-            return;
-        }
-        if (t.reputation(player.getUUID()) < 10) {
-            player.displayClientMessage(Component.translatable("lacuna.guild.need_rep").withStyle(ChatFormatting.YELLOW), true);
-            return;
-        }
-        if (coins.getCount() < JOIN_COST) {
-            player.displayClientMessage(Component.translatable("lacuna.guild.need_coins", JOIN_COST), true);
-            return;
-        }
-        coins.consume(JOIN_COST, player);
-        player.setData(ModAttachments.GUILD, guild.getSerializedName());
-        player.sendSystemMessage(Component.translatable("lacuna.guild.joined", Component.translatable("lacuna.guild." + guild.getSerializedName()))
-                .withStyle(ChatFormatting.GOLD));
-        level.playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.6F, 1.2F);
-    }
-
-    static void offerContract(ServerLevel level, VillageRecord t, ServerPlayer player, GuildType guild) {
-        if (!enabled()) {
-            return;
-        }
-        if (guildOf(player) != guild) {
-            player.displayClientMessage(Component.translatable("lacuna.guild.info", Component.translatable("lacuna.guild." + guild.getSerializedName()),
-                    JOIN_COST), false);
-            return;
-        }
-        if (player.getInventory().hasAnyMatching(s -> s.is(ModItems.GUILD_CONTRACT.get()))) {
-            player.displayClientMessage(Component.translatable("lacuna.guild.contract_active"), true);
-            return;
-        }
-        Object[][] table = switch (guild) {
+    /** The contracts a guild posts: item, min, max, reward min, reward max (one is drawn at random per request). */
+    static Object[][] contractTable(GuildType guild) {
+        return switch (guild) {
             case SMITHS -> SMITHS;
             case GEMCUTTERS -> GEMCUTTERS;
             case SCHOLARS -> SCHOLARS;
         };
+    }
+
+    private static Component guildName(GuildType guild) {
+        return Component.translatable("lacuna.guild." + guild.getSerializedName());
+    }
+
+    /** Joins the board's guild for {@link #JOIN_COST} coins from the inventory (reputation 10+, one guild per person). */
+    static CivicScreens.Result join(ServerLevel level, VillageRecord t, ServerPlayer player, GuildType guild) {
+        if (!enabled()) {
+            return CivicScreens.Result.fail(Component.translatable("lacuna.civic.guild.disabled"));
+        }
+        GuildType current = guildOf(player);
+        if (current != null) {
+            return CivicScreens.Result.fail(Component.translatable(current == guild ? "lacuna.guild.already" : "lacuna.guild.other",
+                    guildName(current)));
+        }
+        if (t.reputation(player.getUUID()) < 10) {
+            return CivicScreens.Result.fail(Component.translatable("lacuna.guild.need_rep"));
+        }
+        if (CivicScreens.coins(player) < JOIN_COST) {
+            return CivicScreens.Result.fail(Component.translatable("lacuna.guild.need_coins", JOIN_COST));
+        }
+        CivicScreens.takeCoins(player, JOIN_COST);
+        player.setData(ModAttachments.GUILD, guild.getSerializedName());
+        level.playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.6F, 1.2F);
+        return CivicScreens.Result.ok(Component.translatable("lacuna.guild.joined", guildName(guild)));
+    }
+
+    /** Members of the board's guild without a contract get a random one from the guild's table. */
+    static CivicScreens.Result offerContract(ServerLevel level, VillageRecord t, ServerPlayer player, GuildType guild) {
+        if (!enabled()) {
+            return CivicScreens.Result.fail(Component.translatable("lacuna.civic.guild.disabled"));
+        }
+        if (guildOf(player) != guild) {
+            return CivicScreens.Result.fail(Component.translatable("lacuna.guild.members_only", guildName(guild)));
+        }
+        if (activeContract(player) != null) {
+            return CivicScreens.Result.fail(Component.translatable("lacuna.guild.contract_active"));
+        }
+        Object[][] table = contractTable(guild);
         RandomSource r = level.getRandom();
         Object[] row = table[r.nextInt(table.length)];
         int count = (Integer) row[1] + r.nextInt((Integer) row[2] - (Integer) row[1] + 1);
@@ -106,29 +109,51 @@ public final class Guilds {
         ItemStack contract = new ItemStack(ModItems.GUILD_CONTRACT.get());
         contract.set(ModComponents.GUILD_CONTRACT.get(), new ContractData((String) row[0], count, reward, t.id.toString(), guild.getSerializedName()));
         com.lacuna.mod.util.Give.toPlayer(player, contract);
-        player.displayClientMessage(Component.translatable("lacuna.guild.contract_given"), true);
+        level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0F, 1.0F);
+        return CivicScreens.Result.ok(Component.translatable("lacuna.guild.contract_given"));
     }
 
-    static void handIn(ServerLevel level, VillageRecord t, ServerPlayer player, GuildType guild, ItemStack contract) {
-        ContractData d = GuildContractItem.data(contract);
+    /** The guild contract the player carries (the held one first, then the inventory), or null. */
+    static ItemStack activeContract(ServerPlayer player) {
+        if (player.getMainHandItem().is(ModItems.GUILD_CONTRACT.get())) {
+            return player.getMainHandItem();
+        }
+        var inv = player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            if (inv.getItem(i).is(ModItems.GUILD_CONTRACT.get())) {
+                return inv.getItem(i);
+            }
+        }
+        return null;
+    }
+
+    static Item contractItem(ContractData d) {
         ResourceLocation id = ResourceLocation.tryParse(d.itemId());
-        Item item = id == null ? null : BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+        return id == null ? null : BuiltInRegistries.ITEM.getOptional(id).orElse(null);
+    }
+
+    /** Hands in the player's contract at the board of its guild: takes the items, pays the coins, +3 reputation. */
+    static CivicScreens.Result handIn(ServerLevel level, VillageRecord t, ServerPlayer player, GuildType guild) {
+        ItemStack contract = activeContract(player);
+        if (contract == null) {
+            return CivicScreens.Result.fail(Component.translatable("lacuna.civic.guild.no_contract"));
+        }
+        ContractData d = GuildContractItem.data(contract);
+        Item item = contractItem(d);
         if (d.isEmpty() || item == null || !d.guild().equals(guild.getSerializedName())) {
-            player.displayClientMessage(Component.translatable("lacuna.guild.wrong_board"), true);
-            return;
+            return CivicScreens.Result.fail(Component.translatable("lacuna.guild.wrong_board"));
         }
         int have = ContainerHelper.clearOrCountMatchingItems(player.getInventory(), s -> s.is(item), d.count(), true);
         if (have < d.count()) {
-            player.displayClientMessage(Component.translatable("lacuna.guild.missing", d.count() - have, item.getDescription()), true);
-            return;
+            return CivicScreens.Result.fail(Component.translatable("lacuna.guild.missing", d.count() - have, item.getDescription()));
         }
         ContainerHelper.clearOrCountMatchingItems(player.getInventory(), s -> s.is(item), d.count(), false);
         contract.consume(1, player);
         ItemStack pay = new ItemStack(ModItems.VILLAGE_COIN.get(), d.rewardCoins());
         com.lacuna.mod.util.Give.toPlayer(player, pay);
         VillageService.change(level, t, player, ReputationMath.Change.CONTRACT, 1);
-        player.sendSystemMessage(Component.translatable("lacuna.guild.contract_done", d.rewardCoins()).withStyle(ChatFormatting.GREEN));
         level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+        return CivicScreens.Result.ok(Component.translatable("lacuna.guild.contract_done", d.rewardCoins()));
     }
 
     /** A Guildmaster's guild: stored on the villager, otherwise read from its job-site board. */

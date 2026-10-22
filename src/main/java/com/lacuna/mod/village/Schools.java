@@ -53,6 +53,37 @@ public final class Schools {
         return taught;
     }
 
+    /** For the school desk screen: {desks, villagers still learning near a desk, villagers already at level 3, working villagers}. */
+    static int[] census(ServerLevel level, VillageRecord t) {
+        List<BlockPos> desks = desks(level, t);
+        int cap = VillagerData.getMinXpPerLevel(3);
+        int learning = 0;
+        int graduated = 0;
+        int working = 0;
+        for (Villager v : level.getEntitiesOfClass(Villager.class, new AABB(t.center).inflate(t.radius, 24, t.radius),
+                v -> v.isAlive() && !v.isBaby())) {
+            VillagerProfession prof = v.getVillagerData().getProfession();
+            if (prof == VillagerProfession.NONE || prof == VillagerProfession.NITWIT) {
+                continue;
+            }
+            working++;
+            if (v.getVillagerData().getLevel() >= 3 || v.getVillagerXp() >= cap) {
+                graduated++;
+            } else if (desks.stream().anyMatch(d -> d.distSqr(v.blockPosition()) <= RANGE * RANGE)) {
+                learning++;
+            }
+        }
+        return new int[] {desks.size(), learning, graduated, working};
+    }
+
+    static int xpPerLesson() {
+        return XP;
+    }
+
+    static int range() {
+        return RANGE;
+    }
+
     private static boolean isDesk(BlockState s) {
         return s.is(ModBlocks.SCHOOL_DESK.get()) || s.is(Blocks.LECTERN);
     }
