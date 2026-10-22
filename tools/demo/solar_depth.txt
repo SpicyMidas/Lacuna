@@ -29,6 +29,17 @@ shot depth_clouds_night
 look 0 -30
 wait 2
 shot depth_clouds_night_up
+# --- above the cloud floor: the column rises through it 44 blocks away; the floor beyond the column must stay
+# behind the light, the floor in front of it must cover it
+cmd fill ~-2 205 ~-2 ~2 205 ~2 minecraft:glass
+cmd tp @s ~ 206 ~ 0 14
+wait 60
+cmd summon lacuna:solar_ray ~ -60 ~44
+wait 22
+shot depth_clouds_above_night
+cmd time set 6000
+wait 4
+shot depth_clouds_above_day
 # --- on the ground: the column entering the ground, from 26 blocks and from above
 cmd time set 6000
 cmd tp @s ~ -60 ~ 0 14
