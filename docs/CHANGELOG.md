@@ -7,6 +7,16 @@
 - **Ruby tools removed** (sword, pickaxe, axe, shovel, hoe): rubies are for trading with the Last Merchant, ruby
   blocks and the rest stay.
 - **Starcaller Trumpet** is held like a bow but lower in the hand and tilted a little more.
+- **Exilite is a debris now** (like ancient debris, hand-drawn side/top): blast-proof, diamond pickaxe, drops itself,
+  still super rare deep in the Forgotten Land and always hidden in stone. Smelt it into Exilite Shards; 4 shards + 4
+  gold = an Exilite Ingot (fireproof, beacon payment). One ingot between two crying obsidian = 2 Forgotten Portal
+  Frames. Block of Exilite = 9 ingots (beacon base); the decorative Exilite family is made from 1 shard + 8 calcite.
+  Hand-drawn shard and ingot textures.
+- **Totem of Banishing:** new hand-drawn texture. Using it blasts everything within 6 blocks away hard (no damage) where
+  you leave and again where you land, with a shockwave ring, stone chips, sparks and a heavy boom; a struck target is
+  thrown back before it vanishes. The arrival totem pop-up now plays only for totem banishment, not portals or commands.
+  Banishment particles use the new Exilite palette.
+- **Forgotten Portal:** crossing it is now a plain dimension change, without the full-screen void overlay.
 <!-- rev11 -->
 
 ## 0.10.0 — revision 10 (player feedback)
