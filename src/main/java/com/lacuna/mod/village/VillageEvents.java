@@ -290,5 +290,6 @@ public final class VillageEvents {
         TRADING_WITH.remove(event.getEntity().getUUID());
         LAST_HURT_PENALTY.remove(event.getEntity().getUUID());
         VillageService.forget(event.getEntity().getUUID());
+        CivicScreens.forget(event.getEntity().getUUID());
     }
 }

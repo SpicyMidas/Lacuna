@@ -33,7 +33,7 @@ import org.apache.commons.io.FileUtils;
  * {@code sneak on|off}, {@code forward on|off}, {@code select <0-8>}, {@code camera first|back|front},
  * {@code log <text>}, {@code clearchat}, {@code quit},
  * {@code fx <kind> x y z [x2 y2 z2] [p0 p1 p2]} (client effect handler, ~ offsets allowed),
- * {@code particle <id> x y z [count]}.
+ * {@code particle <id> x y z [count]}, {@code key <glfw key code>} (to the open screen).
  * Blank lines and lines starting with # are ignored. Screenshots land in run/screenshots/.
  */
 public final class ClientDemo {
@@ -130,6 +130,12 @@ public final class ClientDemo {
                 case "select" -> mc.player.getInventory().selected = Integer.parseInt(arg.trim());
                 case "log" -> Lacuna.LOGGER.info("[DEMO] {}", arg);
                 case "clearchat" -> mc.gui.getChat().clearMessages(false);
+                // key <glfw code>: a key press sent to the open screen (Tab/Enter drive its buttons, 256 = Escape)
+                case "key" -> {
+                    if (mc.screen != null) {
+                        mc.screen.keyPressed(Integer.parseInt(arg.trim()), 0, 0);
+                    }
+                }
                 case "fx" -> spawnFx(mc, arg.trim().split(" "));
                 case "particle" -> {
                     // particle <id> <x> <y> <z> [count]: client-side burst of a registered particle type

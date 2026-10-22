@@ -38,5 +38,6 @@ public final class LacunaNetwork {
                 com.lacuna.mod.client.eclipse.PossessionClient.onSync(payload);
             }
         });
+        com.lacuna.mod.village.CivicNet.register(registrar);
     }
 }

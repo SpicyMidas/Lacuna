@@ -25,11 +25,9 @@ public final class VillageTrades {
 
     public static void onVillagerTrades(VillagerTradesEvent event) {
         if (event.getType() == ModVillagers.COINER.get()) {
-            add(event, 1, buy(Items.RAW_IRON, 6), buy(Items.RAW_COPPER, 12), buy(Items.RAW_GOLD, 4));
-            add(event, 2, buy(ModItems.RUBY.get(), 2), buy(ModItems.RAW_UMBRAL_STEEL.get(), 3), buy(Items.IRON_INGOT, 5));
-            add(event, 3, buy(Items.GOLD_INGOT, 3), buy(ModItems.UMBRAL_STEEL_INGOT.get(), 2), buy(ModItems.RUBY.get(), 2));
-            add(event, 4, sell(Items.EMERALD, 1, 4), buy(Items.COPPER_INGOT, 10));
-            add(event, 5, sell(ModItems.RUBY.get(), 1, 3));
+            for (MintRate rate : coinerRates()) {
+                add(event, rate.level(), rate.buy() ? buy(rate.item(), rate.count()) : sell(rate.item(), rate.count(), rate.coins()));
+            }
         } else if (event.getType() == ModVillagers.GUILDMASTER.get()) {
             for (int tier = 1; tier <= 3; tier++) {
                 event.getTrades().computeIfAbsent(tier, k -> new java.util.ArrayList<>()).addAll(Guilds.listings(tier));
@@ -39,6 +37,23 @@ public final class VillageTrades {
             add(event, 2, sell(Items.NAME_TAG, 1, 8));
             add(event, 3, sell(Items.BELL, 1, 12));
         }
+    }
+
+    /**
+     * One Coiner offer: at villager {@code level}, {@code buy} = the Coiner mints one coin from {@code count} of the
+     * item, otherwise it sells {@code count} of the item for {@code coins}. The mint press screen shows this table.
+     */
+    public record MintRate(int level, ItemLike item, int count, int coins, boolean buy) {}
+
+    static List<MintRate> coinerRates() {
+        return List.of(new MintRate(1, Items.RAW_IRON, 6, 1, true), new MintRate(1, Items.RAW_COPPER, 12, 1, true),
+                new MintRate(1, Items.RAW_GOLD, 4, 1, true),
+                new MintRate(2, ModItems.RUBY.get(), 2, 1, true), new MintRate(2, ModItems.RAW_UMBRAL_STEEL.get(), 3, 1, true),
+                new MintRate(2, Items.IRON_INGOT, 5, 1, true),
+                new MintRate(3, Items.GOLD_INGOT, 3, 1, true), new MintRate(3, ModItems.UMBRAL_STEEL_INGOT.get(), 2, 1, true),
+                new MintRate(3, ModItems.RUBY.get(), 2, 1, true),
+                new MintRate(4, Items.EMERALD, 1, 4, false), new MintRate(4, Items.COPPER_INGOT, 10, 1, true),
+                new MintRate(5, ModItems.RUBY.get(), 1, 3, false));
     }
 
     @SafeVarargs

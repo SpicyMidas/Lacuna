@@ -168,8 +168,6 @@ def council_currency(g):
         g.name(f"entity.minecraft.villager.lacuna.{prof}", en, it)
     g.name("lacuna.village.council", "The council of %s has decreed a new policy: %s.",
            "Il consiglio di %s ha decretato una nuova politica: %s.")
-    g.name("lacuna.court.standing", "Standing: %s (%s). Fine to clear it: %s coins. Next pardon in %s days.",
-           "Posizione: %s (%s). Multa per saldarla: %s monete. Prossimo perdono tra %s giorni.")
     g.name("lacuna.court.too_soon", "The court heard you recently. Come back in a few days.",
            "Il tribunale ti ha ascoltato da poco. Torna tra qualche giorno.")
     g.name("lacuna.court.nothing_owed", "You owe the village nothing.", "Non devi nulla al villaggio.")
@@ -228,8 +226,6 @@ def guilds(g):
                                   "La gilda accetta solo amici del villaggio (reputazione 10+)."),
         "lacuna.guild.need_coins": ("Joining costs %s village coins.", "L'iscrizione costa %s monete del villaggio."),
         "lacuna.guild.joined": ("Welcome to the %s!", "Benvenuto nella %s!"),
-        "lacuna.guild.info": ("%s: right click with %s coins to join (reputation 10+, one guild per person).",
-                              "%s: clic destro con %s monete per iscriverti (reputazione 10+, una gilda a persona)."),
         "lacuna.guild.contract_active": ("Finish your current contract first.", "Prima completa il contratto in corso."),
         "lacuna.guild.contract_given": ("The guild hands you a contract.", "La gilda ti consegna un contratto."),
         "lacuna.guild.wrong_board": ("This contract belongs to another guild.", "Questo contratto appartiene a un'altra gilda."),

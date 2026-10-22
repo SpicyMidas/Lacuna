@@ -338,7 +338,7 @@ public final class VillageService {
                 .append(Component.literal(" " + t.shortId()).withStyle(ChatFormatting.GRAY));
     }
 
-    /** Chat summary shown by the ledger and {@code /lacuna village}. */
+    /** Chat summary for the operator command {@code /lacuna village} (players read the ledger screen instead). */
     public static void describe(ServerLevel level, VillageRecord t, ServerPlayer player) {
         int rep = t.reputation(player.getUUID());
         long today = day(level);

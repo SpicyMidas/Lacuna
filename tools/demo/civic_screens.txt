@@ -1,0 +1,119 @@
+# Civic block screens: a founded village with every civic block in a row; each screen (and each tab) is opened with
+# a right click and screenshotted; Tab + Enter press the screen's buttons (join the guild, request a contract).
+world lacuna_civic flat
+wait 60
+cmd gamemode survival
+cmd time set noon
+cmd gamerule doDaylightCycle false
+cmd gamerule doMobSpawning false
+cmd gamerule sendCommandFeedback false
+cmd setblock 0 -60 3 lacuna:village_ledger[facing=north]
+cmd setblock -2 -60 3 lacuna:judge_bench[facing=north]
+cmd setblock 2 -60 3 lacuna:guild_board[facing=north,guild=smiths]
+cmd setblock 4 -60 3 lacuna:council_table[facing=north]
+cmd setblock -4 -60 3 lacuna:mint_press[facing=north]
+cmd setblock 6 -60 3 lacuna:school_desk[facing=north]
+cmd setblock 7 -60 6 minecraft:lectern
+cmd summon minecraft:villager 3 -60 6 {VillagerData:{profession:"minecraft:librarian",level:1,type:"minecraft:plains"},NoAI:1b}
+cmd summon minecraft:villager 5 -60 7 {VillagerData:{profession:"minecraft:farmer",level:3,type:"minecraft:plains"},NoAI:1b}
+cmd tp @s 0.5 -60 1.2
+look 0 30
+wait 40
+use on
+wait 2
+use off
+wait 30
+clearchat
+cmd lacuna rep set @s 18
+wait 50
+shot civic_ledger_overview
+key 50
+wait 10
+shot civic_ledger_laws
+key 51
+wait 10
+shot civic_ledger_council
+key 52
+wait 10
+shot civic_ledger_today
+key 256
+wait 10
+cmd lacuna rep set @s -32
+cmd give @s lacuna:village_coin 4
+cmd tp @s -1.5 -60 1.2
+look 0 30
+wait 20
+use on
+wait 2
+use off
+wait 30
+clearchat
+shot civic_court
+key 258
+key 257
+wait 20
+shot civic_court_paid
+key 256
+wait 10
+cmd lacuna rep set @s 25
+cmd give @s lacuna:village_coin 40
+cmd give @s minecraft:iron_ingot 30
+cmd give @s minecraft:coal 64
+cmd tp @s 2.5 -60 1.2
+look 0 30
+wait 20
+use on
+wait 2
+use off
+wait 30
+clearchat
+shot civic_guild_membership
+key 258
+key 257
+wait 20
+shot civic_guild_joined
+key 50
+wait 10
+key 258
+key 257
+wait 20
+shot civic_guild_contract
+key 256
+wait 10
+cmd tp @s 4.5 -60 1.2
+look 0 30
+wait 20
+use on
+wait 2
+use off
+wait 30
+clearchat
+shot civic_council
+key 256
+wait 10
+cmd tp @s -3.5 -60 1.2
+look 0 30
+wait 20
+use on
+wait 2
+use off
+wait 30
+clearchat
+shot civic_mint
+key 50
+wait 10
+shot civic_mint_rates
+key 256
+wait 10
+cmd tp @s 6.5 -60 1.2
+look 0 30
+wait 20
+use on
+wait 2
+use off
+wait 30
+clearchat
+shot civic_school
+key 256
+wait 10
+quit
