@@ -13,8 +13,6 @@ All `/lacuna` commands need permission level 2.
 /give @s lacuna:ruby_ore
 /give @s lacuna:deepslate_ruby_ore
 /give @s lacuna:ruby 9
-/give @s lacuna:ruby_sword
-/give @s lacuna:ruby_pickaxe
 /give @s lacuna:divine_glass 16
 /give @s lacuna:divine_glass_pane 16
 /give @s lacuna:divine_glass_cluster 4
