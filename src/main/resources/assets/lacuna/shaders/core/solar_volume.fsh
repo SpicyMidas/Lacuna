@@ -6,7 +6,7 @@
 // the level (client/solar/SolarVolume). Same layers, colours and motion as solar_column.fsh (white-hot core,
 // striated golden body, bands pouring down, heat-shimmer edges, soft halo; or the hazy sunbeam profile), read across
 // a cylinder instead of a flat ribbon: brighter where the eye looks along the shaft, melting softly into the ground,
-// clouds and walls it meets, hidden by near clouds and drawn over far ones, and fogged like the terrain.
+// clouds and walls it meets, hidden by near clouds and drawn over far ones, and dimmed with distance (never fogged grey).
 // Output is premultiplied (blend ONE, ONE or ONE, ONE_MINUS_SRC_ALPHA).
 
 uniform vec4 ColorModulator;
@@ -46,8 +46,8 @@ float fbm(vec2 p) {
 
 void main() {
     vec2 shaft = lacuna_shaft(worldPos, texCoord0.x, radius);
-    float fog = (flags & 2) != 0 ? 0.0 : lacuna_fog(worldPos);
-    float depth = shaft.x * shaft.y * (1.0 - fog);
+    float fade = (flags & 2) != 0 ? 1.0 : lacuna_fade(worldPos);
+    float depth = shaft.x * shaft.y * fade;
     if (depth <= 0.001) {
         discard;
     }

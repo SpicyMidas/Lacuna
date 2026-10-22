@@ -4,7 +4,7 @@
 
 // Lacuna energy beam with depth: beam.fsh (flowing turbulence, ripple rings, hot core) read across a round beam
 // instead of a flat ribbon, drawn after the level (client/solar/SolarVolume): brighter where the eye looks along it,
-// melting softly into what it hits, correctly in front of or behind clouds, fogged like the terrain.
+// melting softly into what it hits, correctly in front of or behind clouds, dimmed with distance (never fogged grey).
 // Output is premultiplied (blend ONE, ONE).
 
 uniform vec4 ColorModulator;
@@ -33,8 +33,8 @@ float noise(vec2 p) {
 
 void main() {
     vec2 shaft = lacuna_shaft(worldPos, texCoord0.x, radius);
-    float fog = (flags & 2) != 0 ? 0.0 : lacuna_fog(worldPos);
-    float depth = shaft.x * shaft.y * (1.0 - fog);
+    float fade = (flags & 2) != 0 ? 1.0 : lacuna_fade(worldPos);
+    float depth = shaft.x * shaft.y * fade;
     if (depth <= 0.001) {
         discard;
     }

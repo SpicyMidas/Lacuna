@@ -4,7 +4,7 @@
 
 // Lacuna soft flare with depth: glow.fsh (soft core, halo, four light streaks, slow twinkle) drawn after the level
 // (client/solar/SolarVolume): it fades softly behind the surfaces it touches instead of being cut by a hard line,
-// sits correctly in front of or behind clouds and is fogged like the terrain.
+// sits correctly in front of or behind clouds and dims with distance.
 // texCoord0: 0..1 over the quad; vertexColor.rgb: tint; vertexColor.a: intensity. Premultiplied (blend ONE, ONE).
 
 uniform vec4 ColorModulator;
@@ -17,7 +17,7 @@ in vec3 worldPos;
 out vec4 fragColor;
 
 void main() {
-    float depth = lacuna_soft_quad(worldPos, texCoord0) * (1.0 - lacuna_fog(worldPos));
+    float depth = lacuna_soft_quad(worldPos, texCoord0) * lacuna_fade(worldPos);
     float seconds = GameTime * 1200.0;
     vec2 p = texCoord0 * 2.0 - 1.0;
     float d = length(p);

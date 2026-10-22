@@ -2,6 +2,7 @@
 // clouds, weather and the Fabulous composite are done. They read the scene depth instead of testing against it:
 // SceneDepthSampler holds terrain, entities, water and glass (and in Fast / Fancy also the clouds), CloudDepthSampler
 // the Fabulous cloud layer (the same texture otherwise). Distances are along the view ray from the eye, in blocks.
+// The light is additive: nothing here ever mixes in the fog colour.
 
 uniform sampler2D SceneDepthSampler;
 uniform sampler2D CloudDepthSampler;
@@ -23,16 +24,18 @@ float lacuna_scene_distance() {
     return d >= 1.0 ? 1.0e6 : lacuna_eye_distance(gl_FragCoord.xy, d);
 }
 
-// vanilla terrain fog (FogStart..FogEnd smoothstep) by horizontal distance, lifted where the light is seen high up
-// against the sky in open air (vanilla does not fog the sky either; thick fogs such as water or blindness still apply)
-float lacuna_fog(vec3 pos) {
-    float d = length(pos.xz);
-    if (d <= FogStart) {
-        return 0.0;
+// Distance attenuation of the light (a multiplier, never a blend toward the fog colour: the light only ever adds).
+// Under the terrain fog the light is bright enough to carry well past it: it only dims gently beyond the fog start;
+// thick fogs (water, lava, blindness, powder snow: a short fog end) still swallow it like vanilla.
+float lacuna_fade_at(float d) {
+    if (FogEnd < 40.0) {
+        return 1.0 - smoothstep(FogStart, FogEnd, d);
     }
-    float fog = d < FogEnd ? smoothstep(FogStart, FogEnd, d) : 1.0;
-    float up = pos.y / max(length(pos), 1.0e-4);
-    return fog * (1.0 - smoothstep(24.0, 64.0, FogEnd) * smoothstep(0.12, 0.5, up));
+    return 1.0 - 0.6 * smoothstep(max(FogStart, 0.5 * FogEnd), 2.2 * FogEnd, d);
+}
+
+float lacuna_fade(vec3 pos) {
+    return lacuna_fade_at(length(pos));
 }
 
 // A camera-facing ribbon read as a round shaft of light around its axis. pos: camera-relative position on the ribbon
