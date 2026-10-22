@@ -4,7 +4,7 @@
 
 // Lacuna 3D light tubes (client/solar/SolarTubes): a shaft of light as a real round volume. Drawn on the back faces
 // of a closed tube mesh (they cover the tube's footprint exactly once, whether the eye is outside or inside it), each
-// pixel intersects its view ray with the tube (the local axis and radius come from the vertex stage) and integrates
+// pixel intersects its view ray with the tube (the local axis and radius are evaluated on the shaft's curve) and integrates
 // the light's radial profile along the part of the chord that lies in front of the scene and of the eye, in closed
 // form (Gaussian profiles: erf). So the light is as thick as the volume really is from any angle, brightest where the
 // eye looks along it (up to a soft saturation), still there when the eye is inside it looking up, and it melts into
@@ -20,13 +20,13 @@ uniform vec3 TubeA;
 uniform vec3 TubeK;
 uniform vec3 TubeB;
 uniform vec2 TubeMode;
+uniform vec2 TubeRadius;
+uniform vec4 TubeColorA;
+uniform vec4 TubeColorB;
+uniform vec2 TubeV;
 
 in vec3 worldPos;
-in vec3 axisPos;
-in vec3 axisDir;
-in float radius;
-in float along;
-in vec4 vertexColor;
+in float param;
 
 out vec4 fragColor;
 
@@ -105,8 +105,18 @@ void clip_plane(vec3 o, vec3 n, vec3 dir, inout float t0, inout float t1) {
 void main() {
     float dist = length(worldPos);
     vec3 dir = worldPos / max(dist, 1.0e-5);
+    // the local axis, radius and colour where this fragment lies on the tube
+    float q = clamp(param, 0.0, 1.0);
+    float p = 1.0 - q;
+    vec3 axisPos = p * p * TubeA + 2.0 * q * p * TubeK + q * q * TubeB;
+    vec3 axisDir = p * (TubeK - TubeA) + q * (TubeB - TubeK);
+    if (dot(axisDir, axisDir) < 1.0e-12) {
+        axisDir = TubeB - TubeA;
+    }
     vec3 axis = normalize(axisDir);
-    float r = max(radius, 1.0e-4);
+    float r = max(mix(TubeRadius.x, TubeRadius.y, q), 1.0e-4);
+    vec4 vertexColor = mix(TubeColorA, TubeColorB, q);
+    float along = mix(TubeV.x, TubeV.y, q);
     int flags = int(TubeMode.y + 0.5);
 
     // the ray from the eye (the origin) against the round tube around the local axis

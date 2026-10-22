@@ -483,25 +483,28 @@ public final class SolarVisuals {
         Vec3 top = ctx.rel(new Vec3(base.x, topY, base.z));
 
         // the pillar, outer layers: a faint amber haze and a golden halo, additive like all the light (while fading
-        // they keep their colour longer than their width: the pillar thins into a golden thread); fainter by night
+        // they keep their colour longer than their width: the pillar thins into a golden thread)
         float day = daylight(ctx.level(), pt);
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
         // (nested 3D shells, SolarTubes: seen from any side, from below or from inside, they keep their thickness)
-        int haze = FxDraw.argb(0.07F * soft * (0.5F + 0.5F * day), AMBER);
-        int halo = FxDraw.argb(0.16F * soft * (0.7F + 0.3F * day), GOLD);
+        // additive light reads stronger against the night sky than on a bright day sky (where too much of it only
+        // bleaches into a wide white slab): the outer layers ease off by day
+        float glare = 1.0F - 0.45F * day;
+        int haze = FxDraw.argb(0.08F * soft * glare, AMBER);
+        int halo = FxDraw.argb(0.16F * soft * glare, GOLD);
         float hazeWidth = 64.0F * swell * breathe;
         float haloWidth = 30.0F * swell * breathe;
         tube(pose, over, bottom, top, hazeWidth, hazeWidth, haze, haze, -6.0F, height, false);
         tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false);
         // a bright splash where it meets the ground: a cone of light widening into the ground
         tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
-                FxDraw.argb(0.22F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
+                FxDraw.argb(0.22F * a * glare, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
 
         // inner layers: they pile up into a white-hot core
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
-        int gold = FxDraw.argb(0.32F * a, GOLD);
-        int warm = FxDraw.argb(0.42F * a, WARM);
-        int pale = FxDraw.argb(0.7F * a, PALE);
+        int gold = FxDraw.argb(0.32F * a * glare, GOLD);
+        int warm = FxDraw.argb(0.42F * a * glare, WARM);
+        int pale = FxDraw.argb(0.7F * a * (1.0F - 0.25F * day), PALE);
         int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
         tube(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, gold, gold, -6.0F, height, true);
         tube(pose, beam, bottom, top, 13.0F * swell, 13.0F * swell, warm, warm, -6.0F, height, false);

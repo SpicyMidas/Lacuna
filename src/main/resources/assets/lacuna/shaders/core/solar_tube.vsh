@@ -4,7 +4,8 @@
 // and scaled here onto each shaft of light. Position.xy: unit circle (0, 0 at a cap's centre), Position.z: 0..1 along.
 // The axis is the quadratic Bezier curve TubeA -> TubeK -> TubeB (camera-relative blocks; a straight shaft has TubeK
 // at its midpoint), rings closer together near TubeA (where the target and the eye usually are). The fragment stage
-// gets the local axis point, direction and radius and integrates the light along the view ray through the tube.
+// gets the curve parameter, evaluates the axis, radius and colour there exactly (no banding between rings on curved
+// shafts) and integrates the light along the view ray through the tube.
 
 in vec3 Position;
 
@@ -14,16 +15,9 @@ uniform vec3 TubeA;
 uniform vec3 TubeK;
 uniform vec3 TubeB;
 uniform vec2 TubeRadius;
-uniform vec4 TubeColorA;
-uniform vec4 TubeColorB;
-uniform vec2 TubeV;
 
 out vec3 worldPos;
-out vec3 axisPos;
-out vec3 axisDir;
-out float radius;
-out float along;
-out vec4 vertexColor;
+out float param;
 
 void main() {
     float q = Position.z * Position.z;
@@ -45,9 +39,5 @@ void main() {
 
     gl_Position = ProjMat * ModelViewMat * vec4(pos, 1.0);
     worldPos = pos;
-    axisPos = centre;
-    axisDir = tangent;
-    radius = r;
-    along = mix(TubeV.x, TubeV.y, q);
-    vertexColor = mix(TubeColorA, TubeColorB, q);
+    param = q;
 }
