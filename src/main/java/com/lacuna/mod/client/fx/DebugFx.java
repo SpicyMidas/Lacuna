@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 public final class DebugFx implements ClientFx {
     private final Vec3 a;
     private final Vec3 b;
+    private final GroundDecal decal = new GroundDecal();
     private int age;
 
     private DebugFx(Vec3 a, Vec3 b) {
@@ -44,6 +45,6 @@ public final class DebugFx implements ClientFx {
         VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
         FxDraw.billboard(pose, glow, ctx.camera(), rb, 2.5F, 0.0F, 0xFFFFD27A);
         VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
-        FxDraw.ground(pose, ring, rb.add(0, 0.05, 0), 3.0F + (age % 20) * 0.2F, 0xC0FFE0A0);
+        decal.at(ctx.level(), b, 7.0).square(ctx, ring, b.x, b.z, 3.0F + (age % 20) * 0.2F, 0.0F, 0xC0FFE0A0);
     }
 }

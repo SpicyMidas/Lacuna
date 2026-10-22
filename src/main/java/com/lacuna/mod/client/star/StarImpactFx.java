@@ -5,6 +5,7 @@ import com.lacuna.mod.client.fx.FxDraw;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModParticles;
@@ -31,6 +32,8 @@ final class StarImpactFx implements ClientFx {
 
     private final Vec3 at;
     private final float radius;
+    /** The crater rim the shockwave and the molten glow lie on. */
+    private final GroundDecal decal = new GroundDecal();
     private int age;
 
     private StarImpactFx(Vec3 at, float radius) {
@@ -146,15 +149,16 @@ final class StarImpactFx implements ClientFx {
         if (wave < 1.0F) {
             float e = 1.0F - (1.0F - wave) * (1.0F - wave);
             VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
-            FxDraw.ground(pose, ring, c.add(0.0, 0.08, 0.0), 0.6F + radius * 2.4F * e, FxDraw.argb(0.9F * (1.0F - wave), FallingStarFx.GOLD));
-            FxDraw.ground(pose, ring, c.add(0.0, 0.1, 0.0), 0.4F + radius * 1.6F * e, FxDraw.argb(0.6F * (1.0F - wave), FallingStarFx.STARLIGHT));
+            GroundDecal g = decal.at(ctx.level(), at, 0.6 + radius * 2.4);
+            g.square(ctx, ring, at.x, at.z, 0.6F + radius * 2.4F * e, 0.006F, FxDraw.argb(0.9F * (1.0F - wave), FallingStarFx.GOLD));
+            g.square(ctx, ring, at.x, at.z, 0.4F + radius * 1.6F * e, 0.012F, FxDraw.argb(0.6F * (1.0F - wave), FallingStarFx.STARLIGHT));
         }
         // the molten glow, cooling through amber to ember red
         float cool = Mth.clamp(t / LIFE, 0.0F, 1.0F);
         float flicker = 0.85F + 0.15F * Mth.sin(t * 1.9F) * Mth.sin(t * 0.7F + 1.0F);
         VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.GLOW));
-        FxDraw.ground(pose, glow, c.add(0.0, 0.05, 0.0), radius * 1.5F, FxDraw.argb(0.7F * (1.0F - cool) * flicker,
-                FallingStarFx.mix(FallingStarFx.GOLD, FallingStarFx.EMBER, cool)));
+        decal.at(ctx.level(), at, 0.6 + radius * 2.4).square(ctx, glow, at.x, at.z, radius * 1.5F, 0.0F,
+                FxDraw.argb(0.7F * (1.0F - cool) * flicker, FallingStarFx.mix(FallingStarFx.GOLD, FallingStarFx.EMBER, cool)));
         FxDraw.billboard(pose, glow, ctx.camera(), c.add(0.0, 0.5, 0.0), radius * (1.0F + cool), 0.0F,
                 FxDraw.argb(0.35F * (1.0F - cool) * flicker, FallingStarFx.AMBER));
     }

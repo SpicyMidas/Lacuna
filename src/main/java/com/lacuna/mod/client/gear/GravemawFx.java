@@ -7,6 +7,7 @@ import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.gear.GravemawGreatswordItem;
 import com.lacuna.mod.network.FxPayload;
@@ -108,6 +109,8 @@ public final class GravemawFx {
     /** Violet rings and a soft pool of shadow light under a charging player; ends when the charge does. */
     private static final class ChargeAura implements ClientFx {
         private final int playerId;
+        /** The rings and pool lie on the terrain around the player's feet. */
+        private final GroundDecal decal = new GroundDecal();
         /** Game time of the last tick: an aura the manager dropped stops ticking and is replaced. */
         private long seen;
 
@@ -147,14 +150,14 @@ public final class GravemawFx {
             float f = chargeOf(p, partial);
             float t = (ctx.level().getGameTime() + partial) * 0.25F;
             float pulse = f >= 1.0F ? 0.75F + 0.25F * Mth.sin(t * 2.0F) : 1.0F;
-            PoseStack.Pose pose = ctx.pose().last();
-            Vec3 feet = ctx.rel(p.getPosition(partial)).add(0, 0.04, 0);
+            Vec3 feet = p.getPosition(partial);
+            GroundDecal g = decal.at(ctx.level(), feet, 3.4);
             VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
-            FxDraw.ground(pose, ring, feet, 0.9F + 2.4F * f, FxDraw.argb((0.25F + 0.55F * f) * pulse, VIOLET));
-            FxDraw.ground(pose, ring, feet.add(0, 0.01, 0), (0.6F + 1.4F * f) * (0.9F + 0.1F * Mth.sin(t)),
+            g.square(ctx, ring, feet.x, feet.z, 0.9F + 2.4F * f, 0.0F, FxDraw.argb((0.25F + 0.55F * f) * pulse, VIOLET));
+            g.square(ctx, ring, feet.x, feet.z, (0.6F + 1.4F * f) * (0.9F + 0.1F * Mth.sin(t)), 0.006F,
                     FxDraw.argb(0.3F * f * pulse, PALE));
             VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.GLOW));
-            FxDraw.ground(pose, glow, feet, 1.2F + 2.0F * f, FxDraw.argb(0.18F * f * pulse, VIOLET));
+            g.square(ctx, glow, feet.x, feet.z, 1.2F + 2.0F * f, 0.0F, FxDraw.argb(0.18F * f * pulse, VIOLET));
         }
     }
 
@@ -180,6 +183,8 @@ public final class GravemawFx {
         private final float strength;
         private final float range;
         private final float half;
+        /** The terrain under the wave: the shockwave ring lies on it and the crescent's foot follows it. */
+        private final GroundDecal decal = new GroundDecal();
         private int age;
 
         Wave(FxPayload p) {
@@ -233,7 +238,8 @@ public final class GravemawFx {
                 return;
             }
             float height = 1.4F + 1.4F * strength;
-            Vec3 base = ctx.rel(origin).add(0, 0.05, 0);
+            GroundDecal g = decal.at(ctx.level(), origin, range + 1.0);
+            Vec3 cam = ctx.cam();
             PoseStack.Pose pose = ctx.pose().last();
             // two fading echoes behind the front give the wave its motion
             for (int echo = 2; echo >= 0; echo--) {
@@ -241,23 +247,26 @@ public final class GravemawFx {
                 float a = fade * (echo == 0 ? 1.0F : 0.35F / echo);
                 // dark body (two layers for depth), violet glow through it, a bright violet crest and a thin pale edge
                 VertexConsumer dark = ctx.buffers().getBuffer(FxRenderTypes.shade(FxRenderTypes.BEAM));
-                band(pose, dark, base, r, 0.0F, height, FxDraw.argb(a, 0x0A0512));
-                band(pose, dark, base, r - 0.3F, 0.0F, height * 0.85F, FxDraw.argb(0.8F * a, 0x160A26));
+                band(pose, dark, cam, g, r, 0.0F, height, FxDraw.argb(a, 0x0A0512));
+                band(pose, dark, cam, g, r - 0.3F, 0.0F, height * 0.85F, FxDraw.argb(0.8F * a, 0x160A26));
                 VertexConsumer light = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.BEAM));
-                band(pose, light, base, r + 0.05F, 0.0F, height, FxDraw.argb(0.45F * a, VIOLET));
-                band(pose, light, base, r + 0.1F, height * 0.72F, height * 1.04F, FxDraw.argb(0.85F * a, 0xB27CFF));
-                band(pose, light, base, r + 0.12F, height * 0.9F, height * 1.02F, FxDraw.argb(0.6F * a, PALE));
+                band(pose, light, cam, g, r + 0.05F, 0.0F, height, FxDraw.argb(0.45F * a, VIOLET));
+                band(pose, light, cam, g, r + 0.1F, height * 0.72F, height * 1.04F, FxDraw.argb(0.85F * a, 0xB27CFF));
+                band(pose, light, cam, g, r + 0.12F, height * 0.9F, height * 1.02F, FxDraw.argb(0.6F * a, PALE));
             }
             // a short shockwave ring where the blade struck the ground
             float ringFade = 1.0F - Mth.clamp(time / 6.0F, 0.0F, 1.0F);
             if (ringFade > 0.0F) {
-                FxDraw.ground(pose, ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING)), base.add(0, 0.02, 0),
-                        1.0F + time * 0.45F, FxDraw.argb(0.7F * ringFade, VIOLET));
+                g.square(ctx, ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING)), origin.x, origin.z,
+                        1.0F + time * 0.45F, 0.0F, FxDraw.argb(0.7F * ringFade, VIOLET));
             }
         }
 
-        /** A vertical band along the arc at radius r, from y0 to y1 above the base; u runs bottom (0) to top (1). */
-        private void band(PoseStack.Pose pose, VertexConsumer vc, Vec3 base, float r, float y0, float y1, int argb) {
+        /**
+         * A vertical band along the arc at radius r, from y0 to y1 above the ground under it (its foot follows the
+         * terrain, {@code g}); u runs bottom (0) to top (1).
+         */
+        private void band(PoseStack.Pose pose, VertexConsumer vc, Vec3 cam, GroundDecal g, float r, float y0, float y1, int argb) {
             int segments = 16;
             int alpha = (argb >>> 24) & 0xFF;
             for (int i = 0; i < segments; i++) {
@@ -270,16 +279,22 @@ public final class GravemawFx {
                 float t1 = Mth.sin(s1 * Mth.PI);
                 int c0 = ((int) (alpha * t0) << 24) | (argb & 0xFFFFFF);
                 int c1 = ((int) (alpha * t1) << 24) | (argb & 0xFFFFFF);
-                double x0 = base.x + Math.cos(a0) * r;
-                double z0 = base.z + Math.sin(a0) * r;
-                double x1 = base.x + Math.cos(a1) * r;
-                double z1 = base.z + Math.sin(a1) * r;
+                double x0 = origin.x + Math.cos(a0) * r;
+                double z0 = origin.z + Math.sin(a0) * r;
+                double x1 = origin.x + Math.cos(a1) * r;
+                double z1 = origin.z + Math.sin(a1) * r;
+                double b0 = g.follow(x0, z0) + 0.03 - cam.y;
+                double b1 = g.follow(x1, z1) + 0.03 - cam.y;
                 float top0 = y0 + (y1 - y0) * (0.35F + 0.65F * t0);
                 float top1 = y0 + (y1 - y0) * (0.35F + 0.65F * t1);
-                vc.addVertex(pose, (float) x0, (float) (base.y + y0), (float) z0).setUv(0.0F, 0.0F).setColor(c0);
-                vc.addVertex(pose, (float) x0, (float) (base.y + top0), (float) z0).setUv(1.0F, 0.0F).setColor(c0);
-                vc.addVertex(pose, (float) x1, (float) (base.y + top1), (float) z1).setUv(1.0F, 1.0F).setColor(c1);
-                vc.addVertex(pose, (float) x1, (float) (base.y + y0), (float) z1).setUv(0.0F, 1.0F).setColor(c1);
+                float rx0 = (float) (x0 - cam.x);
+                float rz0 = (float) (z0 - cam.z);
+                float rx1 = (float) (x1 - cam.x);
+                float rz1 = (float) (z1 - cam.z);
+                vc.addVertex(pose, rx0, (float) (b0 + y0), rz0).setUv(0.0F, 0.0F).setColor(c0);
+                vc.addVertex(pose, rx0, (float) (b0 + top0), rz0).setUv(1.0F, 0.0F).setColor(c0);
+                vc.addVertex(pose, rx1, (float) (b1 + top1), rz1).setUv(1.0F, 1.0F).setColor(c1);
+                vc.addVertex(pose, rx1, (float) (b1 + y0), rz1).setUv(0.0F, 1.0F).setColor(c1);
             }
         }
     }

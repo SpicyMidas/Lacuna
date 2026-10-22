@@ -5,6 +5,7 @@ import com.lacuna.mod.client.fx.FxDraw;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.gear.EmberWave;
 import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModParticles;
@@ -699,6 +700,8 @@ public final class EmberDust {
         private final float size;
         private final boolean shed;
         private final int life;
+        /** The ground under the body (the hot patch lies on it). */
+        private final GroundDecal decal = new GroundDecal();
         private int age;
 
         Glow(Vec3[] spots, Vec3 feet, float bodySize, boolean shed) {
@@ -730,7 +733,7 @@ public final class EmberDust {
                         FxDraw.argb((shed ? 0.16F : 0.26F) * fade * flick, GLOW_ORANGE));
             }
             if (!shed) {
-                FxDraw.ground(pose, vc, ctx.rel(feet).add(0.0, 0.04, 0.0), 0.5F + size, FxDraw.argb(0.4F * fade, GLOW_DEEP));
+                decal.at(ctx.level(), feet, 0.5 + size).square(ctx, vc, feet.x, feet.z, 0.5F + size, 0.0F, FxDraw.argb(0.4F * fade, GLOW_DEEP));
             }
         }
     }

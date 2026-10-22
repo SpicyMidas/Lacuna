@@ -260,18 +260,19 @@ public final class SolarVisuals {
         int gold = SunLight.lit(GOLD, 0.0F);
         int warm = SunLight.lit(WARM, 0.15F);
         int pale = SunLight.lit(PALE, 0.35F);
-        Vec3 ground = ctx.rel(new Vec3(target.x, target.y + 0.06, target.z));
+        // (all of them lie on the terrain: SolarGround)
+        com.lacuna.mod.client.fx.GroundDecal ground = SolarGround.at(ctx, spear, target, ring * 3.4F);
         VertexConsumer marks = ctx.buffers().getBuffer(SolarRenderTypes.ring());
-        groundMark(pose, marks, ground.add(0, 0.02, 0), ring * 1.9F, SolarRenderTypes.POOL, FxDraw.argb(0.2F + 0.65F * e, gold));
-        groundMark(pose, marks, ground.add(0, 0.03, 0), ring, SolarRenderTypes.RETICLE, FxDraw.argb(0.45F + 0.55F * e, warm));
+        SolarGround.mark(ctx, ground, marks, target, ring * 1.9F, SolarRenderTypes.POOL, 0.006F, FxDraw.argb(0.2F + 0.65F * e, gold));
+        SolarGround.mark(ctx, ground, marks, target, ring, SolarRenderTypes.RETICLE, 0.012F, FxDraw.argb(0.45F + 0.55F * e, warm));
         for (int j = 0; j < 2; j++) {
             float q = (t * 0.035F + j * 0.5F) % 1.0F;
             float r = ring * (1.0F + 2.4F * (1.0F - q));
-            groundMark(pose, marks, ground.add(0, 0.04 + 0.01 * j, 0), r, SolarRenderTypes.THIN,
+            SolarGround.mark(ctx, ground, marks, target, r, SolarRenderTypes.THIN, 0.018F + 0.006F * j,
                     FxDraw.argb(Mth.sin(q * Mth.PI) * (0.25F + 0.5F * e), pale));
         }
         VertexConsumer pool = ctx.buffers().getBuffer(SolarRenderTypes.ringOver());
-        groundMark(pose, pool, ground.add(0, 0.01, 0), ring * 1.3F, SolarRenderTypes.POOL, FxDraw.argb(0.1F + 0.35F * e, warm));
+        SolarGround.mark(ctx, ground, pool, target, ring * 1.3F, SolarRenderTypes.POOL, 0.0F, FxDraw.argb(0.1F + 0.35F * e, warm));
 
         // 5. the spear's own light, swelling
         Vec3 d = spear.pointing(pt);
@@ -495,11 +496,12 @@ public final class SolarVisuals {
         groundMark(pose, marks, sky, 46.0F * swell, SolarRenderTypes.POOL, FxDraw.argb(0.55F * a, GOLD));
         groundMark(pose, marks, sky.add(0, -0.5, 0), 26.0F * width, SolarRenderTypes.THIN, FxDraw.argb(0.5F * a, PALE));
 
-        // on the ground: a molten pool of light, the impact starburst and a dome of light
-        Vec3 groundC = ctx.rel(base.add(0, 0.08, 0));
-        groundMark(pose, marks, groundC, 18.0F * swell, SolarRenderTypes.POOL, FxDraw.argb(0.7F * a, GOLD));
+        // on the ground (lying on the terrain: SolarGround): a molten pool of light, the impact starburst and a dome of light
+        com.lacuna.mod.client.fx.GroundDecal groundC = SolarGround.at(ctx, ray, base,
+                t < Balance.SOLAR_RAY_TICKS + 26.0F ? 48.0 : 18.0 * swell);
+        SolarGround.mark(ctx, groundC, marks, base, 18.0F * swell, SolarRenderTypes.POOL, 0.01F, FxDraw.argb(0.7F * a, GOLD));
         VertexConsumer pool = ctx.buffers().getBuffer(SolarRenderTypes.ringOver());
-        groundMark(pose, pool, groundC.add(0, -0.02, 0), 12.0F * swell, SolarRenderTypes.POOL, FxDraw.argb(0.35F * a, WARM));
+        SolarGround.mark(ctx, groundC, pool, base, 12.0F * swell, SolarRenderTypes.POOL, 0.0F, FxDraw.argb(0.35F * a, WARM));
         VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
         FxDraw.billboard(pose, glow, ctx.camera(), ctx.rel(base.add(0, 2.0, 0)), 11.0F * swell, t * 0.01F, FxDraw.argb(0.55F * a, WARM));
         VertexConsumer flare = ctx.buffers().getBuffer(SolarRenderTypes.flare());
@@ -516,7 +518,7 @@ public final class SolarVisuals {
             }
             float r = 1.5F + reach[j] * (float) SolarMath.easeOut(local);
             float alpha = (float) Math.pow(1.0F - local, 1.4) * (j == 0 ? 1.0F : 0.7F);
-            groundMark(pose, marks, groundC.add(0, 0.03 * (j + 1), 0), r, SolarRenderTypes.SHOCKWAVE,
+            SolarGround.mark(ctx, groundC, marks, base, r, SolarRenderTypes.SHOCKWAVE, 0.01F + 0.008F * (j + 1),
                     FxDraw.argb(alpha, j == 0 ? WHITE : WARM));
         }
     }

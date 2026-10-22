@@ -6,6 +6,7 @@ import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.gear.StarlaceSet;
 import com.lacuna.mod.network.FxPayload;
@@ -254,6 +255,8 @@ public final class StarlaceClient {
         private static final float GROW = 8.0F;
         private final Vec3 origin;
         private final float range;
+        /** The terrain the shockwave runs over. */
+        private final GroundDecal decal = new GroundDecal();
         private int age;
 
         Starfall(Vec3 origin, float range) {
@@ -291,17 +294,18 @@ public final class StarlaceClient {
                 return;
             }
             PoseStack.Pose pose = ctx.pose().last();
-            Vec3 base = ctx.rel(origin).add(0, 0.06, 0);
+            GroundDecal g = decal.at(ctx.level(), origin, Math.max(range, 0.8 + range * 0.6));
             VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
             // pale gold front, a lavender ring trailing it and a faint echo further behind
-            FxDraw.ground(pose, ring, base, radius(time), FxDraw.argb(0.85F * fade, GOLD));
-            FxDraw.ground(pose, ring, base.add(0, 0.01, 0), radius(time - 1.2F) * 0.94F, FxDraw.argb(0.6F * fade, LAVENDER));
-            FxDraw.ground(pose, ring, base.add(0, 0.02, 0), radius(time - 2.6F) * 0.85F, FxDraw.argb(0.3F * fade, STARLIGHT));
+            g.square(ctx, ring, origin.x, origin.z, radius(time), 0.006F, FxDraw.argb(0.85F * fade, GOLD));
+            g.square(ctx, ring, origin.x, origin.z, radius(time - 1.2F) * 0.94F, 0.012F, FxDraw.argb(0.6F * fade, LAVENDER));
+            g.square(ctx, ring, origin.x, origin.z, radius(time - 2.6F) * 0.85F, 0.018F, FxDraw.argb(0.3F * fade, STARLIGHT));
             // a soft pool of light where the player landed, brightest at the impact
             float flare = 1.0F - Mth.clamp(time / 6.0F, 0.0F, 1.0F);
             VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.GLOW));
-            FxDraw.ground(pose, glow, base.add(0, 0.03, 0), 0.8F + range * 0.6F * (1.0F - flare), FxDraw.argb(0.3F * fade, LAVENDER));
+            g.square(ctx, glow, origin.x, origin.z, 0.8F + range * 0.6F * (1.0F - flare), 0.0F, FxDraw.argb(0.3F * fade, LAVENDER));
             if (flare > 0.0F) {
+                Vec3 base = ctx.rel(origin).add(0, g.ground() - origin.y, 0);
                 FxDraw.billboard(pose, glow, ctx.camera(), base.add(0, 0.4, 0), 0.9F + 0.6F * (1.0F - flare), 0.0F,
                         FxDraw.argb(0.55F * flare, GOLD));
             }

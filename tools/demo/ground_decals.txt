@@ -1,0 +1,71 @@
+# Terrain-projected ground marks (client/fx/GroundDecal): purpose-built uneven ground - carpets, a dirt path,
+# farmland, grass, slabs, snow layers, a stair step, two terraces (one snowed), oak slabs and a high cliff - seen from
+# a glass pillar and from the side, with the debug ring, the Ember Triangle glyph, the Gravemaw crescent, the Starlace
+# shockwave and Sun's Fury (focus reticle / rings / pools, then the strike pool and shockwaves).
+world lacuna_decal flat
+wait 60
+hud off
+cmd time set noon
+cmd gamerule sendCommandFeedback false
+cmd fill ~-9 ~ ~3 ~9 ~6 ~24 air
+cmd fill ~-7 ~ ~6 ~-3 ~ ~8 red_carpet
+cmd fill ~2 ~-1 ~5 ~5 ~-1 ~8 dirt_path
+cmd fill ~6 ~-1 ~5 ~8 ~-1 ~8 farmland
+cmd fill ~-2 ~ ~4 ~1 ~ ~7 short_grass
+cmd fill ~-8 ~ ~9 ~-1 ~ ~11 smooth_stone_slab
+cmd fill ~1 ~ ~9 ~8 ~ ~10 snow[layers=2]
+cmd fill ~1 ~ ~11 ~8 ~ ~11 snow[layers=5]
+cmd fill ~-8 ~ ~12 ~8 ~ ~12 stone_brick_stairs[facing=south]
+cmd fill ~-8 ~ ~13 ~8 ~ ~24 stone
+cmd fill ~-8 ~1 ~16 ~8 ~1 ~24 stone
+cmd fill ~-8 ~2 ~16 ~-2 ~2 ~24 snow[layers=3]
+cmd fill ~-1 ~1 ~13 ~4 ~1 ~15 oak_slab
+cmd fill ~5 ~2 ~16 ~8 ~4 ~24 stone
+cmd fill ~ ~ ~-2 ~ ~5 ~-2 glass
+cmd tp @s ~ ~6 ~-2 0 38
+look 0 38
+wait 50
+shot decal_scene
+# 1. the debug ring (3 -> 6.8 blocks) centred on plain grass between the slabs and the snow
+fx debug ~ ~-1 ~6 ~ ~-6 ~13
+wait 14
+shot decal_debug_ring
+wait 90
+# 2. Ember Triangle release: the rotated glyph, the flash and the heat front; then from the side
+fx ember_wave ~ ~-6 ~13 ~ ~-6 ~13 7 14 25
+wait 3
+shot decal_ember_flash
+wait 10
+shot decal_ember_glyph
+cmd tp @s ~-9 ~-6 ~15 -90 14
+look -90 14
+wait 4
+shot decal_ember_side
+wait 40
+# 3. Gravemaw crescent from the side: shockwave ring at its origin, its foot climbing the stair step and terraces
+fx gravemaw_wave ~9 ~ ~-4 ~9 ~ ~1 1 9 55
+wait 4
+shot decal_gravemaw_side
+cmd tp @s ~9 ~6 ~-15 0 38
+look 0 38
+wait 2
+fx gravemaw_wave ~ ~-6 ~9 ~ ~-6 ~14 1 9 55
+wait 4
+shot decal_gravemaw_top
+wait 20
+# 4. Starlace starfall shockwave
+fx starlace_starfall ~ ~-6 ~13 ~ ~-6 ~13 6 12 1
+wait 5
+shot decal_starlace
+wait 30
+# 5. Sun's Fury dropped onto the patch: focus (reticle, rings, light pools), then the strike
+cmd summon lacuna:suns_fury ~ ~-2 ~13 {Motion:[0.0d,-1.2d,0.0d]}
+wait 24
+shot decal_solar_focus_early
+wait 62
+shot decal_solar_focus_late
+wait 26
+shot decal_solar_strike
+wait 24
+shot decal_solar_strike_b
+quit
