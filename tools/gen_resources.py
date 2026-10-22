@@ -31,7 +31,7 @@ CONTENT_MODULES = [
     "m14_quickening",
     "m15_chrono_hourglass", "m15_bag", "m15_starcaller",
     "m16_confusion", "m16_natural_stars", "m16_starlace_bandage", "m16_bag_players",
-    "m17_exile", "m17_shadow_possession",
+    "m17_exile", "m17_shadow_possession", "m18_civic_gui",
 ]
 
 
