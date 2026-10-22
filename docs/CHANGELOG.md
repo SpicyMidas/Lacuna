@@ -4,6 +4,10 @@
 
 - **Gravemaw Greatsword icon** (16x16) is brighter: its shades moved one step up the 32x32 sword's own colour
   ramp, with the same dark outline.
+- **Sun's Fury in real 3D, no grey:** the grey/brown haze around the rays is gone (the wide outer glow layers now only
+  add light instead of covering the sky). The strike pillar and the converging focus sunbeams are true 3D tubes: each
+  pixel traces the view ray through the round shaft, so the beam has exact thickness from any angle and you can stand
+  inside it and look straight up. Still depth-correct against clouds and terrain, dimming gently with distance.
 <!-- rev12 -->
 
 ## 0.11.0 — revision 11 (player feedback)
