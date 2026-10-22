@@ -21,7 +21,8 @@ import net.minecraft.world.phys.Vec3;
 /**
  * The light of Sun's Fury, drawn after particles (so it also works under Fabulous graphics) for every spear / column
  * whose entity renderer ran this frame (vanilla culling decides what is visible). Everything is GPU shader light
- * ({@link SolarRenderTypes}): camera-facing ribbons read as volumetric shafts, flat procedural marks as rings and pools.
+ * ({@link SolarRenderTypes}), always additive: the pillar and the focus sunbeams are real 3D volumes ({@link SolarTubes};
+ * camera-facing ribbons without its shader), the trail a volumetric ribbon, flat procedural marks rings and pools.
  * <ul>
  *   <li>flight: a tapering golden comet trail and a starburst on the spear head;</li>
  *   <li>focus: while the sun is up, a wide cone of sunlight, soft sunbeams and finally a thin focus beam that all leave
@@ -29,7 +30,7 @@ import net.minecraft.world.phys.Vec3;
  *       colour (orange at sunrise, warm white high up) and converge on the spear (a magnifying glass gathering
  *       sunlight); always a turning target reticle that shrinks and brightens, pull-in rings, a ground light pool and
  *       the spear's own swelling glow, in white light while the sun is below the horizon;</li>
- *   <li>strike: a sky-to-ground pillar of five layered column-shader ribbons (amber haze, golden halo, striated body,
+ *   <li>strike: a sky-to-ground pillar of nested light volumes (amber haze, golden halo, sunbeam body, striated body,
  *       pale inner light, white-hot core), rings of light pouring down it, a glowing aperture where it leaves the sky,
  *       an impact starburst, a dome of light and a molten light pool on the ground, and shockwaves racing outward;</li>
  *   <li>fade: the pillar thins into a golden thread and its light drains away (the motes are spawned by the entity).</li>

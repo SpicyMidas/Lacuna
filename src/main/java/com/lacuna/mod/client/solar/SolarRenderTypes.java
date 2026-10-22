@@ -149,7 +149,7 @@ public final class SolarRenderTypes {
     }
 
     /**
-     * {@link #column()} for sunlight coming down from the sun's disc in the sky: drawn the same, but not fogged like
+     * {@link #column()} for sunlight coming down from the sun's disc in the sky: drawn the same, but not dimmed like
      * the terrain (vanilla does not fog the sun either), so the shafts keep leaving the disc at any render distance.
      */
     public static RenderType skyColumn() {

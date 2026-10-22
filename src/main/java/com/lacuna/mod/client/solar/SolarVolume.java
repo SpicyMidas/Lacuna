@@ -41,7 +41,7 @@ import org.joml.Matrix4fStack;
  *       from the radius, the distance from the axis and the angle to it, so the light is brighter where the eye looks
  *       along the shaft, and the part of the chord behind the scene or the eye is dropped: near clouds and hills hide
  *       it, far clouds stay behind it, it melts into the ground and walls it enters instead of being cut, and it fades
- *       smoothly when the eye is inside it. Vanilla terrain fog by horizontal distance (none for sunlight from the
+ *       smoothly when the eye is inside it. Dimmed with distance, never fogged grey (not at all for sunlight from the
  *       sky).</li>
  *   <li>{@code lacuna:solar_soft_glow} / {@code lacuna:solar_soft_corona}: flares and glows fade softly behind the
  *       surfaces they touch (soft particles that never dim what is in front), same cloud ordering and fog.</li>
@@ -55,7 +55,7 @@ import org.joml.Matrix4fStack;
 public final class SolarVolume {
     /** {@code UV2.y} flag: the soft sunbeam profile (ribbon u offset 2). */
     static final int SUNBEAM = 1;
-    /** {@code UV2.y} flag: sunlight coming down from the sky's sun disc, not fogged like the terrain. */
+    /** {@code UV2.y} flag: sunlight coming down from the sky's sun disc, not dimmed with distance. */
     static final int SKY = 2;
 
     @Nullable
