@@ -9,6 +9,7 @@
   pixel traces the view ray through the round shaft, so the beam has exact thickness from any angle and you can stand
   inside it and look straight up. Still depth-correct against clouds and terrain, dimming gently with distance.
 - **Item details** now show while holding **Shift** (was Space); rebindable under Controls → Lacuna.
+- **Totem of Confusion** works with a plain right click, like the Totem of Banishing (no more raising it like a horn).
 <!-- rev12 -->
 
 ## 0.11.0 — revision 11 (player feedback)

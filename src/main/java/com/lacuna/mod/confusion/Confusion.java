@@ -35,7 +35,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Totem of Confusion: raising the totem conjures {@link #COPIES} copies of the player ({@link ConfusionCopy}) on free
+ * Totem of Confusion: using the totem conjures {@link #COPIES} copies of the player ({@link ConfusionCopy}) on free
  * ground {@link #MIN_RADIUS}-{@link #MAX_RADIUS} blocks around them. A weighted roll ({@link #SWAP_CHANCE}, 3 in 4 for the swap) decides the
  * rest: either the player slips into one of the copies' places and a copy appears where they stood ("swap"), or the
  * player stays put with the copies around them ("stay"). Both look the same to everyone else; only the owner is told
@@ -59,8 +59,6 @@ public final class Confusion {
     public static final int USES = 3;
     /** 45 s between raises. */
     public static final int COOLDOWN = 900;
-    /** The totem is held up this long (goat-horn style pose) before the copies appear. */
-    public static final int RAISE_TICKS = 12;
     /** Chance that the player swaps places with one of the copies instead of staying among them. */
     public static final float SWAP_CHANCE = 0.75F;
 

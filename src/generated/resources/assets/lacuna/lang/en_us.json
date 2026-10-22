@@ -378,7 +378,7 @@
   "item.lacuna.totem_of_confusion.mimic": " They copy your every move: walk, sprint, jump, sneak, swing, each on its own heading",
   "item.lacuna.totem_of_confusion.swap": " %s%% chance you swap places with one of them, else you stay in their midst",
   "item.lacuna.totem_of_confusion.tip": "Only you are told whether you swapped.",
-  "item.lacuna.totem_of_confusion.use": "Hold use: %s copies of you appear around you",
+  "item.lacuna.totem_of_confusion.use": "Use: %s copies of you appear around you",
   "item.lacuna.totem_of_confusion.uses": "Uses left: %s/%s",
   "item.lacuna.umbral_steel.nightforged": "Nightforged: mines %s faster where light is %s or less",
   "item.lacuna.umbral_steel_axe": "Umbral Steel Axe",

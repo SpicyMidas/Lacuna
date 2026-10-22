@@ -1,29 +1,17 @@
-"""Totem of Confusion: raised like a goat horn, it conjures five copies of the player (lacuna:confusion_copy) that wear
+"""Totem of Confusion: used with a right click, it conjures five copies of the player (lacuna:confusion_copy) that wear
 their skin, mirror their every move on their own headings, break in two hits and fade after about 20 seconds."""
 from content.m12_polish import adv, code
 
-# raised: centred, lifted and turned towards the camera in first person; upright and facing out in third person
-RAISING = {
-    "thirdperson_righthand": {"rotation": [0, 90, 0], "translation": [0, 4, 1], "scale": [0.55, 0.55, 0.55]},
-    "thirdperson_lefthand": {"rotation": [0, 90, 0], "translation": [0, 4, 1], "scale": [0.55, 0.55, 0.55]},
-    "firstperson_righthand": {"rotation": [0, -20, 5], "translation": [-5, 4, -3], "scale": [0.55, 0.55, 0.55]},
-    "firstperson_lefthand": {"rotation": [0, -20, 5], "translation": [-5, 4, -3], "scale": [0.55, 0.55, 0.55]},
-}
-
-
 def build(g):
-    g.item("totem_of_confusion", "Totem of Confusion", "Totem della Confusione",
-           overrides=[{"predicate": {"lacuna:raising": 1}, "model": "lacuna:item/totem_of_confusion_raising"}])
-    g.item_model("totem_of_confusion_raising", {"parent": "minecraft:item/generated",
-                                                "textures": {"layer0": "lacuna:item/totem_of_confusion"}, "display": RAISING})
+    g.item("totem_of_confusion", "Totem of Confusion", "Totem della Confusione")
     # the armour stand is the body, amethyst the illusion, the pearl the swap; gold and emerald make it a totem
     g.shaped("totem_of_confusion", [" P ", "AMA", "GEG"],
              {"P": "minecraft:ender_pearl", "A": "minecraft:amethyst_shard", "M": "minecraft:armor_stand",
               "G": "minecraft:gold_ingot", "E": "minecraft:emerald"},
              "lacuna:totem_of_confusion", category="equipment", unlock="minecraft:ender_pearl")
     g.name("item.lacuna.totem_of_confusion.lore", "Five of you. Only one is real.", "Cinque di te. Solo uno è vero.")
-    g.name("item.lacuna.totem_of_confusion.use", "Hold use: %s copies of you appear around you",
-           "Tieni premuto usa: %s copie di te compaiono intorno a te")
+    g.name("item.lacuna.totem_of_confusion.use", "Use: %s copies of you appear around you",
+           "Usa: %s copie di te compaiono intorno a te")
     g.name("item.lacuna.totem_of_confusion.swap", " %s%% chance you swap places with one of them, else you stay in their midst",
            " %s%% di probabilità di scambiarti con una di loro, altrimenti resti in mezzo a loro")
     g.name("item.lacuna.totem_of_confusion.mimic", " They copy your every move: walk, sprint, jump, sneak, swing, each on its own heading",

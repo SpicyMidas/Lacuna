@@ -1,6 +1,5 @@
 package com.lacuna.mod.client.confusion;
 
-import com.lacuna.mod.Lacuna;
 import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.confusion.Confusion;
 import com.lacuna.mod.confusion.ConfusionCopy;
@@ -14,12 +13,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -34,7 +31,6 @@ public final class ConfusionClient {
 
     public static void register(IEventBus modBus, IEventBus forgeBus) {
         modBus.addListener(ConfusionClient::onRegisterRenderers);
-        modBus.addListener(ConfusionClient::onClientSetup);
         forgeBus.addListener(ConfusionClient::onClientTick);
         FxHandlers.register(Confusion.FX_RAISE, ConfusionClient::onRaise);
         ConfusionCopy.setOwnedLocally(copy -> {
@@ -45,12 +41,6 @@ public final class ConfusionClient {
 
     private static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.CONFUSION_COPY.get(), ConfusionCopyRenderer::new);
-    }
-
-    private static void onClientSetup(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> SafeRun.run("item_properties", () -> ItemProperties.register(ModItems.TOTEM_OF_CONFUSION.get(),
-                Lacuna.id("raising"), (stack, level, entity, seed) ->
-                        entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F)));
     }
 
     /** After the local player moved this tick: their keys, for their copies on the server to walk the same way. */

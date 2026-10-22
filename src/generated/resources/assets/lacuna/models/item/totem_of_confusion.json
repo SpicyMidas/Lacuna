@@ -1,12 +1,4 @@
 {
-  "overrides": [
-    {
-      "model": "lacuna:item/totem_of_confusion_raising",
-      "predicate": {
-        "lacuna:raising": 1
-      }
-    }
-  ],
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "lacuna:item/totem_of_confusion"

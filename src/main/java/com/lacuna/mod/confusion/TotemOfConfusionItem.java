@@ -15,52 +15,33 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 
 /**
- * Totem of Confusion: hold use to raise it (goat-horn style pose, {@link Confusion#RAISE_TICKS} ticks); when the raise
- * completes, five copies of the player appear around them ({@link Confusion#activate}). Letting go early does nothing.
- * {@link Confusion#USES} raises per totem, {@link Confusion#COOLDOWN} ticks apart; it cannot be repaired.
+ * Totem of Confusion: right click (like the Totem of Banishing) and five copies of the player appear around them
+ * ({@link Confusion#activate}). {@link Confusion#USES} uses per totem, {@link Confusion#COOLDOWN} ticks apart; it cannot be repaired.
  */
 public class TotemOfConfusionItem extends Item {
     public TotemOfConfusionItem(Properties properties) {
         super(properties);
     }
 
+    /** Right click, like the Totem of Banishing: the copies appear at once. */
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!level.isClientSide()) {
-            Sfx.at(player, SoundEvents.ILLUSIONER_PREPARE_MIRROR, 0.7F, 1.3F);
-        }
-        player.startUsingItem(hand);
-        return InteractionResultHolder.consume(stack);
-    }
-
-    @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        if (entity instanceof ServerPlayer player) {
-            InteractionHand hand = player.getUsedItemHand();
-            if (SafeRun.call(Confusion.FEATURE, () -> Confusion.activate(player), false)) {
-                player.getCooldowns().addCooldown(this, Confusion.COOLDOWN);
-                player.awardStat(Stats.ITEM_USED.get(this));
-                level.gameEvent(GameEvent.ITEM_INTERACT_FINISH, player.position(), GameEvent.Context.of(player));
-                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
+        if (player instanceof ServerPlayer sp) {
+            if (!SafeRun.call(Confusion.FEATURE, () -> Confusion.activate(sp), false)) {
+                return InteractionResultHolder.fail(stack);
             }
+            Sfx.at(player, SoundEvents.ILLUSIONER_PREPARE_MIRROR, 0.7F, 1.3F);
+            player.getCooldowns().addCooldown(this, Confusion.COOLDOWN);
+            player.awardStat(Stats.ITEM_USED.get(this));
+            level.gameEvent(GameEvent.ITEM_INTERACT_FINISH, player.position(), GameEvent.Context.of(player));
+            stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(hand));
         }
-        return stack;
-    }
-
-    @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
-        return Confusion.RAISE_TICKS;
-    }
-
-    @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.TOOT_HORN;
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide());
     }
 
     @Override
