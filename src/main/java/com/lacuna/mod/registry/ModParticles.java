@@ -42,7 +42,7 @@ public final class ModParticles {
 
     /** Banishment: a tumbling bone-and-umber stone chip of the Totem of Banishing, pinwheeling out of a totem burst. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BANISH_MOTE = simple("banish_mote");
-    /** Banishment: a pale four-point spark with a lichen-green halo (the rift, the portal surface, the held totem). */
+    /** Banishment: a pale four-point spark with a pearl-lavender halo (the rift, the portal surface, the held totem). */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RIFT_SPARK = simple("rift_spark");
 
     private ModParticles() {}

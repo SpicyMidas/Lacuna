@@ -182,7 +182,15 @@ public final class ModItems {
     public static final DeferredItem<com.lacuna.mod.mummy.StarlaceBandageItem> STARLACE_BANDAGE = item("starlace_bandage",
             com.lacuna.mod.mummy.StarlaceBandageItem::new, new Item.Properties());
     // ------------------------------------------------------------------ Exilite (the totem's own stone, fl/Exilite)
-    public static final DeferredItem<Item> EXILITE_SHARD = item("exilite_shard", Item::new, new Item.Properties().rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<Item> EXILITE_SHARD = item("exilite_shard", Item::new,
+            new Item.Properties().rarity(Rarity.UNCOMMON).fireResistant());
+    public static final DeferredItem<Item> EXILITE_INGOT = item("exilite_ingot", Item::new,
+            new Item.Properties().rarity(Rarity.RARE).fireResistant());
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> EXILITE_DEBRIS = item("exilite_debris",
+            p -> new net.minecraft.world.item.BlockItem(ModBlocks.EXILITE_DEBRIS.get(), p), new Item.Properties().fireResistant());
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> EXILITE_BLOCK = item("exilite_block",
+            p -> new net.minecraft.world.item.BlockItem(ModBlocks.EXILITE_BLOCK.get(), p),
+            new Item.Properties().rarity(Rarity.RARE).fireResistant());
 
     private ModItems() {}
 

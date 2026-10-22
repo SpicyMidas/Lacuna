@@ -5,7 +5,6 @@ import com.lacuna.mod.client.fx.ClientFx;
 import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
-import com.lacuna.mod.client.portal.PortalTransition;
 import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.registry.ModParticles;
@@ -21,14 +20,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * The Totem of Banishing going off for whoever lands in the Forgotten Land ({@link BanishFx#ARRIVAL_FX}), the way a
+ * The Totem of Banishing going off for whoever it sends to the Forgotten Land ({@link BanishFx#ARRIVAL_FX}: the totem
+ * used on oneself or on a struck target; never a portal crossing or a command), the way a
  * totem of undying goes off (vanilla entity event 35): the totem pops up big on the arriving player's screen
  * ({@code GameRenderer.displayItemActivation}), a tracking burst of the totem's stone chips ({@code banish_mote}) flies
  * off the body with a ring of rift sparks at the feet, and a layered totem sound plays: the totem pop pitched down
  * under an amethyst resonance and a soul's sigh.
  * <p>
- * The arriving player's own pop waits until the world can be seen again (the loading screen is gone and a Forgotten
- * Portal's void has lifted), so it is never spent behind them; onlookers see the burst as soon as the newcomer's entity
+ * The arriving player's own pop waits until the world can be seen again (the loading screen is gone), so it is never
+ * spent behind them; onlookers see the burst as soon as the newcomer's entity
  * reaches their client (it is tracked a tick or two after it lands).
  */
 public final class BanishArrivalFx {
@@ -44,6 +44,7 @@ public final class BanishArrivalFx {
     /** From {@code FxHandlers.bootstrap()}. */
     public static void register() {
         FxHandlers.register(BanishFx.ARRIVAL_FX, p -> FxManager.add(p.p0() > 0.5F ? new OwnPop() : new Onlooker(p)));
+        BanishBlastFx.register();
     }
 
     /** The arriving player's own totem. */
@@ -58,7 +59,7 @@ public final class BanishArrivalFx {
                 return false;
             }
             waited++;
-            boolean visible = !(mc.screen instanceof ReceivingLevelScreen) && !PortalTransition.active();
+            boolean visible = !(mc.screen instanceof ReceivingLevelScreen);
             clear = visible ? clear + 1 : 0;
             if (clear < SETTLE && waited < MAX_WAIT) {
                 return true;

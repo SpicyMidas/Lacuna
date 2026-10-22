@@ -1,30 +1,39 @@
-"""Banishment particles and the Exilite stone family, in the Totem of Banishing's palette without its ruby.
+"""Banishment particles and the Exilite stone family, in the exilite palette of the user's hand-drawn textures.
 
-The palette is read off the totem's texture (art/m02_forgotten_land.totem): bone highlights, cream and warm-grey
-stone, a dark umber outline and a fleck of lichen green. No reds anywhere.
+The palette is sampled from tools/art/hand: block/exilite_debris_side + _top, item/exilite_shard, item/exilite_ingot
+and item/totem_of_banishing (the "exilite set"): bone white, cream, sand and taupe stone, a warm umber outline
+(#7C6C58), the darker umber of the buried debris, and pearl glints of pink, mint and lavender on the brightest
+pixels. No reds anywhere (the ruby is the totem's alone).
 
 Particles (textures/particle/, 8x8, pixel art):
-  * banish_mote_0..2 - a stone chip of the totem tumbling (big chip, small chip, glint); tinted per particle.
-  * rift_spark_0..2  - a pale four-point spark with a lichen halo (additive), shrinking frame by frame.
-Exilite (textures/block/, textures/item/): ore, raw stone, polished, bricks, chiseled (the totem's open hand), shard.
+  * banish_mote_0..2 - a stone chip tumbling (big chip, small chip, glint); tinted per particle.
+  * rift_spark_0..2  - a pearl-white four-point spark with a lavender halo (additive), shrinking frame by frame.
+Exilite (textures/block/): raw stone, polished, bricks, chiseled (the totem's open hand), the Block of Exilite.
+The debris, shard and ingot textures are hand-drawn (tools/art/hand), never generated.
 """
 import math
 
-from texlib import c, from_ascii, lerp, new, noise_fill, ramp, rng, save
-from art.common import ore
+from texlib import c, from_ascii, lerp, new, noise_fill, rng, save
 
-# ---------------------------------------------------------------------------------------- the totem's palette
-BONE_HI = c("#ECE6D8")
-BONE = c("#CFC6B3")
-BONE_MID = c("#BDB4A2")
-BONE_LO = c("#A39B8C")
-GREY = c("#8C8780")
-GREY_D = c("#6E6A64")
-UMBER_L = c("#5E5247")
-UMBER = c("#4E4338")
-LICHEN = c("#9BA889")
+# ---------------------------------------------------------------------------------------- the exilite palette
+PEARL_W = c("#F9F8F3")
+PEARL_P = c("#FDF3F6")   # pink glint
+PEARL_M = c("#F2FBF6")   # mint glint
+PEARL_L = c("#F6F3FB")   # lavender glint
+BONE_HI = c("#E8E2D6")
+BONE = c("#DAD2BD")
+CREAM = c("#D2C9B2")
+TAN = c("#BFB399")
+SAND = c("#A69E8B")
+TAUPE = c("#988973")
+TAUPE_D = c("#887D6A")
+UMBER_L = c("#7C6C58")   # the outline of the shard, ingot and totem
+UMBER = c("#766A58")
+UMBER_D = c("#635646")   # the debris' darkest seams
+PEARLS = [PEARL_P, PEARL_M, PEARL_L]
 
-PAL = {"O": UMBER, "o": UMBER_L, "q": GREY_D, "k": GREY, "s": BONE_LO, "n": BONE_MID, "m": BONE, "h": BONE_HI, "g": LICHEN}
+PAL = {"O": UMBER_L, "o": UMBER, "q": TAUPE_D, "k": TAUPE, "s": TAN, "n": CREAM, "m": BONE_HI, "h": PEARL_W,
+       "p": PEARL_P, "g": PEARL_M, "l": PEARL_L}
 
 
 # ---------------------------------------------------------------------------------------- particles
@@ -34,7 +43,7 @@ MOTE_FRAMES = [
         "...OO...",
         "..OhmO..",
         ".OhmmsO.",
-        ".OmgsO..",
+        ".OmpsO..",
         "..OsO...",
         "...O....",
         "........",
@@ -52,9 +61,9 @@ MOTE_FRAMES = [
     [
         "........",
         "........",
-        "...m....",
-        "..mhm...",
-        "...m....",
+        "...l....",
+        "..lhg...",
+        "...p....",
         "........",
         "........",
         "........",
@@ -68,7 +77,7 @@ def banish_motes():
 
 
 def rift_spark(arm):
-    """Four-point star centred on the 8x8 sprite: bone-white core, cream arms, a faint lichen halo."""
+    """Four-point star centred on the 8x8 sprite: pearl-white core, bone arms, a faint lavender pearl halo."""
     img = new(8, 8)
     px = img.load()
     for y in range(8):
@@ -78,13 +87,14 @@ def rift_spark(arm):
             col = None
             if min(dx, dy) < 0.6 and max(dx, dy) < arm:
                 t = max(dx, dy) / arm
-                base = lerp(BONE_HI, BONE, min(1.0, t * 1.4))
+                base = lerp(PEARL_W, BONE_HI, min(1.0, t * 1.4))
                 alpha = 255 if t < 0.45 else (190 if t < 0.75 else 110)
                 col = (base[0], base[1], base[2], alpha)
             elif d < arm * 0.75:
-                # the halo between the arms: quantized lichen glow
+                # the halo between the arms: quantized pearl glow, lavender inside, a touch of mint outside
                 alpha = 90 if d < arm * 0.45 else 45
-                col = (LICHEN[0], LICHEN[1], LICHEN[2], alpha)
+                tone = PEARL_L if d < arm * 0.45 else PEARL_M
+                col = (tone[0], tone[1], tone[2], alpha)
             if col:
                 px[x, y] = col
     return img
@@ -96,13 +106,11 @@ def rift_sparks():
 
 
 # ---------------------------------------------------------------------------------------- exilite
-STONE = [BONE_LO, BONE_MID, BONE, BONE, BONE_HI]
-MATRIX = ramp("#4E4338", "#5E5247", "#5E5247", "#6E6A64", "#6E6A64")
-NODULE = [UMBER, BONE_LO, BONE, BONE_HI, BONE_HI]
+STONE = [SAND, TAN, CREAM, BONE, BONE_HI]
 
 
 def _veins(img, name, count, col, dark):
-    """Thin wandering umber veins (like the totem's weathered cracks), dark at the start, fading to grey."""
+    """Thin wandering umber veins (like the seams of the debris), dark at the start, fading to taupe."""
     px = img.load()
     r = rng(name + "_veins")
     for v in range(count):
@@ -116,64 +124,60 @@ def _veins(img, name, count, col, dark):
                 y += 1
 
 
-def _lichen(img, name, count):
+def _pearls(img, name, count):
+    """Pearl glints (pink, mint, lavender) like the brightest pixels of the hand-drawn shard and ingot."""
     px = img.load()
-    r = rng(name + "_lichen")
+    r = rng(name + "_pearls")
     for _ in range(count):
-        px[r.randint(0, 15), r.randint(0, 15)] = LICHEN
+        px[r.randint(0, 15), r.randint(0, 15)] = r.choice(PEARLS)
 
 
 def exilite():
     img = noise_fill(STONE, "exilite", cell=4, speckle=0.16, contrast=1.1)
-    _veins(img, "exilite", 3, GREY, UMBER_L)
-    _lichen(img, "exilite", 3)
-    return img
-
-
-def exilite_ore():
-    base = noise_fill(MATRIX, "exilite_ore_matrix", cell=4, speckle=0.2, contrast=1.2)
-    img = ore(base, NODULE, "exilite_ore", clusters=4)
-    _lichen(img, "exilite_ore", 2)
+    _veins(img, "exilite", 3, TAUPE, UMBER_L)
+    _pearls(img, "exilite", 3)
     return img
 
 
 def _bevelled(name, contrast=0.55):
-    img = noise_fill([BONE_MID, BONE, BONE, BONE_HI], name, cell=8, speckle=0.06, contrast=contrast)
+    img = noise_fill([CREAM, BONE, BONE, BONE_HI], name, cell=8, speckle=0.06, contrast=contrast)
     px = img.load()
     for i in range(16):
-        px[i, 0] = BONE_HI
-        px[0, i] = BONE_HI
-        px[i, 15] = BONE_LO
-        px[15, i] = BONE_LO
-        px[i, 14] = lerp(px[i, 14], BONE_LO, 0.4) if 0 < i < 15 else px[i, 14]
-        px[14, i] = lerp(px[14, i], BONE_LO, 0.4) if 0 < i < 15 else px[14, i]
-    px[15, 0] = BONE_MID
-    px[0, 15] = BONE_MID
+        px[i, 0] = PEARL_W
+        px[0, i] = PEARL_W
+        px[i, 15] = TAN
+        px[15, i] = TAN
+        px[i, 14] = lerp(px[i, 14], TAN, 0.4) if 0 < i < 15 else px[i, 14]
+        px[14, i] = lerp(px[14, i], TAN, 0.4) if 0 < i < 15 else px[14, i]
+    px[15, 0] = CREAM
+    px[0, 15] = CREAM
     return img
 
 
 def polished_exilite():
-    return _bevelled("polished_exilite")
+    img = _bevelled("polished_exilite")
+    _pearls(img, "polished_exilite", 2)
+    return img
 
 
 def exilite_bricks():
-    img = noise_fill([BONE_MID, BONE, BONE, BONE_HI], "exilite_bricks", cell=4, speckle=0.1, contrast=0.9)
+    img = noise_fill([CREAM, BONE, BONE, BONE_HI], "exilite_bricks", cell=4, speckle=0.1, contrast=0.9)
     px = img.load()
     for y in range(16):
         for x in range(16):
             row = y // 4
             offset = 4 if row % 2 else 0
             if y % 4 == 3 or (x + offset) % 8 == 7:
-                px[x, y] = GREY_D
+                px[x, y] = UMBER_L
             elif y % 4 == 2 or (x + offset) % 8 == 6:
-                px[x, y] = lerp(px[x, y], BONE_LO, 0.5)  # lower-right shade of each brick
+                px[x, y] = lerp(px[x, y], TAN, 0.5)  # lower-right shade of each brick
             elif y % 4 == 0:
-                px[x, y] = lerp(px[x, y], BONE_HI, 0.5)
-    _lichen(img, "exilite_bricks", 2)
+                px[x, y] = lerp(px[x, y], PEARL_W, 0.5)
+    _pearls(img, "exilite_bricks", 2)
     return img
 
 
-# the Totem of Banishing's open stone hand, carved in relief: H = lit edge, s = face, o = shadowed edge
+# the Totem of Banishing's open stone hand, carved in relief: h = lit edge, s = face, o = shadowed edge, g = the palm
 HAND = [
     "....h.h.h...",
     "..h.s.s.s.h.",
@@ -199,11 +203,11 @@ def chiseled_exilite():
                 continue
             X, Y = ox + x, oy + y
             if ch == "h":
-                px[X, Y] = BONE_HI
+                px[X, Y] = PEARL_W
             elif ch == "s":
-                px[X, Y] = BONE_LO
+                px[X, Y] = TAN
             elif ch == "g":
-                px[X, Y] = LICHEN  # the totem's palm socket, empty of its ruby: lichen has grown in it
+                px[X, Y] = PEARL_P  # the totem's palm socket, empty of its ruby: a pearl glints in it
             elif ch == "o":
                 px[X, Y] = UMBER_L
     # a carved groove frame inside the bevel
@@ -211,40 +215,39 @@ def chiseled_exilite():
         for (x, y) in ((i, 1), (1, i)):
             px[x, y] = lerp(px[x, y], UMBER_L, 0.45)
         for (x, y) in ((i, 14), (14, i)):
-            px[x, y] = lerp(px[x, y], BONE_HI, 0.5)
+            px[x, y] = lerp(px[x, y], PEARL_W, 0.5)
     return img
 
 
-SHARD = [
-    "................",
-    "...........OO...",
-    "..........OhmO..",
-    ".........OhmmsO.",
-    "........OhmmnsO.",
-    ".......OhmmnssO.",
-    "......OhhmnsskO.",
-    ".....OhmmnsgskO.",
-    "....OhmmnsssskO.",
-    "...OhmmnssskkqO.",
-    "...OmmnsskkkqO..",
-    "..OsnsskkkqoO...",
-    "..OksskkqqoO....",
-    "...OOkkqooO.....",
-    ".....OOOOO......",
-    "................",
-]
-
-
-def exilite_shard():
-    return from_ascii(SHARD, PAL)
+def exilite_block():
+    """Block of Exilite: nine ingots pressed into one, like a netherite block. A smooth bone-white face with the
+    ingot's bevel (pearl top-left, tan bottom-right), an umber rim, four faint ingot seams and pearl glints."""
+    img = noise_fill([CREAM, BONE, BONE_HI, BONE_HI], "exilite_block", cell=8, speckle=0.05, contrast=0.45)
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            if x == 0 or y == 0 or x == 15 or y == 15:
+                px[x, y] = UMBER_L
+            elif x == 1 or y == 1:
+                px[x, y] = PEARL_W
+            elif x == 14 or y == 14:
+                px[x, y] = TAN
+            elif x in (5, 10) or y in (5, 10):
+                px[x, y] = lerp(px[x, y], TAN, 0.35)  # the seams of the pressed ingots
+            elif x in (6, 11) or y in (6, 11):
+                px[x, y] = lerp(px[x, y], PEARL_W, 0.45)
+    px[1, 14] = CREAM
+    px[14, 1] = CREAM
+    for (x, y), col in zip(((3, 3), (8, 2), (12, 8), (3, 12), (8, 8)), (PEARL_L, PEARL_P, PEARL_M, PEARL_P, PEARL_L)):
+        px[x, y] = col
+    return img
 
 
 def paint():
     banish_motes()
     rift_sparks()
-    save(exilite_ore(), "block/exilite_ore")
     save(exilite(), "block/exilite")
     save(polished_exilite(), "block/polished_exilite")
     save(exilite_bricks(), "block/exilite_bricks")
     save(chiseled_exilite(), "block/chiseled_exilite")
-    save(exilite_shard(), "item/exilite_shard")
+    save(exilite_block(), "block/exilite_block")

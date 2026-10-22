@@ -9,14 +9,15 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 
 /**
- * Client providers for the banishment particles, in the Totem of Banishing's own palette (bone, cream, warm grey,
- * umber and a fleck of lichen green; never its ruby): they replace the vanilla End and portal particles every crossing
+ * Client providers for the banishment particles, in the exilite palette sampled from the hand-drawn debris, shard,
+ * ingot and totem textures (bone white, cream, sand, a warm umber rim and pearl glints of pink, mint and lavender;
+ * never the totem's ruby): they replace the vanilla End and portal particles every crossing
  * to and from the Forgotten Land used to show.
  * <ul>
  *   <li>{@code banish_mote}: a tumbling stone chip of the totem, moving like the vanilla totem-of-undying particle (fast
  *       burst, heavy drag, slow fall) but with its course turning a little every tick, always the same way, so a burst
  *       pinwheels out like a swirl; it shrinks to a glint before it fades.</li>
- *   <li>{@code rift_spark}: a pale additive four-point spark with a lichen halo that drifts up and shrinks away (the
+ *   <li>{@code rift_spark}: a pale additive four-point spark with a pearl-lavender halo that drifts up and shrinks away (the
  *       rift's spiral, the portal surface, the held totem).</li>
  * </ul>
  */
@@ -24,8 +25,8 @@ public final class BanishParticles {
     public static final FxParticles.Style RIFT_SPARK = new FxParticles.Style(12, 24, 0.075F, -0.003F, 0.9F, true, true, true, 0.0F,
             0.35F, 1.0F, false, 0xFFFFFF, 0.05F);
 
-    /** Tints over the bone-coloured chip sprite: mostly bone, some cream and warm grey, now and then lichen green. */
-    private static final int[] MOTE_TINTS = {0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xEDE8DC, 0xD6D0C3, 0xBFD0A8};
+    /** Tints over the bone-coloured chip sprite: mostly bone, some cream, now and then a pearl glint (pink, mint, lavender). */
+    private static final int[] MOTE_TINTS = {0xFFFFFF, 0xFFFFFF, 0xFFFFFF, 0xF2EBDD, 0xFFEEF3, 0xEDFCF4, 0xF1EDFF};
 
     private BanishParticles() {}
 

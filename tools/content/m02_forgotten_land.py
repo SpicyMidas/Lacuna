@@ -79,8 +79,11 @@ def totem(g):
     g.item("totem_of_banishing", "Totem of Banishing", "Totem dell'esilio")
     g.name("item.lacuna.totem_of_banishing.lore", "A stone hand that remembers a land no one else does.",
            "Una mano di pietra che ricorda una terra che nessun altro ricorda.")
-    g.name("item.lacuna.totem_of_banishing.use", "Use: enter or leave the Forgotten Land. Strike: banish the target.",
-           "Usa: entra o esci dalla Terra Dimenticata. Colpisci: esilia il bersaglio.")
+    g.name("item.lacuna.totem_of_banishing.use",
+           "Use: enter the Forgotten Land in a blast that throws everything nearby back, at both ends (or leave it "
+           "early). Strike: hurl the target away and banish it.",
+           "Usa: entra nella Terra Dimenticata con un'onda d'urto che respinge tutto ciò che è vicino, a entrambi i "
+           "capi (o lasciala prima). Colpisci: scaglia via il bersaglio ed esilialo.")
     g.name("item.lacuna.totem_of_banishing.portal", "Use on a ring of Forgotten Portal Frames: light the portal.",
            "Usa su un anello di cornici del portale dimenticato: accende il portale.")
     g.name("item.lacuna.totem_of_banishing.wear", "Wears out after 6 uses; it cannot be repaired.",

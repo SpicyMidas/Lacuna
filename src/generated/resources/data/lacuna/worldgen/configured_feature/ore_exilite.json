@@ -1,11 +1,11 @@
 {
   "config": {
-    "discard_chance_on_air_exposure": 0.7,
+    "discard_chance_on_air_exposure": 1.0,
     "size": 3,
     "targets": [
       {
         "state": {
-          "Name": "lacuna:exilite_ore"
+          "Name": "lacuna:exilite_debris"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",
@@ -14,7 +14,7 @@
       },
       {
         "state": {
-          "Name": "lacuna:exilite_ore"
+          "Name": "lacuna:exilite_debris"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",

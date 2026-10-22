@@ -207,8 +207,16 @@ public final class ModBlocks {
         ModRegistries.ITEMS.addAlias(com.lacuna.mod.Lacuna.id("fallen_star"), com.lacuna.mod.Lacuna.id("prime_star_rock"));
     }
     // ------------------------------------------------------------------ Exilite: the totem's own stone, deep in the Forgotten Land (fl/Exilite)
-    public static final DeferredBlock<DropExperienceBlock> EXILITE_ORE = block("exilite_ore", () -> new DropExperienceBlock(
-            UniformInt.of(4, 8), com.lacuna.mod.fl.Exilite.ore()));
+    // debris and Block of Exilite never burn: their items (fire resistant, like ancient debris) are in ModItems
+    public static final DeferredBlock<Block> EXILITE_DEBRIS = blockNoItem("exilite_debris", () -> new Block(
+            com.lacuna.mod.fl.Exilite.debris()));
+    public static final DeferredBlock<Block> EXILITE_BLOCK = blockNoItem("exilite_block", () -> new Block(
+            com.lacuna.mod.fl.Exilite.block()));
+    static {
+        // the old Exilite Ore (block and item) loads as Exilite Debris in existing worlds
+        ModRegistries.BLOCKS.addAlias(com.lacuna.mod.Lacuna.id("exilite_ore"), com.lacuna.mod.Lacuna.id("exilite_debris"));
+        ModRegistries.ITEMS.addAlias(com.lacuna.mod.Lacuna.id("exilite_ore"), com.lacuna.mod.Lacuna.id("exilite_debris"));
+    }
     public static final DeferredBlock<Block> EXILITE = block("exilite", () -> new Block(com.lacuna.mod.fl.Exilite.stone()));
     public static final DeferredBlock<Block> POLISHED_EXILITE = block("polished_exilite", () -> new Block(com.lacuna.mod.fl.Exilite.stone()));
     public static final DeferredBlock<Block> EXILITE_BRICKS = block("exilite_bricks", () -> new Block(com.lacuna.mod.fl.Exilite.stone()));

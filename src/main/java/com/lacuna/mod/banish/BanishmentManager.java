@@ -53,7 +53,15 @@ public final class BanishmentManager {
     /** Volatile queue of melee banishments (applied a few ticks after the knockback). */
     private static final List<Pending> PENDING = new ArrayList<>();
 
-    private record Pending(UUID target, ResourceKey<Level> dimension, long dueTick) {}
+    private record Pending(UUID target, ResourceKey<Level> dimension, long dueTick, UUID attacker) {}
+
+    /**
+     * What sent an entity across. Only {@link #TOTEM} (the Totem of Banishing used on oneself or on a struck target)
+     * gets the totem's own show: the knockback blasts at both ends ({@link TotemBlast}) and the totem popping on
+     * arrival ({@link BanishFx#arrival}). A {@link #PORTAL} crossing is a plain dimension change with the rift particles
+     * (no screen flash); a {@link #COMMAND} (or any other code path) shows the rift and nothing else.
+     */
+    public enum Cause { TOTEM, PORTAL, COMMAND }
 
     private BanishmentManager() {}
 
@@ -113,7 +121,7 @@ public final class BanishmentManager {
         }
         ResourceKey<Level> dim = player.level().dimension();
         if (dim == Level.OVERWORLD) {
-            return SafeRun.call(FEATURE, () -> banish(player) != null, false, () -> rescueAll(server));
+            return SafeRun.call(FEATURE, () -> banish(player, Cause.TOTEM, player) != null, false, () -> rescueAll(server));
         }
         if (dim == ModDimensions.FORGOTTEN_LAND) {
             return SafeRun.call(FEATURE, () -> returnEntity(player) != null, false, () -> rescueAll(server));
@@ -122,7 +130,7 @@ public final class BanishmentManager {
         return false;
     }
 
-    /** Totem melee hit: strong knockback now, banishment a few ticks later. */
+    /** Totem melee hit: the target is blasted back hard now and banished a few ticks later, mid-flight. */
     public static boolean queueBanish(ServerPlayer attacker, LivingEntity target) {
         MinecraftServer server = attacker.getServer();
         if (server == null || !enabled(server)) {
@@ -132,16 +140,27 @@ public final class BanishmentManager {
             attacker.displayClientMessage(Component.translatable("lacuna.totem.resists"), true);
             return false;
         }
-        target.knockback(Balance.TOTEM_KNOCKBACK, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
-        PENDING.add(new Pending(target.getUUID(), target.level().dimension(), server.getTickCount() + MELEE_DELAY));
+        TotemBlast.strike(attacker, target);
+        PENDING.add(new Pending(target.getUUID(), target.level().dimension(), server.getTickCount() + MELEE_DELAY,
+                attacker.getUUID()));
         return true;
     }
 
     // ------------------------------------------------------------------------------------------ core transfers
 
-    /** Sends an overworld entity to the Forgotten Land with a drifting timer. Returns the moved entity or null. */
+    /** {@link #banish(Entity, Cause, Entity)} for a {@link Cause#COMMAND}: no totem show. */
     @Nullable
     public static Entity banish(Entity entity) {
+        return banish(entity, Cause.COMMAND, null);
+    }
+
+    /**
+     * Sends an overworld entity to the Forgotten Land with a drifting timer. Returns the moved entity or null.
+     * {@code owner} is whoever used the totem ({@link Cause#TOTEM}: the traveller itself, or the striker): its allies
+     * and pets are spared by the blasts.
+     */
+    @Nullable
+    public static Entity banish(Entity entity, Cause cause, @Nullable Entity owner) {
         MinecraftServer server = entity.getServer();
         if (server == null || !(entity.level() instanceof ServerLevel from) || from.dimension() != Level.OVERWORLD) {
             return null;
@@ -165,7 +184,11 @@ public final class BanishmentManager {
         if (entity instanceof Mob mob) {
             mob.setPersistenceRequired();
         }
-        effects(from, entity.position());
+        boolean totem = cause == Cause.TOTEM;
+        if (totem) {
+            TotemBlast.blast(from, entity.position(), entity, owner, false);
+        }
+        effects(from, entity.position(), cause);
         Entity moved = Teleporter.teleport(entity, fl, Vec3.atBottomCenterOf(safe), entity.getYRot(), entity.getXRot());
         if (moved == null) {
             return null;
@@ -174,8 +197,11 @@ public final class BanishmentManager {
         moved.setData(ModAttachments.BANISHMENT_ID, id.toString());
         BanishmentSavedData.get(server).put(new BanishmentSavedData.Record(id, Level.OVERWORLD, origin, returnAt, drift,
                 moved.getUUID(), moved instanceof Player, safe));
-        effects(fl, moved.position());
-        BanishFx.arrival(fl, moved); // the totem goes off for whoever lands, like a totem of undying
+        effects(fl, moved.position(), cause);
+        if (totem) {
+            TotemBlast.blast(fl, moved.position(), moved, owner, true);
+            BanishFx.arrival(fl, moved); // the totem goes off for whoever it sent, like a totem of undying
+        }
         if (moved instanceof ServerPlayer player) {
             player.displayClientMessage(Component.translatable("lacuna.banish.arrived"), false);
         }
@@ -183,9 +209,15 @@ public final class BanishmentManager {
         return moved;
     }
 
-    /** Brings an entity back from the Forgotten Land to the translated overworld position. */
+    /** {@link #returnEntity(Entity, Cause)} for a {@link Cause#COMMAND} (also the timed return and the totem's early leave). */
     @Nullable
     public static Entity returnEntity(Entity entity) {
+        return returnEntity(entity, Cause.COMMAND);
+    }
+
+    /** Brings an entity back from the Forgotten Land to the translated overworld position. */
+    @Nullable
+    public static Entity returnEntity(Entity entity, Cause cause) {
         MinecraftServer server = entity.getServer();
         if (server == null) {
             return null;
@@ -199,7 +231,7 @@ public final class BanishmentManager {
         BlockPos safe = SafeSpot.find(overworld, target, record.isEmpty());
 
         if (entity.level() instanceof ServerLevel from) {
-            effects(from, entity.position());
+            effects(from, entity.position(), cause);
         }
         Entity moved = Teleporter.teleport(entity, overworld, Vec3.atBottomCenterOf(safe), entity.getYRot(), entity.getXRot());
         if (moved == null) {
@@ -207,7 +239,7 @@ public final class BanishmentManager {
         }
         moved.removeData(ModAttachments.BANISHMENT_ID);
         record.ifPresent(r -> data.remove(r.id));
-        effects(overworld, moved.position());
+        effects(overworld, moved.position(), cause);
         if (moved instanceof ServerPlayer player) {
             player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 0, false, false, true));
             player.setData(ModAttachments.ARRIVAL_PROTECTION, overworld.getGameTime() + Balance.ARRIVAL_PROTECTION_TICKS);
@@ -216,9 +248,9 @@ public final class BanishmentManager {
         return moved;
     }
 
-    /** Both ends of every crossing: Lacuna's own particles in the totem's palette, the rift, the sounds ({@link BanishFx}). */
-    private static void effects(ServerLevel level, Vec3 pos) {
-        BanishFx.travel(level, pos);
+    /** Both ends of every crossing: Lacuna's own particles in the exilite palette, the rift, the sounds ({@link BanishFx}). */
+    private static void effects(ServerLevel level, Vec3 pos, Cause cause) {
+        BanishFx.travel(level, pos, cause != Cause.PORTAL);
     }
 
     /** SafeRun restore step: every online player inside the Forgotten Land goes home, without the timer logic. */
@@ -327,7 +359,7 @@ public final class BanishmentManager {
             ServerLevel level = server.getLevel(p.dimension());
             Entity target = level == null ? null : level.getEntity(p.target());
             if (target != null && canBanish(target)) {
-                banish(target);
+                banish(target, Cause.TOTEM, server.getPlayerList().getPlayer(p.attacker()));
             }
         }
     }
