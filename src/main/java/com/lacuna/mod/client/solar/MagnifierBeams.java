@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -127,6 +128,12 @@ public final class MagnifierBeams {
             FxDraw.billboard(pose, flare, ctx.camera(), hit, 1.1F + 0.12F * Mth.sin(t * 2.3F), t * 0.03F, FxDraw.argb(0.9F * shimmer, rgb));
             glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
             FxDraw.billboard(pose, glow, ctx.camera(), hit, 0.45F + 0.06F * Mth.sin(t * 3.1F), -t * 0.04F, FxDraw.argb(1.0F, hot));
+        }
+        // a spot of light lying on the ground it burns (top faces, the water surface), following the terrain
+        if ((trace.hitsBlock() && trace.blockHit().getDirection() == Direction.UP) || trace.waterHit() != null) {
+            Vec3 spot = new Vec3(end.x, trace.stop().y, end.z);
+            SolarGround.mark(ctx, SolarGround.at(ctx, player, spot, 1.0), ctx.buffers().getBuffer(SolarRenderTypes.ring()), spot,
+                    0.8F + 0.06F * Mth.sin(t * 2.3F), SolarRenderTypes.POOL, 0.0F, FxDraw.argb(0.6F * shimmer, rgb));
         }
     }
 
