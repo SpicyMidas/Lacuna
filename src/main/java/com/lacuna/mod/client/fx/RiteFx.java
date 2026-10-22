@@ -11,9 +11,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Travel rites: the {@code rift} (Totem of Banishing crossings: a pale vortex that swallows or releases the traveller,
- * with a fade-from-grey flash for them) and the {@code rewind} (Chronoshard Pocket Watch: a golden clock ring
- * turning backwards and a thread of light back along the jump).
+ * Travel rites: the {@code rift} (Forgotten Land crossings: a pale vortex that swallows or releases the traveller,
+ * with a fade-from-grey flash for them unless {@code p0} is 1, a portal crossing) and the {@code rewind} (Chronoshard
+ * Pocket Watch: a golden clock ring turning backwards and a thread of light back along the jump).
  */
 public final class RiteFx {
     private RiteFx() {}
@@ -21,7 +21,9 @@ public final class RiteFx {
     public static void register() {
         FxHandlers.register("rift", p -> {
             FxManager.add(new Rift(p.a(), p.color() & 0xFFFFFF));
-            flashIfHere(p.a(), p.color() & 0xFFFFFF, 0.55F, 24);
+            if (p.p0() < 0.5F) { // p0 = 1: a Forgotten Portal crossing, no flash
+                flashIfHere(p.a(), p.color() & 0xFFFFFF, 0.55F, 24);
+            }
         });
         FxHandlers.register("rewind", p -> {
             FxManager.add(new Rewind(p.a(), p.b()));

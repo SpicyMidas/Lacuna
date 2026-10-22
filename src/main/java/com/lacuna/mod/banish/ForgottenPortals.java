@@ -255,7 +255,8 @@ public final class ForgottenPortals {
         }
         entryBurst(level, entity, portal);
         Entity moved = SafeRun.call(BanishmentManager.FEATURE,
-                () -> outbound ? BanishmentManager.banish(entity) : BanishmentManager.returnEntity(entity), null,
+                () -> outbound ? BanishmentManager.banish(entity, BanishmentManager.Cause.PORTAL, null)
+                        : BanishmentManager.returnEntity(entity, BanishmentManager.Cause.PORTAL), null,
                 () -> BanishmentManager.rescueAll(server));
         if (moved == null) {
             entity.setPortalCooldown(); // no retry every tick: it tries again once it has stepped out and back in
