@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0 — revision 10 (player feedback)
+
+<!-- rev10 -->
+
 ## 0.9.0 — revision 9 (player feedback)
 
 - **Starcaller Trumpet** is held and blown like a bow.
