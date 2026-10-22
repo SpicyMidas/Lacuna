@@ -118,6 +118,7 @@ TEXTS = {
     "court.purse.detail": ("Coins are taken from your inventory", "Le monete vengono prese dall'inventario"),
     "court.partial": ("Paying all of them restores %s reputation", "Pagarle tutte ridà %s di reputazione"),
     "court.pay": ("Pay fine (%s)", "Paga la multa (%s)"),
+    "court.pay_none": ("Pay fine", "Paga la multa"),
     "court.pay.tip": ("Pay %s coins: your reputation becomes %s.", "Paga %s monete: la tua reputazione diventa %s."),
     "court.no_coins": ("You have no village coins to pay with.", "Non hai monete del villaggio per pagare."),
     # guild board

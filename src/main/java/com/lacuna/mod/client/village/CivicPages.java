@@ -247,7 +247,7 @@ final class CivicPages {
         Component tip = fine <= 0 ? Component.translatable("lacuna.court.nothing_owed")
                 : wait > 0 ? Component.translatable("lacuna.court.too_soon")
                 : coins <= 0 ? tr("court.no_coins") : tr("court.pay.tip", pay, signed(after));
-        page.button(tr("court.pay", Math.max(pay, 0)), "pay", fine > 0 && wait == 0 && coins > 0, tip);
+        page.button(pay > 0 ? tr("court.pay", pay) : tr("court.pay_none"), "pay", fine > 0 && wait == 0 && coins > 0, tip);
         return page;
     }
 

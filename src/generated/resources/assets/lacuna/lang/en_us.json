@@ -510,6 +510,7 @@
   "lacuna.civic.court.partial": "Paying all of them restores %s reputation",
   "lacuna.civic.court.pay": "Pay fine (%s)",
   "lacuna.civic.court.pay.tip": "Pay %s coins: your reputation becomes %s.",
+  "lacuna.civic.court.pay_none": "Pay fine",
   "lacuna.civic.court.purse": "You carry %s coins",
   "lacuna.civic.court.purse.detail": "Coins are taken from your inventory",
   "lacuna.civic.court.ready": "The court will hear you now",

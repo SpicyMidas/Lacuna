@@ -510,6 +510,7 @@
   "lacuna.civic.court.partial": "Pagarle tutte ridà %s di reputazione",
   "lacuna.civic.court.pay": "Paga la multa (%s)",
   "lacuna.civic.court.pay.tip": "Paga %s monete: la tua reputazione diventa %s.",
+  "lacuna.civic.court.pay_none": "Paga la multa",
   "lacuna.civic.court.purse": "Hai con te %s monete",
   "lacuna.civic.court.purse.detail": "Le monete vengono prese dall'inventario",
   "lacuna.civic.court.ready": "Il tribunale ti ascolta subito",
