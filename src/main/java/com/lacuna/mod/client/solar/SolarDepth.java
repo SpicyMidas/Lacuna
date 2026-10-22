@@ -38,7 +38,9 @@ final class SolarDepth {
         LevelRenderer level = mc.levelRenderer;
         RenderTarget translucent = level.getTranslucentTarget();
         RenderTarget clouds = level.getCloudsTarget();
-        if (Minecraft.useShaderTransparency() && translucent != null && clouds != null) {
+        // the transparency targets exist exactly while vanilla runs the Fabulous composite (its own test); the main
+        // depth is then overwritten by the composite's final blit
+        if (translucent != null && clouds != null) {
             scene = translucent.getDepthTextureId();
             // the cloud target is only cleared (and drawn) this frame while clouds are on
             cloud = mc.options.getCloudsType() != CloudStatus.OFF ? clouds.getDepthTextureId() : scene;

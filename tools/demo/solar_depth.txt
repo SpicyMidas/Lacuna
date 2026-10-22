@@ -1,0 +1,74 @@
+# Solar light with depth: the Sun's Fury column seen from just below the cloud layer (near clouds must cover it, far
+# clouds stay behind it), the column entering the ground, the focus sunbeams and the Divine Magnifying Glass beam.
+# Needs clouds on and render distance 8+ (copy tools/demo/options.txt, then set renderClouds:"true", renderDistance:8;
+# graphicsMode:1 for Fancy, 2 for Fabulous).
+world lacuna_depth flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doDaylightCycle false
+cmd gamerule doFireTick false
+cmd weather clear
+cmd time set 6000
+# --- under the clouds (layer at y 192..196): a glass platform at y 182
+cmd fill ~-2 182 ~-2 ~2 182 ~2 minecraft:glass
+cmd tp @s ~ 183 ~ 0 -12
+wait 60
+cmd summon lacuna:solar_ray ~ -60 ~44
+wait 22
+shot depth_clouds_day
+look 0 -30
+wait 2
+shot depth_clouds_day_up
+look 0 -12
+cmd time set 18000
+wait 60
+cmd summon lacuna:solar_ray ~ -60 ~44
+wait 22
+shot depth_clouds_night
+look 0 -30
+wait 2
+shot depth_clouds_night_up
+# --- on the ground: the column entering the ground, from 26 blocks and from above
+cmd time set 6000
+cmd tp @s ~ -60 ~ 0 14
+wait 60
+cmd summon lacuna:solar_ray ~ -60 ~26
+wait 20
+shot depth_ground
+cmd tp @s ~ -48 ~ 0 32
+wait 3
+shot depth_ground_above
+wait 60
+# --- the focus: a thrown spear gathering sunlight
+cmd tp @s ~ -60 ~ 0 3
+cmd give @s lacuna:suns_fury
+select 0
+wait 10
+use on
+wait 26
+use off
+wait 40
+shot depth_focus
+look 0 -55
+wait 2
+shot depth_focus_sun
+wait 70
+# --- the Divine Magnifying Glass at a wall (the beam runs along the view)
+cmd kill @e[type=lacuna:suns_fury]
+cmd clear @s
+cmd give @s lacuna:divine_magnifying_glass
+select 0
+look 0 8
+cmd fill ~-2 ~ ~7 ~2 ~2 ~7 minecraft:stone_bricks
+wait 10
+use on
+wait 20
+shot depth_glass_first
+camera back
+wait 4
+shot depth_glass_back
+camera first
+use off
+wait 4
+quit
