@@ -7,7 +7,12 @@
   now laid onto the real top of the blocks underneath: snow layers, slabs, carpets, paths, farmland and each half of a
   stair, wrapping over steps instead of sinking into them or floating, and fading at cliffs. The Divine Magnifying
   Glass also lights a small spot where its beam burns a surface.
-<!-- rev10 -->
+- **Sun's Fury ray with real depth:** the ray, the converging sunbeams, the Magnifying Glass beam and their glows are
+  drawn after the clouds and tested against the scene's depth (Fast, Fancy and Fabulous): near clouds cover the ray,
+  far clouds stay behind it, and it hides behind hills and blocks. The beams are now read as round 3D shafts
+  (brighter when seen end-on, soft where they enter the ground, a cloud or surround you) with vanilla fog. Other
+  shader effects in Fast/Fancy are also drawn after the clouds so clouds no longer paint over them.
+
 
 ## 0.9.0 — revision 9 (player feedback)
 
