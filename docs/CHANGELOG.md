@@ -2,6 +2,11 @@
 
 ## 0.10.0 — revision 10 (player feedback)
 
+- **Ground marks follow the terrain:** every glyph, reticle, ring, light pool and shockwave drawn on the ground (Sun's
+  Fury focus and strike, Gravemaw Greatsword, Ember Triangle, Eclipser, Starcaller, Starlace, rites, ember dust) is
+  now laid onto the real top of the blocks underneath: snow layers, slabs, carpets, paths, farmland and each half of a
+  stair, wrapping over steps instead of sinking into them or floating, and fading at cliffs. The Divine Magnifying
+  Glass also lights a small spot where its beam burns a surface.
 <!-- rev10 -->
 
 ## 0.9.0 — revision 9 (player feedback)
