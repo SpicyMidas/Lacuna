@@ -5,7 +5,6 @@ import com.lacuna.mod.client.fx.ClientFx;
 import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
-import com.lacuna.mod.client.portal.PortalTransition;
 import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.registry.ModParticles;
@@ -58,7 +57,7 @@ public final class BanishArrivalFx {
                 return false;
             }
             waited++;
-            boolean visible = !(mc.screen instanceof ReceivingLevelScreen) && !PortalTransition.active();
+            boolean visible = !(mc.screen instanceof ReceivingLevelScreen);
             clear = visible ? clear + 1 : 0;
             if (clear < SETTLE && waited < MAX_WAIT) {
                 return true;

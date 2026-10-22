@@ -41,16 +41,11 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  * (players and every creature that may be banished) with the banishment system: banished from the overworld (timer,
  * 1:12 coordinates, safe spot), returned from the Forgotten Land. The transfer runs at the end of the server tick in
  * which the portal was touched, never inside a block callback; the vanilla portal cooldown keeps the new arrival from
- * bouncing straight back. A crossing player is sent {@link #CROSSING_FX} first, which the client turns into a
- * full-screen fade through the swirling void (client/portal/PortalTransition).
+ * bouncing straight back. A crossing player sees the plain vanilla dimension change (no overlay, no totem pop: that
+ * belongs to the Totem of Banishing alone).
  */
 public final class ForgottenPortals {
     public static final String FEATURE = "forgotten_portal";
-    /**
-     * FxPayload kind sent to a crossing player right before the transfer; {@code p0} = 1 (crossing now) or -1 (the
-     * transfer failed: lift the void again).
-     */
-    public static final String CROSSING_FX = "forgotten_crossing";
     /** Entities that touched a portal during this tick, sent through at its end (in the order they touched). */
     private static final Map<UUID, Entry> ENTERED = new LinkedHashMap<>();
 
@@ -259,19 +254,11 @@ public final class ForgottenPortals {
             return;
         }
         entryBurst(level, entity, portal);
-        ServerPlayer traveller = entity instanceof ServerPlayer player ? player : null;
-        if (traveller != null) {
-            // right before the transfer: the client fades into the void, holds it while the far side loads, fades out
-            LacunaFx.sendTo(traveller, FxPayload.at(CROSSING_FX, entity.position()).withParams(1.0F, 0.0F, 0.0F));
-        }
         Entity moved = SafeRun.call(BanishmentManager.FEATURE,
                 () -> outbound ? BanishmentManager.banish(entity) : BanishmentManager.returnEntity(entity), null,
                 () -> BanishmentManager.rescueAll(server));
         if (moved == null) {
             entity.setPortalCooldown(); // no retry every tick: it tries again once it has stepped out and back in
-            if (traveller != null && !traveller.hasDisconnected()) {
-                LacunaFx.sendTo(traveller, FxPayload.at(CROSSING_FX, entity.position()).withParams(-1.0F, 0.0F, 0.0F));
-            }
             return;
         }
         moved.setPortalCooldown();
