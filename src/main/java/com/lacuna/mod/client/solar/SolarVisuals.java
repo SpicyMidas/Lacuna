@@ -487,21 +487,21 @@ public final class SolarVisuals {
         float day = daylight(ctx.level(), pt);
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
         // (nested 3D shells, SolarTubes: seen from any side, from below or from inside, they keep their thickness)
-        int haze = FxDraw.argb(0.11F * soft * (0.35F + 0.65F * day), AMBER);
-        int halo = FxDraw.argb(0.28F * soft * (0.6F + 0.4F * day), GOLD);
+        int haze = FxDraw.argb(0.07F * soft * (0.5F + 0.5F * day), AMBER);
+        int halo = FxDraw.argb(0.16F * soft * (0.7F + 0.3F * day), GOLD);
         float hazeWidth = 64.0F * swell * breathe;
         float haloWidth = 30.0F * swell * breathe;
         tube(pose, over, bottom, top, hazeWidth, hazeWidth, haze, haze, -6.0F, height, false);
         tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false);
         // a bright splash where it meets the ground: a cone of light widening into the ground
         tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
-                FxDraw.argb(0.3F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
+                FxDraw.argb(0.22F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
 
         // inner layers: they pile up into a white-hot core
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
-        int gold = FxDraw.argb(0.5F * a, GOLD);
-        int warm = FxDraw.argb(0.6F * a, WARM);
-        int pale = FxDraw.argb(0.9F * a, PALE);
+        int gold = FxDraw.argb(0.32F * a, GOLD);
+        int warm = FxDraw.argb(0.42F * a, WARM);
+        int pale = FxDraw.argb(0.7F * a, PALE);
         int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
         tube(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, gold, gold, -6.0F, height, true);
         tube(pose, beam, bottom, top, 13.0F * swell, 13.0F * swell, warm, warm, -6.0F, height, false);

@@ -32,7 +32,7 @@ out vec4 fragColor;
 
 const float PI = 3.14159265;
 /** Soft saturation of the light seen along a shaft: at most this many times its brightness seen across it. */
-const float GLOW_LIMIT = 3.0;
+const float GLOW_LIMIT = 2.5;
 
 float hash(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));

@@ -23,7 +23,7 @@ import org.lwjgl.opengl.GL11;
  * The shafts of light of Sun's Fury as real 3D volumes: the strike pillar's nested shells (haze, halo, sunbeam body,
  * warm and pale layers, white-hot core, the splash cone at its foot) and the focus' converging sunbeams and focus beam.
  * <p>
- * One closed tube mesh (16 sides, 24 rings, both end caps) is built once into a static GPU buffer and reused for every
+ * One closed tube mesh (16 sides, 48 rings, both end caps) is built once into a static GPU buffer and reused for every
  * shaft: the {@code lacuna:solar_tube} vertex shader bends and scales it onto the shaft's axis (a quadratic Bezier
  * curve, straight for the pillar) and radii, and the fragment shader integrates the light along each view ray through
  * the round volume against the scene depth ({@link SolarDepth}; at most one depth copy per frame, none under
@@ -45,7 +45,7 @@ final class SolarTubes {
     static final int NEAR_FADE = 4;
 
     private static final int SIDES = 16;
-    private static final int RINGS = 24;
+    private static final int RINGS = 48;
     private static final int MAX = 96;
     private static final int STRIDE = 23;
     private static final float[] DATA = new float[MAX * STRIDE];

@@ -1,6 +1,6 @@
 #version 150
 
-// Lacuna 3D light tubes (client/solar/SolarTubes): one static closed tube mesh (16 sides, 24 rings, end caps), bent
+// Lacuna 3D light tubes (client/solar/SolarTubes): one static closed tube mesh (16 sides, 48 rings, end caps), bent
 // and scaled here onto each shaft of light. Position.xy: unit circle (0, 0 at a cap's centre), Position.z: 0..1 along.
 // The axis is the quadratic Bezier curve TubeA -> TubeK -> TubeB (camera-relative blocks; a straight shaft has TubeK
 // at its midpoint), rings closer together near TubeA (where the target and the eye usually are). The fragment stage
