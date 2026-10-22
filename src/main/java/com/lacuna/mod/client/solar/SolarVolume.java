@@ -46,7 +46,9 @@ import org.joml.Matrix4fStack;
  *   <li>{@code lacuna:solar_soft_glow} / {@code lacuna:solar_soft_corona}: flares and glows fade softly behind the
  *       surfaces they touch (soft particles that never dim what is in front), same cloud ordering and fog.</li>
  * </ul>
- * The ribbons are re-encoded on the fly by {@link Shafts} into {@link DefaultVertexFormat#PARTICLE} (u = signed
+ * The pillar and the focus sunbeams are real 3D volumes drawn in the same pass ({@link SolarTubes}); the ribbons
+ * left here (the flight trail, the Divine Magnifying Glass beam, and every shaft when the tube shader is missing) are
+ * re-encoded on the fly by {@link Shafts} into {@link DefaultVertexFormat#PARTICLE} (u = signed
  * distance from the axis in blocks, the radius log-encoded in UV2), no allocation. Every shader is optional: a type
  * whose late shader failed to load is drawn after particles exactly as before.
  */
@@ -165,6 +167,7 @@ public final class SolarVolume {
      */
     static void beginFrame(SolarBuffers buffers) {
         buffers.discard(ORDER);
+        SolarTubes.clear();
         MODEL_VIEW.set(RenderSystem.getModelViewMatrix());
         fogStart = RenderSystem.getShaderFogStart();
         fogEnd = RenderSystem.getShaderFogEnd();
@@ -172,12 +175,13 @@ public final class SolarVolume {
 
     /** {@code AFTER_LEVEL}: draws the late light, if any was queued this frame, against the finished scene. */
     static void drawLate(RenderLevelStageEvent event, SolarBuffers buffers) {
-        if (!buffers.started(ORDER)) {
+        if (!buffers.started(ORDER) && !SolarTubes.pending()) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
         if (!SolarDepth.prepare(mc)) {
             buffers.discard(ORDER);
+            SolarTubes.clear();
             return;
         }
         Matrix4fStack stack = RenderSystem.getModelViewStack();
@@ -195,8 +199,11 @@ public final class SolarVolume {
             for (RenderType type : ORDER) {
                 buffers.endBatch(type);
             }
+            // the shafts of light as 3D volumes
+            SolarTubes.draw(MODEL_VIEW);
         } finally {
             buffers.discard(ORDER);
+            SolarTubes.clear();
             RenderSystem.setShaderFogStart(savedStart);
             RenderSystem.setShaderFogEnd(savedEnd);
             stack.popMatrix();

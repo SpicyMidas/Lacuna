@@ -27,6 +27,7 @@ public final class SolarClient {
     public static void register(IEventBus modBus, IEventBus forgeBus) {
         modBus.addListener(SolarRenderTypes::onRegisterShaders);
         modBus.addListener(SolarVolume::onRegisterShaders);
+        modBus.addListener(SolarTubes::onRegisterShaders);
         modBus.addListener(SolarClient::onClientSetup);
         forgeBus.addListener(SolarClient::onClientTick);
         forgeBus.addListener(SolarClient::onRenderLevel);

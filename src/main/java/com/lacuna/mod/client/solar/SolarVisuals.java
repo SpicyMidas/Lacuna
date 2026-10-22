@@ -144,6 +144,24 @@ public final class SolarVisuals {
         }
     }
 
+    /**
+     * A straight shaft of light from {@code a} to {@code b} (camera-relative), {@code widthA} / {@code widthB} across:
+     * a 3D volume ({@link SolarTubes}) or, without the tube shader, the camera-facing ribbon into {@code fallback}
+     * ({@code sunbeam}: the soft sunbeam profile).
+     */
+    static void tube(PoseStack.Pose pose, VertexConsumer fallback, Vec3 a, Vec3 b, float widthA, float widthB, int argbA, int argbB,
+                      float vA, float vB, boolean sunbeam) {
+        if (SolarTubes.straight(pose, a, b, widthA * 0.5F, widthB * 0.5F, argbA, argbB, vA, vB,
+                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0)) {
+            return;
+        }
+        if (sunbeam) {
+            sunbeam(pose, fallback, a, b, widthA, widthB, argbA, argbB, vA, vB);
+        } else {
+            FxDraw.ribbon(pose, fallback, a, b, widthA, widthB, argbA, argbB, vA, vB);
+        }
+    }
+
     private static Vec3 facing(Vec3 dir, Vec3 at) {
         Vec3 s = dir.cross(at);
         if (s.lengthSqr() < 1.0E-8) {
@@ -368,6 +386,15 @@ public final class SolarVisuals {
         if (Math.max(alphaT, alphaS) <= 0.002F) {
             return;
         }
+        // as a 3D volume when the tube shader is there (sunlight from the sky: not dimmed with distance)
+        double toK = Math.sqrt((kx - t.x) * (kx - t.x) + (ky - t.y) * (ky - t.y) + (kz - t.z) * (kz - t.z));
+        double toA = Math.sqrt((ax - kx) * (ax - kx) + (ay - ky) * (ay - ky) + (az - kz) * (az - kz));
+        double chord = Math.sqrt((ax - t.x) * (ax - t.x) + (ay - t.y) * (ay - t.y) + (az - t.z) * (az - t.z));
+        if (SolarTubes.curve(pose, t.x, t.y, t.z, kx, ky, kz, ax, ay, az, widthT * 0.5F, widthS * 0.5F, FxDraw.argb(alphaT, rgbT),
+                FxDraw.argb(alphaS, rgbS), 0.0F, (float) (0.5 * (chord + toK + toA)),
+                u0 == 2 ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, SolarTubes.SKY | SolarTubes.NEAR_FADE)) {
+            return;
+        }
         double along = 0.0;
         for (int i = 0; i <= SEGMENTS; i++) {
             double q = (double) i / SEGMENTS;
@@ -459,21 +486,27 @@ public final class SolarVisuals {
         // they keep their colour longer than their width: the pillar thins into a golden thread); fainter by night
         float day = daylight(ctx.level(), pt);
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
-        FxDraw.ribbon(pose, over, bottom, top, 64.0F * swell * breathe, FxDraw.argb(0.11F * soft * (0.35F + 0.65F * day), AMBER), -6.0F,
-                height);
-        FxDraw.ribbon(pose, over, bottom, top, 30.0F * swell * breathe, FxDraw.argb(0.28F * soft * (0.6F + 0.4F * day), GOLD), -6.0F,
-                height);
-        // a bright splash where it meets the ground
-        FxDraw.ribbon(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
-                FxDraw.argb(0.3F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F);
+        // (nested 3D shells, SolarTubes: seen from any side, from below or from inside, they keep their thickness)
+        int haze = FxDraw.argb(0.11F * soft * (0.35F + 0.65F * day), AMBER);
+        int halo = FxDraw.argb(0.28F * soft * (0.6F + 0.4F * day), GOLD);
+        float hazeWidth = 64.0F * swell * breathe;
+        float haloWidth = 30.0F * swell * breathe;
+        tube(pose, over, bottom, top, hazeWidth, hazeWidth, haze, haze, -6.0F, height, false);
+        tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false);
+        // a bright splash where it meets the ground: a cone of light widening into the ground
+        tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
+                FxDraw.argb(0.3F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
 
-        // inner layers, additive: they pile up into a white-hot core
+        // inner layers: they pile up into a white-hot core
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
-        sunbeam(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, FxDraw.argb(0.5F * a, GOLD), FxDraw.argb(0.5F * a, GOLD),
-                -6.0F, height);
-        FxDraw.ribbon(pose, beam, bottom, top, 13.0F * swell, FxDraw.argb(0.6F * a, WARM), -6.0F, height);
-        FxDraw.ribbon(pose, beam, bottom, top, 6.5F * swell, FxDraw.argb(0.9F * a, PALE), -6.0F, height);
-        FxDraw.ribbon(pose, beam, bottom, top, 2.8F * swell, FxDraw.argb(Math.min(1.0F, a + burst), WHITE), -6.0F, height);
+        int gold = FxDraw.argb(0.5F * a, GOLD);
+        int warm = FxDraw.argb(0.6F * a, WARM);
+        int pale = FxDraw.argb(0.9F * a, PALE);
+        int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
+        tube(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, gold, gold, -6.0F, height, true);
+        tube(pose, beam, bottom, top, 13.0F * swell, 13.0F * swell, warm, warm, -6.0F, height, false);
+        tube(pose, beam, bottom, top, 6.5F * swell, 6.5F * swell, pale, pale, -6.0F, height, false);
+        tube(pose, beam, bottom, top, 2.8F * swell, 2.8F * swell, white, white, -6.0F, height, false);
 
         // rings of light pouring down the pillar
         VertexConsumer marks = ctx.buffers().getBuffer(SolarRenderTypes.ring());
