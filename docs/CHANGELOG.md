@@ -17,7 +17,11 @@
   thrown back before it vanishes. The arrival totem pop-up now plays only for totem banishment, not portals or commands.
   Banishment particles use the new Exilite palette.
 - **Forgotten Portal:** crossing it is now a plain dimension change, without the full-screen void overlay.
-<!-- rev11 -->
+- **Village blocks have real screens** instead of chat messages: the Village Ledger (overview, laws, council, today's
+  record), the Guild Board (membership with a Join button, contracts with Request / Turn in), the Judge's Bench
+  (standing, fine, Pay fine), the Council Table, the Mint Press (coin value and the Coiner's rates) and the School
+  Desk: parchment panels in an oak frame with tabs, scrollable cards, tooltips and your reputation and coins at the
+  bottom. Coins are now taken from anywhere in your inventory.
 
 ## 0.10.0 — revision 10 (player feedback)
 
