@@ -220,6 +220,15 @@ public final class GroundDecal {
         return Float.isNaN(v) ? fallback : v;
     }
 
+    /**
+     * Height for something standing on the ground at world {@code (x, z)} (the foot of a wall of light, a spark): the
+     * surface there, or the ground under the centre where there is none or where a mark would have faded out.
+     */
+    public double follow(double x, double z) {
+        double v = heightAt(x, z, Double.NaN);
+        return Double.isNaN(v) || Math.abs(v - ground()) >= FADE_END ? ground() : v;
+    }
+
     // ------------------------------------------------------------------ drawing
 
     /** Axis-aligned square mark of half-size {@code half} centred at world {@code (cx, cz)}; uv 0..1 like {@link FxDraw#ground}. */
@@ -579,6 +588,7 @@ public final class GroundDecal {
      * than 40%: posts, panes, ladders, flower pots are looked through), or {@link #NONE} for air, plants, rails,
      * torches and other blocks without collision (snow layers always count).
      */
+    @SuppressWarnings("deprecation")
     private static float[] computeShape(BlockState state) {
         if (state.isAir()) {
             return NONE;

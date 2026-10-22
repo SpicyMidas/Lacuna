@@ -8,6 +8,7 @@ import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.gear.EmberWave;
 import com.lacuna.mod.gear.TideCurrents;
@@ -86,13 +87,17 @@ public final class EmberTriangleFx {
         vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z).setUv(u, v).setColor(argb);
     }
 
-    /** The glyph lying on the ground centred at {@code c} (camera-relative), apex towards {@code yawDeg}. */
-    private static void glyph(PoseStack.Pose pose, VertexConsumer vc, Vec3 c, float half, float yawDeg, int argb) {
+    /**
+     * The glyph lying on the terrain ({@code g}) centred at world {@code c}, apex towards {@code yawDeg}, {@code lift}
+     * above the surface.
+     */
+    private static void glyph(FxRenderContext ctx, GroundDecal g, VertexConsumer vc, Vec3 c, float half, float yawDeg, float lift,
+                              int argb) {
         double a = Math.toRadians(yawDeg);
-        Vec3 forward = new Vec3(-Math.sin(a) * half, 0.0, Math.cos(a) * half);
-        Vec3 side = new Vec3(Math.cos(a) * half, 0.0, Math.sin(a) * half);
-        // the texture's top row (v = 0) holds the apex: it must lie forward
-        FxDraw.quad(pose, vc, c, side, forward.scale(-1.0), argb);
+        double cos = Math.cos(a) * half;
+        double sin = Math.sin(a) * half;
+        // u runs along the side (cos, sin); the texture's top row (v = 0) holds the apex: v runs backwards (sin, -cos)
+        g.quad(ctx, vc, c.x, c.z, cos, sin, sin, -cos, lift, argb);
     }
 
     /** Corner {@code k} (0 = apex) of the glyph's triangle around {@code c}. */
@@ -113,6 +118,7 @@ public final class EmberTriangleFx {
         private final int ticks;
         private final float yaw;
         private final Vec3 fallback;
+        private final GroundDecal decal = new GroundDecal();
         private int age;
 
         Windup(FxPayload p) {
@@ -182,14 +188,14 @@ public final class EmberTriangleFx {
             float half = half(f);
             float heading = heading(f);
             float flicker = 0.85F + 0.15F * Mth.sin(time * 2.3F) * Mth.sin(time * 1.1F + 0.7F);
-            Vec3 c = ctx.rel(feet(ctx.partialTick())).add(0.0, 0.05, 0.0);
-            PoseStack.Pose pose = ctx.pose().last();
+            Vec3 c = feet(ctx.partialTick());
+            GroundDecal g = decal.at(ctx.level(), c, GLYPH_HALF * 1.65);
             VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.GLOW));
-            FxDraw.ground(pose, glow, c.add(0.0, -0.01, 0.0), half * 1.3F, FxDraw.argb(0.3F * f * flicker, ORANGE));
+            g.square(ctx, glow, c.x, c.z, half * 1.3F, 0.0F, FxDraw.argb(0.3F * f * flicker, ORANGE));
             VertexConsumer vc = ctx.buffers().getBuffer(FxRenderTypes.additive(GLYPH));
-            glyph(pose, vc, c, half * 1.16F, heading, FxDraw.argb(0.35F * (0.3F + 0.7F * f) * flicker, DEEP));
-            glyph(pose, vc, c.add(0.0, 0.004, 0.0), half, heading, FxDraw.argb((0.35F + 0.65F * f) * flicker, GOLD));
-            glyph(pose, vc, c.add(0.0, 0.008, 0.0), half * 0.99F, heading, FxDraw.argb(0.6F * f * f * flicker, WHITE_HOT));
+            glyph(ctx, g, vc, c, half * 1.16F, heading, 0.002F, FxDraw.argb(0.35F * (0.3F + 0.7F * f) * flicker, DEEP));
+            glyph(ctx, g, vc, c, half, heading, 0.006F, FxDraw.argb((0.35F + 0.65F * f) * flicker, GOLD));
+            glyph(ctx, g, vc, c, half * 0.99F, heading, 0.01F, FxDraw.argb(0.6F * f * f * flicker, WHITE_HOT));
         }
     }
 
@@ -213,6 +219,8 @@ public final class EmberTriangleFx {
         /** Ground height along each ray (every {@link TideCurrents#PATH_STEP} blocks): the front hugs the terrain. */
         private final double[][] heights = new double[RAYS][];
         private boolean passedSelf;
+        /** The terrain under the glyph and the flash at the origin. */
+        private final GroundDecal decal = new GroundDecal();
         private int age;
 
         Wave(FxPayload p) {
@@ -348,6 +356,7 @@ public final class EmberTriangleFx {
             PoseStack.Pose pose = ctx.pose().last();
             Vec3 cam = ctx.cam();
             Vec3 c = ctx.rel(origin);
+            GroundDecal g = decal.at(ctx.level(), origin, 8.8);
 
             // darkness first (alpha blended): the scorched trail behind the front and the charred glyph
             if (trailFade > 0.0F && rr > 0.4) {
@@ -357,7 +366,7 @@ public final class EmberTriangleFx {
             float charA = 0.6F * Mth.clamp(time / 4.0F, 0.0F, 1.0F) * (1.0F - smooth((time - 18.0F) / (BURN - 16.0F)));
             if (charA > 0.0F) {
                 VertexConsumer shade = ctx.buffers().getBuffer(FxRenderTypes.shade(GLYPH));
-                glyph(pose, shade, c.add(0.0, 0.035, 0.0), GLYPH_HALF * 1.04F, yaw, FxDraw.argb(charA, CHAR));
+                glyph(ctx, g, shade, origin, GLYPH_HALF * 1.04F, yaw, 0.0F, FxDraw.argb(charA, CHAR));
             }
 
             // then light (additive): the red-hot ground behind the front, the front itself and its rising heat
@@ -386,7 +395,7 @@ public final class EmberTriangleFx {
                 VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.GLOW));
                 FxDraw.billboard(pose, glow, ctx.camera(), c.add(0.0, 1.0, 0.0), 2.2F + time * 0.7F, 0.0F, FxDraw.argb(0.95F * f, WHITE_HOT));
                 FxDraw.billboard(pose, glow, ctx.camera(), c.add(0.0, 0.6, 0.0), 3.5F + time * 1.1F, 0.0F, FxDraw.argb(0.55F * f, ORANGE));
-                FxDraw.ground(pose, glow, c.add(0.0, 0.05, 0.0), 3.0F + time * 0.8F, FxDraw.argb(0.7F * f, GOLD));
+                g.square(ctx, glow, origin.x, origin.z, 3.0F + time * 0.8F, 0.012F, FxDraw.argb(0.7F * f, GOLD));
             }
 
             // the glyph flashes white-hot at release, then burns out through orange to a dull red
@@ -397,9 +406,8 @@ public final class EmberTriangleFx {
                 int hot = burn < 0.15F ? mixRgb(WHITE_HOT, GOLD, burn / 0.15F)
                         : burn < 0.5F ? mixRgb(GOLD, DEEP, (burn - 0.15F) / 0.35F) : mixRgb(DEEP, EMBER_RED, (burn - 0.5F) / 0.5F);
                 VertexConsumer vc = ctx.buffers().getBuffer(FxRenderTypes.additive(GLYPH));
-                Vec3 g = c.add(0.0, 0.05, 0.0);
-                glyph(pose, vc, g, GLYPH_HALF * 1.18F, yaw, FxDraw.argb(0.35F * glyphA * flick, DEEP));
-                glyph(pose, vc, g.add(0.0, 0.005, 0.0), GLYPH_HALF, yaw, FxDraw.argb(glyphA * flick, hot));
+                glyph(ctx, g, vc, origin, GLYPH_HALF * 1.18F, yaw, 0.006F, FxDraw.argb(0.35F * glyphA * flick, DEEP));
+                glyph(ctx, g, vc, origin, GLYPH_HALF, yaw, 0.01F, FxDraw.argb(glyphA * flick, hot));
             }
         }
 

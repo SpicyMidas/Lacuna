@@ -5,6 +5,7 @@ import com.lacuna.mod.client.fx.ClientFx;
 import com.lacuna.mod.client.fx.FxDraw;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.registry.ModParticles;
 import com.lacuna.mod.star.FallingStarEntity;
@@ -53,6 +54,8 @@ final class FallingStarFx implements ClientFx {
     private Vec3 last;
     @Nullable
     private Vec3 landed;
+    /** The terrain the landing marker lies on. */
+    private final GroundDecal decal = new GroundDecal();
     private int age;
     private int gone = -1;
     private boolean fell;
@@ -273,20 +276,19 @@ final class FallingStarFx implements ClientFx {
         Vec3 ground;
         Entity target = star.targetId() >= 0 ? ctx.level().getEntity(star.targetId()) : null;
         if (target != null) {
-            ground = target.getPosition(ctx.partialTick()).add(0.0, 0.06, 0.0);
+            ground = target.getPosition(ctx.partialTick());
         } else {
-            Vec3 aim = star.aim();
-            ground = aim.add(0.0, 0.06, 0.0);
+            ground = star.aim();
         }
         float p = star.isFalling() ? star.fallProgress(ctx.partialTick()) : 0.0F;
         float a = star.isFalling() ? 0.25F + 0.5F * p : 0.25F * star.appearProgress(ctx.partialTick());
         float pulse = 0.5F + 0.5F * Mth.sin(time * (0.3F + 0.9F * p));
         VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
-        Vec3 c = ctx.rel(ground);
-        FxDraw.ground(pose, ring, c, 1.9F + 0.25F * pulse, FxDraw.argb(a * (0.6F + 0.4F * pulse), AMBER));
-        FxDraw.ground(pose, ring, c.add(0.0, 0.01, 0.0), 1.0F + 0.8F * (1.0F - p), FxDraw.argb(a * 0.7F, GOLD));
+        GroundDecal g = decal.at(ctx.level(), ground, 2.2);
+        g.square(ctx, ring, ground.x, ground.z, 1.9F + 0.25F * pulse, 0.006F, FxDraw.argb(a * (0.6F + 0.4F * pulse), AMBER));
+        g.square(ctx, ring, ground.x, ground.z, 1.0F + 0.8F * (1.0F - p), 0.012F, FxDraw.argb(a * 0.7F, GOLD));
         VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.GLOW));
-        FxDraw.ground(pose, glow, c.add(0.0, -0.01, 0.0), 1.6F, FxDraw.argb(a * 0.35F, EMBER));
+        g.square(ctx, glow, ground.x, ground.z, 1.6F, 0.0F, FxDraw.argb(a * 0.35F, EMBER));
     }
 
     static int mix(int a, int b, float t) {

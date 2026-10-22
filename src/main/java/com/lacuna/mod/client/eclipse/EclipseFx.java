@@ -8,6 +8,7 @@ import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModParticles;
@@ -205,6 +206,8 @@ public final class EclipseFx {
         private final float[][] slashes; // frac, roll, tilt, sweep sign
         private final float[][] streaks; // frac, span, angle, radius, height
         private final int images;
+        /** The terrain at the start of the dash (its shockwave lies on it). */
+        private final GroundDecal decal = new GroundDecal();
         private int age;
 
         DashFx(Vec3 start, Vec3 end, int ticks, float power, float fallbackYaw, ResourceLocation skin, boolean slim) {
@@ -285,9 +288,10 @@ public final class EclipseFx {
             if (t < 12.0F) {
                 float k = t / 12.0F;
                 float radius = 0.6F + 2.8F * (1.0F - (1.0F - k) * (1.0F - k));
-                Vec3 g = ctx.rel(start.add(0, 0.06, 0));
-                FxDraw.ground(pose, ctx.buffers().getBuffer(FxRenderTypes.shade(FxRenderTypes.RING)), g, radius, FxDraw.argb(0.85F * (1.0F - k), BLACK));
-                FxDraw.ground(pose, ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING)), g, radius * 1.06F,
+                GroundDecal g = decal.at(ctx.level(), start, 3.7);
+                g.square(ctx, ctx.buffers().getBuffer(FxRenderTypes.shade(FxRenderTypes.RING)), start.x, start.z, radius, 0.0F,
+                        FxDraw.argb(0.85F * (1.0F - k), BLACK));
+                g.square(ctx, ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING)), start.x, start.z, radius * 1.06F, 0.006F,
                         FxDraw.argb(0.9F * (1.0F - k), CRIMSON));
             }
 
@@ -498,6 +502,8 @@ public final class EclipseFx {
         private static final int LIFE = 18;
         private final Vec3 pos;
         private final boolean shadowWalk;
+        /** The terrain under the burst (its shockwave lies on it). */
+        private final GroundDecal decal = new GroundDecal();
         private int age;
 
         BurstFx(Vec3 pos, boolean shadowWalk) {
@@ -524,11 +530,12 @@ public final class EclipseFx {
             float k = Mth.clamp(t / LIFE, 0.0F, 1.0F);
             float ease = 1.0F - (1.0F - k) * (1.0F - k);
             PoseStack.Pose pose = ctx.pose().last();
-            Vec3 g = ctx.rel(pos.add(0, 0.06, 0));
+            GroundDecal g = decal.at(ctx.level(), pos, 4.6);
             float radius = 0.5F + (shadowWalk ? 3.0F : 3.8F) * ease;
-            FxDraw.ground(pose, ctx.buffers().getBuffer(FxRenderTypes.shade(FxRenderTypes.RING)), g, radius, FxDraw.argb(0.9F * (1.0F - k), BLACK));
+            g.square(ctx, ctx.buffers().getBuffer(FxRenderTypes.shade(FxRenderTypes.RING)), pos.x, pos.z, radius, 0.0F,
+                    FxDraw.argb(0.9F * (1.0F - k), BLACK));
             if (!shadowWalk || t < 10.0F) {
-                FxDraw.ground(pose, ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING)), g, radius * 1.05F,
+                g.square(ctx, ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING)), pos.x, pos.z, radius * 1.05F, 0.006F,
                         FxDraw.argb((shadowWalk ? 0.4F : 0.9F) * (1.0F - k), CRIMSON));
             }
             Vec3 c = ctx.rel(pos.add(0, 1.0, 0));

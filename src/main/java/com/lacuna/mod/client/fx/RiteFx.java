@@ -43,6 +43,8 @@ public final class RiteFx {
     private static final class Rift implements ClientFx {
         private static final int LIFE = 30;
         private final Vec3 at;
+        /** The ground under the traveller (the floor ring lies on it). */
+        private final GroundDecal decal = new GroundDecal();
         private final int rgb;
         private int age;
 
@@ -84,7 +86,8 @@ public final class RiteFx {
             }
             FxDraw.billboard(pose, ctx.buffers().getBuffer(FxRenderTypes.glowShader()), ctx.camera(), c, 1.6F * (1.0F - 0.4F * life), 0.0F,
                     FxDraw.argb(0.9F * fade, rgb));
-            FxDraw.ground(pose, ring, c.add(0, -0.95, 0), 1.2F + t * 0.12F, FxDraw.argb(0.5F * fade, rgb));
+            decal.at(ctx.level(), at.x, at.y - 1.0, at.z, 1.2 + LIFE * 0.12)
+                    .square(ctx, ring, at.x, at.z, 1.2F + t * 0.12F, 0.0F, FxDraw.argb(0.5F * fade, rgb));
         }
     }
 
@@ -93,6 +96,8 @@ public final class RiteFx {
         private static final int LIFE = 26;
         private final Vec3 dest;
         private final Vec3 from;
+        /** The ground at the destination (the clock ring lies on it). */
+        private final GroundDecal decal = new GroundDecal();
         private int age;
 
         Rewind(Vec3 dest, Vec3 from) {
@@ -112,8 +117,9 @@ public final class RiteFx {
             Vec3 c = ctx.rel(dest);
             PoseStack.Pose pose = ctx.pose().last();
             VertexConsumer ring = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.RING));
-            FxDraw.ground(pose, ring, c.add(0, -0.95, 0), 1.4F, FxDraw.argb(0.8F * fade, 0xFFD27A));
-            FxDraw.ground(pose, ring, c.add(0, -0.94, 0), 1.0F, FxDraw.argb(0.5F * fade, 0xFFF2C8));
+            GroundDecal g = decal.at(ctx.level(), dest.x, dest.y - 1.0, dest.z, 1.5);
+            g.square(ctx, ring, dest.x, dest.z, 1.4F, 0.0F, FxDraw.argb(0.8F * fade, 0xFFD27A));
+            g.square(ctx, ring, dest.x, dest.z, 1.0F, 0.01F, FxDraw.argb(0.5F * fade, 0xFFF2C8));
             VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
             for (int h = 0; h < 12; h++) {
                 double a = -t * 0.35 + h * Mth.TWO_PI / 12.0; // counter-clockwise: time runs back
