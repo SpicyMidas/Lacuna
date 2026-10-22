@@ -19,12 +19,12 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * Lacuna item descriptions stay folded until asked for: the lore, usage and stat lines an item adds (and its optional
- * {@code item.lacuna.<id>.tip} line) only show while the "Item details" key (Space by default) is held over the item;
+ * {@code item.lacuna.<id>.tip} line) only show while the "Item details" key (Shift by default) is held over the item;
  * otherwise a single grey hint line takes their place. Vanilla lines (attributes, enchantments...) are never touched.
  */
 public final class GenericTooltips {
     public static final KeyMapping DETAILS = new KeyMapping("key.lacuna.item_details", InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_SPACE, "key.categories.lacuna");
+            GLFW.GLFW_KEY_LEFT_SHIFT, "key.categories.lacuna");
 
     private GenericTooltips() {}
 

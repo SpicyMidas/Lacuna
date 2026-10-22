@@ -8,6 +8,7 @@
   add light instead of covering the sky). The strike pillar and the converging focus sunbeams are true 3D tubes: each
   pixel traces the view ray through the round shaft, so the beam has exact thickness from any angle and you can stand
   inside it and look straight up. Still depth-correct against clouds and terrain, dimming gently with distance.
+- **Item details** now show while holding **Shift** (was Space); rebindable under Controls → Lacuna.
 <!-- rev12 -->
 
 ## 0.11.0 — revision 11 (player feedback)
