@@ -74,8 +74,6 @@ public final class SolarVolume {
     private static final RenderStateShard.ShaderStateShard CORONA_SHADER = new RenderStateShard.ShaderStateShard(
             () -> SolarDepth.bind(softCorona));
 
-    private static final RenderType VOLUME_OVER = create("lacuna_solar_volume_over", VOLUME_SHADER, SolarRenderTypes.OVER,
-            DefaultVertexFormat.PARTICLE);
     private static final RenderType VOLUME_ADD = create("lacuna_solar_volume", VOLUME_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             DefaultVertexFormat.PARTICLE);
     private static final RenderType BEAM_ADD = create("lacuna_beam_volume", BEAM_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
@@ -84,11 +82,9 @@ public final class SolarVolume {
             DefaultVertexFormat.POSITION_TEX_COLOR);
     private static final RenderType FLARE_ADD = create("lacuna_soft_flare", CORONA_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             DefaultVertexFormat.POSITION_TEX_COLOR);
-    /** Late drawing order: the covering light first, then the light that adds on top. */
-    private static final List<RenderType> ORDER = List.of(VOLUME_OVER, VOLUME_ADD, BEAM_ADD, GLOW_ADD, FLARE_ADD);
+    /** Late drawing order (all additive: light never darkens what is behind it). */
+    private static final List<RenderType> ORDER = List.of(VOLUME_ADD, BEAM_ADD, GLOW_ADD, FLARE_ADD);
 
-    private static final Shafts OVER_WORLD = new Shafts(VOLUME_OVER, 0);
-    private static final Shafts OVER_SKY = new Shafts(VOLUME_OVER, SKY);
     private static final Shafts ADD_WORLD = new Shafts(VOLUME_ADD, 0);
     private static final Shafts ADD_SKY = new Shafts(VOLUME_ADD, SKY);
     private static final Shafts BEAM = new Shafts(BEAM_ADD, 0);
@@ -144,12 +140,6 @@ public final class SolarVolume {
     @Nullable
     static Late late(RenderType type) {
         if (volume != null) {
-            if (type == SolarRenderTypes.COLUMN_OVER) {
-                return OVER_WORLD;
-            }
-            if (type == SolarRenderTypes.SKY_COLUMN_OVER) {
-                return OVER_SKY;
-            }
             if (type == SolarRenderTypes.COLUMN_ADD) {
                 return ADD_WORLD;
             }

@@ -26,9 +26,9 @@ import org.jetbrains.annotations.Nullable;
  *   <li>{@code lacuna:solar_ring}: smooth procedural marks on flat quads: the focus reticle, shockwaves, light pools
  *       and thin rings ({@link #RETICLE}, {@link #SHOCKWAVE}, {@link #POOL}, {@link #THIN} select the mode via u).</li>
  * </ul>
- * All output premultiplied colour, blended two ways: <b>additive</b> (light piles up into white-hot cores) and
- * <b>over</b> ({@code ONE, ONE_MINUS_SRC_ALPHA}: the light also covers what is behind it, which keeps the gold visible
- * against a bright daytime sky instead of washing out to white). Like {@link FxShaders}, a shader that fails to load
+ * All output premultiplied colour. Light is always <b>additive</b> (it piles up into white-hot cores and never darkens
+ * what is behind it); only the light pools lying on the ground keep the covering <b>over</b> blend
+ * ({@code ONE, ONE_MINUS_SRC_ALPHA}). Like {@link FxShaders}, a shader that fails to load
  * is logged and replaced by the framework's beam / glow / textured types.
  * <p>
  * The light (columns, sunbeams, the trail, flares and glows) is drawn with depth and volume after the level by
@@ -72,11 +72,7 @@ public final class SolarRenderTypes {
     // and volume instead when their SolarVolume twin loaded
     static final RenderType COLUMN_ADD = create("lacuna_solar_column", COLUMN_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
-    static final RenderType COLUMN_OVER = create("lacuna_solar_column_over", COLUMN_SHADER, OVER,
-            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
     static final RenderType SKY_COLUMN_ADD = create("lacuna_solar_sky_column", COLUMN_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
-            RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
-    static final RenderType SKY_COLUMN_OVER = create("lacuna_solar_sky_column_over", COLUMN_SHADER, OVER,
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
     static final RenderType FLARE_ADD = create("lacuna_solar_flare", CORONA_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
@@ -90,8 +86,6 @@ public final class SolarRenderTypes {
     private static final RenderType SKY_CORONA = create("lacuna_sky_corona", CORONA_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             RenderStateShard.NO_DEPTH_TEST, false, null);
     private static final RenderType SKY_GLOW = create("lacuna_sky_glow", GLOW_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
-            RenderStateShard.NO_DEPTH_TEST, false, null);
-    private static final RenderType SKY_GLOW_OVER = create("lacuna_sky_glow_over", GLOW_SHADER, OVER,
             RenderStateShard.NO_DEPTH_TEST, false, null);
     private static final RenderType SKY_GLOW_TEXTURED = create("lacuna_sky_glow_textured", POS_TEX_COLOR,
             RenderStateShard.LIGHTNING_TRANSPARENCY, RenderStateShard.NO_DEPTH_TEST, false, FxRenderTypes.GLOW);
@@ -146,9 +140,12 @@ public final class SolarRenderTypes {
         return column != null ? COLUMN_ADD : FxRenderTypes.beam();
     }
 
-    /** Column light that also covers the background (keeps its colour on a bright sky). */
+    /**
+     * The wide outer column layers (haze, halo, trail glow). Additive like the rest of the light: a covering blend
+     * here darkened the sky and clouds behind the faint outer layers into a grey smoke around every ray.
+     */
     public static RenderType columnOver() {
-        return column != null ? COLUMN_OVER : FxRenderTypes.beam();
+        return column();
     }
 
     /**
@@ -159,9 +156,9 @@ public final class SolarRenderTypes {
         return column != null ? SKY_COLUMN_ADD : FxRenderTypes.beam();
     }
 
-    /** {@link #columnOver()} for sunlight from the sky (see {@link #skyColumn()}). */
+    /** {@link #columnOver()} for sunlight from the sky (see {@link #skyColumn()}): additive too. */
     public static RenderType skyColumnOver() {
-        return column != null ? SKY_COLUMN_OVER : FxRenderTypes.beam();
+        return skyColumn();
     }
 
     /** Additive starburst flare (u,v 0..1 over a billboard): the corona shader in world space, or the glow fallback. */
@@ -192,8 +189,8 @@ public final class SolarRenderTypes {
         return FxShaders.glow() != null ? SKY_GLOW : SKY_GLOW_TEXTURED;
     }
 
-    /** Large warm wash around the sun that tints the sky instead of bleaching it. */
+    /** Large warm wash around the sun: additive light (a covering wash greyed the blue sky around the sun). */
     public static RenderType skyWash() {
-        return FxShaders.glow() != null ? SKY_GLOW_OVER : SKY_GLOW_TEXTURED;
+        return FxShaders.glow() != null ? SKY_GLOW : SKY_GLOW_TEXTURED;
     }
 }

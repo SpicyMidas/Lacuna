@@ -191,7 +191,7 @@ public final class SolarVisuals {
             for (int i = 0; i < n; i++) {
                 float wk = wake(k[i]);
                 w[i] = 2.2F * wk + 0.1F;
-                c[i] = FxDraw.argb(0.45F * wk * Math.min(1.0F, 1.6F * k[i]), AMBER);
+                c[i] = FxDraw.argb(0.3F * wk * Math.min(1.0F, 1.6F * k[i]), AMBER);
             }
             strip(pose, over, rel, w, c, v, 0);
             VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
@@ -309,11 +309,10 @@ public final class SolarVisuals {
         int pale = SunLight.shade(PALE, 0.3F);
         int white = SunLight.shade(WHITE, 0.5F);
 
-        // 1. a vast faint cone of gathered sunlight from the sun narrowing onto the target (covers: keeps its colour on
-        // a bright sky)
+        // 1. a vast faint cone of gathered sunlight from the sun narrowing onto the target
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.skyColumnOver());
         shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, Mth.lerp(e, 20.0F, 1.6F), (float) (far * Mth.lerp(e, 0.3F, 0.06F)),
-                (0.1F + 0.32F * e) * sun, (0.04F + 0.1F * e) * sun, gold, amber, 0);
+                (0.06F + 0.2F * e) * sun, (0.025F + 0.06F * e) * sun, gold, amber, 0);
 
         // 2. soft sunbeams, turning slowly; as the light concentrates they narrow, brighten and gain a bright filament
         // (the ring lies across the sun's direction, spanned by (0, 0, 1) and dir x (0, 0, 1) = (sy, -sx, 0))
@@ -350,7 +349,7 @@ public final class SolarVisuals {
         if (focus > 0.002F) {
             float quiver = 0.85F + 0.15F * Mth.sin(t * 2.7F);
             float a = focus * sun;
-            shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, 3.5F * focus, (float) (far * 0.02) * focus, 0.3F * a, 0.3F * a, gold, gold, 0);
+            shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, 3.5F * focus, (float) (far * 0.02) * focus, 0.2F * a, 0.2F * a, gold, gold, 0);
             shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 1.4F * focus * quiver, 1.4F * focus * quiver, 0.9F * a, 0.9F * a, pale, pale, 0);
             shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 0.45F * focus, 0.45F * focus, a, a, white, white, 0);
         }
@@ -456,18 +455,17 @@ public final class SolarVisuals {
         Vec3 bottom = ctx.rel(base.add(0, -6.0, 0));
         Vec3 top = ctx.rel(new Vec3(base.x, topY, base.z));
 
-        // the pillar, outer layers: an amber haze and a golden halo that also cover the sky behind them (while fading
-        // they keep their colour longer than their width: the pillar thins into a golden thread)
-        // by night the faint outer haze would only read as a brown veil over the stars: keep it for the day
+        // the pillar, outer layers: a faint amber haze and a golden halo, additive like all the light (while fading
+        // they keep their colour longer than their width: the pillar thins into a golden thread); fainter by night
         float day = daylight(ctx.level(), pt);
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
-        FxDraw.ribbon(pose, over, bottom, top, 64.0F * swell * breathe, FxDraw.argb(0.2F * soft * (0.35F + 0.65F * day), AMBER), -6.0F,
+        FxDraw.ribbon(pose, over, bottom, top, 64.0F * swell * breathe, FxDraw.argb(0.11F * soft * (0.35F + 0.65F * day), AMBER), -6.0F,
                 height);
-        FxDraw.ribbon(pose, over, bottom, top, 30.0F * swell * breathe, FxDraw.argb(0.45F * soft * (0.6F + 0.4F * day), GOLD), -6.0F,
+        FxDraw.ribbon(pose, over, bottom, top, 30.0F * swell * breathe, FxDraw.argb(0.28F * soft * (0.6F + 0.4F * day), GOLD), -6.0F,
                 height);
         // a bright splash where it meets the ground
         FxDraw.ribbon(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
-                FxDraw.argb(0.45F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F);
+                FxDraw.argb(0.3F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F);
 
         // inner layers, additive: they pile up into a white-hot core
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());

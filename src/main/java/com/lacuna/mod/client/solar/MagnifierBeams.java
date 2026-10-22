@@ -109,9 +109,9 @@ public final class MagnifierBeams {
         // the lens is about as wide as the cone where it starts (much closer to the eye in first person)
         float lensWidth = firstPerson ? 0.2F : 0.42F;
 
-        // a faint covering veil keeps the colour readable against a bright daytime sky
+        // a faint outer veil of coloured light
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
-        FxDraw.ribbon(pose, over, a, b, lensWidth * 1.2F, 0.45F, FxDraw.argb(0.16F * shimmer, rgb), FxDraw.argb(0.22F * shimmer, rgb),
+        FxDraw.ribbon(pose, over, a, b, lensWidth * 1.2F, 0.45F, FxDraw.argb(0.1F * shimmer, rgb), FxDraw.argb(0.14F * shimmer, rgb),
                 0.0F, len);
         // the cone of gathered light, its body and the white-hot core
         VertexConsumer beam = ctx.buffers().getBuffer(FxRenderTypes.beam());

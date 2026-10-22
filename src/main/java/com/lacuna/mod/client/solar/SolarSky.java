@@ -138,9 +138,9 @@ public final class SolarSky {
         pose.mulPose(event.getModelViewMatrix());
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
         Camera camera = event.getCamera();
-        // a vast golden wash that tints the sky around the sun (covers rather than adds, so it stays gold by day)
+        // a vast golden wash of light around the sun (additive: never greys the sky)
         VertexConsumer wash = buffers.getBuffer(SolarRenderTypes.skyWash());
-        FxDraw.billboard(pose.last(), wash, camera, sun, 70.0F + 50.0F * b, 0.0F, FxDraw.argb(0.42F * b * clear, SunLight.shade(0xFFA640, 0.0F)));
+        FxDraw.billboard(pose.last(), wash, camera, sun, 70.0F + 50.0F * b, 0.0F, FxDraw.argb(0.22F * b * clear, SunLight.shade(0xFFA640, 0.0F)));
         buffers.endBatch();
         // the flaring sun: a crown of turning rays and a white-hot disc
         VertexConsumer corona = buffers.getBuffer(SolarRenderTypes.skyCorona());
