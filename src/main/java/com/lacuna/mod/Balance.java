@@ -25,12 +25,6 @@ public final class Balance {
     public static final int FL_CHECK_INTERVAL = 20;
     public static final int ARRIVAL_PROTECTION_TICKS = 40;
 
-    // ---------------------------------------------------------------- ruby (M1)
-    public static final int RUBY_TOOL_DURABILITY = 800;
-    public static final float RUBY_TOOL_SPEED = 7.0F;
-    public static final float RUBY_TOOL_DAMAGE_BONUS = 3.0F;
-    public static final int RUBY_TOOL_ENCHANTABILITY = 15;
-
     // ---------------------------------------------------------------- divine sight (M1)
     public static final int DIVINE_SIGHT_RANGE = 12;
     public static final int DIVINE_SIGHT_GLASS_DISTANCE = 6;

@@ -35,7 +35,6 @@ public final class ModCreativeTabs {
             ModItems.TOTEM_OF_CONFUSION,
             ModItems.STARLACE_BANDAGE,
             ModItems.UMBRAL_STEEL_SWORD, ModItems.UMBRAL_STEEL_PICKAXE, ModItems.UMBRAL_STEEL_AXE, ModItems.UMBRAL_STEEL_SHOVEL, ModItems.UMBRAL_STEEL_HOE,
-            ModItems.RUBY_SWORD, ModItems.RUBY_PICKAXE, ModItems.RUBY_AXE, ModItems.RUBY_SHOVEL, ModItems.RUBY_HOE,
             ModItems.STARLACE_HELMET, ModItems.STARLACE_CHESTPLATE, ModItems.STARLACE_LEGGINGS, ModItems.STARLACE_BOOTS,
             // materials
             ModItems.RUBY, ModItems.DIVINE_GLASS_SHARD, ModItems.RAW_UMBRAL_STEEL, ModItems.UMBRAL_STEEL_INGOT,

@@ -12,21 +12,19 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import org.joml.Vector3f;
 
 /**
  * Small server-side flourishes that make the mod's materials feel alive: ores and crystals ring and sparkle as they
- * break, coins jingle when picked up, rare Lacuna items chime, ruby blades leave red glints. Purely cosmetic and
+ * break, coins jingle when picked up, rare Lacuna items chime. Purely cosmetic and
  * fail-safe ({@link SafeRun}).
  */
 public final class Flourishes {
@@ -39,7 +37,6 @@ public final class Flourishes {
     public static void register(IEventBus bus) {
         bus.addListener(Flourishes::onBreak);
         bus.addListener(Flourishes::onPickup);
-        bus.addListener(Flourishes::onHurt);
     }
 
     private static void onBreak(BlockEvent.BreakEvent event) {
@@ -93,23 +90,6 @@ public final class Flourishes {
                     level.sendParticles(ModParticles.LIGHT_MOTE.get(), player.getX(), player.getY() + 1.0, player.getZ(), 6, 0.3, 0.4, 0.3, 0.02);
                 }
             }
-        });
-    }
-
-    private static void onHurt(LivingDamageEvent.Post event) {
-        if (!(event.getSource().getDirectEntity() instanceof Player player) || event.getNewDamage() <= 0
-                || !(player.level() instanceof ServerLevel level) || SafeRun.isDisabled(FEATURE)) {
-            return;
-        }
-        ItemStack held = player.getMainHandItem();
-        if (!held.is(ModItems.RUBY_SWORD.get()) && !held.is(ModItems.RUBY_AXE.get())) {
-            return;
-        }
-        LivingEntity target = event.getEntity();
-        SafeRun.run(FEATURE, () -> {
-            level.sendParticles(RUBY_DUST, target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 8,
-                    target.getBbWidth() * 0.4, target.getBbHeight() * 0.25, target.getBbWidth() * 0.4, 0.02);
-            Sfx.varied(target, SoundEvents.AMETHYST_BLOCK_HIT, 0.7F, 1.45F, 0.1F);
         });
     }
 }

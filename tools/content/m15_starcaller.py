@@ -7,12 +7,12 @@ from content.m12_polish import adv, code
 # vanilla goat horn hand poses (models/item/goat_horn.json and tooting_goat_horn.json): the trumpet is held the same way
 # held like a bow (vanilla item/bow display), and blown with the bow draw pose (StarcallerTrumpetItem: UseAnim.BOW)
 HELD = {
-    "thirdperson_righthand": {"rotation": [-80, 260, -40], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
-    "thirdperson_lefthand": {"rotation": [-80, -280, 40], "translation": [-1, -2, 2.5], "scale": [0.9, 0.9, 0.9]},
-    "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
-    "firstperson_lefthand": {"rotation": [0, 90, -25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]},
+    # like a bow, but lower in the hand and tilted a little more
+    "thirdperson_righthand": {"rotation": [-70, 260, -50], "translation": [-1, -3.5, 2], "scale": [0.9, 0.9, 0.9]},
+    "thirdperson_lefthand": {"rotation": [-70, -280, 50], "translation": [-1, -3.5, 2], "scale": [0.9, 0.9, 0.9]},
+    "firstperson_righthand": {"rotation": [0, -90, 35], "translation": [1.13, 2.0, 1.13], "scale": [0.68, 0.68, 0.68]},
+    "firstperson_lefthand": {"rotation": [0, 90, -35], "translation": [1.13, 2.0, 1.13], "scale": [0.68, 0.68, 0.68]},
 }
-GLOW = {"block_light": 15, "sky_light": 15, "ambient_occlusion": False}
 
 
 def build(g):
@@ -57,19 +57,9 @@ def star_rock(g):
     block (own name, loot, Silk Touch item); the old lacuna:fallen_star is aliased to Prime in Java."""
     # Molten: animated, drawn full bright by the block itself (emissiveRendering, like magma)
     g.cube("molten_star_rock", "Molten Star Rock", "Roccia stellare fusa", loot=molten_loot())
-    # Prime: the star-stone, with its crystals and glitter laid over it full bright (cutout, neoforge light data)
-    def cube_el(tex, glow=False):
-        e = {"from": [0, 0, 0], "to": [16, 16, 16],
-             "faces": {d: {"texture": tex, "cullface": d} for d in ("north", "south", "east", "west", "up", "down")}}
-        if glow:
-            e["neoforge_data"] = dict(GLOW)
-        return e
-    prime = {"parent": "minecraft:block/block", "render_type": "minecraft:cutout",
-             "textures": {"particle": "lacuna:block/prime_star_rock", "all": "lacuna:block/prime_star_rock",
-                          "glints": "lacuna:block/prime_star_rock_glints"},
-             "elements": [cube_el("#all"), cube_el("#glints", glow=True)]}
-    g.single("prime_star_rock", "Prime Star Rock", "Roccia stellare viva", prime,
-             loot=loot_ore("prime_star_rock", "lacuna:star_fragment", 1, 3, "uniform"))
+    # Prime: the hand-drawn animated star block (tools/art/hand/block/prime_star_rock.png + .mcmeta)
+    g.cube("prime_star_rock", "Prime Star Rock", "Roccia stellare viva",
+           loot=loot_ore("prime_star_rock", "lacuna:star_fragment", 1, 3, "uniform"))
     g.cube("extinguished_star_rock", "Extinguished Block of the Star", "Blocco spento della stella",
            loot=loot_ore("extinguished_star_rock", "lacuna:star_fragment", 0, 1, "none"))
     for bid in ("molten_star_rock", "prime_star_rock", "extinguished_star_rock"):

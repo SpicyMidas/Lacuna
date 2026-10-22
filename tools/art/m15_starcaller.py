@@ -207,7 +207,7 @@ def prime_star_rock():
                 q = ((cx + dx) % 16, (cy + dy) % 16)
                 if q not in filled:
                     sp[q[0], q[1] + 16 * f] = CRYSTAL["h"]
-    _save_animated(strip, "block/prime_star_rock_glints", 8, interpolate=True)
+    # the glints overlay is gone: the hand-drawn animated prime_star_rock replaces the whole look
 
 
 MOON = [c("#46464B"), c("#55555A"), c("#646468"), c("#737376"), c("#838385"), c("#949495"), c("#A6A6A7")]

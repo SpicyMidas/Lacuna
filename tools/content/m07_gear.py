@@ -91,7 +91,7 @@ def umbral_tools(g):
     g.name("item.lacuna.umbral_steel_axe.cleave_detail", " Foes within %2$s blocks take %1$s of the hit and are thrown back",
            " I nemici entro %2$s blocchi subiscono il %1$s del colpo e vengono respinti")
     g.tag("item", "lacuna:umbral_gear", mod("eclipser"), mod("gravemaw_greatsword"))
-    g.tag("item", "lacuna:drawn_weapons", mod("umbral_steel_sword"), mod("umbral_steel_axe"), mod("ruby_sword"), mod("ruby_axe"),
+    g.tag("item", "lacuna:drawn_weapons", mod("umbral_steel_sword"), mod("umbral_steel_axe"),
           mod("gravemaw_greatsword"), mod("tidecaller_sickle"), mod("echo_dagger"), mod("heartwood_bow"),
           "minecraft:wooden_sword", "minecraft:stone_sword", "minecraft:iron_sword", "minecraft:golden_sword",
           "minecraft:diamond_sword", "minecraft:netherite_sword", "minecraft:bow", "minecraft:crossbow", "minecraft:trident",

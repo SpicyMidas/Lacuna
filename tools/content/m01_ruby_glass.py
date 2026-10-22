@@ -10,11 +10,6 @@ def build(g):
     g.cube("ruby_block", "Block of Ruby", "Blocco di rubino")
 
     g.item("ruby", "Ruby", "Rubino")
-    for tool, en, it in [("sword", "Ruby Sword", "Spada di rubino"), ("pickaxe", "Ruby Pickaxe", "Piccone di rubino"),
-                         ("axe", "Ruby Axe", "Ascia di rubino"), ("shovel", "Ruby Shovel", "Pala di rubino"),
-                         ("hoe", "Ruby Hoe", "Zappa di rubino")]:
-        g.item(f"ruby_{tool}", en, it, model="handheld")
-        g.tag("item", f"minecraft:{tool}s", mod(f"ruby_{tool}"))
 
     # ---------------------------------------------------------------- divine glass
     g.item("divine_glass_shard", "Divine Glass Shard", "Frammento di vetro divino")
@@ -36,13 +31,6 @@ def build(g):
     g.cooking("ruby_from_blasting_ruby_ore", "blasting", "lacuna:ruby_ore", "lacuna:ruby", 1.0, 100)
     g.cooking("ruby_from_smelting_deepslate_ruby_ore", "smelting", "lacuna:deepslate_ruby_ore", "lacuna:ruby", 1.0, 200)
     g.cooking("ruby_from_blasting_deepslate_ruby_ore", "blasting", "lacuna:deepslate_ruby_ore", "lacuna:ruby", 1.0, 100)
-    tools = {
-        "sword": ["R", "R", "S"], "pickaxe": ["RRR", " S ", " S "], "axe": ["RR", "RS", " S"],
-        "shovel": ["R", "S", "S"], "hoe": ["RR", " S", " S"],
-    }
-    for tool, pattern in tools.items():
-        g.shaped(f"ruby_{tool}", pattern, {"R": "lacuna:ruby", "S": "minecraft:stick"}, f"lacuna:ruby_{tool}",
-                 category="equipment", unlock="lacuna:ruby")
     g.shaped("divine_glass", ["DD", "DD"], {"D": "lacuna:divine_glass_shard"}, "lacuna:divine_glass", category="building")
     g.shaped("divine_glass_pane", ["GGG", "GGG"], {"G": "lacuna:divine_glass"}, "lacuna:divine_glass_pane", 16,
              category="decorations")

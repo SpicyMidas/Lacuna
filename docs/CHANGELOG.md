@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.0 — revision 11 (player feedback)
+
+- **New hand-drawn textures:** the whole Umbral Steel set (raw, ingot, sword, pickaxe, axe, shovel, hoe), the
+  Starlace Bandage, Prime Star Rock (animated) and the Extinguished Block of the Star.
+- **Ruby tools removed** (sword, pickaxe, axe, shovel, hoe): rubies are for trading with the Last Merchant, ruby
+  blocks and the rest stay.
+- **Starcaller Trumpet** is held like a bow but lower in the hand and tilted a little more.
+<!-- rev11 -->
+
 ## 0.10.0 — revision 10 (player feedback)
 
 - **Ground marks follow the terrain:** every glyph, reticle, ring, light pool and shockwave drawn on the ground (Sun's

@@ -13,8 +13,6 @@ def paint():
     save(ore(deepslate_base(), RUBY, "deepslate_ruby_ore"), "block/deepslate_ruby_ore")
     save(storage_block(RUBY, "ruby_block"), "block/ruby_block")
     save(gem(RUBY), "item/ruby")
-    for kind in ("sword", "pickaxe", "axe", "shovel", "hoe"):
-        save(tool(kind, [RUBY[0], RUBY[1], RUBY[2], RUBY[3], RUBY[4]]), f"item/ruby_{kind}")
 
     # Divine glass: white-gold, translucent (alpha 150-210), prism fringe pixels
     frame = [with_alpha(c("#C9A24A"), 230), with_alpha(c("#FFE9A0"), 230), with_alpha(c("#FFF7D6"), 240)]
