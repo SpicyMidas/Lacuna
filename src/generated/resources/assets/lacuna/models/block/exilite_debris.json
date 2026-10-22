@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "lacuna:block/exilite_debris_top",
+    "side": "lacuna:block/exilite_debris_side"
+  }
+}

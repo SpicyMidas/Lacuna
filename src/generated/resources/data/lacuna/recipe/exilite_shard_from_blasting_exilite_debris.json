@@ -1,9 +1,9 @@
 {
   "category": "misc",
   "cookingtime": 100,
-  "experience": 1.0,
+  "experience": 2.0,
   "ingredient": {
-    "item": "lacuna:exilite_ore"
+    "item": "lacuna:exilite_debris"
   },
   "result": {
     "id": "lacuna:exilite_shard"

@@ -1,0 +1,13 @@
+{
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lacuna:exilite_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "lacuna:exilite_ingot"
+  },
+  "type": "minecraft:crafting_shapeless"
+}
