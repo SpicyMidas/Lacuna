@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.0 — revision 12 (player feedback)
+
+- **Gravemaw Greatsword icon** (16x16) is brighter: its shades moved one step up the 32x32 sword's own colour
+  ramp, with the same dark outline.
+<!-- rev12 -->
+
 ## 0.11.0 — revision 11 (player feedback)
 
 - **New hand-drawn textures:** the whole Umbral Steel set (raw, ingot, sword, pickaxe, axe, shovel, hoe), the
