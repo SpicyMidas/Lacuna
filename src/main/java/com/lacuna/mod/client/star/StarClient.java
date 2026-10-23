@@ -17,7 +17,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 /**
  * Client wiring of the Starcaller Trumpet: the falling star is drawn entirely by a {@link FallingStarFx} attached when
  * the entity arrives on the client (its entity renderer draws nothing), the impact by {@link StarImpactFx}, and the
- * trumpet is held and drawn like a bow (its item model and UseAnim.BOW).
+ * trumpet's hold and blowing pose by {@link TrumpetClient}.
  */
 public final class StarClient {
     /** Live star effects by entity id, so the impact can tell its star where it landed. */
@@ -30,6 +30,7 @@ public final class StarClient {
         forgeBus.addListener(StarClient::onEntityJoin);
         forgeBus.addListener(StarClient::onLogout);
         FxHandlers.register(Starfall.FX_IMPACT, StarImpactFx::handle);
+        TrumpetClient.register(modBus);
     }
 
     private static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {

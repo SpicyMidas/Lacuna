@@ -127,6 +127,11 @@ public final class ClientDemo {
                     default -> net.minecraft.client.CameraType.FIRST_PERSON;
                 });
                 case "attack" -> KeyMapping.click(mc.options.keyAttack.getKey());
+                // body <degrees>: turn the body that far from the head (up to 50: an oblique view of a pose in third person)
+                case "body" -> {
+                    mc.player.yBodyRot = mc.player.getYRot() + Float.parseFloat(arg.trim());
+                    mc.player.yBodyRotO = mc.player.yBodyRot;
+                }
                 case "select" -> mc.player.getInventory().selected = Integer.parseInt(arg.trim());
                 case "log" -> Lacuna.LOGGER.info("[DEMO] {}", arg);
                 case "clearchat" -> mc.gui.getChat().clearMessages(false);

@@ -27,6 +27,7 @@ public final class BagClient {
         // after GenericTooltips (normal priority) folded the usage lines: what is inside always shows
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, BagClient::onTooltip);
         BagPlayerClient.register(modBus);
+        BagHoldClient.register(modBus);
     }
 
     private static void onClientSetup(FMLClientSetupEvent event) {
