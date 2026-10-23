@@ -1,4 +1,91 @@
 {
+  "display": {
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        15,
+        20
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "translation": [
+        1.64,
+        11.82,
+        1.52
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        15,
+        20
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ],
+      "translation": [
+        1.64,
+        11.82,
+        1.52
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        113.6,
+        -53.6,
+        -100
+      ],
+      "scale": [
+        1.05,
+        1.05,
+        1.05
+      ],
+      "translation": [
+        1.85,
+        1.53,
+        8.92
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        113.6,
+        -53.6,
+        -100
+      ],
+      "scale": [
+        1.05,
+        1.05,
+        1.05
+      ],
+      "translation": [
+        1.85,
+        1.53,
+        8.92
+      ]
+    }
+  },
   "parent": "lacuna:item/comically_large_bag",
   "textures": {
     "layer0": "lacuna:item/comically_large_bag_full"

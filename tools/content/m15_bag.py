@@ -3,12 +3,35 @@ from gen_resources import mod
 
 BAG = "comically_large_bag"
 
-# Held comically large: three times the usual size in third person, nearly double in first person (lowered so it
-# does not hide the crosshair), a big lump on the ground. GUI and item frames keep the normal icon size.
+# Held comically large (twice the usual in-hand size), and held like in the cartoons, with both hands. GUI and item
+# frames keep the normal icon size, and it is a big lump on the ground.
+#  - empty: held open in front with both arms raised forward, mouth toward what is looked at, ready to catch;
+#  - full / stuffed: slung over the shoulder of the holding hand, both hands on the neck, the bulging sack on the back.
+# The third-person values are solved against the arm angles of client/pose/LacunaArmPoses (BAG_OPEN, BAG_CARRY):
+# change both together. First person: the empty bag is drawn held up in front with both arms by client/bag/BagHoldClient
+# (from the vanilla hand base, then these transforms); the full one rides at the right edge, over the shoulder.
+GROUND = {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.65, 0.65, 0.65]}
 DISPLAY = {
-    "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 3.5, 2], "scale": [1.05, 1.05, 1.05]},
-    "firstperson_righthand": {"rotation": [0, -90, 25], "translation": [1.13, 2.2, 1.13], "scale": [0.9, 0.9, 0.9]},
-    "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.65, 0.65, 0.65]},
+    "thirdperson_righthand": {"rotation": [133.3, -0, 180], "translation": [-6, -4.88, 3.56], "scale": [1.05, 1.05, 1.05]},
+    "thirdperson_lefthand": {"rotation": [133.3, 0, -180], "translation": [-6, -4.88, 3.56], "scale": [1.05, 1.05, 1.05]},
+    "firstperson_righthand": {"rotation": [-25, -0, -0], "translation": [-8.96, 2.52, -7.48], "scale": [1, 1, 1]},
+    "firstperson_lefthand": {"rotation": [-25, -0, 0], "translation": [-8.96, 2.52, -7.48], "scale": [1, 1, 1]},
+    "ground": GROUND,
+}
+DISPLAY_FULL = {
+    "thirdperson_righthand": {"rotation": [113.6, -53.6, -100], "translation": [1.85, 1.53, 8.92], "scale": [1.05, 1.05, 1.05]},
+    "thirdperson_lefthand": {"rotation": [113.6, -53.6, -100], "translation": [1.85, 1.53, 8.92], "scale": [1.05, 1.05, 1.05]},
+    "firstperson_righthand": {"rotation": [-0, 15, 20], "translation": [1.64, 11.82, 1.52], "scale": [0.7, 0.7, 0.7]},
+    "firstperson_lefthand": {"rotation": [-0, 15, 20], "translation": [1.64, 11.82, 1.52], "scale": [0.7, 0.7, 0.7]},
+    "ground": GROUND,
+}
+# stuffed: a bit bigger, sitting a little further back and up
+DISPLAY_STUFFED = {
+    "thirdperson_righthand": {"rotation": [113.6, -53.6, -100], "translation": [2.4, 2.46, 9.11], "scale": [1.2, 1.2, 1.2]},
+    "thirdperson_lefthand": {"rotation": [113.6, -53.6, -100], "translation": [2.4, 2.46, 9.11], "scale": [1.2, 1.2, 1.2]},
+    "firstperson_righthand": {"rotation": [-0, 15, 20], "translation": [2.04, 12.22, 1.12], "scale": [0.8, 0.8, 0.8]},
+    "firstperson_lefthand": {"rotation": [-0, 15, 20], "translation": [2.04, 12.22, 1.12], "scale": [0.8, 0.8, 0.8]},
+    "ground": GROUND,
 }
 
 LANG = {
@@ -52,9 +75,11 @@ def build(g):
     g.item(BAG, "Comically Large Bag", "Sacco Comicamente Grande", extra={"display": DISPLAY},
            overrides=[{"predicate": {"lacuna:full": 0.5}, "model": mod(f"item/{BAG}_full")},
                       {"predicate": {"lacuna:full": 1}, "model": mod(f"item/{BAG}_stuffed")}])
-    g.item_model(f"{BAG}_full", {"parent": mod(f"item/{BAG}"), "textures": {"layer0": mod(f"item/{BAG}_full")}})
+    g.item_model(f"{BAG}_full", {"parent": mod(f"item/{BAG}"), "textures": {"layer0": mod(f"item/{BAG}_full")},
+                                    "display": DISPLAY_FULL})
     # stuffed: a horse-sized creature, or a creature/container holding 9+ stacks (bag/BagCapture#fullness)
-    g.item_model(f"{BAG}_stuffed", {"parent": mod(f"item/{BAG}"), "textures": {"layer0": mod(f"item/{BAG}_stuffed")}})
+    g.item_model(f"{BAG}_stuffed", {"parent": mod(f"item/{BAG}"), "textures": {"layer0": mod(f"item/{BAG}_stuffed")},
+                                       "display": DISPLAY_STUFFED})
     for key, (en, it) in LANG.items():
         g.name(key, en, it)
 

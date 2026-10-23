@@ -1,0 +1,107 @@
+# Hold poses: Comically Large Bag empty (held open, both hands), full and stuffed (slung over the shoulder), and the
+# Starcaller Trumpet held across the fist and blown with both hands. Third person front, 3/4 front, 3/4 back, first person.
+world lacuna_pose flat
+wait 60
+hud off
+cmd time set 6000
+cmd gamerule doDaylightCycle false
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd clear @s
+cmd item replace entity @s hotbar.0 with lacuna:comically_large_bag
+cmd item replace entity @s hotbar.1 with lacuna:comically_large_bag[lacuna:bag_contents={kind:"entity",data:{id:"minecraft:pig"}}]
+cmd item replace entity @s hotbar.2 with lacuna:comically_large_bag[lacuna:bag_contents={kind:"entity",data:{id:"minecraft:horse"}}]
+cmd item replace entity @s hotbar.3 with lacuna:starcaller_trumpet
+wait 20
+cmd tp @s 0.5 -60 0.5 facing 0.5 -59.4 10
+wait 10
+select 0
+wait 10
+camera front
+wait 4
+shot pose_bag_empty_front
+body 45
+wait 2
+shot pose_bag_empty_front34
+camera back
+body -45
+wait 2
+shot pose_bag_empty_back34
+camera first
+hud on
+wait 2
+shot pose_bag_empty_fp
+hud off
+select 1
+wait 10
+camera front
+wait 4
+shot pose_bag_full_front
+body 45
+wait 2
+shot pose_bag_full_front34
+camera back
+body -45
+wait 2
+shot pose_bag_full_back34
+body 45
+wait 2
+shot pose_bag_full_back34b
+camera first
+hud on
+wait 2
+shot pose_bag_full_fp
+hud off
+select 2
+wait 10
+camera front
+wait 4
+shot pose_bag_stuffed_front
+body 45
+wait 2
+shot pose_bag_stuffed_front34
+camera back
+body -45
+wait 2
+shot pose_bag_stuffed_back34
+camera first
+hud on
+wait 2
+shot pose_bag_stuffed_fp
+hud off
+select 3
+wait 10
+camera front
+wait 4
+shot pose_trumpet_front
+body 45
+wait 2
+shot pose_trumpet_front34
+camera back
+body -45
+wait 2
+shot pose_trumpet_back34
+camera first
+hud on
+wait 2
+shot pose_trumpet_fp
+hud off
+camera front
+cmd tp @s 0.5 -60 0.5 facing 0.5 -60.5 6
+wait 6
+use on
+wait 8
+shot pose_blow_front
+body 45
+wait 1
+shot pose_blow_front34
+camera back
+body -45
+wait 1
+shot pose_blow_back34
+camera first
+hud on
+wait 2
+shot pose_blow_fp
+use off
+quit

@@ -4,14 +4,21 @@ Fragments."""
 from gen_resources import SILK, SURVIVES, loot_ore, mod, pool
 from content.m12_polish import adv, code
 
-# vanilla goat horn hand poses (models/item/goat_horn.json and tooting_goat_horn.json): the trumpet is held the same way
-# held like a bow (vanilla item/bow display), and blown with the bow draw pose (StarcallerTrumpetItem: UseAnim.BOW)
+# Held: gripped by its middle, the fist round the valves, square to the forearm, bell forward (in-hand centre at the
+# fist; solved for the vanilla one-handed hold). Blown (lacuna:blowing, client/star/TrumpetClient): raised level to the
+# lips with both hands, mouthpiece at the mouth; the third-person values are solved against the arm angles of
+# client/pose/LacunaArmPoses.TRUMPET_BLOW (change both together).
 HELD = {
-    # like a bow, but lower in the hand and tilted a little more
-    "thirdperson_righthand": {"rotation": [-70, 260, -50], "translation": [-1, -3.5, 2], "scale": [0.9, 0.9, 0.9]},
-    "thirdperson_lefthand": {"rotation": [-70, -280, 50], "translation": [-1, -3.5, 2], "scale": [0.9, 0.9, 0.9]},
-    "firstperson_righthand": {"rotation": [0, -90, 35], "translation": [1.13, 2.0, 1.13], "scale": [0.68, 0.68, 0.68]},
-    "firstperson_lefthand": {"rotation": [0, 90, -35], "translation": [1.13, 2.0, 1.13], "scale": [0.68, 0.68, 0.68]},
+    "thirdperson_righthand": {"rotation": [-0, -90, -90], "translation": [-0, -2, 0.5], "scale": [0.85, 0.85, 0.85]},
+    "thirdperson_lefthand": {"rotation": [-0, 90, 90], "translation": [0, -2, 0.5], "scale": [0.85, 0.85, 0.85]},
+    "firstperson_righthand": {"rotation": [-0, -40, -2.9], "translation": [1.04, 2.02, -1.98], "scale": [0.6, 0.6, 0.6]},
+    "firstperson_lefthand": {"rotation": [-0, -40, -2.9], "translation": [1.04, 2.02, -1.98], "scale": [0.6, 0.6, 0.6]},
+}
+BLOWING = {
+    "thirdperson_righthand": {"rotation": [164, -60.8, 180], "translation": [-0.34, -1.4, -2.06], "scale": [0.75, 0.75, 0.75]},
+    "thirdperson_lefthand": {"rotation": [164, -60.8, -180], "translation": [-0.34, -1.4, -2.06], "scale": [0.75, 0.75, 0.75]},
+    "firstperson_righthand": {"rotation": [-63, -23.4, -51.8], "translation": [-11.32, 4.49, 2.14], "scale": [0.52, 0.52, 0.52]},
+    "firstperson_lefthand": {"rotation": [-63, -23.4, -51.8], "translation": [-11.32, 4.49, 2.14], "scale": [0.52, 0.52, 0.52]},
 }
 
 
@@ -29,7 +36,9 @@ def build(g):
 
 
 def trumpet(g):
-    g.item("starcaller_trumpet", "Starcaller Trumpet", "Tromba Richiamastelle", extra={"display": HELD})
+    g.item("starcaller_trumpet", "Starcaller Trumpet", "Tromba Richiamastelle", extra={"display": HELD},
+           overrides=[{"predicate": {"lacuna:blowing": 1}, "model": mod("item/starcaller_trumpet_blowing")}])
+    g.item_model("starcaller_trumpet_blowing", {"parent": mod("item/starcaller_trumpet"), "display": BLOWING})
     g.shaped("starcaller_trumpet", ["ZCZ", "GHG", " G "],
              {"Z": "lacuna:zenithite_shard", "C": "lacuna:starlace_cloth", "G": "minecraft:gold_ingot", "H": "minecraft:goat_horn"},
              "lacuna:starcaller_trumpet", category="equipment", unlock="minecraft:goat_horn")

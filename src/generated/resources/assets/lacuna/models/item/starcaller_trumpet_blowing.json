@@ -1,0 +1,73 @@
+{
+  "display": {
+    "firstperson_lefthand": {
+      "rotation": [
+        -63,
+        -23.4,
+        -51.8
+      ],
+      "scale": [
+        0.52,
+        0.52,
+        0.52
+      ],
+      "translation": [
+        -11.32,
+        4.49,
+        2.14
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        -63,
+        -23.4,
+        -51.8
+      ],
+      "scale": [
+        0.52,
+        0.52,
+        0.52
+      ],
+      "translation": [
+        -11.32,
+        4.49,
+        2.14
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        164,
+        -60.8,
+        -180
+      ],
+      "scale": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "translation": [
+        -0.34,
+        -1.4,
+        -2.06
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        164,
+        -60.8,
+        180
+      ],
+      "scale": [
+        0.75,
+        0.75,
+        0.75
+      ],
+      "translation": [
+        -0.34,
+        -1.4,
+        -2.06
+      ]
+    }
+  },
+  "parent": "lacuna:item/starcaller_trumpet"
+}

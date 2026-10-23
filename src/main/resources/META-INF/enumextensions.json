@@ -1,0 +1,22 @@
+{
+  "entries": [
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "LACUNA_BAG_OPEN",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {"class": "com/lacuna/mod/client/pose/LacunaArmPoses", "field": "BAG_OPEN"}
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "LACUNA_BAG_CARRY",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {"class": "com/lacuna/mod/client/pose/LacunaArmPoses", "field": "BAG_CARRY"}
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "LACUNA_TRUMPET_BLOW",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {"class": "com/lacuna/mod/client/pose/LacunaArmPoses", "field": "TRUMPET_BLOW"}
+    }
+  ]
+}
