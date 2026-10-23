@@ -41,7 +41,9 @@ public final class TrumpetClient {
 
     private static void onClientSetup(FMLClientSetupEvent event) {
         event.enqueueWork(() -> SafeRun.run("item_properties", () -> ItemProperties.register(ModItems.STARCALLER_TRUMPET.get(),
-                Lacuna.id("blowing"), (stack, level, entity, seed) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F)));
+                Lacuna.id("blowing"), (stack, level, entity, seed) -> entity != null && entity.isUsingItem()
+                        // the held stack, not only getUseItem(): a slot update (wear) swaps the instance mid-use
+                        && (entity.getUseItem() == stack || entity.getItemInHand(entity.getUsedItemHand()) == stack) ? 1.0F : 0.0F)));
     }
 
     private static void onRegisterExtensions(RegisterClientExtensionsEvent event) {

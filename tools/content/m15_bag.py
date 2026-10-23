@@ -12,23 +12,23 @@ BAG = "comically_large_bag"
 # (from the vanilla hand base, then these transforms); the full one rides at the right edge, over the shoulder.
 GROUND = {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.65, 0.65, 0.65]}
 DISPLAY = {
-    "thirdperson_righthand": {"rotation": [149, 0, 180], "translation": [-6, -5.6, 2.66], "scale": [1.05, 1.05, 1.05]},
-    "thirdperson_lefthand": {"rotation": [149, 0, -180], "translation": [-6, -5.6, 2.66], "scale": [1.05, 1.05, 1.05]},
-    "firstperson_righthand": {"rotation": [-25, 0, 0], "translation": [-8.96, 0.12, -2.88], "scale": [0.85, 0.85, 0.85]},
-    "firstperson_lefthand": {"rotation": [-25, 0, 0], "translation": [-8.96, 0.12, -2.88], "scale": [0.85, 0.85, 0.85]},
+    "thirdperson_righthand": {"rotation": [133.3, -0, 180], "translation": [-6, -4.88, 3.56], "scale": [1.05, 1.05, 1.05]},
+    "thirdperson_lefthand": {"rotation": [133.3, 0, -180], "translation": [-6, -4.88, 3.56], "scale": [1.05, 1.05, 1.05]},
+    "firstperson_righthand": {"rotation": [-25, -0, -0], "translation": [-8.96, 0.32, -7.48], "scale": [1, 1, 1]},
+    "firstperson_lefthand": {"rotation": [-25, -0, 0], "translation": [-8.96, 0.32, -7.48], "scale": [1, 1, 1]},
     "ground": GROUND,
 }
 DISPLAY_FULL = {
-    "thirdperson_righthand": {"rotation": [116.4, -60.6, -82], "translation": [2.64, 3.2, 7.56], "scale": [1.05, 1.05, 1.05]},
-    "thirdperson_lefthand": {"rotation": [116.4, -60.6, -82], "translation": [2.64, 3.2, 7.56], "scale": [1.05, 1.05, 1.05]},
+    "thirdperson_righthand": {"rotation": [113.6, -53.6, -100], "translation": [1.85, 1.53, 8.92], "scale": [1.05, 1.05, 1.05]},
+    "thirdperson_lefthand": {"rotation": [113.6, -53.6, -100], "translation": [1.85, 1.53, 8.92], "scale": [1.05, 1.05, 1.05]},
     "firstperson_righthand": {"rotation": [0, 35, 20], "translation": [1.24, 7.72, 3.12], "scale": [0.95, 0.95, 0.95]},
     "firstperson_lefthand": {"rotation": [0, 35, 20], "translation": [1.24, 7.72, 3.12], "scale": [0.95, 0.95, 0.95]},
     "ground": GROUND,
 }
 # stuffed: a bit bigger, sitting a little further back and up
 DISPLAY_STUFFED = {
-    "thirdperson_righthand": {"rotation": [116.4, -60.6, -82], "translation": [3.05, 4.31, 7.55], "scale": [1.2, 1.2, 1.2]},
-    "thirdperson_lefthand": {"rotation": [116.4, -60.6, -82], "translation": [3.05, 4.31, 7.55], "scale": [1.2, 1.2, 1.2]},
+    "thirdperson_righthand": {"rotation": [113.6, -53.6, -100], "translation": [2.4, 2.46, 9.11], "scale": [1.2, 1.2, 1.2]},
+    "thirdperson_lefthand": {"rotation": [113.6, -53.6, -100], "translation": [2.4, 2.46, 9.11], "scale": [1.2, 1.2, 1.2]},
     "firstperson_righthand": {"rotation": [0, 35, 20], "translation": [1.64, 8.12, 3.12], "scale": [1.08, 1.08, 1.08]},
     "firstperson_lefthand": {"rotation": [0, 35, 20], "translation": [1.64, 8.12, 3.12], "scale": [1.08, 1.08, 1.08]},
     "ground": GROUND,

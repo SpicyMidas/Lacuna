@@ -3,35 +3,35 @@
     "firstperson_lefthand": {
       "rotation": [
         0,
-        75,
-        -5
+        -40,
+        -2.9
       ],
       "scale": [
-        0.68,
-        0.68,
-        0.68
+        0.6,
+        0.6,
+        0.6
       ],
       "translation": [
-        1.13,
-        2.4,
-        1.13
+        1.04,
+        2.02,
+        -1.98
       ]
     },
     "firstperson_righthand": {
       "rotation": [
         0,
-        -75,
-        5
+        -40,
+        -2.9
       ],
       "scale": [
-        0.68,
-        0.68,
-        0.68
+        0.6,
+        0.6,
+        0.6
       ],
       "translation": [
-        1.13,
-        2.4,
-        1.13
+        1.04,
+        2.02,
+        -1.98
       ]
     },
     "thirdperson_lefthand": {

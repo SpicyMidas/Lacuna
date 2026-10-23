@@ -9,16 +9,16 @@ from content.m12_polish import adv, code
 # lips with both hands, mouthpiece at the mouth; the third-person values are solved against the arm angles of
 # client/pose/LacunaArmPoses.TRUMPET_BLOW (change both together).
 HELD = {
-    "thirdperson_righthand": {"rotation": [0, -90, -90], "translation": [0, -2, 0.5], "scale": [0.85, 0.85, 0.85]},
-    "thirdperson_lefthand": {"rotation": [0, 90, 90], "translation": [0, -2, 0.5], "scale": [0.85, 0.85, 0.85]},
-    "firstperson_righthand": {"rotation": [0, -75, 5], "translation": [1.13, 2.4, 1.13], "scale": [0.68, 0.68, 0.68]},
-    "firstperson_lefthand": {"rotation": [0, 75, -5], "translation": [1.13, 2.4, 1.13], "scale": [0.68, 0.68, 0.68]},
+    "thirdperson_righthand": {"rotation": [-0, -90, -90], "translation": [-0, -2, 0.5], "scale": [0.85, 0.85, 0.85]},
+    "thirdperson_lefthand": {"rotation": [-0, 90, 90], "translation": [0, -2, 0.5], "scale": [0.85, 0.85, 0.85]},
+    "firstperson_righthand": {"rotation": [-0, -40, -2.9], "translation": [1.04, 2.02, -1.98], "scale": [0.6, 0.6, 0.6]},
+    "firstperson_lefthand": {"rotation": [-0, -40, -2.9], "translation": [1.04, 2.02, -1.98], "scale": [0.6, 0.6, 0.6]},
 }
 BLOWING = {
-    "thirdperson_righthand": {"rotation": [170.9, -61.4, 180], "translation": [-0.45, 0.33, -1.96], "scale": [0.75, 0.75, 0.75]},
-    "thirdperson_lefthand": {"rotation": [170.9, -61.4, -180], "translation": [-0.45, 0.33, -1.96], "scale": [0.75, 0.75, 0.75]},
-    "firstperson_righthand": {"rotation": [-68.2, -17, -53.6], "translation": [-12.14, 5.49, 3.58], "scale": [0.7, 0.7, 0.7]},
-    "firstperson_lefthand": {"rotation": [-68.2, -17, -53.6], "translation": [-12.14, 5.49, 3.58], "scale": [0.7, 0.7, 0.7]},
+    "thirdperson_righthand": {"rotation": [164, -60.8, 180], "translation": [-0.34, -1.4, -2.06], "scale": [0.75, 0.75, 0.75]},
+    "thirdperson_lefthand": {"rotation": [164, -60.8, -180], "translation": [-0.34, -1.4, -2.06], "scale": [0.75, 0.75, 0.75]},
+    "firstperson_righthand": {"rotation": [-65, -20.9, -52.5], "translation": [-11.69, 4.78, 2.63], "scale": [0.6, 0.6, 0.6]},
+    "firstperson_lefthand": {"rotation": [-65, -20.9, -52.5], "translation": [-11.69, 4.78, 2.63], "scale": [0.6, 0.6, 0.6]},
 }
 
 

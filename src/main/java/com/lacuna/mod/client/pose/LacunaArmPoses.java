@@ -27,10 +27,10 @@ public final class LacunaArmPoses {
             (IArmPoseTransformer) LacunaArmPoses::trumpetBlow);
 
     // right-hand hold, radians (xRot, yRot, zRot); see the class comment
-    static final float[] OPEN = {-1.85F, 0.0F, 0.0F};
-    static final float[] CARRY_HOLDING = {-2.68F, 0.01F, 0.0F};
-    static final float[] CARRY_FREE = {-1.75F, 0.89F, 0.0F};
-    static final float[] BLOW_RIGHT = {-1.73F, -0.5F, 0.0F};
+    static final float[] OPEN = {-1.95F, 0.0F, 0.0F};
+    static final float[] CARRY_HOLDING = {-2.73F, 0.15F, 0.0F};
+    static final float[] CARRY_FREE = {-1.86F, 1.17F, 0.0F};
+    static final float[] BLOW_RIGHT = {-1.85F, -0.51F, 0.0F};
 
     private LacunaArmPoses() {}
 
