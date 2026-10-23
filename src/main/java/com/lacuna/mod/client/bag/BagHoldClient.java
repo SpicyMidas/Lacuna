@@ -39,9 +39,9 @@ import org.joml.Vector3f;
  */
 public final class BagHoldClient {
     // first person, empty bag: where the hands grip the rim of the sack (view space, blocks; right arm, x mirrored)
-    private static final Vector3f HAND = new Vector3f(0.36F, -0.31F, -1.28F);
+    private static final Vector3f HAND = new Vector3f(0.36F, -0.17F, -1.28F);
     // and where the arms come from (the shoulders, just off the bottom corners of the view)
-    private static final Vector3f SHOULDER = new Vector3f(0.75F, -1.0F, -0.45F);
+    private static final Vector3f SHOULDER = new Vector3f(0.75F, -0.95F, -0.45F);
 
     private BagHoldClient() {}
 

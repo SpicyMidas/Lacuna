@@ -17,8 +17,8 @@ HELD = {
 BLOWING = {
     "thirdperson_righthand": {"rotation": [164, -60.8, 180], "translation": [-0.34, -1.4, -2.06], "scale": [0.75, 0.75, 0.75]},
     "thirdperson_lefthand": {"rotation": [164, -60.8, -180], "translation": [-0.34, -1.4, -2.06], "scale": [0.75, 0.75, 0.75]},
-    "firstperson_righthand": {"rotation": [-65, -20.9, -52.5], "translation": [-11.69, 4.78, 2.63], "scale": [0.6, 0.6, 0.6]},
-    "firstperson_lefthand": {"rotation": [-65, -20.9, -52.5], "translation": [-11.69, 4.78, 2.63], "scale": [0.6, 0.6, 0.6]},
+    "firstperson_righthand": {"rotation": [-63, -23.4, -51.8], "translation": [-11.32, 4.49, 2.14], "scale": [0.52, 0.52, 0.52]},
+    "firstperson_lefthand": {"rotation": [-63, -23.4, -51.8], "translation": [-11.32, 4.49, 2.14], "scale": [0.52, 0.52, 0.52]},
 }
 
 
