@@ -10,6 +10,11 @@
   inside it and look straight up. Still depth-correct against clouds and terrain, dimming gently with distance.
 - **Item details** now show while holding **Shift** (was Space); rebindable under Controls → Lacuna.
 - **Totem of Confusion** works with a plain right click, like the Totem of Banishing (no more raising it like a horn).
+- **Starcaller Trumpet pose:** held across the fist, square to the forearm and gripped at its middle; when blown,
+  both hands raise it level to the lips.
+- **Comically Large Bag poses:** empty, it's held open in front of you with both hands, ready to catch something; full
+  (or stuffed, a bit bigger) it's slung over your right shoulder with both hands, cartoon-thief style. In first person
+  the empty bag hangs between your two hands and the full one peeks over your shoulder in the top corner.
 <!-- rev12 -->
 
 ## 0.11.0 — revision 11 (player feedback)

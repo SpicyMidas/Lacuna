@@ -21,16 +21,16 @@ DISPLAY = {
 DISPLAY_FULL = {
     "thirdperson_righthand": {"rotation": [113.6, -53.6, -100], "translation": [1.85, 1.53, 8.92], "scale": [1.05, 1.05, 1.05]},
     "thirdperson_lefthand": {"rotation": [113.6, -53.6, -100], "translation": [1.85, 1.53, 8.92], "scale": [1.05, 1.05, 1.05]},
-    "firstperson_righthand": {"rotation": [-0, 15, 20], "translation": [1.64, 11.82, 1.52], "scale": [0.7, 0.7, 0.7]},
-    "firstperson_lefthand": {"rotation": [-0, 15, 20], "translation": [1.64, 11.82, 1.52], "scale": [0.7, 0.7, 0.7]},
+    "firstperson_righthand": {"rotation": [-0, 15, 20], "translation": [3.2, 13.2, 1.52], "scale": [0.45, 0.45, 0.45]},
+    "firstperson_lefthand": {"rotation": [-0, 15, 20], "translation": [3.2, 13.2, 1.52], "scale": [0.45, 0.45, 0.45]},
     "ground": GROUND,
 }
 # stuffed: a bit bigger, sitting a little further back and up
 DISPLAY_STUFFED = {
     "thirdperson_righthand": {"rotation": [113.6, -53.6, -100], "translation": [2.4, 2.46, 9.11], "scale": [1.2, 1.2, 1.2]},
     "thirdperson_lefthand": {"rotation": [113.6, -53.6, -100], "translation": [2.4, 2.46, 9.11], "scale": [1.2, 1.2, 1.2]},
-    "firstperson_righthand": {"rotation": [-0, 15, 20], "translation": [2.04, 12.22, 1.12], "scale": [0.8, 0.8, 0.8]},
-    "firstperson_lefthand": {"rotation": [-0, 15, 20], "translation": [2.04, 12.22, 1.12], "scale": [0.8, 0.8, 0.8]},
+    "firstperson_righthand": {"rotation": [-0, 15, 20], "translation": [3.4, 13.4, 1.12], "scale": [0.52, 0.52, 0.52]},
+    "firstperson_lefthand": {"rotation": [-0, 15, 20], "translation": [3.4, 13.4, 1.12], "scale": [0.52, 0.52, 0.52]},
     "ground": GROUND,
 }
 
