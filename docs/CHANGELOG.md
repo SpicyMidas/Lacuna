@@ -15,6 +15,8 @@
 - **Comically Large Bag poses:** empty, it's held open in front of you with both hands, ready to catch something; full
   (or stuffed, a bit bigger) it's slung over your right shoulder with both hands, cartoon-thief style. In first person
   the empty bag hangs between your two hands and the full one peeks over your shoulder in the top corner.
+- **Showroom:** `/function lacuna:showroom` in a flat creative world builds a hall with a station for every Lacuna
+  item, in order: a sign saying what to do, a chest with the item and what it needs, and something to try it on.
 <!-- rev12 -->
 
 ## 0.11.0 — revision 11 (player feedback)
