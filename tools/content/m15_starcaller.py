@@ -39,9 +39,7 @@ def trumpet(g):
     g.item("starcaller_trumpet", "Starcaller Trumpet", "Tromba Richiamastelle", extra={"display": HELD},
            overrides=[{"predicate": {"lacuna:blowing": 1}, "model": mod("item/starcaller_trumpet_blowing")}])
     g.item_model("starcaller_trumpet_blowing", {"parent": mod("item/starcaller_trumpet"), "display": BLOWING})
-    g.shaped("starcaller_trumpet", ["ZCZ", "GHG", " G "],
-             {"Z": "lacuna:zenithite_shard", "C": "lacuna:starlace_cloth", "G": "minecraft:gold_ingot", "H": "minecraft:goat_horn"},
-             "lacuna:starcaller_trumpet", category="equipment", unlock="minecraft:goat_horn")
+    # a relic: no recipe (sources in m19_progression and docs/PROGRESSION.md)
     g.tag("item", "minecraft:enchantable/durability", mod("starcaller_trumpet"))
     g.name("item.lacuna.starcaller_trumpet.lore", "Sound it, and a star answers.", "Suonala, e una stella risponde.")
     g.name("item.lacuna.starcaller_trumpet.use", "Use: call a falling star down where you look (up to %s blocks)",
@@ -67,8 +65,7 @@ def star_rock(g):
     # Molten: animated, drawn full bright by the block itself (emissiveRendering, like magma)
     g.cube("molten_star_rock", "Molten Star Rock", "Roccia stellare fusa", loot=molten_loot())
     # Prime: the hand-drawn animated star block (tools/art/hand/block/prime_star_rock.png + .mcmeta)
-    g.cube("prime_star_rock", "Prime Star Rock", "Roccia stellare viva",
-           loot=loot_ore("prime_star_rock", "lacuna:star_fragment", 1, 3, "uniform"))
+    g.cube("prime_star_rock", "Prime Star Rock", "Roccia stellare viva", loot=prime_loot())
     g.cube("extinguished_star_rock", "Extinguished Block of the Star", "Blocco spento della stella",
            loot=loot_ore("extinguished_star_rock", "lacuna:star_fragment", 0, 1, "none"))
     for bid in ("molten_star_rock", "prime_star_rock", "extinguished_star_rock"):
@@ -81,13 +78,22 @@ def star_rock(g):
            "subito nell'acqua o sotto la pioggia. Scavata ora: solo 1-2 frammenti di stella, di rado un frammento di "
            "brillamento solare.")
     g.name("item.lacuna.prime_star_rock.tip",
-           "The star at its best: mine it with a pickaxe for 1-3 Star Fragments (Fortune helps). It chimes softly, and "
-           "burns out after about three days.",
-           "La stella al suo meglio: scavala con un piccone per 1-3 frammenti di stella (Fortuna aiuta). Tintinna piano e "
-           "si spegne dopo circa tre giorni.")
+           "The star at its best: mine it with a pickaxe for 1-3 Star Fragments (Fortune helps) and, very rarely, a "
+           "Lacunar Quintessence. It chimes softly, and burns out after about three days.",
+           "La stella al suo meglio: scavala con un piccone per 1-3 frammenti di stella (Fortuna aiuta) e, molto di rado, "
+           "una Quintessenza lacunare. Tintinna piano e si spegne dopo circa tre giorni.")
     g.name("item.lacuna.extinguished_star_rock.tip",
            "A spent star, grey and cratered like the Moon. Mined, it gives at most one Star Fragment.",
            "Una stella esaurita, grigia e piena di crateri come la Luna. Scavata, dà al massimo un frammento di stella.")
+
+
+def prime_loot():
+    """1-3 Star Fragments (Fortune helps), plus a 1 % Lacunar Quintessence (not with Silk Touch, see m19)."""
+    table = loot_ore("prime_star_rock", "lacuna:star_fragment", 1, 3, "uniform")
+    table["pools"].append(pool([{"type": "minecraft:item", "name": "lacuna:lacunar_quintessence"}], conditions=[
+        {"condition": "minecraft:inverted", "term": SILK}, {"condition": "minecraft:random_chance", "chance": 0.01},
+        SURVIVES]))
+    return table
 
 
 def molten_loot():

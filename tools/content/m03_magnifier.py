@@ -42,7 +42,5 @@ def build(g):
            "La luce del sole ricorda dove le è stato detto di andare.")
     g.name("item.lacuna.divine_magnifying_glass.use", "Hold use: focus a burning beam of light.",
            "Tieni premuto: concentra un raggio di luce ardente.")
-    g.shaped("divine_magnifying_glass", [" G ", "GDG", " S "],
-             {"G": "minecraft:gold_ingot", "D": "lacuna:divine_glass", "S": "minecraft:stick"},
-             "lacuna:divine_magnifying_glass", category="equipment", unlock="lacuna:divine_glass")
+    # a relic: no recipe (sources in m19_progression and docs/PROGRESSION.md)
     g.tag("block", "lacuna:not_meltable", "minecraft:blue_ice")

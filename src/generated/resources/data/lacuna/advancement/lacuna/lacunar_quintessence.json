@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "quintessence": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:lacunar_quintessence"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.lacunar_quintessence.description"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:lacunar_quintessence"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.lacunar_quintessence.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "quintessence"
+    ]
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 82
+        },
+        {
+          "name": "lacuna:null_lantern",
+          "type": "minecraft:item",
+          "weight": 6
+        },
+        {
+          "name": "lacuna:whisperbone_flute",
+          "type": "minecraft:item",
+          "weight": 6
+        },
+        {
+          "name": "lacuna:echo_dagger",
+          "type": "minecraft:item",
+          "weight": 4
+        },
+        {
+          "name": "lacuna:eclipser",
+          "type": "minecraft:item",
+          "weight": 2
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "lacuna:extra/chests/ancient_city_relics",
+  "type": "minecraft:chest"
+}

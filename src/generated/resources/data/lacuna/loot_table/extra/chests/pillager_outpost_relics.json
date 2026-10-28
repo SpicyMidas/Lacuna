@@ -1,0 +1,26 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 88
+        },
+        {
+          "name": "lacuna:heartwood_bow",
+          "type": "minecraft:item",
+          "weight": 7
+        },
+        {
+          "name": "lacuna:starcaller_trumpet",
+          "type": "minecraft:item",
+          "weight": 5
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "lacuna:extra/chests/pillager_outpost_relics",
+  "type": "minecraft:chest"
+}

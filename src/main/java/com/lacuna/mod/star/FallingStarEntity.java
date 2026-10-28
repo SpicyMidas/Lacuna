@@ -404,6 +404,9 @@ public class FallingStarEntity extends Projectile {
             fires(server, ground);
         }
         restStar(server, at, ground);
+        if (natural) {
+            com.lacuna.mod.essence.Quintessence.onNaturalStarLanded(server, at);
+        }
         sounds(server, at, wet);
         LacunaFx.send(server, at, 160.0, FxPayload.at(Starfall.FX_IMPACT, at).withEntity(getId())
                 .withParams(Starfall.BLAST_RADIUS, cratered ? 1.0F : 0.0F, wet ? 1.0F : 0.0F));

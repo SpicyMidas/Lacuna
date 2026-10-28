@@ -57,6 +57,43 @@
         }
       ],
       "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "predicates": {
+                "minecraft:enchantments": [
+                  {
+                    "enchantments": "minecraft:silk_touch",
+                    "levels": {
+                      "min": 1
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "chance": 0.01,
+          "condition": "minecraft:random_chance"
+        },
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "name": "lacuna:lacunar_quintessence",
+          "type": "minecraft:item"
+        }
+      ],
+      "rolls": 1.0
     }
   ],
   "random_sequence": "lacuna:blocks/prime_star_rock",

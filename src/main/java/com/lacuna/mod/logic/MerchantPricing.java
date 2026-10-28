@@ -8,9 +8,11 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Last Merchant stock (spec M10), pure and unit-tested. The merchant buys raw ores/ingots for currency and sells
- * divine glass shards, rubies, chronal shards and echo shards. The ore families the nearest player mined most get
- * buy offers, and the top one an extra "bulk buy". Sell prices scale with the nearest village's price index (M11d).
+ * Last Merchant stock (spec M10), pure and unit-tested. The merchant buys raw ores/ingots for rubies and sells
+ * materials (divine glass shards, chronal shards, echo shards...), two relics drawn at random, the Sun's Fury forge
+ * and sometimes a Lacunar Quintessence, all for rubies: rubies are his only currency, and what relics cost. The ore
+ * families the nearest player mined most get buy offers, and the top one an extra "bulk buy". Sell prices scale with
+ * the nearest village's price index (M11d).
  */
 public final class MerchantPricing {
     /** An offer: {@code costItem x costCount (+ cost2) -> result x resultCount}, ids are "namespace:path". */
@@ -77,12 +79,67 @@ public final class MerchantPricing {
     };
 
     /**
-     * The Last Merchant's offers: he only deals in {@code currency} (rubies). He buys the families the player mined most
-     * (and a bulk lot of the top one) plus two ingots, paying in rubies, and sells his catalog for rubies. The currency
-     * itself is never bought or sold.
+     * Relics he may carry (relics are never crafted, docs/PROGRESSION.md): item, price in rubies. Each visit he brings
+     * {@link #RELIC_OFFERS} of them, drawn at random, one of each; a price above 64 is paid as 64 rubies plus ruby blocks
+     * (9 rubies each, rounded up). Totems are never sold: only a Lacunar Quintessence makes one.
      */
+    public static final Object[][] RELICS = {
+            {"lacuna:divine_magnifying_glass", 32},
+            {"lacuna:chronoshard_pocket_watch", 32},
+            {"lacuna:whisperbone_flute", 32},
+            {"lacuna:heartwood_bow", 40},
+            {"lacuna:pyrrhic_scepter", 40},
+            {"lacuna:echo_dagger", 40},
+            {"lacuna:mirror_of_recursion", 40},
+            {"lacuna:starcaller_trumpet", 40},
+            {"lacuna:null_lantern", 48},
+            {"lacuna:tidecaller_sickle", 48},
+            {"lacuna:quickening_wand", 48},
+            {"lacuna:eclipser", 82},
+            {"lacuna:gravemaw_greatsword", 82},
+            {"lacuna:ember_triangle", 82},
+    };
+    public static final int RELIC_OFFERS = 2;
+    /** Always on offer: he sets a Solar Flare into Sun's Fury for this many rubies (Sun's Fury has no recipe). */
+    public static final int SUNS_FURY_FORGE_PRICE = 32;
+    /** One merchant in five carries a single Lacunar Quintessence, for 100 rubies (64 rubies + 4 ruby blocks). */
+    public static final float QUINTESSENCE_CHANCE = 0.2F;
+    public static final int QUINTESSENCE_PRICE = 100;
+    public static final String RUBY = "lacuna:ruby";
+    public static final String RUBY_BLOCK = "lacuna:ruby_block";
+    public static final int RUBIES_PER_BLOCK = 9;
+
+    /**
+     * {@code price} rubies (scaled by the price index) as one or two stacks: up to 64 of the currency, the rest in ruby
+     * blocks when the currency is the ruby (otherwise capped at 64). Returns {count, blockCount}.
+     */
+    public static int[] split(int price, double priceIndex, String currency) {
+        int total = Math.max(1, (int) Math.ceil(price * Math.max(0.5, priceIndex)));
+        if (total <= 64 || !RUBY.equals(currency)) {
+            return new int[] {Math.min(64, total), 0};
+        }
+        return new int[] {64, Math.min(64, (total - 64 + RUBIES_PER_BLOCK - 1) / RUBIES_PER_BLOCK)};
+    }
+
+    private static Offer sale(String currency, int price, double priceIndex, String item, int count, int maxUses) {
+        int[] cost = split(price, priceIndex, currency);
+        return new Offer(currency, cost[0], cost[1] > 0 ? RUBY_BLOCK : null, cost[1], item, count, maxUses);
+    }
+
+    /** {@link #build(Map, String, double, Random, boolean, boolean)} without a Quintessence on offer. */
     public static List<Offer> build(Map<String, Integer> minedByFamily, String currency, double priceIndex, Random random,
                                     boolean solarFragment) {
+        return build(minedByFamily, currency, priceIndex, random, solarFragment, false);
+    }
+
+    /**
+     * The Last Merchant's offers: he only deals in {@code currency} (rubies). He buys the families the player mined most
+     * (and a bulk lot of the top one) plus two ingots, paying in rubies, and sells his catalog for rubies; then, also for
+     * rubies, a Solar Flare Fragment ({@code solarFragment}), the Sun's Fury forge, two relics drawn at random and, now and
+     * then, a Lacunar Quintessence ({@code quintessence}). The currency itself is never bought or sold.
+     */
+    public static List<Offer> build(Map<String, Integer> minedByFamily, String currency, double priceIndex, Random random,
+                                    boolean solarFragment, boolean quintessence) {
         List<Offer> offers = new ArrayList<>();
         List<String> ranked = new ArrayList<>();
         for (Map.Entry<String, Object[]> e : FAMILIES.entrySet()) {
@@ -126,6 +183,18 @@ public final class MerchantPricing {
         }
         if (solarFragment) {
             offers.add(new Offer(currency, 16, "lacuna:divine_glass_shard", 8, "lacuna:solar_flare_fragment", 1, 1));
+        }
+        // the forge: rubies and a Solar Flare (four fragments, assembled) for Sun's Fury
+        offers.add(new Offer(currency, scaled(SUNS_FURY_FORGE_PRICE, priceIndex), "lacuna:solar_flare", 1, "lacuna:suns_fury", 1, 1));
+        // two relics, drawn at random, one of each
+        List<Object[]> relics = new ArrayList<>(List.of(RELICS));
+        java.util.Collections.shuffle(relics, random);
+        for (int i = 0; i < Math.min(RELIC_OFFERS, relics.size()); i++) {
+            Object[] r = relics.get(i);
+            offers.add(sale(currency, (Integer) r[1], priceIndex, (String) r[0], 1, 1));
+        }
+        if (quintessence) {
+            offers.add(sale(currency, QUINTESSENCE_PRICE, priceIndex, "lacuna:lacunar_quintessence", 1, 1));
         }
         return offers;
     }

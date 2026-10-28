@@ -131,7 +131,7 @@
       "entries": [
         {
           "type": "minecraft:empty",
-          "weight": 975
+          "weight": 902
         },
         {
           "name": "lacuna:solar_flare_fragment",
@@ -147,6 +147,66 @@
           "name": "lacuna:exilite_shard",
           "type": "minecraft:item",
           "weight": 12
+        },
+        {
+          "name": "lacuna:lacunar_quintessence",
+          "type": "minecraft:item",
+          "weight": 10
+        },
+        {
+          "name": "lacuna:divine_magnifying_glass",
+          "type": "minecraft:item",
+          "weight": 6
+        },
+        {
+          "name": "lacuna:quickening_wand",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "name": "lacuna:mirror_of_recursion",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "name": "lacuna:chronoshard_pocket_watch",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "name": "lacuna:null_lantern",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "name": "lacuna:pyrrhic_scepter",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "name": "lacuna:heartwood_bow",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "name": "lacuna:whisperbone_flute",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "name": "lacuna:gravemaw_greatsword",
+          "type": "minecraft:item",
+          "weight": 4
+        },
+        {
+          "name": "lacuna:eclipser",
+          "type": "minecraft:item",
+          "weight": 3
+        },
+        {
+          "name": "lacuna:ember_triangle",
+          "type": "minecraft:item",
+          "weight": 3
         }
       ],
       "rolls": 1.0

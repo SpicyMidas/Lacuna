@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:chests/desert_pyramid"
+    }
+  ],
+  "table": "lacuna:extra/chests/desert_pyramid_relics",
+  "type": "neoforge:add_table"
+}

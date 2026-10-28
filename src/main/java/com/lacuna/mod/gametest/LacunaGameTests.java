@@ -416,12 +416,12 @@ public final class LacunaGameTests {
         var merchant = helper.spawn(ModEntities.LAST_MERCHANT.get(), CENTER);
         var offers = merchant.getOffers();
         check(helper, offers.size() >= 9, "merchant should stock at least 9 offers, has " + offers.size());
-        var currency = com.lacuna.mod.merchant.CurrencyService.currency();
-        for (var good : List.of(ModItems.DIVINE_GLASS_SHARD.get(), ModItems.RUBY.get(), ModItems.CHRONAL_SHARD.get(), Items.ECHO_SHARD)) {
+        var currency = ModItems.RUBY.get(); // the Last Merchant deals in rubies only
+        for (var good : List.of(ModItems.DIVINE_GLASS_SHARD.get(), ModItems.CHRONAL_SHARD.get(), Items.ECHO_SHARD, ModItems.SUNS_FURY.get())) {
             check(helper, offers.stream().anyMatch(o -> o.getResult().is(good) && o.getBaseCostA().is(currency)),
-                    "sells " + good + " for the current currency");
+                    "sells " + good + " for rubies");
         }
-        check(helper, offers.stream().anyMatch(o -> o.getResult().is(currency)), "buys materials for currency");
+        check(helper, offers.stream().anyMatch(o -> o.getResult().is(currency)), "buys materials for rubies");
         helper.succeed();
     }
 

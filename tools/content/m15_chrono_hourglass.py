@@ -104,9 +104,9 @@ def build(g):
         "minecraft:big_dripleaf", "minecraft:big_dripleaf_stem", "minecraft:sculk_shrieker", "minecraft:piston",
         "minecraft:sticky_piston", "minecraft:moving_piston", "minecraft:piston_head")])
 
-    g.shaped(BID, ["GUG", "#C#", "GSG"],
-             {"G": "minecraft:gold_ingot", "U": "lacuna:umbral_steel_ingot", "#": "minecraft:glass",
-              "C": "lacuna:chronal_shard", "S": "minecraft:sand"},
+    # still craftable (it runs only on chronal shards), but its frame now holds two of them: one per bulb
+    g.shaped(BID, ["GCG", "#S#", "GCG"],
+             {"G": "minecraft:gold_ingot", "#": "minecraft:glass", "C": "lacuna:chronal_shard", "S": "minecraft:sand"},
              mod(BID), category="misc", unlock="lacuna:chronal_shard")
 
     g.asset("particles/chrono_tick", {"textures": [f"lacuna:chrono_tick_{i}" for i in range(4)]})

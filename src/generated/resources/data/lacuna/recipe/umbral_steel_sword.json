@@ -2,16 +2,16 @@
   "category": "equipment",
   "key": {
     "R": {
-      "item": "lacuna:umbral_steel_ingot"
+      "item": "lacuna:ruby"
     },
-    "S": {
-      "item": "minecraft:stick"
+    "U": {
+      "item": "lacuna:umbral_steel_ingot"
     }
   },
   "pattern": [
-    "R",
-    "R",
-    "S"
+    "U",
+    "U",
+    "R"
   ],
   "result": {
     "count": 1,

@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:entities/piglin_brute"
+    }
+  ],
+  "table": "lacuna:extra/piglin_brute_relic",
+  "type": "neoforge:add_table"
+}

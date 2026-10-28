@@ -78,6 +78,31 @@
         "min": 2.0,
         "type": "minecraft:uniform"
       }
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 92
+        },
+        {
+          "name": "lacuna:divine_magnifying_glass",
+          "type": "minecraft:item",
+          "weight": 3
+        },
+        {
+          "name": "lacuna:chronoshard_pocket_watch",
+          "type": "minecraft:item",
+          "weight": 3
+        },
+        {
+          "name": "lacuna:comically_large_bag",
+          "type": "minecraft:item",
+          "weight": 2
+        }
+      ],
+      "rolls": 1.0
     }
   ],
   "random_sequence": "lacuna:chests/village_mint",

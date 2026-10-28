@@ -27,8 +27,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 
 /**
- * The Last Merchant (spec M10): a wandering trader who trades in mined materials. Extends WanderingTrader for its
- * model, goals, despawn timer and trading UI; only the stock differs. Never saved (entity type is noSave).
+ * The Last Merchant (spec M10): a wandering trader who trades in mined materials and relics, for rubies only
+ * ({@link MerchantPricing}). Extends WanderingTrader for its model, goals, despawn timer and trading UI; only the stock
+ * differs. Never saved (entity type is noSave).
  */
 public class LastMerchant extends WanderingTrader {
     private double priceIndex = 1.0;
@@ -54,9 +55,11 @@ public class LastMerchant extends WanderingTrader {
             mined = recentlyMined(sp);
         }
         boolean fragment = random.nextFloat() < Balance.MERCHANT_FRAGMENT_CHANCE;
-        // the Last Merchant deals only in rubies
-        String currency = "lacuna:ruby";
-        List<MerchantPricing.Offer> plan = MerchantPricing.build(mined, currency, priceIndex, new Random(random.nextLong()), fragment);
+        boolean quintessence = random.nextFloat() < MerchantPricing.QUINTESSENCE_CHANCE;
+        // the Last Merchant deals only in rubies (relics and the Quintessence too; above 64, partly in ruby blocks)
+        String currency = MerchantPricing.RUBY;
+        List<MerchantPricing.Offer> plan = MerchantPricing.build(mined, currency, priceIndex, new Random(random.nextLong()),
+                fragment, quintessence);
         for (MerchantPricing.Offer o : plan) {
             Item cost = item(o.costItem());
             Item result = item(o.resultItem());

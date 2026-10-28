@@ -101,7 +101,13 @@ def civic_blocks(g):
              "functions": [{"function": "minecraft:set_count", "add": False, "count": {"type": "minecraft:uniform", "min": 1.0, "max": 3.0}}]},
             {"type": "minecraft:item", "name": "minecraft:gold_nugget", "weight": 2,
              "functions": [{"function": "minecraft:set_count", "add": False, "count": {"type": "minecraft:uniform", "min": 2.0, "max": 7.0}}]},
-            {"type": "minecraft:item", "name": mod("ruby"), "weight": 1}]}]})
+            {"type": "minecraft:item", "name": mod("ruby"), "weight": 1}]},
+        # one roll for the treasury's valuables (weights out of 100): a coiner's lens, a pocket watch, a money bag
+        {"rolls": 1.0, "bonus_rolls": 0.0, "entries": [
+            {"type": "minecraft:empty", "weight": 92},
+            {"type": "minecraft:item", "name": mod("divine_magnifying_glass"), "weight": 3},
+            {"type": "minecraft:item", "name": mod("chronoshard_pocket_watch"), "weight": 3},
+            {"type": "minecraft:item", "name": mod("comically_large_bag"), "weight": 2}]}]})
 
 
 def civic_pools(g):

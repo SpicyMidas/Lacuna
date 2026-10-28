@@ -5,6 +5,16 @@ from content import worldgen as wg
 FL = "lacuna:"
 HORIZONTAL = {"north": 0, "east": 90, "south": 180, "west": 270}
 
+# the Sunken Bell Tower chest's rare roll, weights out of 100 (the rest is nothing; the heart of the sea keeps its 2 %)
+BELL_RARE = [("minecraft:heart_of_the_sea", 2), ("lacuna:lacunar_quintessence", 12), ("lacuna:tidecaller_sickle", 6),
+             ("lacuna:starcaller_trumpet", 5), ("lacuna:chronoshard_pocket_watch", 4), ("lacuna:whisperbone_flute", 4),
+             ("lacuna:suns_fury", 2)]
+# the Mirror Hoard's relic roll: always one relic, weights out of 100 (the Reflection itself drops a Quintessence)
+HOARD_RELICS = [("lacuna:mirror_of_recursion", 14), ("lacuna:eclipser", 10), ("lacuna:quickening_wand", 10),
+                ("lacuna:echo_dagger", 9), ("lacuna:chronoshard_pocket_watch", 9), ("lacuna:divine_magnifying_glass", 9),
+                ("lacuna:gravemaw_greatsword", 8), ("lacuna:null_lantern", 8), ("lacuna:pyrrhic_scepter", 7),
+                ("lacuna:ember_triangle", 6), ("lacuna:whisperbone_flute", 6), ("lacuna:suns_fury", 4)]
+
 
 def build(g):
     biome_blocks(g)
@@ -254,8 +264,8 @@ def bell_tower(g):
                        wg.loot_entry("minecraft:gold_ingot", 10, 1, 3), wg.loot_entry("minecraft:iron_ingot", 12, 1, 4),
                        wg.loot_entry("minecraft:nautilus_shell", 5), wg.loot_entry("lacuna:chronal_shard", 3),
                        wg.loot_entry("minecraft:copper_ingot", 12, 2, 6)], 3, 6),
-        {"bonus_rolls": 0.0, "rolls": 1.0, "entries": [{"type": "minecraft:empty", "weight": 49},
-                                                        {"type": "minecraft:item", "name": "minecraft:heart_of_the_sea", "weight": 1}]}]))
+        {"bonus_rolls": 0.0, "rolls": 1.0, "entries": [{"type": "minecraft:empty", "weight": 100 - sum(w for _, w in BELL_RARE)}]
+         + [wg.loot_entry(i, w) for i, w in BELL_RARE]}]))
     g.name("lacuna.bell.reveal", "The bell's toll echoes through the stone: %s ores answer.",
            "Il rintocco della campana attraversa la pietra: rispondono %s minerali.")
     g.name("lacuna.bell.cooldown", "The bell is still humming (%ss).", "La campana vibra ancora (%ss).")
@@ -336,7 +346,9 @@ def labyrinth(g):
                        wg.loot_entry("minecraft:amethyst_shard", 10, 2, 6)], 4, 7),
         {"bonus_rolls": 0.0, "rolls": 1.0, "entries": [
             {"type": "minecraft:empty", "weight": 9},
-            {"type": "minecraft:item", "name": "lacuna:solar_flare_fragment", "weight": 1}]}]))
+            {"type": "minecraft:item", "name": "lacuna:solar_flare_fragment", "weight": 1}]},
+        {"bonus_rolls": 0.0, "rolls": 1.0, "entries": [wg.loot_entry(i, w) for i, w in HOARD_RELICS]}]))
+    assert sum(w for _, w in HOARD_RELICS) == 100
 
 
 # ============================================================================================ 10d last merchant
@@ -344,5 +356,10 @@ def merchant(g):
     g.name("entity.lacuna.last_merchant", "Last Merchant", "Ultimo mercante")
     g.item("last_merchant_spawn_egg", "Last Merchant Spawn Egg", "Uovo generatore dell'ultimo mercante", model="spawn_egg")
     g.data("loot_table/entities/last_merchant", {"type": "minecraft:entity", "random_sequence": "lacuna:entities/last_merchant"})
-    g.data("loot_table/entities/reflection", {"type": "minecraft:entity", "random_sequence": "lacuna:entities/reflection"})
+    # beaten by a player (once per labyrinth: the ring stays solved), the Reflection leaves a Lacunar Quintessence
+    g.data("loot_table/entities/reflection", {"type": "minecraft:entity", "random_sequence": "lacuna:entities/reflection",
+                                              "pools": [{"bonus_rolls": 0.0, "rolls": 1.0,
+                                                         "conditions": [{"condition": "minecraft:killed_by_player"}],
+                                                         "entries": [{"type": "minecraft:item",
+                                                                      "name": "lacuna:lacunar_quintessence"}]}]})
     g.tag("entity_type", "lacuna:cannot_be_banished", "lacuna:last_merchant")

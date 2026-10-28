@@ -21,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
  * Reflection (spec M10): a dark-silver double of the player who woke it. It does not path-find: it replays its
  * player's own path 60 ticks late (positions sampled every 5 ticks into a volatile {@link PathTrail}), passing
  * through mirrors like a reflection would. Touching the player deals 6. 20 HP, never saved; it vanishes if its
- * player leaves 48 blocks, logs out or changes dimension.
+ * player leaves 48 blocks, logs out or changes dimension. Beaten by a player it leaves a Lacunar Quintessence (its
+ * loot table, {@code killed_by_player}); it carries nothing else and gives no experience.
  */
 public class ReflectionEntity extends PathfinderMob {
     @Nullable
@@ -120,11 +121,6 @@ public class ReflectionEntity extends PathfinderMob {
     @Override
     public boolean isPushable() {
         return false;
-    }
-
-    @Override
-    protected void dropAllDeathLoot(ServerLevel level, DamageSource source) {
-        // a reflection owns nothing
     }
 
     @Override

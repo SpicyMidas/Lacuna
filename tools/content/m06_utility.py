@@ -98,17 +98,7 @@ def items(g):
     ]:
         g.name(key, en, it)
 
-    g.shaped("chronoshard_pocket_watch", [" N ", "UCU", " U "],
-             {"N": "lacuna:umbral_steel_nugget", "U": "lacuna:umbral_steel_ingot", "C": "minecraft:clock"},
-             "lacuna:chronoshard_pocket_watch", category="tools", unlock="lacuna:umbral_steel_ingot")
-    g.shaped("mirror_of_recursion", ["QDQ", "DGD", "QDQ"],
-             {"Q": "minecraft:amethyst_shard", "D": "lacuna:divine_glass_shard", "G": "minecraft:gold_ingot"},
-             "lacuna:mirror_of_recursion", category="equipment", unlock="lacuna:divine_glass_shard")
-    g.shaped("null_lantern", [" U ", "ULU", " D "],
-             {"U": "lacuna:umbral_steel_ingot", "L": "minecraft:soul_lantern", "D": "lacuna:divine_glass_shard"},
-             "lacuna:null_lantern", category="tools", unlock="lacuna:umbral_steel_ingot")
-    g.shaped("whisperbone_flute", [" B ", "BEB", " B "], {"B": "minecraft:bone", "E": "minecraft:echo_shard"},
-             "lacuna:whisperbone_flute", category="tools", unlock="minecraft:echo_shard")
+    # the watch, the mirror, the lantern and the flute are relics: no recipes (sources in m19_progression)
     g.shared["ruin_cache_rare"].append(wg.loot_entry("lacuna:chronal_shard", 10))
     g.shared["ruin_cache_rare"][0]["weight"] -= 10
 

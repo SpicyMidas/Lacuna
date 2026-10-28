@@ -4,11 +4,12 @@ from content.m12_polish import adv, code
 
 def build(g):
     g.item("totem_of_confusion", "Totem of Confusion", "Totem della Confusione")
-    # the armour stand is the body, amethyst the illusion, the pearl the swap; gold and emerald make it a totem
-    g.shaped("totem_of_confusion", [" P ", "AMA", "GEG"],
+    # the armour stand is the body, amethyst the illusion, the pearl the swap; gold and a Lacunar Quintessence (m19)
+    # make it a totem
+    g.shaped("totem_of_confusion", [" P ", "AMA", "GQG"],
              {"P": "minecraft:ender_pearl", "A": "minecraft:amethyst_shard", "M": "minecraft:armor_stand",
-              "G": "minecraft:gold_ingot", "E": "minecraft:emerald"},
-             "lacuna:totem_of_confusion", category="equipment", unlock="minecraft:ender_pearl")
+              "G": "minecraft:gold_ingot", "Q": "lacuna:lacunar_quintessence"},
+             "lacuna:totem_of_confusion", category="equipment", unlock="lacuna:lacunar_quintessence")
     g.name("item.lacuna.totem_of_confusion.lore", "Five of you. Only one is real.", "Cinque di te. Solo uno è vero.")
     g.name("item.lacuna.totem_of_confusion.use", "Use: %s copies of you appear around you",
            "Usa: %s copie di te compaiono intorno a te")

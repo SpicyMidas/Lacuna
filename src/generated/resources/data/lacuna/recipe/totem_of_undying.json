@@ -1,0 +1,24 @@
+{
+  "category": "equipment",
+  "key": {
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "Q": {
+      "item": "lacuna:lacunar_quintessence"
+    }
+  },
+  "pattern": [
+    "EGE",
+    "GQG",
+    " G "
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:totem_of_undying"
+  },
+  "type": "minecraft:crafting_shaped"
+}

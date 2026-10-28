@@ -1,0 +1,26 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 80
+        },
+        {
+          "name": "lacuna:ember_triangle",
+          "type": "minecraft:item",
+          "weight": 12
+        },
+        {
+          "name": "lacuna:pyrrhic_scepter",
+          "type": "minecraft:item",
+          "weight": 8
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "lacuna:extra/chests/bastion_treasure_relics",
+  "type": "minecraft:chest"
+}

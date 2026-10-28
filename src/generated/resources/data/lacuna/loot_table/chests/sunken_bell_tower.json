@@ -126,12 +126,42 @@
       "entries": [
         {
           "type": "minecraft:empty",
-          "weight": 49
+          "weight": 65
         },
         {
           "name": "minecraft:heart_of_the_sea",
           "type": "minecraft:item",
-          "weight": 1
+          "weight": 2
+        },
+        {
+          "name": "lacuna:lacunar_quintessence",
+          "type": "minecraft:item",
+          "weight": 12
+        },
+        {
+          "name": "lacuna:tidecaller_sickle",
+          "type": "minecraft:item",
+          "weight": 6
+        },
+        {
+          "name": "lacuna:starcaller_trumpet",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "name": "lacuna:chronoshard_pocket_watch",
+          "type": "minecraft:item",
+          "weight": 4
+        },
+        {
+          "name": "lacuna:whisperbone_flute",
+          "type": "minecraft:item",
+          "weight": 4
+        },
+        {
+          "name": "lacuna:suns_fury",
+          "type": "minecraft:item",
+          "weight": 2
         }
       ],
       "rolls": 1.0

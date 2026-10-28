@@ -12,15 +12,12 @@
     },
     "S": {
       "item": "minecraft:sand"
-    },
-    "U": {
-      "item": "lacuna:umbral_steel_ingot"
     }
   },
   "pattern": [
-    "GUG",
-    "#C#",
-    "GSG"
+    "GCG",
+    "#S#",
+    "GCG"
   ],
   "result": {
     "count": 1,
