@@ -1,0 +1,27 @@
+{
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "D": {
+      "item": "lacuna:divine_glass_shard"
+    },
+    "M": {
+      "item": "minecraft:map"
+    },
+    "R": {
+      "item": "lacuna:ruby"
+    }
+  },
+  "pattern": [
+    " D ",
+    "RMR",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:wayfarers_chart"
+  },
+  "type": "minecraft:crafting_shaped"
+}

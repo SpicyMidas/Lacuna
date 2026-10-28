@@ -41,6 +41,8 @@ SIZE_RULES = [
     (re.compile(r"^textures/effect/"), {(32, 32), (64, 64), (16, 64), (32, 128)}),
     # shader-sampled environment layers (the Forgotten Portal's screen-space fog and motes, like vanilla end_sky)
     (re.compile(r"^textures/environment/"), {(128, 128), (256, 256)}),
+    # map decoration sprites (stitched into the vanilla map_decorations atlas), e.g. the Wayfarer's Chart markers
+    (re.compile(r"^textures/map/decorations/"), {(8, 8)}),
     # hand-drawn high-resolution items/blocks (tools/art/hand), e.g. the 32x32 Gravemaw Greatsword
     (re.compile(r"^textures/(item|block)/"), {(32, 32), (24, 24), (16, 16)}),
 ]
