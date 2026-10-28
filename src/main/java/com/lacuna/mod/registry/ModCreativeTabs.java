@@ -41,6 +41,7 @@ public final class ModCreativeTabs {
             ModItems.UMBRAL_STEEL_NUGGET, ModItems.ZENITHITE_SHARD, ModItems.STARLACE_CLOTH, ModItems.SOLAR_FLARE_FRAGMENT, ModItems.SOLAR_FLARE,
             ModItems.STAR_FRAGMENT, ModBlocks.MOLTEN_STAR_ROCK, ModBlocks.PRIME_STAR_ROCK, ModBlocks.EXTINGUISHED_STAR_ROCK,
             ModItems.EXILITE_SHARD, ModItems.EXILITE_INGOT,
+            ModItems.LACUNAR_QUINTESSENCE,
             ModItems.CHRONAL_SHARD, ModItems.ECHO_FRAGMENT, ModItems.EMBER, ModItems.CRYSTAL_WILLOW_SHARD, ModItems.SILK_DUST, ModItems.CLOCKWORK_GEAR,
             // villages and creatures
             ModItems.VILLAGE_COIN, ModBlocks.VILLAGE_LEDGER, ModItems.GUILD_CONTRACT, ModItems.REPAIR_KIT, ModItems.CLOCKWORK_DECOY,

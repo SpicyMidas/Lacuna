@@ -191,6 +191,9 @@ public final class ModItems {
     public static final DeferredItem<net.minecraft.world.item.BlockItem> EXILITE_BLOCK = item("exilite_block",
             p -> new net.minecraft.world.item.BlockItem(ModBlocks.EXILITE_BLOCK.get(), p),
             new Item.Properties().rarity(Rarity.RARE).fireResistant());
+    // ------------------------------------------------------------------ Lacunar Quintessence (legendary essence: totems)
+    public static final DeferredItem<com.lacuna.mod.essence.QuintessenceItem> LACUNAR_QUINTESSENCE = item("lacunar_quintessence",
+            com.lacuna.mod.essence.QuintessenceItem::new, new Item.Properties().rarity(Rarity.EPIC).fireResistant());
 
     private ModItems() {}
 
