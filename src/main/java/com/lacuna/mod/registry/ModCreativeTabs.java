@@ -26,7 +26,7 @@ public final class ModCreativeTabs {
             // relics
             ModItems.TOTEM_OF_BANISHING, ModBlocks.FORGOTTEN_PORTAL_FRAME, ModItems.ECLIPSER, ModItems.SUNS_FURY, ModItems.DIVINE_MAGNIFYING_GLASS,
             ModItems.FRACTURED_PEARL, ModItems.ARRIVAL_SHARD, ModItems.DEPARTURE_SHARD, ModItems.CHRONOSHARD_POCKET_WATCH,
-            ModItems.MIRROR_OF_RECURSION, ModItems.NULL_LANTERN, ModItems.WHISPERBONE_FLUTE,
+            ModItems.MIRROR_OF_RECURSION, ModItems.NULL_LANTERN, ModItems.WHISPERBONE_FLUTE, ModItems.WAYFARERS_CHART,
             // special weapons, tools, armour
             ModItems.GRAVEMAW_GREATSWORD, ModItems.TIDECALLER_SICKLE, ModItems.HEARTWOOD_BOW, ModItems.ECHO_DAGGER, ModItems.PYRRHIC_SCEPTER,
             ModItems.QUICKENING_WAND,

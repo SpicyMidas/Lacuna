@@ -191,6 +191,9 @@ public final class ModItems {
     public static final DeferredItem<net.minecraft.world.item.BlockItem> EXILITE_BLOCK = item("exilite_block",
             p -> new net.minecraft.world.item.BlockItem(ModBlocks.EXILITE_BLOCK.get(), p),
             new Item.Properties().rarity(Rarity.RARE).fireResistant());
+    // ------------------------------------------------------------------ Wayfarer's Chart (live map of the Overworld)
+    public static final DeferredItem<com.lacuna.mod.chart.WayfarersChartItem> WAYFARERS_CHART = item("wayfarers_chart",
+            com.lacuna.mod.chart.WayfarersChartItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     private ModItems() {}
 
