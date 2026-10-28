@@ -3,6 +3,33 @@
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->
+- **Crafting rebalanced: relics are found, not crafted.** The Eclipser, Sun's Fury, Divine Magnifying Glass,
+  Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute, Gravemaw Greatsword, Tidecaller
+  Sickle, Heartwood Bow, Echo Dagger, Pyrrhic Scepter, Ember Triangle, Wand of Quickening and Starcaller Trumpet no
+  longer have recipes. Each one has at least two sources:
+  - the Mirror Labyrinth hoard (always one relic);
+  - Sunken Bell Towers and Forgotten Land ruin caches;
+  - village mints;
+  - vanilla bosses: Wither, Elder Guardian, Warden and Piglin Brute;
+  - vanilla treasure chests: ancient city, bastion, outpost, mansion, desert pyramid and End city;
+  - the Last Merchant, who now sells two random relics per visit for rubies.
+
+  Every relic's details tooltip says where to look. Sun's Fury is forged by the Last Merchant from a Solar Flare.
+- **Lacunar Quintessence (new, legendary):** a very rare essence, the only way to craft totems. It crafts the Totem
+  of Banishing, the Totem of Confusion and even the vanilla Totem of Undying. Sources:
+  - always dropped by the Reflection guarding a Mirror Labyrinth;
+  - sometimes carried by a natural falling star;
+  - rarely found in Sunken Bell Towers and ruin caches;
+  - now and then sold by the Last Merchant.
+
+  Dropped, it survives fire, lava, cactus and explosions.
+- **Fairer recipes for what stays craftable:**
+  - Umbral Steel tools need a ruby at the binding.
+  - The Comically Large Bag needs an ender pearl.
+  - The Chrono Hourglass needs chronal shards.
+  - The Repair Kit finally has a recipe.
+  - Repair kits no longer restore totems.
+- `docs/PROGRESSION.md`: every item and where it comes from.
 
 ## 0.12.0 — revision 12 (player feedback)
 
