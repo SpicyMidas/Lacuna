@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0-beta.1 — first beta release
+
+<!-- beta -->
+
 ## 0.12.0 — revision 12 (player feedback)
 
 - **Gravemaw Greatsword icon** (16x16) is brighter: its shades moved one step up the 32x32 sword's own colour
@@ -17,7 +21,6 @@
   the empty bag hangs between your two hands and the full one peeks over your shoulder in the top corner.
 - **Fixed:** Raw Umbral Steel had the nugget picture; the new hand-drawn nuggets are now the Umbral Steel Nugget and
   Raw Umbral Steel has its chunk texture back.
-<!-- rev12 -->
 
 ## 0.11.0 — revision 11 (player feedback)
 
