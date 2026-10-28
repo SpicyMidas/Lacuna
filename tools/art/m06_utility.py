@@ -1,11 +1,11 @@
 """M6 textures: pocket watch, chronal shard, mirror, null lantern (item + placed block), whisperbone flute, echo
-fragment, orrery, echo skin."""
+fragment, echo skin."""
 import json
 import os
 
 from PIL import Image
 
-from texlib import ROOT, TEXTURES, c, from_ascii, new, noise_fill, ramp, recolor, rng, save, with_alpha
+from texlib import ROOT, TEXTURES, c, from_ascii, new, ramp, recolor, rng, save, with_alpha
 from art.common import shards
 from art.humanoid import humanoid_skin
 
@@ -167,17 +167,6 @@ FLUTE = [
 ]
 
 
-def orrery_textures():
-    base = noise_fill(ramp("#4A4A52", "#5A5A64", "#6A6A76", "#7A7A88"), "orrery_base", cell=4, speckle=0.1)
-    px = base.load()
-    for i in range(16):
-        px[i, 0] = c("#D49A22")
-        px[i, 15] = c("#8A5A10")
-    ring = noise_fill(ramp("#8A5A10", "#D49A22", "#F2C94C", "#FFF2A0"), "orrery_ring", cell=2, speckle=0.2)
-    core = noise_fill(ramp("#3C8CFF", "#7FE8E0", "#B8E8FF", "#FFFFFF"), "orrery_core", cell=2, speckle=0.3, contrast=1.5)
-    return base, ring, core
-
-
 def paint():
     save(from_ascii(WATCH, {"o": c("#5A3A10"), "G": c("#F2C94C"), "g": c("#D49A22"), "C": c("#BFE8F8"),
                             "W": c("#FFFFFF"), "h": c("#2E3350"), "H": c("#7B4DFF")}), "item/chronoshard_pocket_watch")
@@ -194,9 +183,5 @@ def paint():
     save(from_ascii(FLUTE, {"o": c("#6E6450"), "W": c("#F2EAD6"), "B": c("#D8CCB0"), "H": c("#2A2A30"),
                             "b": c("#9C8E70")}), "item/whisperbone_flute")
     save(shards([c("#0A2A32"), c("#0E5A66"), c("#29DFEB"), c("#9EF6FF"), c("#E8FFFF")]), "item/echo_fragment")
-    base, ring, core = orrery_textures()
-    save(base, "block/orrery_base")
-    save(ring, "block/orrery_ring")
-    save(core, "block/orrery_core")
     save(humanoid_skin("echo", body=ramp("#0E3A44", "#1E5A66", "#29A0B0", "#7FE8E0"), alpha=150,
                        eyes=c("#E8FFFF"), seed="echo"), "entity/echo")

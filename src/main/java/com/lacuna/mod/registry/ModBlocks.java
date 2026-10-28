@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.IceBlock;
 import com.lacuna.mod.Balance;
 import com.lacuna.mod.block.MuralBlock;
 import com.lacuna.mod.lantern.NullLanternBlock;
-import com.lacuna.mod.orrery.OrreryBlock;
 import com.lacuna.mod.pearl.ArrivalAnchorBlock;
 import java.util.function.Supplier;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -95,11 +94,6 @@ public final class ModBlocks {
             BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).forceSolidOn().strength(1.5F, 3.5F).sound(SoundType.LANTERN)
                     .lightLevel(s -> s.getValue(NullLanternBlock.LIT) ? Balance.LANTERN_LIGHT : 0).noOcclusion()
                     .pushReaction(PushReaction.DESTROY)));
-
-    // ------------------------------------------------------------------ M6 orrery
-    public static final DeferredBlock<OrreryBlock> ORRERY_OF_THRESHOLDS = block("orrery_of_thresholds", () -> new OrreryBlock(
-            BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(2.0F, 6.0F).noOcclusion().lightLevel(s -> 4)
-                    .sound(SoundType.METAL).requiresCorrectToolForDrops()));
 
     // ------------------------------------------------------------------ M7 zenithite
     public static final DeferredBlock<DropExperienceBlock> ZENITHITE_ORE = block("zenithite_ore", () -> new DropExperienceBlock(

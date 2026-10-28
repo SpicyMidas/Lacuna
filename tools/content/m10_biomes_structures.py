@@ -11,7 +11,6 @@ def build(g):
     biomes(g)
     bell_tower(g)
     obelisk(g)
-    g.tag("worldgen/structure", "lacuna:orrery_targets", "lacuna:sunken_bell_tower", "lacuna:obelisk")
     labyrinth(g)
     merchant(g)
 

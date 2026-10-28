@@ -19,8 +19,7 @@ with laws, a council, a currency and guilds. No dependencies besides NeoForge; E
    and beat your own Reflection for its hoard.
 4. Back home: the **Divine Magnifying Glass** (a beam of focused sunlight), **Umbral Steel** and the **Eclipser**,
    **Sun's Fury**, the **Fractured Pearl** (two linked teleport shards), the **Chronoshard Pocket Watch**, **Mirror of
-   Recursion**, **Null Lantern**, **Whisperbone Flute** and the **Orrery of Thresholds**, which points to Obelisks
-   and Sunken Bell Towers.
+   Recursion**, **Null Lantern** and **Whisperbone Flute**.
 5. Visit a **Township** (plains, desert, savanna, taiga, snowy biomes). Read its ledger: keep the laws, trade, kill
    monsters near it and your reputation grows; mint ore into coins, pay fines at the courthouse, join a guild and
    take contracts. The Last Merchant sometimes comes by with a cart full of what you mined.

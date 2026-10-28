@@ -10,7 +10,6 @@ import com.lacuna.mod.gear.GearEvents;
 import com.lacuna.mod.lantern.LanternWard;
 import com.lacuna.mod.mirror.MirrorOfRecursionItem;
 import com.lacuna.mod.network.LacunaNetwork;
-import com.lacuna.mod.orrery.OrreryBlock;
 import com.lacuna.mod.structure.SunkenBellBlock;
 import com.lacuna.mod.registry.ModEntities;
 import com.lacuna.mod.wood.WoodSetup;
@@ -95,7 +94,6 @@ public final class Lacuna {
     private static void onServerStopped(ServerStoppedEvent event) {
         // Volatile, session-scoped state must not leak into the next world (spec section 3, "Data").
         SafeRun.resetAll();
-        OrreryBlock.clearVolatile();
         SunkenBellBlock.clearVolatile();
         LanternWard.clearVolatile();
         com.lacuna.mod.structure.LabyrinthHandler.clearVolatile();

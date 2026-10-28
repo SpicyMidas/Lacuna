@@ -162,11 +162,6 @@ public final class Balance {
     public static final float ECHO_MAX_ATTACK = 6.0F;
     public static final double ECHO_SPEED = 0.3;
 
-    // ---------------------------------------------------------------- orrery (M6)
-    public static final int ORRERY_COOLDOWN = 100;
-    public static final int ORRERY_RADIUS_CHUNKS = 48;
-    public static final int ORRERY_GLOBAL_INTERVAL = 20;
-
     // ---------------------------------------------------------------- gear (M7)
     /** Umbral Steel outclasses Ruby: netherite mining level, 1500 uses, speed 8.5, +4 damage, enchantability 15. */
     public static final int UMBRAL_TOOL_DURABILITY = 1500;
