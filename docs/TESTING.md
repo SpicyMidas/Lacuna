@@ -235,7 +235,8 @@ All `/lacuna` commands need permission level 2.
       the south side, a glowing cracked seal on the north side.
 - [ ] Stepping on the ring in the centre makes a silvery Reflection appear; after 3 s it walks exactly where you
       walked, through walls, and hurts on contact (6).
-- [ ] Killing it shatters the seals: the north door and the hoard alcove open; the chest has the Mirror Hoard loot.
+- [ ] Killing it shatters the seals: the north door and the hoard alcove open; the chest has the Mirror Hoard loot
+      and always one relic; the Reflection drops a Lacunar Quintessence (only when a player kills it).
 - [ ] Walking 48+ blocks away (or logging out) makes the Reflection vanish; the ring can be triggered again.
 ## M10d — Last Merchant
 ```
@@ -245,8 +246,11 @@ All `/lacuna` commands need permission level 2.
 /gamerule doTraderSpawning true
 ```
 - [ ] Mine some ores (e.g. copper), then spawn a merchant nearby: his first buy offer is that ore family plus a bulk
-      offer; he sells divine glass shards, rubies, chronal shards and echo shards for emeralds.
-- [ ] Re-spawn several merchants: about 1 in 12 offers a Solar Flare Fragment for 16 rubies + 24 divine glass shards.
+      offer, paid in rubies; he sells divine glass shards, chronal shards, echo shards... for rubies only.
+- [ ] Every merchant offers two relics (one of each, rubies; Eclipser, Gravemaw and Ember Triangle 64 rubies + 2 ruby
+      blocks) and the Sun's Fury forge (Solar Flare + 32 rubies); re-spawned merchants bring other relics.
+- [ ] Re-spawn several merchants: about 1 in 12 offers a Solar Flare Fragment for 16 rubies + 8 divine glass shards,
+      about 1 in 5 a Lacunar Quintessence for 64 rubies + 4 ruby blocks.
 - [ ] Leaving the area (chunk unload) or restarting removes the merchant; he never comes back from a save.
 - [ ] The merchant looks like a normal plains villager wearing a blue vest.
 ## M11a — Township structures
@@ -321,3 +325,26 @@ All `/lacuna` commands need permission level 2.
       Township).
 - [ ] Switch the game to Italian: every Lacuna text is translated.
 - [ ] Dedicated server: `java -Dlacuna.smoke=tools/smoke_soak.txt ...` runs for 30 minutes without errors.
+
+## 1.0.0-beta — progression (docs/PROGRESSION.md)
+```
+/give @s lacuna:lacunar_quintessence 3
+/give @s minecraft:totem_of_undying
+/give @s lacuna:repair_kit 2
+/loot give @s loot minecraft:chests/ancient_city
+/loot give @s loot lacuna:chests/sunken_bell_tower
+/place structure lacuna:sunken_bell_tower ~ ~ ~20
+```
+- [ ] The Quintessence: magenta (epic) name, glint, animated violet drop with a dark gap; details show lore, its use
+      and where it is found. Dropped into lava or next to a creeper blast it survives.
+- [ ] Recipe book: the Totems of Banishing and Confusion and the vanilla Totem of Undying unlock with the essence and
+      need it; no recipe exists any more for the relics (Eclipser, Sun's Fury, magnifying glass, watch, mirror, lantern,
+      flute, the five special weapons, Ember Triangle, Wand of Quickening, Starcaller Trumpet).
+- [ ] Umbral Steel tools need a ruby in the grip; the bag an ender pearl; the hourglass two chronal shards; repair
+      kits craft from 2 umbral ingots, a clockwork gear, 2 leather and an iron ingot.
+- [ ] A repair kit used with a damaged Totem of Banishing in the other hand refuses it (action bar message).
+- [ ] Each relic's details tooltip lists its sources. `/loot` on the vanilla chests above now and then gives a relic.
+- [ ] On clear nights a natural falling star sometimes leaves a glowing Quintessence at its crater; mining a Prime
+      Star Rock (without Silk Touch) very rarely gives one.
+- [ ] Advancement tab: "The Shape of the Gap" (obtain a Quintessence) leads to "A Land Nobody Remembers"; "Blade of
+      the Eclipse" asks to claim the Eclipser.

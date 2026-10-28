@@ -126,7 +126,8 @@ Gates: 3 ✔ (now also checks dimension/biome/feature/structure references and c
 Built:
 - `divine_magnifying_glass` (500 durability, 1 per 20 beam ticks, use duration 72000, BOW animation, 10-tick
   cooldown on release, repaired at an anvil with Divine Glass Shards +60 each through `AnvilRepairs`, not
-  enchantable, item+item merge disabled). Recipe `.G. / GDG / .S.`.
+  enchantable, item+item merge disabled). Recipe `.G. / GDG / .S.` (removed in 1.0.0-beta: a relic, see
+  [PROGRESSION.md](PROGRESSION.md)).
 - Server beam each use tick: block clip (COLLIDER) up to 24 blocks (×0.5 underwater), entity hit along it,
   3.0 damage every 5 ticks (12/s) with damage type `lacuna:solar_beam` (in `minecraft:is_fire`, armor applies),
   4 s fire. `BeamMath` (unit-tested): day ×1 yellow, underwater ×0.4 / range ×0.5 blue no ignition (+bubbles),
@@ -203,20 +204,20 @@ Gates: 3 ✔, 4 (logic) ✔, 1/2/5/6 not runnable here.
 ## M6 — Utility items
 
 Built:
-- Chronoshard Pocket Watch (12 durability, recipe `.R. / GCG / .D.`): snapshot {dimension, position, view,
+- Chronoshard Pocket Watch (12 durability; a relic since 1.0.0-beta, no recipe): snapshot {dimension, position, view,
   health, food, saturation, game time} every 2400 ticks while anywhere in the inventory (first one immediately),
   ring of 3 (component `lacuna:watch_snapshots`); right click rewinds to the newest snapshot ≥ 400 ticks old in the
   current dimension only (safe spot, health = max(now, then), food/saturation restored, fire cleared, harmful
   effects applied in the last 10 s removed — tracked in the `harmful_effects` player attachment), consumes it and
   newer ones, 1 durability. Chronal shards inserted from the other hand (component, max 5) → cooldown
   6000 − 600·shards. Repair: gold ingot (25 %, not specified in spec).
-- Mirror of Recursion (20 durability, `QDQ / DGD / QDQ`): BLOCK use animation; `ProjectileImpactEvent` on a player
+- Mirror of Recursion (20 durability; relic, no recipe): BLOCK use animation; `ProjectileImpactEvent` on a player
   raising it: projectiles in `lacuna:reflectable` (minus `lacuna:unreflectable`) coming from the front 180° are
   cancelled and sent back toward their shooter with the player as owner (arrows become non-pickable), 1 durability;
   up to 3 echoes stored (component `lacuna:mirror_stored`); sneak + use re-fires the oldest at
   0.85^(reuse+1) speed (arrows also scale base damage); an echo already used 3 times shatters instead.
   Repair: divine glass shard (25 %, not specified in spec).
-- Null Lantern (300 durability, `.U. / ULU / .D.`): held in either hand, hostile mobs (not bosses) between 3 and
+- Null Lantern (300 durability; relic, no recipe): held in either hand, hostile mobs (not bosses) between 3 and
   16 blocks cannot target the holder unless hurt by them in the last 5 s (`LivingChangeTargetEvent` + a 1 Hz sweep
   that drops existing targets); natural monster spawns within 24 blocks fail (`MobSpawnEvent.PositionCheck`);
   1 durability per 200 ticks held. Repair: umbral iron ingot.
@@ -231,7 +232,7 @@ Built:
     events. Both burn 1 charge / 200 game ticks; at 0 the item stays (damage capped, `lacuna:lit` item property ->
     `item/null_lantern_off`) and the block turns `lit=false`, with a fizzle cue. Recharge: Ender Pearl 50 %, Echo
     Shard 100 % (`overrideOtherStackedOnMe` in any slot, or `useItemOn` on the placed lantern, which relights it).
-- Whisperbone Flute (40 durability, `.B. / BEB / .B.`, goat-horn animation/sound, 1200 cooldown) + Echo mob:
+- Whisperbone Flute (40 durability; relic, no recipe; goat-horn animation/sound, 1200 cooldown) + Echo mob:
   volatile per-dimension ring buffer (64) of non-player non-boss deaths; up to 3 deaths within 20 blocks and
   1200 ticks become Echoes (translucent zombie-model humanoid, health ≤ 20, attack ≤ 6, speed 0.3, 200 ticks,
   fights what the owner hits / is hit by, immune to the owner, no loot/XP, `noSave`), each leaving an
@@ -303,7 +304,8 @@ Built:
 - Worldgen via biome modifiers (rarity 1/24–1/40): Echo Birch in birch forests, Cindervine in savanna/badlands/
   windswept, Crystal Willow in cherry groves/meadows, Tidebloom in swamps/mangrove swamps/rivers. FL biome groves
   arrive with M10.
-- Heartwood Bow recipe (`.PS / PRS / .PS`) and repair tag `lacuna:heartwood_bow_repair` (Echo Birch planks).
+- Heartwood Bow repair tag `lacuna:heartwood_bow_repair` (Echo Birch planks); its recipe (`.PS / PRS / .PS`) was
+  removed in 1.0.0-beta (a relic).
 - GameTests: stripping for every family, placed leaves persistence, Cindervine plank burn time.
 
 Deviations: no signs, hanging signs or boats (spec: optional in M12).
@@ -452,7 +454,8 @@ Built:
 - Stock (`logic/MerchantPricing`, unit-tested): buys the three ore families the nearest player mined most (raw iron,
   copper, gold, coal, redstone, lapis, diamond, quartz, ruby, raw umbral steel, zenithite) plus a bulk offer for the
   top one, and two ingot/gem buys; sells divine glass shards (2), rubies (3), chronal shards (8) and echo shards (10);
-  8 % chance of one Solar Flare Fragment for 16 rubies + 24 divine glass shards (spec 14). "Recently mined" = vanilla
+  8 % chance of one Solar Flare Fragment for 16 rubies + 24 divine glass shards (spec 14). Since 1.0.0-beta he deals
+  in rubies only and also sells relics (see the progression section at the end). "Recently mined" = vanilla
   `Stats.BLOCK_MINED` over `#c:ores` since the player's previous merchant visit (a `mined_snapshot` attachment, kept on
   death); the first visit uses lifetime totals.
 - `CurrencyService`: every Lacuna trade asks it for the currency item (emerald until M11c installs the township coin).
@@ -629,3 +632,35 @@ Gates: 3 ✔, 4 (logic, 43 tests) ✔, 1/2/5/6 not runnable here.
 - Client: launches under a virtual display with software OpenGL and loads all Lacuna resources with no model/texture/
   renderer errors (entity renderers are constructed at resource load); joining a world was too slow to finish on
   software rendering here.
+
+## 1.0.0-beta — progression pass (crafting balance, Lacunar Quintessence)
+
+Every item and its sources, with chances: [PROGRESSION.md](PROGRESSION.md) (it supersedes the relic recipes in the
+milestones above and in the spec).
+
+- **Relics are found, not crafted.** Recipes and recipe-unlock advancements removed for the Eclipser, Sun's Fury,
+  Divine Magnifying Glass, Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute, Gravemaw
+  Greatsword, Tidecaller Sickle, Heartwood Bow, Echo Dagger, Pyrrhic Scepter, Ember Triangle, Wand of Quickening and
+  Starcaller Trumpet. Sources: a guaranteed relic roll in every Mirror Hoard, a relic roll in Sunken Bell Towers,
+  ruin caches and village mints (m10/m11/m19), `neoforge:add_table` global loot modifiers on fitting vanilla bosses
+  (Wither, Elder Guardian, Warden, Piglin Brute; player kills) and chests (ancient city, bastion treasure, pillager
+  outpost, woodland mansion, desert pyramid, End city), and the Last Merchant. Each relic's details tooltip
+  (`item.lacuna.<id>.tip`) names its sources.
+- **Lacunar Quintessence** (`lacunar_quintessence`, `essence/QuintessenceItem`): Epic, fire resistant, glint, animated
+  texture (`tools/art/m19_quintessence.py`); dropped it lasts 20 minutes and ignores fire, lava, cactus and blasts.
+  Sources: the Reflection (loot table, `killed_by_player`: once per labyrinth, so `ReflectionEntity` no longer
+  suppresses its loot), natural falling stars 20 % (`essence/Quintessence#onNaturalStarLanded`, hooked in
+  `FallingStarEntity#strike`), Prime Star Rock 1 %, Sunken Bell Tower 12 %, ruin caches 1 %, the Last Merchant 1 visit
+  in 5. It is the only way to craft a totem: Totem of Banishing (`RQR / GTG / .R.`, still with a Totem of Undying),
+  Totem of Confusion (the essence replaces the emerald) and a vanilla Totem of Undying (`EGE / GQG / .G.`).
+  Advancement `lacuna/lacunar_quintessence` ("The Shape of the Gap"); `enter_forgotten_land` now hangs from it, and
+  `forge_eclipser` reads "Claim the Eclipser" (its criterion was always "has the item").
+- **Last Merchant** (`logic/MerchantPricing`): rubies only; two relics drawn at random per visit (32-48 rubies, epic
+  ones 64 + 2 ruby blocks), the Sun's Fury forge (Solar Flare + 32 rubies — Sun's Fury has no recipe, so the four
+  fragments still matter), and a Quintessence in 1 visit of 5 (64 rubies + 4 ruby blocks). Prices above 64 are paid
+  partly in ruby blocks (9 each). Unit-tested; the merchant GameTest now expects rubies.
+- **Craftable, re-costed**: Umbral Steel tools set a ruby in the grip (the ore is commoner than diamond and the tools
+  outclass diamond), the Comically Large Bag needs an ender pearl, the Chrono Hourglass two chronal shards (no umbral
+  ingot); Repair Kits gain a recipe (`UGU / LIL`) and refuse `#lacuna:repair_kit_refuses` (the totems: their uses are
+  final). Ruin-cache rare pool normalised to exactly 1000 (the exilite entry had not been subtracted from the empty
+  weight).
