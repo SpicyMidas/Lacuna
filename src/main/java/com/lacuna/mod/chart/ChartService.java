@@ -41,6 +41,7 @@ public final class ChartService {
     private static final Map<UUID, Session> SESSIONS = new HashMap<>();
     private static final ChartAtlas ATLAS = new ChartAtlas();
     private static int rotation;
+    private static long debugNanos; // TEMP-CHART-DEBUG
 
     private ChartService() {}
 
@@ -86,10 +87,18 @@ public final class ChartService {
             active.add(session);
         }
         if (!active.isEmpty()) {
+            long debugStart = System.nanoTime(); // TEMP-CHART-DEBUG
             long deadline = System.nanoTime() + LacunaConfig.get(LacunaConfig.CHART_BUDGET_MICROS) * 1000L;
             rotation = (rotation + 1) % active.size();
             for (int k = 0; k < active.size(); k++) {
                 active.get((rotation + k) % active.size()).pump(ATLAS, overworld, now, deadline);
+            }
+            debugNanos += System.nanoTime() - debugStart; // TEMP-CHART-DEBUG
+            if (now % 100 == 0) { // TEMP-CHART-DEBUG
+                com.lacuna.mod.Lacuna.LOGGER.info("[chart-debug] 100 ticks: {} ms in charts, {} passes, {} surveys, {} climate samples at {} us each",
+                        debugNanos / 1_000_000L, ChartAtlas.DEBUG_PASSES, ChartAtlas.DEBUG_SURVEYS, ChartAtlas.DEBUG_CLIMATE_SAMPLES,
+                        ChartAtlas.DEBUG_CLIMATE_SAMPLES == 0 ? 0 : ChartAtlas.DEBUG_CLIMATE_NANOS / 1000L / ChartAtlas.DEBUG_CLIMATE_SAMPLES);
+                debugNanos = 0; ChartAtlas.DEBUG_PASSES = 0; ChartAtlas.DEBUG_SURVEYS = 0; ChartAtlas.DEBUG_CLIMATE_SAMPLES = 0; ChartAtlas.DEBUG_CLIMATE_NANOS = 0;
             }
         }
         if (now % 100 == 0) {
@@ -106,7 +115,10 @@ public final class ChartService {
     }
 
     private static void onTagsUpdated(TagsUpdatedEvent event) {
-        ATLAS.forgetInks();
+        // the server's own reload (server thread); a client receiving tags must not touch the server's cache
+        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+            ATLAS.forgetInks();
+        }
     }
 
     private static void clear() {

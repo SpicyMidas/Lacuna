@@ -47,6 +47,7 @@ final class ChartAtlas {
     private final BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
     private final BlockPos.MutableBlockPos depthCursor = new BlockPos.MutableBlockPos();
     private long versions;
+    static long DEBUG_CLIMATE_SAMPLES, DEBUG_CLIMATE_NANOS, DEBUG_SURVEYS, DEBUG_PASSES; // TEMP-CHART-DEBUG
 
     // bound per work() call
     private ServerLevel level;
@@ -173,6 +174,7 @@ final class ChartAtlas {
         tile.climate.trim();
         tile.sampledAt = now;
         tile.row = ChartTile.IDLE;
+        DEBUG_PASSES++; // TEMP-CHART-DEBUG
     }
 
     private void sampleRow(ChartTile tile) {
@@ -269,6 +271,7 @@ final class ChartAtlas {
         }
         surveyHeight = y;
         surveyDepth = depth;
+        DEBUG_SURVEYS++; // TEMP-CHART-DEBUG
         return state.getMapColor(level, cursor);
     }
 
@@ -290,6 +293,7 @@ final class ChartAtlas {
         if (cached != Long.MIN_VALUE) {
             return cached;
         }
+        long debugStart = System.nanoTime(); // TEMP-CHART-DEBUG
         Climate.TargetPoint point = sampler.sample(qx, 0, qz);
         int height = Math.round(Climate.unquantizeCoord(point.depth()) * 128.0F);
         height = Math.max(minY, Math.min(level.getMaxBuildHeight(), height));
@@ -299,6 +303,8 @@ final class ChartAtlas {
                 : biomes.getNoiseBiome(qx, QuartPos.fromBlock(seaLevel), qz, sampler);
         long sample = ((long) inks.of(biome).ordinal() << 32) | (height & 0xFFFFFFFFL);
         tile.climate.put(column, sample);
+        DEBUG_CLIMATE_SAMPLES++; // TEMP-CHART-DEBUG
+        DEBUG_CLIMATE_NANOS += System.nanoTime() - debugStart; // TEMP-CHART-DEBUG
         return sample;
     }
 
