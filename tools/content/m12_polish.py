@@ -41,14 +41,16 @@ def advancements(g):
         en=("Lacuna", "Find your first ruby: the world remembers more than it shows."),
         it=("Lacuna", "Trova il tuo primo rubino: il mondo ricorda più di quanto mostri."))
     adv(g, "enter_forgotten_land", "lacuna:chiseled_ruin_glyph",
-        {"enter": {"trigger": "minecraft:changed_dimension", "conditions": {"to": "lacuna:forgotten_land"}}}, "root",
+        {"enter": {"trigger": "minecraft:changed_dimension", "conditions": {"to": "lacuna:forgotten_land"}}},
+        "lacunar_quintessence",
         en=("A Land Nobody Remembers", "Enter the Forgotten Land."), it=("Una terra che nessuno ricorda", "Entra nella Terra Dimenticata."))
     adv(g, "survive_banishment", "lacuna:totem_of_banishing",
         {"return": {"trigger": "minecraft:changed_dimension", "conditions": {"from": "lacuna:forgotten_land", "to": "minecraft:overworld"}}},
         "enter_forgotten_land", frame="goal",
         en=("Remembered Again", "Come back from the Forgotten Land."), it=("Di nuovo ricordato", "Torna dalla Terra Dimenticata."))
     adv(g, "forge_eclipser", "lacuna:eclipser", {"eclipser": has("lacuna:eclipser")}, "root", frame="goal",
-        en=("Blade of the Eclipse", "Forge the Eclipser."), it=("Lama dell'eclisse", "Forgia l'Eclissatore."))
+        en=("Blade of the Eclipse", "Claim the Eclipser, a relic no smith can forge."),
+        it=("Lama dell'eclisse", "Conquista l'Eclissatore, una reliquia che nessun fabbro sa forgiare."))
     adv(g, "throw_suns_fury", "lacuna:suns_fury", code(), "forge_eclipser", frame="challenge",
         en=("A Piece of the Sun", "Throw Sun's Fury."), it=("Un pezzo di sole", "Scaglia la Furia del Sole."))
     adv(g, "link_pearl", "lacuna:fractured_pearl", code(), "root",

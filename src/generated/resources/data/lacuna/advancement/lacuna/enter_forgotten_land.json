@@ -22,7 +22,7 @@
       "translate": "advancements.lacuna.enter_forgotten_land.title"
     }
   },
-  "parent": "lacuna:lacuna/root",
+  "parent": "lacuna:lacuna/lacunar_quintessence",
   "requirements": [
     [
       "enter"

@@ -7,14 +7,17 @@
     "L": {
       "item": "minecraft:leather"
     },
+    "P": {
+      "item": "minecraft:ender_pearl"
+    },
     "S": {
       "item": "minecraft:string"
     }
   },
   "pattern": [
     "SLS",
-    "LCL",
-    "LLL"
+    "LPL",
+    "LCL"
   ],
   "result": {
     "count": 1,

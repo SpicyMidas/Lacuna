@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:entities/elder_guardian"
+    }
+  ],
+  "table": "lacuna:extra/elder_guardian_relic",
+  "type": "neoforge:add_table"
+}

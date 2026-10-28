@@ -3,7 +3,17 @@
     "lacuna:spider_drops",
     "lacuna:cave_spider_drops",
     "lacuna:husk_drops",
-    "lacuna:pillager_drops"
+    "lacuna:pillager_drops",
+    "lacuna:wither_relic_drops",
+    "lacuna:elder_guardian_relic_drops",
+    "lacuna:warden_relic_drops",
+    "lacuna:piglin_brute_relic_drops",
+    "lacuna:ancient_city_relics",
+    "lacuna:bastion_treasure_relics",
+    "lacuna:pillager_outpost_relics",
+    "lacuna:woodland_mansion_relics",
+    "lacuna:desert_pyramid_relics",
+    "lacuna:end_city_treasure_relics"
   ],
   "replace": false
 }

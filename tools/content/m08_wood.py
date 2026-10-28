@@ -116,10 +116,7 @@ def extras(g):
     g.item("crystal_willow_shard", "Crystal Willow Shard", "Scheggia di salice di cristallo")
     g.shaped("glass_from_crystal_willow_shards", ["##", "##"], {"#": "lacuna:crystal_willow_shard"}, "minecraft:glass", 1, "building")
     g.shared["fuels"] = {mod("ember"): {"burn_time": 1600}, mod("cindervine_planks"): {"burn_time": 400}}
-    # Heartwood Bow recipe and repair material need Echo Birch (spec M7 note)
-    g.shaped("heartwood_bow", [" PS", "PRS", " PS"],
-             {"P": "lacuna:echo_birch_planks", "S": "minecraft:string", "R": "lacuna:ruby"},
-             "lacuna:heartwood_bow", category="equipment", unlock="lacuna:echo_birch_planks")
+    # the Heartwood Bow is a relic (no recipe, m19_progression); Echo Birch planks still repair it
     g.tag("item", "lacuna:heartwood_bow_repair", mod("echo_birch_planks"))
 
     def write_maps(g2):

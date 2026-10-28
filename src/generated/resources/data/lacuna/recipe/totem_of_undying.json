@@ -1,24 +1,24 @@
 {
   "category": "equipment",
   "key": {
-    "D": {
-      "item": "lacuna:divine_glass"
+    "E": {
+      "item": "minecraft:emerald"
     },
     "G": {
       "item": "minecraft:gold_ingot"
     },
-    "S": {
-      "item": "minecraft:stick"
+    "Q": {
+      "item": "lacuna:lacunar_quintessence"
     }
   },
   "pattern": [
-    " G ",
-    "GDG",
-    " S "
+    "EGE",
+    "GQG",
+    " G "
   ],
   "result": {
     "count": 1,
-    "id": "lacuna:divine_magnifying_glass"
+    "id": "minecraft:totem_of_undying"
   },
   "type": "minecraft:crafting_shaped"
 }

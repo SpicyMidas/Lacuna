@@ -85,9 +85,7 @@ def eclipser(g):
     # that was just hit by a melee swing (armour still applies)
     g.tag("damage_type", "minecraft:no_knockback", "lacuna:eclipse")
     g.tag("damage_type", "minecraft:bypasses_cooldown", "lacuna:eclipse")
-    g.shaped("eclipser", [" U ", "RUR", " S "],
-             {"U": "lacuna:umbral_steel_ingot", "R": "lacuna:ruby", "S": "minecraft:stick"},
-             "lacuna:eclipser", category="equipment", unlock="lacuna:umbral_steel_ingot")
+    # a relic: no recipe (sources in m19_progression and docs/PROGRESSION.md)
     g.tag("item", "minecraft:enchantable/durability", mod("eclipser"))
     g.tag("item", "lacuna:drawn_weapons", mod("eclipser"))
     g.name("effect.lacuna.shadow_walk", "Shadow Walk", "Passo d'ombra")
@@ -126,12 +124,10 @@ def solar(g):
     g.name("lacuna.suns_fury.fizzles", "The sun cannot reach the Forgotten Land.", "Il sole non raggiunge la Terra Dimenticata.")
     g.name("entity.lacuna.suns_fury", "Sun's Fury", "Furia del Sole")
     g.name("entity.lacuna.solar_ray", "Solar Ray", "Raggio solare")
+    # Sun's Fury is a relic (no recipe): found, or forged by the Last Merchant from a Solar Flare and rubies
+    # (logic/MerchantPricing), which is what the four fragments are still assembled for
     g.shaped("solar_flare", [" F ", "FDF", " F "], {"F": "lacuna:solar_flare_fragment", "D": "lacuna:divine_glass"},
              "lacuna:solar_flare", category="misc", unlock="lacuna:solar_flare_fragment")
-    g.shaped("suns_fury", ["GFG", "RNR", " S "],
-             {"F": "lacuna:solar_flare", "G": "minecraft:gold_block", "R": "lacuna:ruby_block",
-              "N": "minecraft:netherite_ingot", "S": "minecraft:stick"},
-             "lacuna:suns_fury", category="equipment", unlock="lacuna:solar_flare")
     # 1.5 % per roll in ruin caches (15 / 1000 weight in the rare pool)
     g.shared["ruin_cache_rare"].append(wg.loot_entry("lacuna:solar_flare_fragment", 15))
     g.shared["ruin_cache_rare"][0]["weight"] -= 15

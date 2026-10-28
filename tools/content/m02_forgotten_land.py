@@ -88,9 +88,11 @@ def totem(g):
            "Usa su un anello di cornici del portale dimenticato: accende il portale.")
     g.name("item.lacuna.totem_of_banishing.wear", "Wears out after 6 uses; it cannot be repaired.",
            "Si consuma dopo 6 usi; non può essere riparato.")
-    g.shaped("totem_of_banishing", ["RGR", "GTG", " R "],
-             {"R": "lacuna:ruby", "G": "minecraft:gold_ingot", "T": "minecraft:totem_of_undying"},
-             "lacuna:totem_of_banishing", category="misc", unlock="minecraft:totem_of_undying")
+    # a Totem of Undying taught to forget: only a Lacunar Quintessence (m19) can do that
+    g.shaped("totem_of_banishing", ["RQR", "GTG", " R "],
+             {"R": "lacuna:ruby", "Q": "lacuna:lacunar_quintessence", "G": "minecraft:gold_ingot",
+              "T": "minecraft:totem_of_undying"},
+             "lacuna:totem_of_banishing", category="misc", unlock="lacuna:lacunar_quintessence")
     g.tag("entity_type", "lacuna:cannot_be_banished", "minecraft:ender_dragon", "minecraft:wither", "minecraft:warden",
           "minecraft:elder_guardian")
 

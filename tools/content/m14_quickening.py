@@ -28,9 +28,7 @@ def build(g):
            "Bows, greatswords, the Eclipser, sickles, trumpets and other gifted items sometimes use their own powers",
            "Archi, spadoni, l'Eclipser, falcetti, trombe e altri oggetti dotati a volte usano i propri poteri")
 
-    g.shaped("quickening_wand", [" E ", "DBD", " B "],
-             {"E": "lacuna:echo_fragment", "D": "lacuna:silk_dust", "B": "minecraft:blaze_rod"},
-             "lacuna:quickening_wand", category="equipment", unlock="lacuna:echo_fragment")
+    # a relic: no recipe (sources in m19_progression and docs/PROGRESSION.md)
     g.tag("item", "minecraft:enchantable/durability", mod("quickening_wand"))
     # an animated object never drowns (LivingEntity#canBreatheUnderwater reads this tag)
     g.tag("entity_type", "minecraft:can_breathe_under_water", mod("animated_item"))

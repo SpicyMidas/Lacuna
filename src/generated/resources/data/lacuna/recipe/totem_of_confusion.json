@@ -4,9 +4,6 @@
     "A": {
       "item": "minecraft:amethyst_shard"
     },
-    "E": {
-      "item": "minecraft:emerald"
-    },
     "G": {
       "item": "minecraft:gold_ingot"
     },
@@ -15,12 +12,15 @@
     },
     "P": {
       "item": "minecraft:ender_pearl"
+    },
+    "Q": {
+      "item": "lacuna:lacunar_quintessence"
     }
   },
   "pattern": [
     " P ",
     "AMA",
-    "GEG"
+    "GQG"
   ],
   "result": {
     "count": 1,

@@ -1,8 +1,11 @@
 """M7: Starlace armor + Zenithite, Umbral tool set, five special weapons, Heartwood Bow grasping roots."""
 from gen_resources import loot_ore, mod
 
-TOOLS = {"sword": ["R", "R", "S"], "pickaxe": ["RRR", " S ", " S "], "axe": ["RR", "RS", " S"],
-         "shovel": ["R", "S", "S"], "hoe": ["RR", " S", " S"]}
+# Umbral Steel tools outclass diamond and the ore is commoner than diamond, so each one also sets a ruby where the head
+# meets the haft (the vanilla shape, its first stick turned into a ruby; the sword's ruby is its hilt)
+TOOLS = {"sword": ["U", "U", "R"], "pickaxe": ["UUU", " R ", " S "], "axe": ["UU", "UR", " S"],
+         "shovel": ["U", "R", "S"], "hoe": ["UU", " R", " S"]}
+TOOL_KEY = {"U": "lacuna:umbral_steel_ingot", "R": "lacuna:ruby", "S": "minecraft:stick"}
 
 
 def build(g):
@@ -68,8 +71,8 @@ def umbral_tools(g):
     for tool, (en, it) in names.items():
         iid = f"umbral_steel_{tool}"
         g.item(iid, en, it, model="handheld")
-        g.shaped(iid, TOOLS[tool], {"R": "lacuna:umbral_steel_ingot", "S": "minecraft:stick"}, f"lacuna:{iid}",
-                 category="equipment", unlock="lacuna:umbral_steel_ingot")
+        key = {k: v for k, v in TOOL_KEY.items() if any(k in row for row in TOOLS[tool])}
+        g.shaped(iid, TOOLS[tool], key, f"lacuna:{iid}", category="equipment", unlock="lacuna:umbral_steel_ingot")
         g.tag("item", f"minecraft:{tool}s", mod(iid))
         g.tag("item", "lacuna:umbral_gear", mod(iid))
     for tool, en, it in [
@@ -163,17 +166,7 @@ def weapons(g):
     g.name("lacuna.sickle.tide_low", "The tide is too low for a maelstrom %s", "La marea è troppo bassa per un gorgo %s")
     g.name("lacuna.scepter.too_weak", "You are too weak to pay the price.", "Sei troppo debole per pagarne il prezzo.")
 
-    g.shaped("gravemaw_greatsword", ["UUU", "URU", " S "],
-             {"U": "lacuna:umbral_steel_ingot", "R": "lacuna:ruby", "S": "minecraft:stick"},
-             "lacuna:gravemaw_greatsword", category="equipment", unlock="lacuna:umbral_steel_ingot")
-    g.shaped("tidecaller_sickle", [" PP", " SP", "S  "], {"P": "minecraft:prismarine_shard", "S": "minecraft:stick"},
-             "lacuna:tidecaller_sickle", category="equipment", unlock="minecraft:prismarine_shard")
-    g.shaped("echo_dagger", [" Z ", " Z ", " S "],
-             {"Z": "lacuna:zenithite_shard", "S": "minecraft:stick"},
-             "lacuna:echo_dagger", category="equipment", unlock="lacuna:zenithite_shard")
-    g.shaped("pyrrhic_scepter", [" R ", " B ", " G "],
-             {"R": "lacuna:ruby", "B": "minecraft:blaze_rod", "G": "minecraft:gold_ingot"},
-             "lacuna:pyrrhic_scepter", category="equipment", unlock="minecraft:blaze_rod")
+    # the special weapons are relics: no recipes (sources in m19_progression and docs/PROGRESSION.md)
     for w in ("gravemaw_greatsword", "tidecaller_sickle", "heartwood_bow", "echo_dagger", "pyrrhic_scepter"):
         g.tag("item", "minecraft:enchantable/durability", mod(w))
 
@@ -215,9 +208,7 @@ def grasping_roots(g):
 
 def ember_triangle(g):
     """Ember Triangle: a relic that releases a circular thermal wave and pulverizes what it catches (gear/EmberWave)."""
-    g.item("ember_triangle", "Ember Triangle", "Triangolo di brace")
-    g.shaped("ember_triangle", [" E ", "EBE", "EEE"], {"E": "lacuna:ember", "B": "minecraft:blaze_powder"},
-             "lacuna:ember_triangle", category="equipment", unlock="lacuna:ember")
+    g.item("ember_triangle", "Ember Triangle", "Triangolo di brace")  # a relic: no recipe (m19_progression)
     # the pulverizing damage: nothing protects from it (armor, shields, resistance, enchantments) and it pushes nobody
     g.data("damage_type/pulverized", {"exhaustion": 0.0, "message_id": "lacuna.pulverized", "scaling": "never",
                                       "effects": "burning"})

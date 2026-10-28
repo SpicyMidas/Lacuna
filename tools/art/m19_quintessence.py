@@ -18,7 +18,7 @@ ROWS = {
     1: (8, 8), 2: (7, 8), 3: (7, 9), 4: (6, 9), 5: (6, 10), 6: (5, 10), 7: (4, 11), 8: (4, 11),
     9: (3, 12), 10: (3, 12), 11: (3, 12), 12: (3, 12), 13: (4, 11), 14: (5, 10),
 }
-CORE = (7.5, 10.0)          # the gap at the heart
+CORE = (7.5, 10.5)          # the gap at the heart (a 2x2 hole)
 OUTLINE = c("#1A0A2E")
 BODY = [c("#2E1152"), c("#45207A"), c("#6431A6"), c("#8C52D4"), c("#B884F5")]   # dark -> light
 TEAL = [c("#2FA8A8"), c("#5FE3D4"), c("#B4FFF4")]
@@ -56,23 +56,22 @@ def frame(f):
             if edge(x, y):
                 px[x, y] = OUTLINE
                 continue
-            dx, dy = x - CORE[0], (y - CORE[1]) * 1.1
+            dx, dy = x - CORE[0], y - CORE[1]
             r = math.hypot(dx, dy)
             if r < 0.8:
                 px[x, y] = GAP
                 continue
-            if r < 1.7:
-                px[x, y] = HALO[2] if breath > 0.6 else HALO[1]
+            if r < 1.8:
+                # the thin halo around the gap breathes: bright, then soft
+                px[x, y] = HALO[2] if breath > 0.5 and (dx < 0 or dy < 0) else HALO[1] if breath > 0.25 else HALO[0]
                 continue
-            if r < 2.4:
-                px[x, y] = HALO[1] if breath > 0.35 else HALO[0]
-                continue
-            # two swirling arms of light: teal and rose, winding outward
+            # two swirling arms of light winding outward from the halo: one teal, one rose
             theta = math.atan2(dy, dx)
-            band = math.sin(2 * theta - 0.9 * r + phase)
-            if band > 0.55 and r < 4.6:
-                ramp = TEAL if math.cos(theta - phase / 2) > 0 else ROSE
-                px[x, y] = ramp[2] if band > 0.92 and r < 3.6 else ramp[1] if band > 0.75 else ramp[0]
+            arm = (theta - 0.45 * r + phase / 2) % math.tau
+            band = math.cos(2 * (theta - 0.45 * r) + phase)
+            if band > 0.6 and r < 4.8:
+                ramp = TEAL if arm < math.pi else ROSE
+                px[x, y] = ramp[2] if band > 0.93 and r < 3.2 else ramp[1] if band > 0.8 else ramp[0]
             else:
                 px[x, y] = body_shade(x, y)
     # a fixed glint on the upper-left shoulder and along the tip

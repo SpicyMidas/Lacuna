@@ -1,0 +1,26 @@
+{
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "lacuna:clockwork_gear"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "U": {
+      "item": "lacuna:umbral_steel_ingot"
+    }
+  },
+  "pattern": [
+    "UGU",
+    "LIL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lacuna:repair_kit"
+  },
+  "type": "minecraft:crafting_shaped"
+}

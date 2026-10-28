@@ -104,6 +104,72 @@
         }
       ],
       "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "name": "lacuna:mirror_of_recursion",
+          "type": "minecraft:item",
+          "weight": 14
+        },
+        {
+          "name": "lacuna:eclipser",
+          "type": "minecraft:item",
+          "weight": 10
+        },
+        {
+          "name": "lacuna:quickening_wand",
+          "type": "minecraft:item",
+          "weight": 10
+        },
+        {
+          "name": "lacuna:echo_dagger",
+          "type": "minecraft:item",
+          "weight": 9
+        },
+        {
+          "name": "lacuna:chronoshard_pocket_watch",
+          "type": "minecraft:item",
+          "weight": 9
+        },
+        {
+          "name": "lacuna:divine_magnifying_glass",
+          "type": "minecraft:item",
+          "weight": 9
+        },
+        {
+          "name": "lacuna:gravemaw_greatsword",
+          "type": "minecraft:item",
+          "weight": 8
+        },
+        {
+          "name": "lacuna:null_lantern",
+          "type": "minecraft:item",
+          "weight": 8
+        },
+        {
+          "name": "lacuna:pyrrhic_scepter",
+          "type": "minecraft:item",
+          "weight": 7
+        },
+        {
+          "name": "lacuna:ember_triangle",
+          "type": "minecraft:item",
+          "weight": 6
+        },
+        {
+          "name": "lacuna:whisperbone_flute",
+          "type": "minecraft:item",
+          "weight": 6
+        },
+        {
+          "name": "lacuna:suns_fury",
+          "type": "minecraft:item",
+          "weight": 4
+        }
+      ],
+      "rolls": 1.0
     }
   ],
   "type": "minecraft:chest"

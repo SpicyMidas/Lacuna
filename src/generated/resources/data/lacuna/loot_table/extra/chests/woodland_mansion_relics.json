@@ -1,0 +1,26 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 85
+        },
+        {
+          "name": "lacuna:quickening_wand",
+          "type": "minecraft:item",
+          "weight": 8
+        },
+        {
+          "name": "lacuna:heartwood_bow",
+          "type": "minecraft:item",
+          "weight": 7
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "lacuna:extra/chests/woodland_mansion_relics",
+  "type": "minecraft:chest"
+}

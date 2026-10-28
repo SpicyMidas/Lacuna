@@ -4,7 +4,7 @@
       "conditions": {
         "items": [
           {
-            "items": "minecraft:blaze_rod"
+            "items": "lacuna:clockwork_gear"
           }
         ]
       },
@@ -12,7 +12,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "lacuna:pyrrhic_scepter"
+        "recipe": "lacuna:repair_kit"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "lacuna:pyrrhic_scepter"
+      "lacuna:repair_kit"
     ]
   }
 }

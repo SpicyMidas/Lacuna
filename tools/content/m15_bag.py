@@ -83,8 +83,10 @@ def build(g):
     for key, (en, it) in LANG.items():
         g.name(key, en, it)
 
-    g.shaped(BAG, ["SLS", "LCL", "LLL"], {"S": "minecraft:string", "L": "minecraft:leather", "C": "minecraft:lead"},
-             mod(BAG), category="misc", unlock="minecraft:leather")
+    # still craftable (a utility, not a relic), but an ender pearl is what makes it bigger on the inside
+    g.shaped(BAG, ["SLS", "LPL", "LCL"], {"S": "minecraft:string", "L": "minecraft:leather", "P": "minecraft:ender_pearl",
+                                          "C": "minecraft:lead"},
+             mod(BAG), category="misc", unlock="minecraft:ender_pearl")
 
     # never bagged: bosses (also #c:bosses in code), temporary or bound mod creatures, blocks that must stay unobtainable
     g.tag("entity_type", "lacuna:bag_refuses", "minecraft:ender_dragon", "minecraft:wither", "minecraft:warden",
