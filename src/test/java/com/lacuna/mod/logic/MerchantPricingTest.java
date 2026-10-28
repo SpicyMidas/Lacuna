@@ -1,13 +1,16 @@
 package com.lacuna.mod.logic;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class MerchantPricingTest {
@@ -43,6 +46,48 @@ class MerchantPricingTest {
         assertEquals(8, fragment.cost2Count());
         assertEquals(1, fragment.maxUses());
         assertFalse(offers.stream().anyMatch(o -> o.costCount() > 64 || o.costCount() < 1));
+    }
+
+    @Test
+    void bringsTwoRandomRelicsAndTheSunsFuryForgeForRubiesButNeverATotem() {
+        var relicIds = java.util.Arrays.stream(MerchantPricing.RELICS).map(r -> (String) r[0]).toList();
+        var offers = MerchantPricing.build(Map.of(), "lacuna:ruby", 1.0, new Random(3), false, false);
+        var relics = offers.stream().filter(o -> relicIds.contains(o.resultItem())).toList();
+        assertEquals(MerchantPricing.RELIC_OFFERS, relics.size());
+        assertEquals(relics.size(), relics.stream().map(MerchantPricing.Offer::resultItem).distinct().count());
+        assertTrue(relics.stream().allMatch(o -> o.costItem().equals("lacuna:ruby") && o.maxUses() == 1));
+        var forge = offers.stream().filter(o -> o.resultItem().equals("lacuna:suns_fury")).findFirst().orElseThrow();
+        assertEquals("lacuna:solar_flare", forge.cost2Item());
+        assertEquals(MerchantPricing.SUNS_FURY_FORGE_PRICE, forge.costCount());
+        assertFalse(offers.stream().anyMatch(o -> o.resultItem().startsWith("lacuna:totem_of")
+                || o.resultItem().equals("minecraft:totem_of_undying") || o.resultItem().equals("lacuna:lacunar_quintessence")));
+        assertFalse(offers.stream().anyMatch(o -> o.costCount() > 64 || o.cost2Count() > 64));
+    }
+
+    @Test
+    void everyRelicComesRoundInTime() {
+        Set<String> seen = new HashSet<>();
+        for (int seed = 0; seed < 300; seed++) {
+            MerchantPricing.build(Map.of(), "lacuna:ruby", 1.0, new Random(seed), false, false)
+                    .forEach(o -> seen.add(o.resultItem()));
+        }
+        for (Object[] relic : MerchantPricing.RELICS) {
+            assertTrue(seen.contains((String) relic[0]), (String) relic[0]);
+        }
+    }
+
+    @Test
+    void dearOffersArePaidPartlyInRubyBlocks() {
+        assertArrayEquals(new int[] {64, 2}, MerchantPricing.split(82, 1.0, "lacuna:ruby"));
+        assertArrayEquals(new int[] {64, 4}, MerchantPricing.split(100, 1.0, "lacuna:ruby"));
+        assertArrayEquals(new int[] {41, 0}, MerchantPricing.split(82, 0.5, "lacuna:ruby"));
+        assertArrayEquals(new int[] {64, 0}, MerchantPricing.split(100, 1.0, "minecraft:emerald"));
+        var offers = MerchantPricing.build(Map.of(), "lacuna:ruby", 1.0, new Random(5), false, true);
+        var essence = offers.stream().filter(o -> o.resultItem().equals("lacuna:lacunar_quintessence")).findFirst().orElseThrow();
+        assertEquals(64, essence.costCount());
+        assertEquals("lacuna:ruby_block", essence.cost2Item());
+        assertEquals(4, essence.cost2Count());
+        assertEquals(1, essence.maxUses());
     }
 
     @Test
