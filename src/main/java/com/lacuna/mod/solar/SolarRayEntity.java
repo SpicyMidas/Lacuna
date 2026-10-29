@@ -197,10 +197,12 @@ public class SolarRayEntity extends Entity {
         double r = Balance.SOLAR_RAY_DAMAGE_RADIUS;
         AABB box = new AABB(getX() - r, getY() - 8, getZ() - r, getX() + r, getY() + Math.min(Balance.SOLAR_RAY_HEIGHT, 56), getZ() + r);
         Entity cause = owner == null ? null : server.getEntity(owner);
+        // a thrower who left this level can no longer be checked by the PvP rules: without PvP, players are spared
+        boolean sparePlayers = owner != null && cause == null && !server.getServer().isPvpAllowed();
         for (LivingEntity e : server.getEntitiesOfClass(LivingEntity.class, box, LivingEntity::isAlive)) {
             double dx = e.getX() - getX();
             double dz = e.getZ() - getZ();
-            if (dx * dx + dz * dz > r * r) {
+            if (dx * dx + dz * dz > r * r || sparePlayers && e instanceof Player) {
                 continue;
             }
             if (e.hurt(ModDamageTypes.source(server, ModDamageTypes.SOLAR_RAY, this, cause), Balance.SOLAR_RAY_DAMAGE)) {

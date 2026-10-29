@@ -434,7 +434,9 @@ public class FallingStarEntity extends Projectile {
                 continue; // its caller is gone: nothing tells friend from foe any more
             }
             float damage = locked ? Starfall.BLAST_DAMAGE : Starfall.damageAt(d);
-            boolean affected = damage <= 0.0F || e.hurt(source, damage);
+            // past the damage ring only the push is left: it spares whoever the blast itself could not hurt
+            boolean affected = damage > 0.0F ? e.hurt(source, damage) : !e.isInvulnerableTo(source)
+                    && !(e instanceof Player victim && source.getEntity() instanceof Player caller && !victim.canHarmPlayer(caller));
             if (!affected) {
                 continue; // invulnerable, creative, or a player protected by PvP rules
             }
