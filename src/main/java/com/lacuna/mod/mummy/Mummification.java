@@ -353,7 +353,7 @@ public final class Mummification {
         AttributeInstance speed = mob.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speed != null) {
             speed.removeModifier(SLOW_ID);
-            // transient: never saved, like the partial wraps themselves
+            // transient: never saved (a reloaded creature's partial wraps loosen instead of slowing it again)
             speed.addTransientModifier(new AttributeModifier(SLOW_ID, -Math.min(0.9, SLOW_PER_WRAP * wraps),
                     AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         }

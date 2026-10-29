@@ -62,7 +62,7 @@ public final class ModAttachments {
     /** Starlace Bandage wraps on a creature (mummy/Mummification); saved once it is a finished mummy, synced to clients. */
     public static final Supplier<AttachmentType<com.lacuna.mod.mummy.Mummy>> MUMMY = ATTACHMENTS.register("mummy",
             () -> AttachmentType.builder(() -> com.lacuna.mod.mummy.Mummy.NONE)
-                    .serialize(com.lacuna.mod.mummy.Mummy.CODEC, com.lacuna.mod.mummy.Mummy::done)
+                    .serialize(com.lacuna.mod.mummy.Mummy.CODEC, m -> m.wraps() > 0)
                     .sync(com.lacuna.mod.mummy.Mummy.STREAM_CODEC).build());
 
     private ModAttachments() {}

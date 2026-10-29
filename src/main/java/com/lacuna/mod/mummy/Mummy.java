@@ -8,8 +8,9 @@ import net.minecraft.network.codec.StreamCodec;
 
 /**
  * A creature's Starlace wraps (attachment {@code lacuna:mummy}): how many bandages are on it and how many it takes, and
- * what it was like before, so unwrapping restores it exactly. Partly wrapped creatures are not saved (their wraps
- * loosen soon anyway); a finished mummy is. Synced to clients, which draw the wraps over finished mummies.
+ * what it was like before, so unwrapping restores it exactly. Saved with the creature, partial wraps too (they loosen
+ * and drop back as soon as it ticks again after {@link Mummification#PARTIAL_TICKS}, so a chunk unload or the Comically
+ * Large Bag never eats a bandage). Synced to clients, which draw the wraps over finished mummies.
  *
  * @param wraps     bandages applied so far
  * @param needed    bandages it takes ({@link Mummification#wrapsNeeded})
