@@ -429,9 +429,12 @@ public final class LacunaGameTests {
     @GameTest(template = PLATFORM)
     public static void creativeTabIsCuratedAndComplete(GameTestHelper helper) {
         var ordered = new java.util.ArrayList<>(com.lacuna.mod.registry.ModCreativeTabs.ordered());
-        check(helper, ordered.get(0) == ModItems.TOTEM_OF_BANISHING.get(), "relics come first");
+        check(helper, ordered.get(0) == ModItems.ALMANAC.get() && ordered.get(1) == ModItems.TOTEM_OF_BANISHING.get(),
+                "the Almanac, then the relics come first");
         for (var holder : com.lacuna.mod.registry.ModRegistries.ITEMS.getEntries()) {
-            check(helper, ordered.contains(holder.get()), holder.getId() + " missing from the creative tab");
+            boolean technical = com.lacuna.mod.registry.ModCreativeTabs.technical(holder.get());
+            check(helper, ordered.contains(holder.get()) != technical, holder.getId() + (technical ? " is technical but in" : " missing from")
+                    + " the creative tab");
         }
         var advancements = helper.getLevel().getServer().getAdvancements();
         for (String key : List.of("root", "enter_forgotten_land", "survive_banishment", "forge_eclipser", "throw_suns_fury",

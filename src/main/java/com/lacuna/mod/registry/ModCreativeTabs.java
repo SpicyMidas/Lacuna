@@ -15,14 +15,17 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
- * The single "Lacuna" creative tab (spec M12: curated order): relics first, then weapons and armour, materials,
- * village and mob items, then every block in registration order. Anything not listed is appended at the end, so a
- * new registration can never be missing from the tab.
+ * The single "Lacuna" creative tab (spec M12: curated order): the Almanac, relics, then weapons, gadgets and armour,
+ * materials, village and mob items, then every block in registration order. Anything not listed is appended at the
+ * end, so a new registration can never be missing from the tab; only the {@link #TECHNICAL} structure blocks are
+ * left out (they are hidden from recipe viewers too).
  */
 public final class ModCreativeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Lacuna.MODID);
 
     private static final List<Supplier<? extends ItemLike>> CURATED = List.of(
+            // the guidebook
+            ModItems.ALMANAC,
             // relics
             ModItems.TOTEM_OF_BANISHING, ModBlocks.FORGOTTEN_PORTAL_FRAME, ModItems.ECLIPSER, ModItems.SUNS_FURY, ModItems.DIVINE_MAGNIFYING_GLASS,
             ModItems.FRACTURED_PEARL, ModItems.ARRIVAL_SHARD, ModItems.DEPARTURE_SHARD, ModItems.CHRONOSHARD_POCKET_WATCH,
@@ -33,6 +36,7 @@ public final class ModCreativeTabs {
             ModItems.EMBER_TRIANGLE,
             ModItems.STARCALLER_TRUMPET,
             ModItems.TOTEM_OF_CONFUSION,
+            ModItems.COMICALLY_LARGE_BAG,
             ModItems.STARLACE_BANDAGE,
             ModItems.UMBRAL_STEEL_SWORD, ModItems.UMBRAL_STEEL_PICKAXE, ModItems.UMBRAL_STEEL_AXE, ModItems.UMBRAL_STEEL_SHOVEL, ModItems.UMBRAL_STEEL_HOE,
             ModItems.STARLACE_HELMET, ModItems.STARLACE_CHESTPLATE, ModItems.STARLACE_LEGGINGS, ModItems.STARLACE_BOOTS,
@@ -40,12 +44,16 @@ public final class ModCreativeTabs {
             ModItems.RUBY, ModItems.DIVINE_GLASS_SHARD, ModItems.RAW_UMBRAL_STEEL, ModItems.UMBRAL_STEEL_INGOT,
             ModItems.UMBRAL_STEEL_NUGGET, ModItems.ZENITHITE_SHARD, ModItems.STARLACE_CLOTH, ModItems.SOLAR_FLARE_FRAGMENT, ModItems.SOLAR_FLARE,
             ModItems.STAR_FRAGMENT, ModBlocks.MOLTEN_STAR_ROCK, ModBlocks.PRIME_STAR_ROCK, ModBlocks.EXTINGUISHED_STAR_ROCK,
-            ModItems.EXILITE_SHARD, ModItems.EXILITE_INGOT,
+            ModItems.EXILITE_DEBRIS, ModItems.EXILITE_SHARD, ModItems.EXILITE_INGOT, ModItems.EXILITE_BLOCK,
             ModItems.LACUNAR_QUINTESSENCE,
             ModItems.CHRONAL_SHARD, ModItems.ECHO_FRAGMENT, ModItems.EMBER, ModItems.CRYSTAL_WILLOW_SHARD, ModItems.SILK_DUST, ModItems.CLOCKWORK_GEAR,
             // villages and creatures
             ModItems.VILLAGE_COIN, ModBlocks.VILLAGE_LEDGER, ModItems.GUILD_CONTRACT, ModItems.REPAIR_KIT, ModItems.CLOCKWORK_DECOY,
             ModItems.LANTERN_MOTH_SPAWN_EGG, ModItems.LAST_MERCHANT_SPAWN_EGG);
+
+    /** Structure mechanics, obtainable only with commands: never shown in the tab. */
+    private static final List<Supplier<? extends ItemLike>> TECHNICAL = List.of(
+            ModBlocks.LABYRINTH_TRIGGER, ModBlocks.LABYRINTH_EXIT, ModBlocks.OBELISK_INSCRIPTION);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> LACUNA = TABS.register("lacuna", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.lacuna"))
@@ -59,6 +67,11 @@ public final class ModCreativeTabs {
         Set<Item> items = new LinkedHashSet<>();
         CURATED.forEach(s -> items.add(s.get().asItem()));
         ModRegistries.ITEMS.getEntries().forEach(h -> items.add(h.get()));
+        TECHNICAL.forEach(s -> items.remove(s.get().asItem()));
         return items;
+    }
+
+    public static boolean technical(Item item) {
+        return TECHNICAL.stream().anyMatch(s -> s.get().asItem() == item);
     }
 }
