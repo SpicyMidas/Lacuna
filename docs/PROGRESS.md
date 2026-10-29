@@ -714,7 +714,7 @@ Gates: 3 ✔ (validate_assets 0 errors), compile ✔, one client boot run ✔; G
     being scaled.
   - First join: `almanac.giveOnFirstJoin` (default true) hands every player one; the flag is
     `lacuna_almanac_given` in the player's `PlayerPersisted` NeoForge data (kept through death and the End exit).
-- **Advancements as a progression guide** (`tools/content/m20_milestones.py`, 20 new, en + it, descriptions hint at
+- **Advancements as a progression guide** (`tools/content/m20_milestones.py`, 21 new, en + it, descriptions hint at
   where to go): ruby, Umbral Steel, an Umbral tool, trading with the Last Merchant, the Wayfarer's Chart, any relic
   (new item tag `lacuna:relics`), every relic (challenge, 100 XP), possession, the Wand of Quickening, the Totem of
   Banishing, lighting a Forgotten Portal, zenithite, Exilite Debris (challenge, 50 XP), finding a Mirror Labyrinth,
