@@ -259,6 +259,8 @@ def guilds(g):
         "lacuna.guild.need_coins": ("Joining costs %s village coins.", "L'iscrizione costa %s monete del villaggio."),
         "lacuna.guild.joined": ("Welcome to the %s!", "Benvenuto nella %s!"),
         "lacuna.guild.contract_active": ("Finish your current contract first.", "Prima completa il contratto in corso."),
+        "lacuna.guild.contract_limit": ("The guild has no more work for you today (%s contracts a day).",
+                                        "La gilda oggi non ha altro lavoro per te (%s contratti al giorno)."),
         "lacuna.guild.contract_given": ("The guild hands you a contract.", "La gilda ti consegna un contratto."),
         "lacuna.guild.wrong_board": ("This contract belongs to another guild.", "Questo contratto appartiene a un'altra gilda."),
         "lacuna.guild.missing": ("Still missing: %s × %s", "Mancano ancora: %s × %s"),

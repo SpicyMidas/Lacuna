@@ -31,6 +31,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -259,8 +261,11 @@ public class SolarRayEntity extends Entity {
             if (player != null && !server.mayInteract(player, pos)) {
                 continue;
             }
-            if (!state.getFluidState().isEmpty()) {
-                continue;
+            if (!state.getFluidState().isEmpty() || state.hasBlockEntity()) {
+                continue; // fluids stay, and so do chests, anchors and every other block that holds something
+            }
+            if (player != null && NeoForge.EVENT_BUS.post(new BlockEvent.BreakEvent(server, pos, state, player)).isCanceled()) {
+                continue; // claim and protection mods decide as if the thrower had broken the block
             }
             server.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
             done++;

@@ -3,6 +3,24 @@
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->
+- **Release audit fixes:**
+  - **Shadow Walk:** the spectator menu can no longer teleport a walking shadow across the world.
+  - **Forgotten Land seal:** an operator command running in the same tick (a command-block clock) no longer unseals
+    the Forgotten Land.
+  - **Wand of Quickening:** can no longer wake and steal another player's protected death drop.
+  - **Mirror of Recursion:** reflected tridents keep their thrower, pickup rule and Loyalty.
+  - **PvP respected:** the Heartwood Bow's roots, possessed creatures, the outer push of a falling star and a Sun's
+    Fury ray whose thrower left no longer affect players the attacker may not hurt.
+  - **Starlace Bandage:** a half-wrapped mob now keeps its bandages through chunk unloads and the bag.
+  - **Sun's Fury:** never erases chests, anchors or other blocks that hold something. Claim and protection mods can
+    veto its block clearing, as for blocks the thrower breaks.
+  - **Guild contracts:** capped at three per player per day, so coins are earned, not farmed. Civic screens can no
+    longer be spammed with refresh requests.
+  - **Config screen:** every option has a readable English and Italian label.
+  - **Cleanup:** unused settings, constants, effects, a texture and leftover code were removed. Docs describe the
+    current mod (villages instead of Townships, no ruby tools), and the Arrival Anchor is mined with a pickaxe.
+- **Creative tab:** the Almanac first, gadgets together, exilite with its materials, technical blocks hidden.
+- **Tooltips:** added for the remaining materials and functional blocks.
 - **Lacuna Almanac (new):** an in-game guidebook given to every player on first join (or crafted from a book and a
   ruby). It is a two-page book in the mod's colours with 9 chapters and 78 entries covering every relic, totem, tool,
   material, wood set, biome, structure, creature, event and the village civic life. Each entry has icons, a short

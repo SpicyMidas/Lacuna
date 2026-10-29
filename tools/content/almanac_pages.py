@@ -1028,7 +1028,7 @@ PAGES = {
          "for 20 coins once you are a friend of the village (reputation 10+).\n"
          "Members trade with their guild's **Guildmaster** (Smiths: Umbral Steel and repair kits; Gemcutters: rubies, "
          "divine glass and zenithite; Scholars: chronal shards, echo shards and enchanted books) and take **contracts**: "
-         "deliver the goods for coins and +3 reputation.",
+         "deliver the goods for coins and +3 reputation, up to three contracts a day.",
          "Guild boards hang in the guild hall. Crafted: sticks and paper around a gray (Smiths), red (Gemcutters) or "
          "purple (Scholars) banner."),
         ("Gilde e contratti",
@@ -1037,7 +1037,8 @@ PAGES = {
          "10+).\n"
          "I membri commerciano con il **Maestro di gilda** della loro gilda (fabbri: acciaio umbrale e kit di "
          "riparazione; tagliagemme: rubini, vetro divino e zenithite; studiosi: schegge cronali, frammenti d'eco e libri "
-         "incantati) e accettano **contratti**: consegna la merce per monete e +3 di reputazione.",
+         "incantati) e accettano **contratti**: consegna la merce per monete e +3 di reputazione, fino a tre contratti "
+         "al giorno.",
          "Le bacheche sono appese nella sala delle gilde. Si fabbricano: bastoni e carta attorno a uno stendardo grigio "
          "(fabbri), rosso (tagliagemme) o viola (studiosi)."),
     ),

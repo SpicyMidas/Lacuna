@@ -59,6 +59,9 @@ public final class CivicScreens {
 
     private static final int ACTION_COOLDOWN_TICKS = 4;
     private static final Map<UUID, Long> LAST_ACTION = new ConcurrentHashMap<>();
+    /** An open screen asks for a fresh snapshot every second; anything faster is dropped. */
+    private static final int REFRESH_COOLDOWN_TICKS = 10;
+    private static final Map<UUID, Long> LAST_REFRESH = new ConcurrentHashMap<>();
 
     private CivicScreens() {}
 
@@ -113,6 +116,13 @@ public final class CivicScreens {
             if (!refresh && last != null && now - last < ACTION_COOLDOWN_TICKS && now >= last) {
                 return;
             }
+            if (refresh) {
+                Long lastRefresh = LAST_REFRESH.get(player.getUUID());
+                if (lastRefresh != null && now - lastRefresh < REFRESH_COOLDOWN_TICKS && now >= lastRefresh) {
+                    return;
+                }
+                LAST_REFRESH.put(player.getUUID(), now);
+            }
             BlockState state = level.getBlockState(pos);
             Kind kind = kindOf(state);
             if (kind == null) {
@@ -148,6 +158,7 @@ public final class CivicScreens {
 
     public static void forget(UUID player) {
         LAST_ACTION.remove(player);
+        LAST_REFRESH.remove(player);
     }
 
     private static void send(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, Kind kind, VillageRecord t,

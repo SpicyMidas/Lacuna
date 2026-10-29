@@ -11,6 +11,7 @@ import java.util.List;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -23,6 +24,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -35,6 +37,11 @@ import net.minecraft.world.level.ItemLike;
 /** Guild membership, contracts and Guildmaster trades (spec 18.4). */
 public final class Guilds {
     public static final int JOIN_COST = 20;
+    /** Contracts a member may take per 24000 ticks of play: the guilds' coins are earned, not farmed. */
+    public static final int CONTRACTS_PER_DAY = 3;
+    /** Keys in the player's {@link Player#PERSISTED_NBT_TAG} compound (it survives death, so dying resets nothing). */
+    private static final String CONTRACT_DAY_KEY = "lacuna_contract_day";
+    private static final String CONTRACT_COUNT_KEY = "lacuna_contracts_taken";
 
     /** item, min, max, reward min, reward max per guild. */
     private static final Object[][] SMITHS = {{"minecraft:iron_ingot", 12, 24, 6, 10}, {"lacuna:umbral_steel_ingot", 4, 8, 8, 14},
@@ -100,6 +107,16 @@ public final class Guilds {
         if (activeContract(player) != null) {
             return CivicScreens.Result.fail(Component.translatable("lacuna.guild.contract_active"));
         }
+        CompoundTag data = player.getPersistentData();
+        CompoundTag persisted = data.getCompound(Player.PERSISTED_NBT_TAG);
+        long day = level.getGameTime() / 24000L;
+        int taken = persisted.getLong(CONTRACT_DAY_KEY) == day ? persisted.getInt(CONTRACT_COUNT_KEY) : 0;
+        if (taken >= CONTRACTS_PER_DAY) {
+            return CivicScreens.Result.fail(Component.translatable("lacuna.guild.contract_limit", CONTRACTS_PER_DAY));
+        }
+        persisted.putLong(CONTRACT_DAY_KEY, day);
+        persisted.putInt(CONTRACT_COUNT_KEY, taken + 1);
+        data.put(Player.PERSISTED_NBT_TAG, persisted);
         Object[][] table = contractTable(guild);
         RandomSource r = level.getRandom();
         Object[] row = table[r.nextInt(table.length)];
