@@ -3,7 +3,6 @@ package com.lacuna.mod.fx;
 import com.lacuna.mod.network.FxPayload;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -21,11 +20,6 @@ public final class LacunaFx {
 
     public static void send(ServerLevel level, Vec3 at, FxPayload payload) {
         send(level, at, NEAR, payload);
-    }
-
-    /** Sends to every player tracking {@code entity} and, if it is a player, to the entity itself. */
-    public static void sendTracking(Entity entity, FxPayload payload) {
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
     }
 
     public static void sendTo(ServerPlayer player, FxPayload payload) {

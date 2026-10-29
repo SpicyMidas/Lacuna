@@ -37,8 +37,6 @@ final class TideWater {
     static final int PALE = 3;
     static final int FOAM = 4;
     static final int GLINT = 5;
-    /** Ramp of {@link #ramp}: deep, body, light, pale, foam. */
-    private static final int[] RAMP = {DEEP, BODY, LIGHT, PALE, FOAM};
     private static final float BODY_LUM = 0.46F;
     private static final int VANILLA_WATER = 0x3F76E4;
 
@@ -142,13 +140,6 @@ final class TideWater {
     /** Unlit colour of a palette slot (for vanilla particles, which the game lights itself). */
     int raw(int slot) {
         return raw[slot];
-    }
-
-    /** Lit palette ramp: 0 deep, 0.25 body, 0.5 light, 0.75 pale, 1 foam. */
-    int ramp(float t) {
-        float x = Mth.clamp(t, 0.0F, 1.0F) * (RAMP.length - 1);
-        int i = Math.min(RAMP.length - 2, (int) x);
-        return mix(lit[RAMP[i]], lit[RAMP[i + 1]], x - i);
     }
 
     static int mix(int a, int b, float t) {

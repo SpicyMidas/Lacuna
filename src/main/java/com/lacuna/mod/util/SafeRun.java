@@ -24,10 +24,6 @@ public final class SafeRun {
         return DISABLED.contains(feature);
     }
 
-    public static Set<String> disabledFeatures() {
-        return Set.copyOf(DISABLED);
-    }
-
     @Nullable
     public static String reason(String feature) {
         return REASONS.get(feature);

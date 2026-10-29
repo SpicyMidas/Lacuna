@@ -113,31 +113,4 @@ public final class FxDraw {
             v(vc, pose, b0.x, b0.y, b0.z, 0.0F, vB, argbB);
         }
     }
-
-    /**
-     * Ribbon bent along an arc of radius {@code r} around {@code c} in the plane of unit vectors {@code e1}, {@code e2},
-     * from angle {@code a0} to {@code a1} (radians), {@code width} wide (tapering to points at both ends), drawn as
-     * {@code segments} quads. u runs across (0 inner, 1 outer), v along (0..1).
-     */
-    public static void arc(PoseStack.Pose pose, VertexConsumer vc, Vec3 c, Vec3 e1, Vec3 e2, float r, float a0, float a1,
-                           float width, int segments, int argb) {
-        for (int i = 0; i < segments; i++) {
-            float s0 = (float) i / segments;
-            float s1 = (float) (i + 1) / segments;
-            float w0 = width * Mth.sin(s0 * Mth.PI);
-            float w1 = width * Mth.sin(s1 * Mth.PI);
-            float t0 = Mth.lerp(s0, a0, a1);
-            float t1 = Mth.lerp(s1, a0, a1);
-            Vec3 d0 = e1.scale(Math.cos(t0)).add(e2.scale(Math.sin(t0)));
-            Vec3 d1 = e1.scale(Math.cos(t1)).add(e2.scale(Math.sin(t1)));
-            Vec3 in0 = c.add(d0.scale(r - w0 * 0.5));
-            Vec3 out0 = c.add(d0.scale(r + w0 * 0.5));
-            Vec3 in1 = c.add(d1.scale(r - w1 * 0.5));
-            Vec3 out1 = c.add(d1.scale(r + w1 * 0.5));
-            v(vc, pose, in0.x, in0.y, in0.z, 0.0F, s0, argb);
-            v(vc, pose, out0.x, out0.y, out0.z, 1.0F, s0, argb);
-            v(vc, pose, out1.x, out1.y, out1.z, 1.0F, s1, argb);
-            v(vc, pose, in1.x, in1.y, in1.z, 0.0F, s1, argb);
-        }
-    }
 }

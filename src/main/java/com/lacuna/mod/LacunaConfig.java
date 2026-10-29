@@ -13,7 +13,6 @@ public final class LacunaConfig {
 
     // ---------------------------------------------------------------- general
     public static final ModConfigSpec.IntValue BLOCK_CHANGES_PER_TICK;
-    public static final ModConfigSpec.BooleanValue DEBUG_LOGGING;
 
     // ---------------------------------------------------------------- divine sight
     public static final ModConfigSpec.BooleanValue DIVINE_SIGHT_ENABLED;
@@ -66,7 +65,6 @@ public final class LacunaConfig {
     public static final ModConfigSpec.DoubleValue UMBRAL_DARK_BONUS;
 
     // ---------------------------------------------------------------- wood
-    public static final ModConfigSpec.BooleanValue WOOD_EXTRAS;
     public static final ModConfigSpec.BooleanValue TIDEBLOOM_FISH;
 
     // ---------------------------------------------------------------- forgotten land biomes & structures
@@ -104,7 +102,6 @@ public final class LacunaConfig {
         B.push("general");
         BLOCK_CHANGES_PER_TICK = B.comment("Hard cap of block changes per tick for long block jobs (Sun's Fury).")
                 .defineInRange("blockChangesPerTick", Balance.BLOCK_CHANGES_PER_TICK, 1, 4000);
-        DEBUG_LOGGING = B.comment("Extra debug logging for Lacuna systems.").define("debugLogging", false);
         B.pop();
 
         B.push("divineSight");
@@ -186,7 +183,6 @@ public final class LacunaConfig {
         B.pop();
 
         B.push("wood");
-        WOOD_EXTRAS = B.comment("Reserved for signs/boats (M12, currently not implemented).").define("extras", false);
         TIDEBLOOM_FISH = B.comment("Tidebloom roots occasionally spawn fish in adjacent water.").define("tidebloomFish", true);
         B.pop();
 

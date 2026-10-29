@@ -34,8 +34,6 @@ public final class FxRenderTypes {
     public static final ResourceLocation BEAM = Lacuna.id("textures/effect/beam.png");
     /** Thin ring mask. */
     public static final ResourceLocation RING = Lacuna.id("textures/effect/ring.png");
-    /** Crescent mask. */
-    public static final ResourceLocation SLASH = Lacuna.id("textures/effect/slash.png");
 
     private static final RenderStateShard.ShaderStateShard POS_TEX_COLOR =
             new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader);
@@ -59,9 +57,6 @@ public final class FxRenderTypes {
     private static final Function<ResourceLocation, RenderType> ADDITIVE = Util.memoize(tex -> twin(RenderType.create(
             "lacuna_additive_" + tex.getPath(), DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 1536, false, false,
             state(tex, RenderStateShard.LIGHTNING_TRANSPARENCY, POS_TEX_COLOR, RenderStateShard.LEQUAL_DEPTH_TEST)), tex));
-    private static final Function<ResourceLocation, RenderType> ADDITIVE_THROUGH = Util.memoize(tex -> RenderType.create(
-            "lacuna_additive_through_" + tex.getPath(), DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 1536, false, false,
-            state(tex, RenderStateShard.LIGHTNING_TRANSPARENCY, POS_TEX_COLOR, RenderStateShard.NO_DEPTH_TEST)));
     private static final Function<ResourceLocation, RenderType> SHADE = Util.memoize(tex -> twin(RenderType.create(
             "lacuna_shade_" + tex.getPath(), DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS, 1536, false, true,
             state(tex, RenderStateShard.TRANSLUCENT_TRANSPARENCY, POS_TEX_COLOR, RenderStateShard.LEQUAL_DEPTH_TEST)), tex));
@@ -134,11 +129,6 @@ public final class FxRenderTypes {
     /** Additive light with a texture mask (vertex colour tints, alpha scales intensity). */
     public static RenderType additive(ResourceLocation texture) {
         return ADDITIVE.apply(texture);
-    }
-
-    /** Additive light that ignores depth (seen through blocks); use sparingly. */
-    public static RenderType additiveThrough(ResourceLocation texture) {
-        return ADDITIVE_THROUGH.apply(texture);
     }
 
     /** Alpha-blended (non-glowing) textured quads, for darkness and smoke. */

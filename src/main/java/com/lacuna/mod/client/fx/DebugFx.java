@@ -2,7 +2,6 @@ package com.lacuna.mod.client.fx;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.lacuna.mod.network.FxPayload;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -22,10 +21,6 @@ public final class DebugFx implements ClientFx {
 
     public static void register() {
         FxHandlers.register("debug", p -> FxManager.add(new DebugFx(p.a(), p.b())));
-    }
-
-    public static FxPayload payload(Vec3 a, Vec3 b) {
-        return FxPayload.line("debug", a, b);
     }
 
     @Override

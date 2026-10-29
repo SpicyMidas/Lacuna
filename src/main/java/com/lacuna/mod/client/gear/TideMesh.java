@@ -76,13 +76,6 @@ final class TideMesh {
         v[row] = value;
     }
 
-    /** Hides a ring (its quads are skipped when both rings are empty). */
-    void clearRow(int row) {
-        for (int i = 0; i < sides; i++) {
-            argb[row * sides + i] = 0;
-        }
-    }
-
     /** The surface between rings {@code from} .. {@code to}. */
     void emit(Emitter e, int from, int to) {
         float base = mode * 2.0F;

@@ -48,8 +48,7 @@ public final class Starfall {
     public static final float BLAST_DAMAGE = 8.0F;
     public static final double KNOCKBACK = 1.1;
     public static final float BURN_SECONDS = 3.0F;
-    /** Crater half-width (only when mobGriefing is on); blocks tougher than {@link #CRATER_MAX_RESISTANCE} survive. */
-    public static final double CRATER_RADIUS = 1.75;
+    /** Blocks tougher than this survive the crater (dug only when mobGriefing is on). */
     public static final float CRATER_MAX_RESISTANCE = 9.0F;
     public static final int FIRES = 3;
     /** Players this close feel the impact (camera shake); the flash is seen closer still. */

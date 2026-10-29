@@ -31,7 +31,6 @@ import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.ItemLike;
-import net.minecraft.world.level.block.state.BlockState;
 
 /** Guild membership, contracts and Guildmaster trades (spec 18.4). */
 public final class Guilds {
@@ -237,9 +236,5 @@ public final class Guilds {
             ItemStack book = EnchantedBookItem.createForEnchantment(new EnchantmentInstance(holder, lvl));
             return new MerchantOffer(new ItemCost(ModItems.VILLAGE_COIN.get(), 8 + lvl * 4), book, 3, 10, 0.05F);
         }).orElse(null);
-    }
-
-    static boolean boardIsGuild(BlockState state, GuildType guild) {
-        return state.is(ModBlocks.GUILD_BOARD.get()) && state.getValue(GuildBoardBlock.GUILD) == guild;
     }
 }

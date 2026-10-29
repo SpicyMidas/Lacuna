@@ -11,7 +11,6 @@ public final class Balance {
     // ---------------------------------------------------------------- global budgets (section 3)
     public static final int BLOCK_CHANGES_PER_TICK = 400;
     public static final int MAX_ENTITY_QUERY_SIDE = 64;
-    public static final int MAX_PARTICLE_PACKETS_PER_TICK = 40;
 
     // ---------------------------------------------------------------- safe-spot search (section 6)
     public static final int SAFE_SPOT_HORIZONTAL = 16;
@@ -65,24 +64,9 @@ public final class Balance {
     public static final int ECLIPSER_DURABILITY = 250;
     public static final int ECLIPSER_ATTACK_DAMAGE = 8; // including base 1 (the tooltip shows 8)
     public static final float ECLIPSER_ATTACK_SPEED = 1.6F;
-    public static final int ECLIPSE_CHARGE_PER_HIT = 10;
-    public static final int ECLIPSE_MAX_CHARGE = 100;
-    public static final int ECLIPSE_HIT_INTERVAL = 5;
-    public static final int ECLIPSE_DECAY_DELAY = 160;
-    public static final int ECLIPSE_DECAY_PER_SECOND = 2;
-    public static final int ECLIPSE_MIN_DASH_CHARGE = 20;
-    public static final double ECLIPSE_DASH_BASE = 4.0;
-    public static final double ECLIPSE_DASH_PER_CHARGE = 0.10;
     public static final double ECLIPSE_DASH_MAX = 14.0;
     public static final double ECLIPSE_DASH_RADIUS = 1.5;
-    public static final float ECLIPSE_DAMAGE_BASE = 12.0F;
-    public static final float ECLIPSE_DAMAGE_PER_CHARGE = 0.18F;
-    public static final float ECLIPSE_DAMAGE_MAX = 30.0F;
-    public static final int ECLIPSE_DURABILITY_BASE = 5;
-    public static final int ECLIPSE_DURABILITY_SCALE = 15;
     public static final int ECLIPSE_COOLDOWN = 400;
-    public static final int SHADOW_WALK_BASE_TICKS = 40;
-    public static final int SHADOW_WALK_SCALE_TICKS = 80;
 
     // ---------------------------------------------------------------- sun's fury (M4)
     public static final float SUNS_FURY_SPEED = 2.5F;
@@ -117,7 +101,6 @@ public final class Balance {
     public static final float ARRIVAL_SHARD_SPEED = 1.5F;
     public static final double ARRIVAL_SHARD_GRAVITY = 0.03;
     public static final int SHARD_REPAIR_PER_PEARL = 3;
-    public static final float ANCHOR_BLAST_RESISTANCE = 1200.0F;
 
     // ---------------------------------------------------------------- pocket watch (M6)
     public static final int WATCH_DURABILITY = 12;
@@ -328,12 +311,7 @@ public final class Balance {
     public static final float MERCHANT_FRAGMENT_CHANCE = 0.08F;
 
     // ---------------------------------------------------------------- village civic system (M11)
-    public static final int REP_MIN = -100;
-    public static final int REP_MAX = 100;
     public static final int VILLAGE_MAX_VILLAGERS = 40;
-    public static final int COUNCIL_PERIOD_DAYS = 7;
-    public static final int GUILD_FEE = 20;
-    public static final int GUILD_MIN_REP = 10;
     public static final int PARDON_COOLDOWN_DAYS = 3;
 
     // ---------------------------------------------------------------- ember triangle (thermal wave relic)

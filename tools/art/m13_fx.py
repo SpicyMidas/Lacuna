@@ -74,28 +74,6 @@ def shadow_mote():
         save(img, f"particle/shadow_mote_{frame}")
 
 
-def _crescent(img, cx, cy, r_out, r_in, offset, start, end, body, rim, rim_w):
-    """A crescent: the outer disc minus an inner disc shifted by `offset`, drawn between two angles."""
-    px = img.load()
-    for y in range(img.height):
-        for x in range(img.width):
-            fx, fy = x + 0.5 - cx, y + 0.5 - cy
-            d_out = math.hypot(fx, fy)
-            d_in = math.hypot(fx - offset, fy + offset * 0.35)
-            if d_out > r_out or d_in < r_in:
-                continue
-            ang = math.degrees(math.atan2(fy, fx)) % 360
-            if not (start <= ang <= end):
-                continue
-            edge = min(r_out - d_out, d_in - r_in)
-            taper = min(ang - start, end - ang) / 30.0
-            if taper < 1.0 and edge > taper * 3.0:
-                continue
-            col = rim if edge < rim_w else body
-            a = int(col[3] * min(1.0, 0.35 + taper))
-            px[x, y] = (col[0], col[1], col[2], a)
-
-
 # The melee slashes copy the vanilla sweep (8 opaque frames, 32x32): a wide flat arc above the centre that is drawn
 # in from its right tip, sweeps across and is drawn out towards its left tip. Only the colours are ours.
 SWEEP_WINDOWS = ((0.0, 0.12), (0.0, 0.45), (0.0, 0.75), (0.0, 1.0), (0.15, 1.0), (0.4, 1.0), (0.65, 1.0), (0.88, 1.0))
@@ -222,10 +200,6 @@ def effect_masks():
             if a > 0:
                 px[x, y] = (255, 255, 255, int(255 * a ** 1.5))
     save(img, "effect/ring")
-    # slash: a crescent mask (white) used for large rendered sword arcs
-    img = new(64, 64)
-    _crescent(img, 32, 32, 31, 26, 8.0, 20, 270, (255, 255, 255, 255), (255, 255, 255, 255), 0.0)
-    save(img, "effect/slash")
 
 
 def paint():
