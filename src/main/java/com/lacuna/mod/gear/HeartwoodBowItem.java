@@ -14,7 +14,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
@@ -25,6 +27,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Heartwood Bow (spec M7): arrows root their target for 2 s (movement and jump -100 %), 4 s with "pinned" particles
@@ -50,6 +53,9 @@ public class HeartwoodBowItem extends BowItem {
             return;
         }
         if (event.getRayTraceResult() instanceof EntityHitResult hit && hit.getEntity() instanceof LivingEntity target) {
+            if (target instanceof Player victim && spared(arrow.getOwner(), victim)) {
+                return; // no PvP (or a teammate, or an animated item's friend): the arrow glances off, no roots
+            }
             Vec3 dir = arrow.getDeltaMovement().normalize();
             Vec3 behind = target.position().add(0, target.getBbHeight() * 0.5, 0).add(dir.scale(target.getBbWidth() * 0.5 + 1.5));
             BlockPos wall = BlockPos.containing(behind);
@@ -68,6 +74,14 @@ public class HeartwoodBowItem extends BowItem {
             SafeRun.run("heartwood_roots", () -> GraspingRootsBlock.sprout(level, block.getBlockPos(), block.getDirection(),
                     Balance.GRASPING_ROOTS_PER_HIT));
         }
+    }
+
+    /** A player the shooter may not hurt: the arrow's damage is refused, so its roots must not take hold either. */
+    private static boolean spared(@Nullable Entity shooter, Player victim) {
+        if (shooter instanceof Player player) {
+            return player != victim && !player.canHarmPlayer(victim);
+        }
+        return shooter instanceof AnimatedItemEntity animated && animated.isAlly(victim);
     }
 
     @Override

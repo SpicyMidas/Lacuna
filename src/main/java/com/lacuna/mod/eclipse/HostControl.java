@@ -28,6 +28,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.SmallFireball;
@@ -288,7 +289,8 @@ final class HostControl {
 
     /**
      * The living thing the host looks at within {@code range}: the client's crosshair entity when it really lies on the
-     * shadow's look ray, else the first one along that ray up to the first block.
+     * shadow's look ray, else the first one along that ray up to the first block. Players the shadow may not hurt (no
+     * PvP, teammates) are never struck through a host.
      */
     @Nullable
     private static LivingEntity pick(ServerLevel level, Possession.Link link, Vec3 eye, Vec3 look, double range, int hint) {
@@ -300,7 +302,7 @@ final class HostControl {
         }
         if (hinted instanceof LivingEntity living && living != host && living != link.possessor && living.isAlive() && !living.isSpectator()
                 && living.getBoundingBox().inflate(0.3).clip(eye, end).isPresent()) {
-            return living;
+            return spared(link, living) ? null : living;
         }
         BlockHitResult block = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, host));
         if (block.getType() != HitResult.Type.MISS) {
@@ -308,6 +310,10 @@ final class HostControl {
         }
         EntityHitResult hit = ProjectileUtil.getEntityHitResult(host, eye, end, host.getBoundingBox().expandTowards(end.subtract(eye)).inflate(1.0),
                 e -> e instanceof LivingEntity && e != link.possessor && e.isAlive() && !e.isSpectator() && e.isPickable(), eye.distanceToSqr(end));
-        return hit != null && hit.getEntity() instanceof LivingEntity living ? living : null;
+        return hit != null && hit.getEntity() instanceof LivingEntity living && !spared(link, living) ? living : null;
+    }
+
+    private static boolean spared(Possession.Link link, LivingEntity target) {
+        return target instanceof Player other && !link.possessor.canHarmPlayer(other);
     }
 }
