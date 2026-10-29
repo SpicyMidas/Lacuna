@@ -716,15 +716,15 @@ PAGES = {
     "divine_glass": (
         ("Divine Glass",
          "Glass still warm with old light. Four shards make a block of **Divine Glass**: it glows softly and is a window "
-         "into the stone. Look through it from close by and the ores, chests, spawners and creatures up to 12 blocks "
-         "behind it show through. Six blocks make sixteen panes. Shards also mend the Magnifying Glass and the Mirror.",
+         "into the stone. Look through it from close by and the stone behind falls away: only ores, chests, spawners "
+         "and creatures remain. Six blocks make sixteen panes. Shards also mend the Magnifying Glass and the Mirror.",
          "Divine glass clusters grow only in the Forgotten Land (1 shard, +Fortune; Silk Touch keeps the cluster). Also "
          "ruin caches, bell towers, hoards and obelisks, the Last Merchant (4 rubies) and the Gemcutters' Guild (5 coins)."),
         ("Vetro divino",
          "Vetro ancora caldo di luce antica. Quattro frammenti fanno un blocco di **Vetro divino**: brilla piano ed è "
-         "una finestra nella pietra. Guardaci attraverso da vicino e i minerali, i forzieri, i generatori e le creature "
-         "fino a 12 blocchi oltre si vedono in trasparenza. Sei blocchi fanno sedici pannelli. I frammenti riparano anche "
-         "la Lente e lo Specchio.",
+         "una finestra nella pietra. Guardaci attraverso da vicino e la pietra dietro svanisce: restano solo minerali, "
+         "forzieri, generatori e creature. Sei blocchi fanno sedici pannelli. I frammenti riparano anche la Lente e lo "
+         "Specchio.",
          "I grappoli di vetro divino crescono solo nella Terra Dimenticata (1 frammento, +Fortuna; con Tocco di velluto "
          "resta il grappolo). Anche forzieri delle rovine, torri, tesori e obelischi, l'Ultimo mercante (4 rubini) e la "
          "Gilda dei tagliagemme (5 monete)."),
