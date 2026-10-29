@@ -27,7 +27,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -231,11 +230,5 @@ public class ChronoHourglassBlock extends BaseEntityBlock {
                 Balance.HOURGLASS_PLAYER_SPEED).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("block.lacuna.chrono_hourglass.use3").withStyle(ChatFormatting.DARK_GRAY));
         tooltip.add(Component.translatable("block.lacuna.chrono_hourglass.use5").withStyle(ChatFormatting.DARK_GRAY));
-    }
-
-    /** Placement helper for structures and commands: both halves at once (mirrors {@link DoublePlantBlock#placeAt}). */
-    public static void placeAt(LevelAccessor level, BlockState state, BlockPos pos, int flags) {
-        level.setBlock(pos, state.setValue(HALF, DoubleBlockHalf.LOWER), flags);
-        level.setBlock(pos.above(), state.setValue(HALF, DoubleBlockHalf.UPPER), flags);
     }
 }

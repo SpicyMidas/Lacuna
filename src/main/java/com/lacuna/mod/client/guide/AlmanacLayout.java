@@ -65,7 +65,6 @@ final class AlmanacLayout {
     private final Map<String, Integer> entryFirst;
     private final Map<String, Integer> entryCount;
     private final Map<String, Integer> chapterContents;
-    private final Map<String, Integer> chapterFirst;
 
     private AlmanacLayout(Builder b) {
         this.pages = List.copyOf(b.pages);
@@ -73,7 +72,6 @@ final class AlmanacLayout {
         this.entryFirst = b.entryFirst;
         this.entryCount = b.entryCount;
         this.chapterContents = b.chapterContents;
-        this.chapterFirst = b.chapterFirst;
     }
 
     int spreads() {
@@ -99,10 +97,6 @@ final class AlmanacLayout {
     /** The contents page listing {@code chapter}. */
     int chapterContentsPage(AlmanacBook.Chapter chapter) {
         return chapterContents.getOrDefault(chapter.id(), 0);
-    }
-
-    int chapterFirstPage(AlmanacBook.Chapter chapter) {
-        return chapterFirst.getOrDefault(chapter.id(), 0);
     }
 
     static AlmanacLayout build(AlmanacBook book, Font font, int width, int height) {
@@ -163,7 +157,6 @@ final class AlmanacLayout {
         final Map<String, Integer> entryFirst = new HashMap<>();
         final Map<String, Integer> entryCount = new HashMap<>();
         final Map<String, Integer> chapterContents = new HashMap<>();
-        final Map<String, Integer> chapterFirst = new HashMap<>();
         int contentsPages;
         Page page;
         int y;
@@ -271,7 +264,6 @@ final class AlmanacLayout {
             start(entry.chapter(), entry, false);
             int first = pages.size() - 1;
             entryFirst.put(entry.id(), first);
-            chapterFirst.putIfAbsent(entry.chapter().id(), first);
 
             List<FormattedCharSequence> titleLines = font.split(Component.translatable(entry.titleKey())
                     .withStyle(ChatFormatting.BOLD), width - 20);
