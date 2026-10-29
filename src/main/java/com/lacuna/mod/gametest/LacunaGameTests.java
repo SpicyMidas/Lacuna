@@ -89,7 +89,7 @@ public final class LacunaGameTests {
         helper.setBlock(CENTER, ModBlocks.DIVINE_GLASS_CLUSTER.get());
         List<ItemStack> result = drops(helper, CENTER, new ItemStack(Items.IRON_PICKAXE));
         int shards = result.stream().filter(s -> s.is(ModItems.DIVINE_GLASS_SHARD.get())).mapToInt(ItemStack::getCount).sum();
-        check(helper, shards >= 2 && shards <= 4, "cluster should drop 2-4 shards, got " + shards);
+        check(helper, shards == 1, "cluster should drop 1 shard without Fortune, got " + shards);
         helper.succeed();
     }
 
