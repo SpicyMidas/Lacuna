@@ -37,13 +37,11 @@ final class PossessionOverlay {
     private static float previous;
     private static float beat;
     private static float beatPrev;
-    private static int time;
     private static long crackSeed = 1L;
 
     private PossessionOverlay() {}
 
     static void onEnter() {
-        time = 0;
         crackSeed = System.nanoTime();
     }
 
@@ -71,7 +69,6 @@ final class PossessionOverlay {
         if (!on && current < 0.003F) {
             current = 0.0F;
         }
-        time++;
         float cd = countdown();
         boolean fighting = cd >= 0.0F;
         float bpm = fighting ? 100.0F + 45.0F * (1.0F - cd) : 60.0F + 30.0F * hold();

@@ -305,14 +305,14 @@ final class TideSpout {
                 }
                 if (!touched && tip(age) < 0.04F) {
                     touched = true;
-                    touchdown(level, r);
+                    touchdown(r);
                 }
             }
             return ++age < duration + 20;
         }
 
         /** The funnel's foot hits the water: a ring of spray and torn-up water and bed. */
-        private void touchdown(ClientLevel level, RandomSource r) {
+        private void touchdown(RandomSource r) {
             double d = dist(center);
             if (d < 24.0) {
                 ScreenFx.shake((float) (1.4 * (1.0 - d / 24.0)), 8);

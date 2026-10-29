@@ -232,7 +232,7 @@ public final class CivicScreen extends Screen {
             if (hover) {
                 if (!row.tooltip.isEmpty()) {
                     tooltip.addAll(row.tooltip);
-                } else if (font.width(row.detail) > detailWidth(row, rw) || font.width(row.title) > titleWidth(row, rw)) {
+                } else if (font.width(row.detail) > detailWidth(rw) || font.width(row.title) > titleWidth(row, rw)) {
                     tooltip.add(row.title);
                     if (!row.detail.getString().isEmpty()) {
                         tooltip.add(row.detail.copy().withStyle(net.minecraft.ChatFormatting.GRAY));
@@ -257,7 +257,7 @@ public final class CivicScreen extends Screen {
         return rw - 26 - rightWidth(row);
     }
 
-    private int detailWidth(CivicPage.Row row, int rw) {
+    private int detailWidth(int rw) {
         return rw - 28;
     }
 
@@ -273,7 +273,7 @@ public final class CivicScreen extends Screen {
         int ty = oneLine ? y + 7 : y + 3;
         g.drawString(font, fit(row.title, titleWidth(row, w)), x + 23, ty, titleColor, false);
         if (!oneLine) {
-            g.drawString(font, fit(row.detail, detailWidth(row, w)), x + 23, y + 12, row.dim ? CivicUi.INK_DIM : CivicUi.INK_SOFT, false);
+            g.drawString(font, fit(row.detail, detailWidth(w)), x + 23, y + 12, row.dim ? CivicUi.INK_DIM : CivicUi.INK_SOFT, false);
         }
         int rx = x + w - 4;
         if (row.bar >= 0) {

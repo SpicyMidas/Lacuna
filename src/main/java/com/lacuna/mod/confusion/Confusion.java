@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  * which one happened (action bar).
  * <p>
  * Each copy carries the owner's skin, name tag, armour and held items and mirrors the owner's movement input every
- * tick, turned by its own heading offset ({@link #HEADINGS}), so the crowd walks, sprints, jumps, sneaks and swings
+ * tick, turned by its own heading offset ({@link #SIDE_HEADINGS}), so the crowd walks, sprints, jumps, sneaks and swings
  * together but scatters in different directions. Two hits pop a copy; they fade after {@link #LIFETIME} ticks.
  * Hostile mobs hunting the owner are sometimes drawn to the nearest copy. Tuning lives here (not in the shared
  * Balance) so the feature stays self-contained.

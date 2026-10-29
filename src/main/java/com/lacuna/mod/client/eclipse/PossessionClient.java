@@ -200,7 +200,7 @@ public final class PossessionClient {
                 possessorTick(mc);
             }
             if (possessed) {
-                hostTick(mc);
+                hostTick();
             }
             PossessionOverlay.tick(mc);
         }, PossessionClient::reset);
@@ -225,7 +225,7 @@ public final class PossessionClient {
         sneakHeld = sneak;
     }
 
-    private static void hostTick(Minecraft mc) {
+    private static void hostTick() {
         if (mouseFight > 3.0F) {
             struggle += Math.min(1.2F, mouseFight * 0.08F); // turning the view away from where the shadow looks
         }

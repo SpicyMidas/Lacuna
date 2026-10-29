@@ -354,7 +354,7 @@ public final class TideCurrents {
                 Sfx.at(level, at(to, 0.0), SoundEvents.GENERIC_SPLASH, 0.8F, 0.85F + level.random.nextFloat() * 0.35F);
             }
             if (to >= length - 1.0E-6) {
-                crash(level, player, y);
+                crash(level, player);
                 return false;
             }
             return true;
@@ -466,7 +466,7 @@ public final class TideCurrents {
         }
 
         /** The wave breaks: whatever it carried is thrown on, with a final crash of water. */
-        private void crash(ServerLevel level, @Nullable Player player, double y) {
+        private void crash(ServerLevel level, @Nullable Player player) {
             for (int id : carried) {
                 if (level.getEntity(id) instanceof LivingEntity e && e.isAlive() && !spared(player, e) && !isBoss(e)) {
                     double k = heft(e);

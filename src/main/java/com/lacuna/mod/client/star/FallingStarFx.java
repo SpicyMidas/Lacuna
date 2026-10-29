@@ -183,7 +183,7 @@ final class FallingStarFx implements ClientFx {
         float time = ctx.time(age);
         PoseStack.Pose pose = ctx.pose().last();
         if (alive) {
-            marker(ctx, pose, time);
+            marker(ctx, time);
         }
         if (alive && !star.isFalling()) {
             appear(ctx, pose, head, s, star.appearProgress(pt), time);
@@ -272,7 +272,7 @@ final class FallingStarFx implements ClientFx {
     }
 
     /** A faint ring where the star will strike, pulsing faster and brighter as it comes. */
-    private void marker(FxRenderContext ctx, PoseStack.Pose pose, float time) {
+    private void marker(FxRenderContext ctx, float time) {
         Vec3 ground;
         Entity target = star.targetId() >= 0 ? ctx.level().getEntity(star.targetId()) : null;
         if (target != null) {
