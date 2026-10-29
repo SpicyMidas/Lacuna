@@ -1,0 +1,35 @@
+# Tree clearing in a forest village: a one-biome taiga overworld (spruce forest everywhere). /lacuna village visit
+# civic_square finds the nearest village grown from the civic square (its chunks generate on arrival, with the
+# village_clearing pass), then the plaza from the street, from above and straight down, and each civic building
+# from its street (either design: the square picks one at random).
+world lacuna_taiga biome:minecraft:taiga taiga2
+wait 100
+hud off
+cmd time set 4000
+cmd gamemode spectator
+cmd lacuna village visit civic_square
+wait 800
+shot trees_square_street
+cmd tp @s ~ ~26 ~14
+wait 60
+look 180 48
+wait 300
+shot trees_square_above
+cmd tp @s ~ ~22 ~-31
+wait 40
+look 180 90
+wait 200
+shot trees_square_top
+cmd lacuna village visit village_hall
+wait 200
+shot trees_hall
+cmd lacuna village visit mint
+wait 200
+shot trees_mint
+cmd lacuna village visit guild_hall
+wait 200
+shot trees_guild
+cmd lacuna village visit schoolhouse
+wait 200
+shot trees_school
+quit

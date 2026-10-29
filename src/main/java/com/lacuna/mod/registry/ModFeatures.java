@@ -24,6 +24,9 @@ public final class ModFeatures {
             FEATURES.register("floating_island", () -> new FloatingIslandFeature(NoneFeatureConfiguration.CODEC));
     public static final DeferredHolder<Feature<?>, ClearIceCapFeature> CLEAR_ICE_CAP =
             FEATURES.register("clear_ice_cap", () -> new ClearIceCapFeature(NoneFeatureConfiguration.CODEC));
+    // M11: trees that grew into a village's buildings, doorways or streets are cleared (last decoration step)
+    public static final DeferredHolder<Feature<?>, com.lacuna.mod.village.VillageClearingFeature> VILLAGE_CLEARING =
+            FEATURES.register("village_clearing", () -> new com.lacuna.mod.village.VillageClearingFeature(NoneFeatureConfiguration.CODEC));
 
     private ModFeatures() {}
 }

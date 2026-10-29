@@ -1,0 +1,131 @@
+# Both designs of the four civic buildings in every village style on flat ground (raw templates: the entrance step
+# and the villager spots show as jigsaw blocks): the first designs from the street, then the second designs
+# (village/<type>/alt/<building>); then a snowy and a desert civic square grown with /place jigsaw (pavilion,
+# stalls, the buildings in either design).
+world lacuna_civic_alt flat civicalt
+wait 100
+hud off
+cmd time set 3000
+cmd gamerule doDaylightCycle false
+cmd gamemode spectator
+cmd tp @s -20 -40 28
+wait 60
+cmd place template lacuna:village/plains/village_hall 0 -60 0
+cmd place template lacuna:village/plains/mint 0 -60 16
+cmd place template lacuna:village/plains/guild_hall 0 -60 30
+cmd place template lacuna:village/plains/schoolhouse 0 -60 46
+wait 40
+cmd tp @s -24 -46 -10 facing 6 -56 26
+wait 160
+shot civicalt_plains_first
+cmd tp @s -20 -40 108
+wait 60
+cmd place template lacuna:village/plains/alt/village_hall 0 -60 80
+cmd place template lacuna:village/plains/alt/mint 0 -60 96
+cmd place template lacuna:village/plains/alt/guild_hall 0 -60 110
+cmd place template lacuna:village/plains/alt/schoolhouse 0 -60 126
+wait 40
+cmd tp @s -24 -41 66 facing 6 -53 106
+wait 160
+shot civicalt_plains_second
+cmd tp @s 200 -40 28
+wait 60
+cmd place template lacuna:village/desert/village_hall 220 -60 0
+cmd place template lacuna:village/desert/mint 220 -60 16
+cmd place template lacuna:village/desert/guild_hall 220 -60 30
+cmd place template lacuna:village/desert/schoolhouse 220 -60 46
+wait 40
+cmd tp @s 196 -46 -10 facing 226 -56 26
+wait 160
+shot civicalt_desert_first
+cmd tp @s 200 -40 108
+wait 60
+cmd place template lacuna:village/desert/alt/village_hall 220 -60 80
+cmd place template lacuna:village/desert/alt/mint 220 -60 96
+cmd place template lacuna:village/desert/alt/guild_hall 220 -60 110
+cmd place template lacuna:village/desert/alt/schoolhouse 220 -60 126
+wait 40
+cmd tp @s 196 -41 66 facing 226 -53 106
+wait 160
+shot civicalt_desert_second
+cmd tp @s 420 -40 28
+wait 60
+cmd place template lacuna:village/savanna/village_hall 440 -60 0
+cmd place template lacuna:village/savanna/mint 440 -60 16
+cmd place template lacuna:village/savanna/guild_hall 440 -60 30
+cmd place template lacuna:village/savanna/schoolhouse 440 -60 46
+wait 40
+cmd tp @s 416 -46 -10 facing 446 -56 26
+wait 160
+shot civicalt_savanna_first
+cmd tp @s 420 -40 108
+wait 60
+cmd place template lacuna:village/savanna/alt/village_hall 440 -60 80
+cmd place template lacuna:village/savanna/alt/mint 440 -60 96
+cmd place template lacuna:village/savanna/alt/guild_hall 440 -60 110
+cmd place template lacuna:village/savanna/alt/schoolhouse 440 -60 126
+wait 40
+cmd tp @s 416 -41 66 facing 446 -53 106
+wait 160
+shot civicalt_savanna_second
+cmd tp @s 640 -40 28
+wait 60
+cmd place template lacuna:village/taiga/village_hall 660 -60 0
+cmd place template lacuna:village/taiga/mint 660 -60 16
+cmd place template lacuna:village/taiga/guild_hall 660 -60 30
+cmd place template lacuna:village/taiga/schoolhouse 660 -60 46
+wait 40
+cmd tp @s 636 -46 -10 facing 666 -56 26
+wait 160
+shot civicalt_taiga_first
+cmd tp @s 640 -40 108
+wait 60
+cmd place template lacuna:village/taiga/alt/village_hall 660 -60 80
+cmd place template lacuna:village/taiga/alt/mint 660 -60 96
+cmd place template lacuna:village/taiga/alt/guild_hall 660 -60 110
+cmd place template lacuna:village/taiga/alt/schoolhouse 660 -60 126
+wait 40
+cmd tp @s 636 -41 66 facing 666 -53 106
+wait 160
+shot civicalt_taiga_second
+cmd tp @s 860 -40 28
+wait 60
+cmd place template lacuna:village/snowy/village_hall 880 -60 0
+cmd place template lacuna:village/snowy/mint 880 -60 16
+cmd place template lacuna:village/snowy/guild_hall 880 -60 30
+cmd place template lacuna:village/snowy/schoolhouse 880 -60 46
+wait 40
+cmd tp @s 856 -46 -10 facing 886 -56 26
+wait 160
+shot civicalt_snowy_first
+cmd tp @s 860 -40 108
+wait 60
+cmd place template lacuna:village/snowy/alt/village_hall 880 -60 80
+cmd place template lacuna:village/snowy/alt/mint 880 -60 96
+cmd place template lacuna:village/snowy/alt/guild_hall 880 -60 110
+cmd place template lacuna:village/snowy/alt/schoolhouse 880 -60 126
+wait 40
+cmd tp @s 856 -41 66 facing 886 -53 106
+wait 160
+shot civicalt_snowy_second
+cmd tp @s 1300 -40 0
+wait 100
+cmd place jigsaw lacuna:village/snowy/civic_square minecraft:street 7 1300 -60 0
+wait 300
+cmd tp @s 1300 -18 0 0 90
+wait 200
+shot civicalt_snowy_square_top
+cmd tp @s 1295 -47 -18 facing 1313 -58 0
+wait 200
+shot civicalt_snowy_square
+cmd tp @s 1700 -40 0
+wait 100
+cmd place jigsaw lacuna:village/desert/civic_square minecraft:street 7 1700 -60 0
+wait 300
+cmd tp @s 1700 -18 0 0 90
+wait 200
+shot civicalt_desert_square_top
+cmd tp @s 1695 -47 -18 facing 1713 -58 0
+wait 200
+shot civicalt_desert_square
+quit
