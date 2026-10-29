@@ -18,6 +18,7 @@ MOSSY = ("plains", "taiga")
 def build(g):
     civic_blocks(g)
     civic_pools(g)
+    civic_signs(g)
     village_clearing(g)
     reputation(g)
     council_currency(g)
@@ -111,6 +112,19 @@ def civic_blocks(g):
             {"type": "minecraft:item", "name": mod("comically_large_bag"), "weight": 2}]}]})
 
 
+# the hanging sign on each civic building (two short lines: a hanging sign holds about ten letters per line)
+CIVIC_SIGNS = {"village_hall": (("Village", "Hall"), ("Casa", "comunale")),
+               "mint": (("Village", "Mint"), ("La", "Zecca")),
+               "guild_hall": (("Guild", "Hall"), ("Sala delle", "Gilde")),
+               "schoolhouse": (("Village", "School"), ("La", "Scuola"))}
+
+
+def civic_signs(g):
+    for b, ((en1, en2), (it1, it2)) in CIVIC_SIGNS.items():
+        g.name(f"lacuna.civic.sign.{b}.1", en1, it1)
+        g.name(f"lacuna.civic.sign.{b}.2", en2, it2)
+
+
 def village_clearing(g):
     """The last decoration step of every overworld chunk clears the trees that grew into a village (VillageClearingFeature):
     once per chunk, no placement modifiers. /place feature lacuna:village_clearing runs it on a loaded chunk."""
@@ -126,8 +140,10 @@ def civic_pools(g):
     minecraft:street 7 ~ ~ ~ or /place jigsaw lacuna:village/desert/mint minecraft:building_entrance 2 ~ ~ ~."""
     for v in STYLES:
         processors = "minecraft:mossify_10_percent" if v in MOSSY else "minecraft:empty"
-        for b in CIVIC_BUILDINGS + ("civic_bell",):
-            g.data(f"worldgen/template_pool/village/{v}/{b}", wg.pool([mod(f"village/{v}/{b}")], processors=processors))
+        for b in CIVIC_BUILDINGS:  # either design of the building (tools/structures/m11_villages.py: <b> and alt/<b>)
+            g.data(f"worldgen/template_pool/village/{v}/{b}", wg.pool([mod(f"village/{v}/{b}"), mod(f"village/{v}/alt/{b}")],
+                                                                      processors=processors))
+        g.data(f"worldgen/template_pool/village/{v}/civic_bell", wg.pool([mod(f"village/{v}/civic_bell")], processors=processors))
         # the plaza follows the ground like the vanilla streets (VillagePools adds the same element to town_centers)
         g.data(f"worldgen/template_pool/village/{v}/civic_square", wg.pool([mod(f"village/{v}/civic_square")],
                                                                            processors=processors, projection="terrain_matching"))

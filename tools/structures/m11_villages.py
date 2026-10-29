@@ -34,11 +34,26 @@ Buildings: village_hall (ledger, council table, judge bench; a cupola on the rid
 chimney), guild_hall (one guild board under each guild banner; T plan) and schoolhouse (school desks, lectern,
 blackboard, bookshelves; a front cross gable).
 
+Each building has a second design with its own silhouette (village/<type>/alt/<building>, same footprint, entrance and
+functional blocks, so it fits every slot the first one fits; the single-building pools pick either at random):
+  village_hall: a side-gabled hall behind a square tower over the entrance (pyramid roof with a spire, a balcony on a
+                beam over the door, a lantern room reached by a ladder), a back chimney;
+  mint:         a counting house: a low stone shop wing with the copper teller counter in front of a tall two-storey
+                treasury (stone ground floor with barred vault windows, front gable), two chimneys;
+  guild_hall:   a great hall behind an open loggia (columns, a catslide roof, the guild banners on the columns),
+                stained-glass windows in the guild colours, a forge chimney;
+  schoolhouse:  a front-gabled school behind a columned porch, with a belfry and spire on the ridge.
+Every building names its role on a hanging sign (translated: lacuna.civic.sign.<building>.1/.2), and keeps an apron of
+explicit air in front of its facade so a hill or a grass tuft never blocks the door; planters flank the plainer facades.
+Where a taller volume rises above a lower roof (towers, the treasury) its walls continue above that roof.
+
 civic_square: a town centre (appended to minecraft:village/<type>/town_centers): a terrain-following paved plaza with
-lamps, benches and flower beds, the bell under a rigid canopy (civic_bell) in the middle, the four civic buildings in a
-pinwheel around it (each a rigid piece at its own ground height, like the vanilla houses along a street) and four
-street exits that continue the village outward like the vanilla town centres.
+lamps, benches, flower beds and two market stalls under striped awnings, the bell under a rigid pavilion (civic_bell:
+posts on stone feet, a beam ring, a hipped roof in the style's vocabulary, lanterns under the beams) in the middle, the
+four civic buildings in a pinwheel around it (each a rigid piece at its own ground height, like the vanilla houses
+along a street) and four street exits that continue the village outward like the vanilla town centres.
 """
+import json
 
 L = "lacuna:"
 
@@ -79,6 +94,15 @@ STYLES = {
                   pot2="potted_spruce_sapling", flat=False),
 }
 
+# the wood of the role signs (the style's door wood), the planters' soil and plants
+for _v, (_wood, _soil, _plants) in {
+        "plains": ("oak", "grass_block", ("poppy", "dandelion", "azure_bluet", "oxeye_daisy")),
+        "desert": ("jungle", "sand", ("dead_bush",)),
+        "savanna": ("acacia", "coarse_dirt", ("orange_tulip", "dandelion", "red_tulip")),
+        "taiga": ("spruce", "podzol", ("fern", "lily_of_the_valley", "poppy")),
+        "snowy": ("spruce", "grass_block", ("lily_of_the_valley", "azure_bluet", "blue_orchid"))}.items():
+    STYLES[_v].update(wood=_wood, soil=_soil, plants=_plants)
+
 SQUARES = {
     "plains": dict(ground="grass_block", path="dirt_path", curb="cobblestone", square="stone_bricks", square2="polished_andesite",
                    post="oak_fence", canopy="oak_slab", flowers=("poppy", "dandelion", "oxeye_daisy", "cornflower")),
@@ -101,7 +125,8 @@ CW = {"north": "east", "east": "south", "south": "west", "west": "north"}
 CCW = {v: k for k, v in CW.items()}
 NOT_FULL = ("_stairs", "_slab", "_fence", "_wall", "_pane", "_door", "_trapdoor", "_carpet", "_bed", "torch", "lantern",
             "chain", "_banner", "_button", "campfire", "chest", "lectern", "anvil", "ladder", "flower_pot", "iron_bars", "air",
-            "structure_void", "jigsaw", "_fence_gate", "pressure_plate", "snow", "bell")
+            "structure_void", "jigsaw", "_fence_gate", "pressure_plate", "snow", "bell", "_sign", "decorated_pot",
+            "lightning_rod", "amethyst_cluster")
 
 
 def is_log(name):
@@ -136,8 +161,9 @@ class Vol:
     """A box of the plan: walls x0..x1, z0..z1 up to y=H, then its roof ('x' / 'z': gable with the ridge along that axis,
     'hip', 'flat')."""
 
-    def __init__(self, x0, x1, z0, z1, H, ridge):
+    def __init__(self, x0, x1, z0, z1, H, ridge, tiers=None):
         self.x0, self.x1, self.z0, self.z1, self.H, self.ridge = x0, x1, z0, z1, H, ridge
+        self.tiers = tiers  # hip roofs: rings of stairs before the flat top (None: the building's default)
 
     def inside(self, x, z):
         return self.x0 <= x <= self.x1 and self.z0 <= z <= self.z1
@@ -156,9 +182,10 @@ class Vol:
 class Civic:
     """One civic building: front wall x=1 (door at z=zc), floor y=0, entrance jigsaw at (0, 0, zc)."""
 
-    def __init__(self, Template, vtype, name, D, W, H):
+    def __init__(self, Template, vtype, name, D, W, H, alt=False):
         self.Template = Template
         self.name = name
+        self.alt = alt  # the second design: village/<type>/alt/<name>
         self.v = vtype
         self.p = dict(STYLES[vtype])
         self.D, self.W, self.H = D, W, H
@@ -172,6 +199,7 @@ class Civic:
         self.base_h = self.p["base_h"]
         self.posts = set()
         self.tiers = 2  # hip roofs: rings of stairs before the flat slab top
+        self.band = None  # flat roofs: a colour band in the top row of the walls (the desert's terracotta inlays)
 
     # ------------------------------------------------------------------ primitives
     def set(self, x, y, z, name, props=None, nbt=None):
@@ -215,8 +243,10 @@ class Civic:
         self.lantern(x, low, z, hanging=True)
 
     def wall_banner(self, x, y, z, facing, color, pattern, pattern_color="white"):
+        """pattern: one pattern id (in pattern_color) or a list of (pattern, colour) layers."""
+        layers = pattern if isinstance(pattern, list) else [(pattern, pattern_color)]
         self.set(x, y, z, f"{color}_wall_banner", {"facing": facing},
-                 {"id": "minecraft:banner", "patterns": [{"color": pattern_color, "pattern": pattern}]})
+                 {"id": "minecraft:banner", "patterns": [{"color": c, "pattern": pat} for pat, c in layers]})
 
     def chest(self, x, y, z, facing, loot=None):
         nbt = {"id": "minecraft:chest"}
@@ -238,13 +268,17 @@ class Civic:
                              dict(final_state="minecraft:" + self.p["floor"], joint="rollable")))
 
     # ------------------------------------------------------------------ plan
-    def volume(self, x0, x1, z0, z1, H=None, ridge="x"):
+    def volume(self, x0, x1, z0, z1, H=None, ridge="x", tiers=None):
+        """ridge 'x' / 'z': gable along that axis; 'hip': hipped (with tiers=9: a full pyramid, e.g. a tower)."""
         kind = self.p["kind"]
         if kind == "flat":
             ridge = "flat"
         elif kind == "hip":
             ridge = "hip"
-        self.vols.append(Vol(x0, x1, z0, z1, self.H if H is None else H, ridge))
+        self.vols.append(Vol(x0, x1, z0, z1, self.H if H is None else H, ridge, tiers))
+
+    def tiers_of(self, v):
+        return self.tiers if v.tiers is None else v.tiers
 
     def in_plan(self, x, z):
         return any(v.inside(x, z) for v in self.vols)
@@ -258,7 +292,7 @@ class Civic:
             if r is None:
                 continue
             raw = v.H + 1 + r
-            y = v.H + 1 + min(r, self.tiers) if v.ridge == "hip" else raw
+            y = v.H + 1 + min(r, self.tiers_of(v)) if v.ridge == "hip" else raw
             if best is None or (raw, y) > (best[3], best[0]):
                 best = (y, r, v, raw)
         return best
@@ -319,7 +353,8 @@ class Civic:
         # floor
         for (x, z) in cols:
             self.set(x, 0, z, self.base if self.is_perimeter(x, z) else p["floor"])
-        # walls: a column is wall at height y where the outside (or a lower roof) touches it
+        # walls: a column is wall at height y where the outside (or a lower roof) touches it: in a pitched building,
+        # the roof of another (lower) volume, e.g. a tower's or a treasury's walls continue above the hall's roof
         for (x, z) in cols:
             top, r, v, _ = lv[(x, z)]
             for y in range(1, top):
@@ -330,6 +365,8 @@ class Civic:
                         if n not in lv:
                             exposed = True
                         elif flat and y >= lv[n][0]:
+                            exposed = True
+                        elif not flat and lv[n][2] is not v and y >= lv[n][0]:
                             exposed = True
                 if not exposed:
                     continue
@@ -384,6 +421,8 @@ class Civic:
             return p["post"], {"axis": "y"} if is_log(p["post"]) else None
         if y <= self.base_h:
             return self.base, None
+        if flat and self.band and y == v.H:
+            return self.band, None
         if y <= v.H:
             return self.wall, None
         if not flat and y == v.H + 1:
@@ -407,7 +446,7 @@ class Civic:
         for c, (yy, r, v, y) in sorted(cols.items()):
             x, z = c
             inside = self.in_plan(x, z)
-            capped = kind == "hip" and r > self.tiers
+            capped = kind == "hip" and r > self.tiers_of(v)
             higher = [f for f, (dx, dz) in DIRS.items() if L((x + dx, z + dz)) is not None and L((x + dx, z + dz)) > y]
             facing = None
             if higher:
@@ -475,12 +514,14 @@ class Civic:
         return self.lv[(x, z)][0]
 
     # ------------------------------------------------------------------ details
-    def entrance(self):
+    def entrance(self, lights=True):
         """The step (entrance jigsaw), a hood or awning over the door unless the eave already covers it, lights."""
         p, zc = self.p, self.zc
         step = f"minecraft:{p['step']}[facing=east,half=bottom,shape=straight,waterlogged=false]"
         self.jigsaws.append(((0, 0, zc), ("west_up", "minecraft:building_entrance", "minecraft:building_entrance", "minecraft:empty"),
                              dict(final_state=step, joint="aligned")))
+        if not lights:
+            return
         hood = self.get(0, 3, zc) is None and self.get(0, 4, zc) is None
         if hood:
             for z in (zc - 1, zc, zc + 1):
@@ -504,8 +545,9 @@ class Civic:
             for z in (zc - 1, zc + 1):
                 self.wall_torch(0, 2, z, "west")
 
-    def front_details(self):
-        """Flower pots beside the step, a glazed terracotta medallion over desert doors, ice lamps in the snow."""
+    def front_details(self, fx=1):
+        """Flower pots beside the step, a glazed terracotta medallion over desert doors (facade at x=fx), ice lamps in
+        the snow."""
         p, zc = self.p, self.zc
         dz = 2 if p["porch_posts"] else 1
         for z, pot in ((zc - dz, p["pot"]), (zc + dz, p["pot2"])):
@@ -513,8 +555,8 @@ class Civic:
                 self.set(0, 0, z, pot)
         if p["kind"] == "flat":
             for y in range(self.H, 2, -1):
-                if self.get(1, y, zc) == mc(self.wall):
-                    self.set(1, y, zc, "lime_glazed_terracotta", {"facing": "west"})
+                if self.get(fx, y, zc) == mc(self.wall) and self.get(fx - 1, y, zc) is None:
+                    self.set(fx, y, zc, "lime_glazed_terracotta", {"facing": "west"})
                     break
         if self.v == "snowy":
             for z in (1, self.W):
@@ -544,7 +586,7 @@ class Civic:
                     self.slab(cx, base + 4, cz, p["ridge"])
                 else:
                     f = ("east" if dx < 0 else "west") if dx else ("south" if dz < 0 else "north")
-                    self.stairs(cx + dx, base + 3, cz + dz, f)
+                    self.stairs(cx + dx, base + 3, cz + dz, f, p["roof"] if p["roof"].endswith("_stairs") else p["step"])
 
     def clear(self, x, y, z):
         self.blocks.pop((x, y, z), None)
@@ -559,6 +601,106 @@ class Civic:
         for y in range(0, top + 1):
             self.set(x, y, z, self.p["chimney"])
         self.set(x, top + 1, z, "campfire", {"facing": "north", "lit": "true", "signal_fire": "false", "waterlogged": "false"})
+
+    # ------------------------------------------------------------------ character
+    def sign_text(self):
+        key = f"lacuna.civic.sign.{self.name}"
+        empty = json.dumps({"text": ""})
+        text = {"messages": [empty, json.dumps({"translate": key + ".1"}), json.dumps({"translate": key + ".2"}), empty],
+                "color": "black", "has_glowing_text": False}
+        return {"id": "minecraft:hanging_sign", "is_waxed": True, "front_text": text, "back_text": dict(text)}
+
+    def wall_sign(self, x, y, z, facing):
+        """The building's role on a hanging sign from a wall bracket: it hangs off the block beside it (east or west
+        of a north/south facing sign), its two faces along the street."""
+        self.set(x, y, z, f"{self.p['wood']}_wall_hanging_sign", {"facing": facing, "waterlogged": "false"}, self.sign_text())
+
+    def ceiling_sign(self, x, y, z, rotation=4):
+        """The role sign on two chains under a beam, its face toward the street (rotation 4: west)."""
+        self.set(x, y, z, f"{self.p['wood']}_hanging_sign", {"attached": "false", "rotation": str(rotation),
+                                                             "waterlogged": "false"}, self.sign_text())
+
+    def role_sign(self, spots):
+        """The wall hanging sign at the first free spot (x, y, z) in front of a full facade block at x + 1."""
+        for (x, y, z) in spots:
+            if self.get(x, y, z) is None and full_block(self.get(x + 1, y, z)):
+                self.wall_sign(x, y, z, "north")
+                return
+        raise AssertionError(f"{self.v}/{self.name}: no spot for the role sign among {spots}")
+
+    def planter(self, z, x=0):
+        """A raised bed by the facade: the style's soil with one of its plants."""
+        if self.get(x, 0, z) is None and self.get(x, 1, z) is None:
+            soil = self.p["soil"]
+            self.set(x, 0, z, soil, {"snowy": "false"} if soil in ("grass_block", "podzol") else None)
+            plants = self.p["plants"]
+            self.set(x, 1, z, plants[(z + len(self.name)) % len(plants)])
+
+    def apron(self, x=0):
+        """Explicit air in front of the facade (walking level and two above): a hill, a bush or a grass tuft never
+        blocks the door or the windows (the terrain adaptation alone leaves slopes there)."""
+        steps = {pos for pos, _, _ in self.jigsaws}
+        for z in range(1, self.W + 1):
+            for y in range(0, 3):
+                if self.get(x, y, z) is None and (x, y, z) not in steps:
+                    self.set(x, y, z, "air")
+
+    def ladder(self, x, z, y0, y1, facing):
+        """A ladder column; facing points away from the wall it hangs on."""
+        for y in range(y0, y1 + 1):
+            self.set(x, y, z, "ladder", {"facing": facing, "waterlogged": "false"})
+
+    def close_wall(self, cells, y0, y1, block=None):
+        """Wall blocks in the given columns from y0 to y1 where there is nothing solid yet."""
+        for (x, z) in cells:
+            for y in range(y0, y1 + 1):
+                if self.get(x, y, z) in (None, "minecraft:air"):
+                    self.set(x, y, z, block or self.wall)
+
+    def lean_to(self, x0, x1, z0, z1, y0):
+        """A roof sloping down toward the street: y0 at x0, one higher per block toward x1 (snowy: stepped planks)."""
+        p = self.p
+        for x in range(x0, x1 + 1):
+            y = y0 + x - x0
+            for z in range(z0, z1 + 1):
+                if p["kind"] == "stepped":
+                    self.set(x, y, z, p["fill"])
+                    self.set(x, y + 1, z, "snow", {"layers": "1"})
+                else:
+                    self.stairs(x, y, z, "east")
+
+    def belfry(self, cx, cz):
+        """A slender open belfry on the ridge: corner posts, a lantern hanging inside, a stair cap and a copper spire."""
+        p = self.p
+        cells = [(cx + dx, cz + dz) for dx in (-1, 0, 1) for dz in (-1, 0, 1)]
+        tops = {c: self.roof_cols[c][0] for c in cells}
+        base = max(tops.values()) + (0 if p["kind"] == "gable" else 1)
+        for (x, z) in cells:
+            for y in range(tops[(x, z)] + 1, base + 1):
+                self.set(x, y, z, p["fill"])
+            self.set(x, base, z, p["fill"])
+        for dx in (-1, 1):
+            for dz in (-1, 1):
+                for y in (base + 1, base + 2):
+                    self.connected(cx + dx, y, cz + dz, p["fence"])
+        self.lantern(cx, base + 2, cz, hanging=True)
+        for dx in (-1, 0, 1):
+            for dz in (-1, 0, 1):
+                if (dx, dz) == (0, 0):
+                    self.set(cx, base + 3, cz, p["fill"])
+                    self.set(cx, base + 4, cz, p["fill"])
+                else:
+                    f = ("east" if dx < 0 else "west") if dx else ("south" if dz < 0 else "north")
+                    self.stairs(cx + dx, base + 3, cz + dz, f, p["roof"] if p["roof"].endswith("_stairs") else p["step"])
+        self.set(cx, base + 5, cz, "lightning_rod", {"facing": "up", "powered": "false", "waterlogged": "false"})
+
+    def stained(self, cells, colors):
+        """Glass panes at the given (x, y, z) become stained panes, cycling through the colours."""
+        i = 0
+        for (x, y, z) in cells:
+            if self.get(x, y, z) == "minecraft:glass_pane":
+                self.connected(x, y, z, f"{colors[i % len(colors)]}_stained_glass_pane")
+                i += 1
 
     # ------------------------------------------------------------------ output
     def fix_shapes(self):
@@ -628,7 +770,9 @@ class Civic:
         sz = max(p[2] for p in self.blocks) + 1
         assert min(p[0] for p in self.blocks) >= 0 and min(p[2] for p in self.blocks) >= 0, self.name
         assert sz <= self.W + 2, f"{self.v}/{self.name} is wider than its slot ({sz} > {self.W + 2})"
-        t = self.Template(f"village/{self.v}/{self.name}", max(sx, self.D + 2), sy, self.W + 2)
+        assert sx <= self.D + 2, f"{self.v}/{self.name} is deeper than its slot ({sx} > {self.D + 2})"
+        path = f"village/{self.v}/alt/{self.name}" if self.alt else f"village/{self.v}/{self.name}"
+        t = self.Template(path, max(sx, self.D + 2), sy, self.W + 2)
         for (x, y, z), (n, props, nbt) in self.blocks.items():
             t.set(x, y, z, n, props or None, nbt)
         for pos, (orient, name, target, pool), kw in self.jigsaws:
@@ -690,6 +834,10 @@ def village_hall(Template, v):
     b.bed(3, 8, "west")
     b.bed(3, 2, "west")
     b.villager_spot(3, 7)
+    b.role_sign([(0, 4, 7), (0, 4, 3), (0, 3, 1), (0, 3, b.W), (0, 2, 7)])
+    b.planter(1)
+    b.planter(b.W)
+    b.apron()
     b.save()
 
 
@@ -711,7 +859,7 @@ def mint(Template, v):
     for z in range(2, 7):
         if z == zc:
             continue
-        b.slab(5, 1, z, "smooth_stone_slab", "top")
+        b.slab(5, 1, z, "waxed_cut_copper_slab", "top")
         b.connected(5, 2, z, "iron_bars")
     # the press (Coiner job site), furnace, anvil and the strongbox
     b.set(7, 1, zc, L + "mint_press", {"facing": "west"})
@@ -731,6 +879,10 @@ def mint(Template, v):
     b.bed(6, 6, "east")
     b.bed(3, 6, "west")
     b.villager_spot(3, 5)
+    b.role_sign([(0, 3, 7), (0, 3, 1), (0, 2, 7), (0, 2, 1)])
+    b.planter(1)
+    b.planter(b.W)
+    b.apron()
     b.save()
 
 
@@ -773,6 +925,8 @@ def guild_hall(Template, v):
     b.bed(9, 2, "east")
     b.villager_spot(6, 3)
     b.villager_spot(6, 7)
+    b.role_sign([(0, 4, 3), (0, 4, 7), (0, 2, 3)])
+    b.apron()
     b.save()
 
 
@@ -813,6 +967,284 @@ def schoolhouse(Template, v):
     b.bed(3, 8, "west")
     b.bed(5, 2, "east")
     b.villager_spot(2, 2)
+    b.role_sign([(0, 3, 7), (0, 3, 3), (0, 2, 7)])
+    b.planter(1)
+    b.planter(b.W)
+    b.apron()
+    b.save()
+
+
+# ============================================================================================ second designs
+def village_hall_alt(Template, v):
+    """The hall behind a square tower over the entrance: a side-gabled hall (flat in the desert) and a tower with a
+    pyramid roof and a copper spire (stepped under snow, a parapeted block in the desert), a balcony on a beam over the
+    door with the role sign hanging under it, a lantern room up a ladder, the village crest, planted beds beside the
+    tower, a back chimney."""
+    b = Civic(Template, v, "village_hall", D=11, W=9, H=4, alt=True)
+    p, zc = b.p, b.zc
+    flat = p["kind"] == "flat"
+    if flat:
+        b.band = p["accent"]
+    b.wall = p["hall_wall"]
+    if v == "taiga":
+        b.base = "stone_bricks"
+    th = 9 if flat else 11  # the tower's walls
+    b.volume(5, 11, 1, 9, ridge="z")
+    b.volume(1, 5, 3, 7, H=th, ridge="hip", tiers=9)
+    windows = [(7, 1), (9, 1), (7, 9), (9, 9), (11, 3), (11, 7), (5, 2), (5, 8), (3, 3), (3, 7),
+               (3, 3, 6, 7), (3, 7, 6, 7), (1, 4, 6, 7), (1, 6, 6, 7), (3, 3, th - 1), (3, 7, th - 1)]
+    gable = [] if p["kind"] in ("hip", "flat") else [(8, b.H + 3, 1), (8, b.H + 3, 9)]
+    b.shell(windows=windows, door=(1, zc), extra_posts=((8, 1), (8, 9)), gable_windows=gable)
+    # the tower: a floor over the vestibule (a ladder on its north wall), the balcony door, the balcony on its beam
+    for x in range(2, 6):
+        for z in range(zc - 1, zc + 2):
+            b.set(x, 5, z, p["floor"])
+    b.ladder(2, zc - 1, 1, 5, "south")
+    for half, y in (("lower", 6), ("upper", 7)):
+        b.set(1, y, zc, p["door"], {"facing": "east", "half": half, "hinge": "right", "open": "false", "powered": "false"})
+    for z in range(zc - 1, zc + 2):
+        b.pillar(0, 4, z, p["plate"], axis="z")
+        b.slab(0, 5, z, p["ridge"], "top")
+        b.connected(0, 6, z, p["fence"])
+    b.lantern_on_chain(3, zc, low=th - 1)
+    if not flat:
+        ay = b.roof_cols[(3, zc)][0]
+        b.set(3, ay, zc, p["fill"])
+        b.set(3, ay + 1, zc, "lightning_rod", {"facing": "up", "powered": "false", "waterlogged": "false"})
+    b.wall_banner(0, th if flat else th - 1, zc, "west", p["banner"],
+                  [("minecraft:rhombus", "white"), ("minecraft:circle", p["banner"]), ("minecraft:border", "white")])
+    b.entrance()
+    b.front_details()
+    b.ceiling_sign(0, 3, zc)
+    # beds of flowers in front of the hall on both sides of the tower
+    for z in (1, 2, b.W - 1, b.W):
+        for x in range(1, 5):
+            for y in range(0, 3):
+                if b.get(x, y, z) is None:
+                    b.set(x, y, z, "air")
+        b.planter(z, x=4)
+    # the hall: council table, the court corner, the ledger under the banner
+    for x in range(2, 6):
+        if b.get(x, 1, zc) is None:
+            b.set(x, 1, zc, p["carpet"])
+    for x in (7, 8):
+        b.set(x, 1, zc, L + "council_table", {"facing": "west"})
+        b.stairs(x, 1, zc - 1, "north", p["chair"])
+        b.stairs(x, 1, zc + 1, "south", p["chair"])
+    b.stairs(6, 1, zc, "west", p["chair"])
+    for z in (2, 3):
+        b.set(9, 1, z, L + "judge_bench", {"facing": "west"})
+        b.stairs(10, 1, z, "east", p["chair"])
+    b.set(10, 1, zc, L + "village_ledger", {"facing": "west"})
+    for z in (zc - 1, zc + 1):
+        b.set(10, 1, z, "bookshelf")
+        b.set(10, 2, z, "bookshelf")
+    b.wall_banner(10, 3, zc, "west", p["banner"], "minecraft:triangles_top", "white")
+    b.set(10, 1, 7, p["pot"])
+    b.chest(10, 1, 8, "west")
+    for z in (3, 7):
+        b.lantern_on_chain(8, z)
+    b.chimney(12, zc, b.roof_y(11, zc) + (2 if flat else 3))
+    b.bed(6, 8, "east")
+    b.bed(6, 2, "east")
+    b.villager_spot(9, 7)
+    b.apron()
+    b.save()
+
+
+def mint_alt(Template, v):
+    """A counting house: a low stone shop wing on the street with the teller's copper counter, and behind it a tall
+    treasury with a front gable (in the desert a stepped block): stone up to the strongroom's ceiling with barred vault
+    windows, the press and the strongbox below, a counting room above (a ladder), two chimneys."""
+    b = Civic(Template, v, "mint", D=9, W=7, H=3, alt=True)
+    p, zc = b.p, b.zc
+    flat = p["kind"] == "flat"
+    if flat:
+        b.band = p["accent"]
+    b.base_h = 3  # stone up to the strongroom's ceiling
+    b.volume(1, 4, 1, 7, ridge="z")
+    b.volume(5, 9, 1, 7, H=6, ridge="x")
+    windows = [(1, 2), (1, 6), (3, 1), (3, 7), (7, 1, 2), (7, 7, 2), (6, 1, 4, 5), (8, 1, 4, 5), (6, 7, 4, 5),
+               (8, 7, 4, 5), (9, zc, 4, 5)]
+    gable = [] if p["kind"] in ("hip", "flat") else [(4, 9, zc)]
+    b.shell(windows=windows, door=(1, zc), gable_windows=gable)
+    for z in (1, 7):  # the strongroom's windows are barred
+        if b.get(7, 2, z) == "minecraft:glass_pane":
+            b.connected(7, 2, z, "iron_bars")
+    b.entrance()
+    b.front_details()
+    # the wing: the teller's copper counter with bars (open in the middle), benches for the customers
+    for z in range(2, 7):
+        if z != zc:
+            b.slab(3, 1, z, "waxed_cut_copper_slab", "top")
+            b.connected(3, 2, z, "iron_bars")
+    b.stairs(2, 1, 2, "north", p["chair"])
+    b.stairs(2, 1, 6, "south", p["chair"])
+    b.lantern_on_chain(2, zc)
+    # the strongroom: the press (Coiner job site), furnace, anvil, the strongbox; the counting room above
+    b.set(6, 1, zc, L + "mint_press", {"facing": "west"})
+    b.set(8, 1, 2, "furnace", {"facing": "west", "lit": "false"})
+    b.set(8, 1, 6, "anvil", {"facing": "north"})
+    b.chest(8, 1, 5, "west", loot="lacuna:chests/village_mint")
+    b.set(8, 1, 3, p["accent"] if p["accent"] != "packed_ice" else "polished_diorite")
+    b.set(8, 2, 3, p["pot2"])
+    for x in range(5, 9):
+        for z in range(2, 7):
+            b.set(x, 3, z, p["floor"])
+    b.ladder(8, zc, 1, 3, "west")
+    b.lantern(7, 2, zc, hanging=True)
+    for z in (2, 6):
+        b.set(5, 4, z, "bookshelf")
+    b.set(7, 4, 2, "raw_copper_block")
+    b.set(7, 4, 6, "decorated_pot", {"cracked": "false", "facing": "west", "waterlogged": "false"})
+    b.lantern_on_chain(6, zc, low=5)
+    for z in (2, 6):
+        b.chimney(10, z, b.roof_y(9, z) + (2 if flat else 3))
+    b.bed(5, 2, "east")
+    b.bed(5, 6, "east")
+    b.villager_spot(7, 3)
+    b.role_sign([(0, 3, 7), (0, 3, 1), (0, 2, 7), (0, 2, 1)])
+    b.planter(2)
+    b.planter(b.W - 1)
+    b.apron()
+    b.save()
+
+
+def guild_hall_alt(Template, v):
+    """A great hall behind an open loggia: columns carry a beam and a catslide roof sweeping down from the hall's eave
+    (a flat arcade in the desert), the guild banners hang on the columns and over the door, the role sign under the
+    beam; tall windows stained in the guild colours, a forge chimney at the back corner."""
+    b = Civic(Template, v, "guild_hall", D=12, W=9, H=5, alt=True)
+    p, zc = b.p, b.zc
+    flat = p["kind"] == "flat"
+    if flat:
+        b.band = p["accent"]
+    b.volume(3, 12, 1, 9, ridge="z")
+    front = (2,) if flat else (2, 3, 4)
+    windows = [(3, z, *front) for z in (2, 3, 7, 8)] + [(x, z) for x in (4, 5, 7, 8, 10, 11) for z in (1, 9)] + [(12, 2), (12, 8)]
+    gable = [] if p["kind"] in ("hip", "flat") else [(x, b.H + 3, z) for x in (7, 8) for z in (1, 9)]
+    b.shell(windows=windows, door=(3, zc), extra_posts=((6, 1), (9, 1), (6, 9), (9, 9)), gable_windows=gable)
+    colors = {2: "gray", 3: "red", 7: "red", 8: "purple"}
+    for (x, y, z) in [(3, y, z) for z in colors for y in front] + gable:
+        if b.get(x, y, z) == "minecraft:glass_pane":
+            b.connected(x, y, z, f"{colors.get(z, 'gray' if x == 7 else 'purple')}_stained_glass_pane")
+    # the loggia: a stone floor, columns, the beam, the roof down from the hall's eave
+    for x in (1, 2):
+        for z in range(1, b.W + 1):
+            b.set(x, 0, z, b.base)
+            for y in (1, 2, 3):
+                if b.get(x, y, z) is None:
+                    b.set(x, y, z, "air")
+    for z in (1, 3, 7, 9):
+        for y in (1, 2, 3):
+            b.pillar(1, y, z, p["post"])
+    if flat:
+        for z in range(1, b.W + 1):
+            b.set(0, 4, z, p["plate"])
+            b.set(1, 4, z, p["roof"])
+            b.set(2, 4, z, p["roof"])
+            b.slab(0, 5, z, p["ridge"])
+    else:
+        for z in range(1, b.W + 1):
+            b.pillar(1, 4, z, p["plate"], axis="z")
+        b.lean_to(0, 1, 0, b.W + 1, 4)
+    for z in (zc - 1, zc + 1):
+        b.lantern(1, 3, z, hanging=True)
+    (guild_s, color_s, pat_s), (guild_g, color_g, pat_g), (guild_c, color_c, pat_c) = GUILDS
+    b.wall_banner(0, 3, 3, "west", color_s, pat_s, "yellow")
+    b.wall_banner(0, 3, 7, "west", color_c, pat_c, "yellow")
+    b.wall_banner(2, 3 if flat else 4, zc, "west", color_g, pat_g, "yellow")
+    b.entrance(lights=False)
+    b.front_details(fx=3)
+    b.ceiling_sign(1, 3, zc)
+    # the hall: a board under each guild banner on the back wall, the feast table, the guild's tools
+    for i, (guild, color, pattern) in enumerate(GUILDS):
+        z = 3 + i * 2
+        b.set(11, 1, z, L + "guild_board", {"facing": "west", "guild": guild})
+        b.wall_banner(11, 3, z, "west", color, pattern, "yellow")
+    b.chest(11, 1, 2, "west")
+    b.set(11, 1, 8, "crafting_table")
+    for x in range(6, 10):
+        b.slab(x, 1, zc, p["ridge"] if not flat else "smooth_stone_slab", "top")
+        b.stairs(x, 1, zc - 1 if x % 2 == 0 else zc + 1, "north" if x % 2 == 0 else "south", p["chair"])
+    for x in range(4, 6):
+        b.set(x, 1, zc, p["carpet"])
+    b.set(5, 1, 2, "anvil", {"facing": "east"})
+    b.set(4, 1, 2, "chipped_anvil", {"facing": "east"})
+    shelf = {"facing": "east", **{f"slot_{i}_occupied": "true" if i % 3 else "false" for i in range(6)}}
+    b.set(4, 1, 8, "chiseled_bookshelf", shelf)
+    b.set(4, 2, 8, "chiseled_bookshelf", shelf)
+    b.set(5, 1, 8, p["accent"] if p["accent"] != "packed_ice" else "polished_diorite")
+    b.set(5, 2, 8, "amethyst_cluster", {"facing": "up", "waterlogged": "false"})
+    for x in (6, 10):
+        b.lantern_on_chain(x, zc)
+    b.chimney(13, 2, b.roof_y(12, 2) + (2 if flat else 3))
+    b.bed(9, 8, "east")
+    b.bed(9, 2, "east")
+    b.villager_spot(6, 3)
+    b.villager_spot(6, 7)
+    b.apron()
+    b.save()
+
+
+def schoolhouse_alt(Template, v):
+    """A front-gabled school behind a porch of columns (a parapeted porch in the desert), a belfry with a copper spire
+    on the ridge, the role sign hanging between the columns over a planter."""
+    b = Civic(Template, v, "schoolhouse", D=9, W=9, H=3, alt=True)
+    p, zc = b.p, b.zc
+    flat = p["kind"] == "flat"
+    if flat:
+        b.band = p["accent"]
+    b.volume(2, 9, 1, 9, ridge="x")
+    windows = [(2, 3), (2, 7), (4, 1), (5, 1), (7, 1), (8, 1), (4, 9), (5, 9), (7, 9), (8, 9), (9, 2), (9, 8)]
+    gable = [] if p["kind"] in ("hip", "flat") else [(2, b.H + 3, zc), (9, b.H + 3, zc)]
+    b.shell(windows=windows, door=(2, zc), extra_posts=((6, 1), (6, 9)), gable_windows=gable)
+    # the porch: a stone floor, columns on the street edge, a beam and a roof sloping to the street
+    for z in range(1, b.W + 1):
+        b.set(1, 0, z, b.base)
+        for y in (1, 2):
+            if b.get(1, y, z) is None:
+                b.set(1, y, z, "air")
+        b.pillar(1, 3, z, p["plate"], axis="z")
+        if flat:
+            b.set(0, 3, z, p["plate"])
+            b.slab(0, 4, z, p["ridge"])
+        else:
+            b.stairs(0, 3, z, "east")
+    for z in (1, 3, 7, 9):
+        for y in (0, 1, 2):
+            b.pillar(0, y, z, p["post"])
+    for z in (zc - 1, zc + 1):
+        b.lantern(0, 2, z, hanging=True)
+    b.entrance(lights=False)
+    b.front_details(fx=2)
+    b.set(0, 2, 2, f"{p['wood']}_wall_hanging_sign", {"facing": "west", "waterlogged": "false"}, b.sign_text())
+    b.planter(2)
+    b.planter(b.W - 1)
+    # the classroom: blackboard, the teacher's lectern, two rows of desks, the library corners
+    for z in range(3, 8):
+        for y in (2, 3):
+            b.set(8, y, z, "black_terracotta")
+    b.set(7, 1, zc, "lectern", {"facing": "west", "has_book": "false", "powered": "false"})
+    for x in (4, 6):
+        for z in (3, 4, 6, 7):
+            b.set(x, 1, z, L + "school_desk", {"facing": "east"})
+            b.stairs(x - 1, 1, z, "west", p["chair"])
+    for x in range(3, 7):
+        b.set(x, 1, zc, p["carpet"])
+    for z in (2, 8):
+        for x in (7, 8):
+            b.set(x, 1, z, "bookshelf")
+            b.set(x, 2, z, "bookshelf")
+    b.set(8, 3, 2, p["pot"])
+    b.set(8, 3, 8, p["pot2"])
+    for x in (4, 6):
+        b.lantern_on_chain(x, zc)
+    b.belfry(4, zc)
+    b.bed(4, 8, "east")
+    b.bed(4, 2, "east")
+    b.villager_spot(3, 2)
+    b.apron()
     b.save()
 
 
@@ -954,7 +1386,7 @@ def civic_bell(Template, v):
     t.save()
 
 
-BUILDINGS = (village_hall, mint, guild_hall, schoolhouse)
+BUILDINGS = (village_hall, mint, guild_hall, schoolhouse, village_hall_alt, mint_alt, guild_hall_alt, schoolhouse_alt)
 
 
 def build(Template):
