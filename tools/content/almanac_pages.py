@@ -267,8 +267,8 @@ PAGES = {
          "While shadow walking you are a shade: you pass through walls, unseen, and monsters lose track of you.\n"
          "Click a creature (or, with PvP on, a player) within 8 blocks to **possess** it: you see through its eyes and "
          "steer it with your keys; attacking makes it strike, creepers ignite, ghasts and blazes shoot. Hosts fight back, "
-         "the hostile, big and wounded ones harder: once their bar fills you have a few seconds left. Sneak to leave; no "
-         "body holds you longer than 30 seconds.\n"
+         "the hostile, big and wounded ones harder: once their bar fills you have a few seconds left. Sneak to leave; after "
+         "30 seconds every host fights back.\n"
          "Bosses, other players' pets and mummies refuse you.",
          "The Eclipser's dash ends in a Shadow Walk."),
         ("Passo d'ombra",
@@ -276,7 +276,7 @@ PAGES = {
          "Clicca una creatura (o, con il PvP attivo, un giocatore) entro 8 blocchi per **possederla**: vedi con i suoi "
          "occhi e la guidi con i tuoi tasti; attaccando la fai colpire, i creeper si innescano, ghast e blaze sparano. "
          "Gli ospiti si ribellano, quelli ostili, grossi e feriti di più: quando la loro barra si riempie ti restano "
-         "pochi secondi. Accovacciati per uscire; nessun corpo ti trattiene più di 30 secondi.\n"
+         "pochi secondi. Accovacciati per uscire; dopo 30 secondi ogni ospite si ribella.\n"
          "Boss, animali di altri giocatori e mummie ti respingono.",
          "Lo scatto dell'Eclissatore finisce in un Passo d'ombra."),
     ),
@@ -404,14 +404,14 @@ PAGES = {
          "Sunlight remembers where it was told to go. Hold use to focus a **burning beam** up to 24 blocks: 12 damage per "
          "second, setting creatures alight, kindling wood, melting snow and ice, priming TNT. At night it turns white and "
          "half as strong; underwater, blue, weaker and shorter. In the Forgotten Land it is always day.\n"
-         "Each Divine Glass Shard mends 60 uses at an anvil.",
+         "Each Divine Glass Shard mends a minute of beam at an anvil.",
          None),
         (None,
          "La luce del sole ricorda dove le fu detto di andare. Tieni premuto usa per concentrare un **raggio ardente** "
          "fino a 24 blocchi: 12 danni al secondo, dà fuoco alle creature, accende il legno, scioglie neve e ghiaccio, "
          "innesca la TNT. Di notte diventa bianco e forte la metà; sott'acqua, blu, più debole e più corto. Nella Terra "
          "Dimenticata è sempre giorno.\n"
-         "Ogni frammento di vetro divino ripara 60 utilizzi all'incudine.",
+         "Ogni frammento di vetro divino ripara un minuto di raggio all'incudine.",
          None),
     ),
     "echo_dagger": (
@@ -629,7 +629,7 @@ PAGES = {
          "twice as fast.\n"
          "A redstone signal holds the sand; a comparator reads the time left. Redstone timing, spawners and portals are "
          "never sped up.",
-         "Crafted: 4 gold ingots, 2 chronal shards, 2 glass and a sand (GCG / #S# / GCG)."),
+         "Crafted: 4 gold ingots, 2 chronal shards, 2 glass and sand (GCG / #S# / GCG)."),
         (None,
          "Ogni granello è un secondo preso in prestito. Nutri questa clessidra alta due blocchi con Schegge cronali: 60 "
          "secondi di sabbia ciascuna, fino a 10 minuti (accovacciati per versare tutta la pila). Finché la sabbia scorre, "
@@ -637,7 +637,7 @@ PAGES = {
          "e lava scorrono al doppio, e lì i giocatori guariscono al doppio.\n"
          "Un segnale di pietrarossa trattiene la sabbia; un comparatore legge il tempo rimasto. Temporizzazioni di "
          "pietrarossa, generatori e portali non accelerano mai.",
-         "Si fabbrica: 4 lingotti d'oro, 2 schegge cronali, 2 vetri e una sabbia (GCG / #S# / GCG)."),
+         "Si fabbrica: 4 lingotti d'oro, 2 schegge cronali, 2 vetri e della sabbia (GCG / #S# / GCG)."),
     ),
     "clockwork_decoy": (
         (None,
