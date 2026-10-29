@@ -1,5 +1,6 @@
 package com.lacuna.mod.structure;
 
+import com.lacuna.mod.LacunaConfig;
 import com.lacuna.mod.registry.ModBlocks;
 import com.lacuna.mod.registry.ModEntities;
 import java.util.Map;
@@ -36,6 +37,11 @@ public final class LabyrinthHandler {
 
     static void onTrigger(ServerLevel level, BlockPos trigger, BlockState state, ServerPlayer player) {
         if (state.getValue(LabyrinthTriggerBlock.SOLVED) || player.isCreative() || player.isSpectator()) {
+            return;
+        }
+        if (!LacunaConfig.get(LacunaConfig.LABYRINTH_ENABLED)) {
+            // mirrorLabyrinth off: no Reflection to fight, the seal simply opens
+            onReflectionGone(level, trigger, true);
             return;
         }
         String key = key(level, trigger);

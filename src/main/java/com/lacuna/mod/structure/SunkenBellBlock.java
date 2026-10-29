@@ -1,6 +1,7 @@
 package com.lacuna.mod.structure;
 
 import com.lacuna.mod.Balance;
+import com.lacuna.mod.LacunaConfig;
 import com.lacuna.mod.network.RevealOresPayload;
 import com.lacuna.mod.util.SafeRun;
 import com.mojang.serialization.MapCodec;
@@ -62,6 +63,11 @@ public class SunkenBellBlock extends Block {
         }
         if (!(player instanceof ServerPlayer sp) || !(level instanceof ServerLevel server)) {
             return InteractionResult.PASS;
+        }
+        if (!LacunaConfig.get(LacunaConfig.SUNKEN_BELL_ENABLED)) {
+            // sunkenBell off: just a bell
+            level.playSound(null, pos, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2.0F, 0.7F);
+            return InteractionResult.CONSUME;
         }
         long now = level.getGameTime();
         Long ready = COOLDOWNS.get(sp.getUUID());

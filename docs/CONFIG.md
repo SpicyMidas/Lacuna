@@ -29,7 +29,7 @@ load after registration; they live in `Balance`.
 | gear | umbralDarkBonus | 0.25 | Extra damage fraction for Umbral gear in darkness |
 | wood | extras | false | Reserved for signs/boats (not implemented) |
 | wood | tidebloomFish | true | Tidebloom roots spawn fish |
-| forgottenBiomes | marshFog, dunesSlowCrops, updraftSprings, mirrorLabyrinth, lastMerchant, sunkenBell | true | |
+| forgottenBiomes | marshFog, dunesSlowCrops, updraftSprings, mirrorLabyrinth, lastMerchant, sunkenBell | true | Marsh fog; half-speed crops in the Clockwork Dunes; Updraft Springs; the Labyrinth's Reflection fight (off: the trigger opens the exit at once); Last Merchant visits; Sunken Bell ore reveal (off: it only rings) |
 | forgottenBiomes | lastMerchantIntervalTicks | 72000 | ~3 in-game days |
 | township | enabled, laws, council, currency, guilds | true | Townships and their subsystems |
 | starfall | naturalStars | true | On clear nights in the overworld a star now and then falls 24-64 blocks from a player (never the first night, never in villages, structures or near a base), leaving a molten Star Rock (it cools to Prime Star Rock, then burns out after about three days) |
