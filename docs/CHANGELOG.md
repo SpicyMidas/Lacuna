@@ -3,6 +3,23 @@
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->
+- **Villages: no more trees in the way.** A final generation pass removes whole trees (logs, then the leaves they kept
+  alive, vines, nests, cocoa) that grew into a village's buildings, doorways or streets, even in dense forest.
+  Nothing is left floating, the snow cover is restored, and blocks that belong to the buildings themselves are never
+  touched.
+- **Village civic buildings redesigned:** every building now has a second design with its own silhouette, in all five
+  village styles. Villages built around the civic square use either design.
+  - Village hall: a hall behind a tower with a balcony, lantern room and spire.
+  - Mint: a counting house with a barred teller counter and a two-storey treasury.
+  - Guild hall: a great hall behind a column loggia, with guild banners and stained glass in the guild colours.
+  - Schoolhouse: a gabled schoolhouse with a porch and a belfry.
+
+  All buildings also get:
+  - a hanging sign naming their role;
+  - planters with local plants;
+  - doorways that are always clear.
+
+  The civic square's slab canopy became a **bell pavilion** with lanterns, flanked by two market stalls.
 - **Mirror Glass reflections fixed:**
   - **Every mirror on screen reflects at once:** floor, ceiling, walls and loose blocks, however many there are. Before,
     only the 3 nearest mirror faces were drawn, so mirrors went blank as soon as there were several, or when you
