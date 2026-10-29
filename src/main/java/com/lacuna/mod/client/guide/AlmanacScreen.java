@@ -24,8 +24,8 @@ import org.lwjgl.glfw.GLFW;
  * contents. The book is re-typeset for every window size (GUI scale 1-4, small windows) instead of being scaled.
  */
 public final class AlmanacScreen extends Screen {
-    private static final int MAX_W = 330;
-    private static final int MAX_H = 208;
+    private static final int MAX_W = 376;
+    private static final int MAX_H = 228;
     private static final int MIN_W = 200;
     private static final int MIN_H = 128;
     /** Leather rim of the cover around the pages. */
@@ -359,12 +359,12 @@ public final class AlmanacScreen extends Screen {
                 hot.add(new Hot(x - 2, y, cw + 4, el.h, () -> openEntry(target)));
             }
             case TITLE -> {
-                int iy = y + (el.h - 1 - 16) / 2;
+                int iy = y + (el.h - 3 - 16) / 2;
                 item(g, el.icon, x, iy, 1.0F);
                 if (inside(mx, my, x, iy, 16, 16)) {
                     tipItem = el.icon;
                 }
-                int ty = y + (el.h - 1 - el.lines.size() * AlmanacLayout.LINE) / 2 + 1;
+                int ty = y + (el.h - 3 - el.lines.size() * AlmanacLayout.LINE) / 2 + 1;
                 for (FormattedCharSequence line : el.lines) {
                     g.drawString(font, line, x + 20, ty, AlmanacUi.RUBY, false);
                     ty += AlmanacLayout.LINE;

@@ -20,7 +20,7 @@ ALMANAC = "lacuna:almanac"
 
 # id, icon, title en, title it (book order)
 CHAPTERS = [
-    ("getting_started", "lacuna:almanac", "Getting Started", "Primi passi"),
+    ("getting_started", "minecraft:compass", "Getting Started", "Primi passi"),
     ("forgotten_land", "lacuna:chiseled_ruin_glyph", "The Forgotten Land", "La Terra Dimenticata"),
     ("relics", "lacuna:eclipser", "Relics", "Reliquie"),
     ("totems", "lacuna:lacunar_quintessence", "Totems & Quintessence", "Totem e Quintessenza"),

@@ -275,7 +275,7 @@ final class AlmanacLayout {
 
             List<FormattedCharSequence> titleLines = font.split(Component.translatable(entry.titleKey())
                     .withStyle(ChatFormatting.BOLD), width - 20);
-            El title = new El(Kind.TITLE, Math.max(18, titleLines.size() * LINE + 2) + 1);
+            El title = new El(Kind.TITLE, Math.max(18, titleLines.size() * LINE + 2) + 3);
             title.lines = titleLines;
             title.icon = entry.icon();
             add(title);

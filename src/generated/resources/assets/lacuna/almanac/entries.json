@@ -1,7 +1,7 @@
 {
   "chapters": [
     {
-      "icon": "lacuna:almanac",
+      "icon": "minecraft:compass",
       "id": "getting_started",
       "title": "almanac.lacuna.chapter.getting_started"
     },
