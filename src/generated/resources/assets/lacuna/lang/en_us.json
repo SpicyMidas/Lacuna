@@ -446,7 +446,7 @@
   "item.lacuna.crystal_willow_shard": "Crystal Willow Shard",
   "item.lacuna.departure_shard": "Departure Shard",
   "item.lacuna.departure_shard.lore": "The left half. It wants to go back.",
-  "item.lacuna.departure_shard.use": "Use: travel to the linked anchor (same dimension).",
+  "item.lacuna.departure_shard.use": "Use: travel to the linked anchor, from any dimension (never into or out of the Forgotten Land).",
   "item.lacuna.divine_glass_shard": "Divine Glass Shard",
   "item.lacuna.divine_glass_shard.tip": "Still warm with old light.",
   "item.lacuna.divine_magnifying_glass": "Divine Magnifying Glass",
