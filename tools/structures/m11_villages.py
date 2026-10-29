@@ -106,7 +106,8 @@ for _v, (_wood, _soil, _plants) in {
 SQUARES = {
     "plains": dict(ground="grass_block", path="dirt_path", curb="cobblestone", square="stone_bricks", square2="polished_andesite",
                    post="oak_fence", canopy="oak_slab", flowers=("poppy", "dandelion", "oxeye_daisy", "cornflower")),
-    "desert": dict(ground="sand", path="smooth_sandstone", curb="cut_sandstone", square="cut_sandstone", square2="smooth_sandstone",
+    "desert": dict(ground="sand", path="smooth_sandstone", curb="orange_terracotta", square="cut_sandstone",
+                   square2="chiseled_sandstone",
                    post="sandstone_wall", canopy="smooth_sandstone_slab", flowers=("dead_bush", "cactus")),
     "savanna": dict(ground="grass_block", path="dirt_path", curb="coarse_dirt", square="terracotta", square2="orange_terracotta",
                     post="acacia_fence", canopy="acacia_slab", flowers=("poppy", "dandelion", "orange_tulip", "allium")),
@@ -1259,10 +1260,13 @@ def schoolhouse_alt(Template, v):
 SQ = 27
 SQ_C = SQ // 2
 SQ_OFF = 7         # building entrance offset from the side's middle
-SQ_H = 7          # the bell canopy (5 tall, standing on the plaza) must fit inside the plaza's box
+SQ_H = 9          # the bell pavilion (CANOPY_H tall, standing on the plaza) must fit inside the plaza's box
 PINWHEEL = (("village_hall", SQ_C - SQ_OFF, 0, "north"), ("guild_hall", SQ - 1, SQ_C - SQ_OFF, "east"),
             ("schoolhouse", SQ_C + SQ_OFF, SQ - 1, "south"), ("mint", 0, SQ_C + SQ_OFF, "west"))
 CANOPY = 7
+CANOPY_H = SQ_H - 1
+# market stalls (x0, z0, facing): 3 wide, 2 deep, pinwheeled in the two quarters without a flower bed's lamp nearby
+STALLS = ((16, 3, "south"), (8, SQ - 5, "north"))
 
 
 def post(t, x, y, z, name):
@@ -1292,30 +1296,35 @@ def civic_square(Template, v):
                 block = q["path"]
             elif ring == 2:
                 block = q["curb"]
+            elif d == CANOPY // 2 + 1:
+                block = q["curb"]  # a border around the pavilion
             elif d <= CANOPY // 2 + 2:
                 block = q["square2"]
             else:
                 block = q["square"] if (x + z) % 2 else q["square2"]
             put(x, 0, z, block)
     # paths from the four doors and the four exits to the middle stay plain path, so they read as streets
+    walks = set()
     for (_, ex, ez, facing) in PINWHEEL:
         dx, dz = {"north": (0, 1), "south": (0, -1), "west": (1, 0), "east": (-1, 0)}[facing]
         x, z = ex, ez
         for _ in range(4):
             for w in (-1, 0, 1):
-                put(x + (w if dz else 0), 0, z + (w if dx else 0), q["path"])
+                walks.add((x + (w if dz else 0), z + (w if dx else 0)))
             x, z = x + dx, z + dz
     for (x, z) in ((c, 0), (c, SQ - 1), (0, c), (SQ - 1, c)):
         for i in range(4):
             for w in (-1, 0, 1):
                 if z == 0:
-                    put(x + w, 0, i, q["path"])
+                    walks.add((x + w, i))
                 elif z == SQ - 1:
-                    put(x + w, 0, SQ - 1 - i, q["path"])
+                    walks.add((x + w, SQ - 1 - i))
                 elif x == 0:
-                    put(i, 0, z + w, q["path"])
+                    walks.add((i, z + w))
                 else:
-                    put(SQ - 1 - i, 0, z + w, q["path"])
+                    walks.add((SQ - 1 - i, z + w))
+    for (x, z) in walks:
+        put(x, 0, z, q["path"])
     # flower beds in the four quarters, pinwheeled like the buildings so they never block a door or an exit path,
     # each with a lamp post in the middle
     for (x0, z0) in ((8, 4), (SQ - 7, 8), (SQ - 11, SQ - 7), (4, SQ - 11)):
@@ -1341,6 +1350,24 @@ def civic_square(Template, v):
     for (x, z, facing) in ((c - k, c - 2, "west"), (c - k, c + 2, "west"), (c + k, c - 2, "east"), (c + k, c + 2, "east"),
                            (c - 2, c - k, "north"), (c + 2, c - k, "north"), (c - 2, c + k, "south"), (c + 2, c + k, "south")):
         put(x, 1, z, bench, {"facing": facing, "half": "bottom", "shape": "straight", "waterlogged": "false"})
+    # two market stalls under striped awnings: posts at the corners, a counter with a pot, goods at the back
+    st = STYLES[v]
+    goods = {"plains": "hay_block", "desert": "melon", "savanna": "melon", "taiga": "pumpkin", "snowy": "pumpkin"}[v]
+    for (x0, z0, facing) in STALLS:
+        cells = [(x0 + i, z0 + j) for i in range(3) for j in range(2)]
+        for (x, z) in cells:
+            assert (x, z) not in walks and t.get(x, 1, z) is None, f"{v} stall over {x},{z}"
+        front = z0 + (1 if facing == "south" else 0)
+        back = z0 + (0 if facing == "south" else 1)
+        for x in (x0, x0 + 2):
+            for z in (front, back):
+                post(t, x, 1, z, q["post"])
+                post(t, x, 2, z, q["post"])
+        put(x0 + 1, 1, front, st["ridge"], {"type": "top", "waterlogged": "false"})
+        put(x0 + 1, 2, front, "decorated_pot", {"cracked": "false", "facing": facing, "waterlogged": "false"})
+        put(x0 + 1, 1, back, goods)
+        for (x, z) in cells:
+            put(x, 3, z, ("white" if (x - x0) % 2 else st["banner"]) + "_wool")
     floor = "minecraft:" + q["square2"]
     # the bell canopy (meeting point) in the middle
     t.jigsaw(c, 0, c, "up_north", "minecraft:bottom", "minecraft:bottom", f"lacuna:village/{v}/civic_bell", final_state=floor,
@@ -1360,27 +1387,72 @@ def civic_square(Template, v):
 
 
 def civic_bell(Template, v):
-    """The canopy over the village bell: four posts, a two-tier slab roof, the bell hanging from it. Rigid."""
-    t = Template(f"village/{v}/civic_bell", CANOPY, 5, CANOPY)
-    q = SQUARES[v]
+    """The bell pavilion in the middle of the plaza: four posts on stone feet, a beam ring, a hipped roof in the style's
+    vocabulary (stepped planks under snow, a parapeted deck with a little dome in the desert), the bell on a king post
+    under the apex, lanterns under the beams. Rigid."""
+    c = Civic(Template, v, "civic_bell", D=CANOPY - 2, W=CANOPY - 2, H=3)
+    p = c.p
+    n = CANOPY - 1
     m = CANOPY // 2
-    for (x, z) in ((1, 1), (1, CANOPY - 2), (CANOPY - 2, 1), (CANOPY - 2, CANOPY - 2)):
-        for y in (0, 1, 2):
-            post(t, x, y, z, q["post"])
+    flat = p["kind"] == "flat"
+    for (x, z) in ((1, 1), (1, n - 1), (n - 1, 1), (n - 1, n - 1)):
+        c.set(x, 0, z, p["base"])
+        for y in (1, 2, 3):
+            c.pillar(x, y, z, p["post"])
+    if flat:
+        # a deck on the posts, an eave of slabs, a parapet with corner piers, a stepped dome with a lamp
+        for x in range(CANOPY):
+            for z in range(CANOPY):
+                if 1 <= x <= n - 1 and 1 <= z <= n - 1:
+                    c.set(x, 4, z, p["roof"])
+                else:
+                    c.slab(x, 4, z, p["ridge"], "top")
+                if x in (1, n - 1) and 1 <= z <= n - 1 or z in (1, n - 1) and 1 <= x <= n - 1:
+                    if x in (1, n - 1) and z in (1, n - 1):
+                        c.set(x, 5, z, p["post"])
+                    else:
+                        c.slab(x, 5, z, p["ridge"])
+        for x in range(2, n - 1):
+            for z in range(2, n - 1):
+                c.set(x, 5, z, p["roof"])
+        c.set(m, 6, m, p["plate"])
+        c.lantern(m, 7, m)
+        bell_y = 3
+    else:
+        for i in range(1, n):
+            for (x, z, axis) in ((i, 1, "x"), (i, n - 1, "x"), (1, i, "z"), (n - 1, i, "z")):
+                if c.get(x, 4, z) is None:
+                    c.pillar(x, 4, z, p["plate"], axis=axis)
+        for x in range(CANOPY):
+            for z in range(CANOPY):
+                r = min(x, z, n - x, n - z)
+                y = 4 + r
+                if r == m:
+                    if p["kind"] == "stepped":
+                        c.set(x, y, z, p["fill"])
+                    else:
+                        c.slab(x, y, z, p["ridge"])
+                elif p["kind"] == "stepped":
+                    c.set(x, y, z, p["fill"])
+                    c.set(x, y + 1, z, "snow", {"layers": "1"})
+                else:
+                    c.stairs(x, y, z, "east" if x == r else "west" if n - x == r else "south" if z == r else "north")
+        c.pillar(m, 5, m, p["post"])  # the king post the bell hangs from
+        c.set(m, 6, m, p["fill"])
+        bell_y = 4
+    c.set(m, bell_y, m, "bell", {"attachment": "ceiling", "facing": "north", "powered": "false"}, {"id": "minecraft:bell"})
+    for (x, z) in ((m, 1), (m, n - 1), (1, m), (n - 1, m)):
+        c.lantern(x, 3, z, hanging=True)
+    # clear the space under the roof (terrain, grass, snow) except the posts and the bell's jigsaw
     for x in range(CANOPY):
         for z in range(CANOPY):
-            t.set(x, 3, z, "minecraft:" + q["canopy"], {"type": "bottom", "waterlogged": "false"})
-            if x in (1, CANOPY - 2) and 1 <= z <= CANOPY - 2 or z in (1, CANOPY - 2) and 1 <= x <= CANOPY - 2:
-                t.set(x, 4, z, "minecraft:" + q["canopy"], {"type": "bottom", "waterlogged": "false"})
-    t.set(m, 4, m, "minecraft:" + q["canopy"], {"type": "bottom", "waterlogged": "false"})
-    t.set(m, 2, m, "minecraft:bell", {"attachment": "ceiling", "facing": "north", "powered": "false"}, {"id": "minecraft:bell"})
-    t.set(m, 1, m, "minecraft:air")
-    # clear the space under the roof (terrain and grass) except the posts
-    for x in range(CANOPY):
-        for z in range(CANOPY):
-            for y in (0, 1, 2):
-                if t.get(x, y, z) is None and (x, z) != (m, m):
-                    t.set(x, y, z, "minecraft:air")
+            for y in range(0, bell_y + 1):
+                if c.get(x, y, z) is None and (x, y, z) != (m, 0, m):
+                    c.set(x, y, z, "air")
+    c.fix_shapes()
+    t = Template(f"village/{v}/civic_bell", CANOPY, CANOPY_H, CANOPY)
+    for (x, y, z), (name, props, nbt) in c.blocks.items():
+        t.set(x, y, z, name, props or None, nbt)
     t.jigsaw(m, 0, m, "down_south", "minecraft:bottom", "minecraft:bottom", "minecraft:empty", final_state="minecraft:air",
              joint="rollable")
     t.save()
