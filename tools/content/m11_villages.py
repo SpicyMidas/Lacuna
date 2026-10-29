@@ -18,6 +18,7 @@ MOSSY = ("plains", "taiga")
 def build(g):
     civic_blocks(g)
     civic_pools(g)
+    village_clearing(g)
     reputation(g)
     council_currency(g)
     guilds(g)
@@ -108,6 +109,15 @@ def civic_blocks(g):
             {"type": "minecraft:item", "name": mod("divine_magnifying_glass"), "weight": 3},
             {"type": "minecraft:item", "name": mod("chronoshard_pocket_watch"), "weight": 3},
             {"type": "minecraft:item", "name": mod("comically_large_bag"), "weight": 2}]}]})
+
+
+def village_clearing(g):
+    """The last decoration step of every overworld chunk clears the trees that grew into a village (VillageClearingFeature):
+    once per chunk, no placement modifiers. /place feature lacuna:village_clearing runs it on a loaded chunk."""
+    g.data("worldgen/configured_feature/village_clearing", {"type": "lacuna:village_clearing", "config": {}})
+    g.data("worldgen/placed_feature/village_clearing", {"feature": "lacuna:village_clearing", "placement": []})
+    g.data("neoforge/biome_modifier/village_clearing", {"type": "neoforge:add_features", "biomes": "#minecraft:is_overworld",
+                                                         "features": "lacuna:village_clearing", "step": "top_layer_modification"})
 
 
 def civic_pools(g):
