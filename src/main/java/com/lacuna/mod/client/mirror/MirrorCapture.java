@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -173,17 +174,35 @@ final class MirrorCapture implements MultiBufferSource {
         used = 0;
     }
 
-    /** Draws one recorded draw into {@code into} with the current model-view and projection matrices. */
-    static void replay(Draw d, RenderTarget into) {
-        d.type().setupRenderState();
-        // an output state may have bound another target (Fabulous): the image is where this goes
-        into.bindWrite(false);
-        ShaderInstance shader = RenderSystem.getShader();
-        if (shader != null) {
-            d.buffer().bind();
-            d.buffer().drawWithShader(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), shader);
+    /**
+     * Draws the late (or the other) draws into {@code into} with the current model-view and projection matrices,
+     * grouped by render type in first-use order: one render state and shader setup per type, then each buffer.
+     */
+    static void replay(List<Draw> draws, boolean late, RenderTarget into) {
+        Map<RenderType, List<VertexBuffer>> byType = new LinkedHashMap<>();
+        for (Draw d : draws) {
+            if (d.late() == late) {
+                byType.computeIfAbsent(d.type(), t -> new ArrayList<>(2)).add(d.buffer());
+            }
         }
-        d.type().clearRenderState();
+        for (Map.Entry<RenderType, List<VertexBuffer>> entry : byType.entrySet()) {
+            RenderType type = entry.getKey();
+            type.setupRenderState();
+            // an output state may have bound another target (Fabulous): the image is where this goes
+            into.bindWrite(false);
+            ShaderInstance shader = RenderSystem.getShader();
+            if (shader != null) {
+                shader.setDefaultUniforms(type.mode(), RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(),
+                        Minecraft.getInstance().getWindow());
+                shader.apply();
+                for (VertexBuffer buffer : entry.getValue()) {
+                    buffer.bind();
+                    buffer.draw();
+                }
+                shader.clear();
+            }
+            type.clearRenderState();
+        }
     }
 
     /** Swallows the geometry of render types that must not reach the image. */

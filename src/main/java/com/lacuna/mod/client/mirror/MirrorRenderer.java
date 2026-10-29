@@ -613,16 +613,8 @@ public final class MirrorRenderer {
             RenderSystem.applyModelViewMatrix();
             // the reflection flips the winding: keep culling the real back faces
             GL11.glFrontFace(GL11.GL_CW);
-            for (Draw d : draws) {
-                if (!d.late()) {
-                    MirrorCapture.replay(d, rt);
-                }
-            }
-            for (Draw d : draws) {
-                if (d.late()) {
-                    MirrorCapture.replay(d, rt);
-                }
-            }
+            MirrorCapture.replay(draws, false, rt);
+            MirrorCapture.replay(draws, true, rt);
         } finally {
             VertexBuffer.unbind();
             GL11.glFrontFace(GL11.GL_CCW);
