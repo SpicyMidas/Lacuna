@@ -4,7 +4,8 @@ Run `./gradlew runClient`, create a creative world with cheats, then follow the 
 All `/lacuna` commands need permission level 2.
 
 ## M0
-- [ ] The mod loads; Mods screen lists **Lacuna 0.1.0**; its config button opens the config screen.
+- [ ] The mod loads; the Mods screen lists **Lacuna** with its version, logo and description; its config button opens
+      the config screen, where every section and option has a readable name (English and Italian).
 - [ ] Creative inventory has a **Lacuna** tab.
 - [ ] `/lacuna selftest` prints `Lacuna selftest PASS (...)`.
 
@@ -17,7 +18,7 @@ All `/lacuna` commands need permission level 2.
 /give @s lacuna:divine_glass_pane 16
 /give @s lacuna:divine_glass_cluster 4
 ```
-- [ ] Ores/blocks/tools render with their textures (no magenta/black checkerboard), tools held diagonally.
+- [ ] Ores and blocks render with their textures (no magenta/black checkerboard).
 - [ ] Mining ruby ore with an iron pickaxe drops a ruby + XP; stone pickaxe drops nothing.
 - [ ] A new world has ruby ore below Y 16 (`/fill` a cave or spectate).
 - [ ] Divine Glass: transparent, glows (light 7), adjacent glass faces are culled, you can stand inside it
@@ -264,78 +265,78 @@ All `/lacuna` commands need permission level 2.
       about 1 in 5 a Lacunar Quintessence for 64 rubies + 4 ruby blocks.
 - [ ] Leaving the area (chunk unload) or restarting removes the merchant; he never comes back from a save.
 - [ ] The merchant looks like a normal plains villager wearing a blue vest.
-## M11a — Township structures
+## M11a — Village civic buildings (vanilla villages)
 ```
-/locate structure #lacuna:townships
-/place structure lacuna:township_plains
-/place structure lacuna:township_desert
-/place structure lacuna:township_savanna
-/place structure lacuna:township_taiga
-/place structure lacuna:township_snowy
+/lacuna village locate
+/lacuna village visit village_hall
+/lacuna village visit civic_square
+/lacuna village list
 ```
-- [ ] Walls with four towers and four open gates; streets lead to a plaza with fountain + aqueduct, statue with a
-      readable plaque, bell tower, ledger podium.
-- [ ] Four civic halls (council table, judge's bench, guild board + banners, library with desks) and eight lot
-      buildings (market, workshops with job blocks, houses with beds, granary/orchard/garden/stables/tavern/school).
-- [ ] Roads leave each gate, follow the terrain and have farms on their sides; villagers and two iron golems live
-      there; no vanilla village overlaps a township.
-- [ ] Optional: run `tools/smoke_townships.txt` (20 placements) and check the log is clean.
-## M11b — Reputation, laws, bell, gates
+- [ ] New vanilla villages (every style: plains, desert, savanna, taiga, snowy) sometimes grow around a civic square: a
+      bell canopy in the middle and the village hall, mint, guild hall and schoolhouse around it, each in one of its
+      two designs; other villages now and then get one of these buildings along a street.
+- [ ] `/lacuna village visit mint` (also `guild_hall`, `schoolhouse`) puts you in front of that building's door; the
+      buildings hold their civic blocks (ledger, mint press, judge's bench, guild boards, school desks) and beds.
+- [ ] Villages generated in forest show no trees grown into the buildings, doorways or streets.
+- [ ] `villages.civicBuildings = false`: new villages have no civic buildings; the rest of the civic system still runs.
+## M11b — Reputation, laws, bell
 ```
-/place structure lacuna:township_plains
-/lacuna township info
+/lacuna village
 /lacuna rep get @s
 /lacuna rep set @s 60
 /time set 13000
 /give @s minecraft:iron_sword
 ```
-- [ ] Right click the ledger: reputation, tier, two laws, policy and coin value are listed.
-- [ ] Trading, killing zombies near the plaza, hitting a villager, breaking wall blocks, harvesting ripe wheat and
-      opening a chest next to a villager change reputation with action-bar feedback and daily caps.
-- [ ] With "no drawn weapons": holding the sword inside the walls warns for 3 s, then −1 every 10 s and a golem walks
-      over. With "gates close at dusk": at night strangers get the same treatment.
-- [ ] Gates are open by day, closed at night; with reputation 60 they open when you approach; they cannot be mined
-      unless sneaking with an axe.
-- [ ] Ring the bell at dawn (+2 once), four times (−5), outside dawn with law 4 (−3).
-- [ ] At −60 reputation the iron golems attack; at +60 villager prices drop.
+- [ ] Right click the Village Ledger: its screen shows your reputation and tier, the village's two laws, the council
+      and today's record. A ledger placed outside every village founds a player village around it (radius 48).
+- [ ] Trading with villagers (+1, at most +2 a day), killing hostile mobs in the village (+3), hurting (−10) or killing
+      (−20) a villager, breaking protected village blocks, harvesting ripe crops (unless Honored) and opening a container
+      while a villager watches change your reputation, with daily caps and action-bar feedback.
+- [ ] Law "no drawn weapons": holding the sword in the village warns for 3 s, then −1 every 10 s while an iron golem
+      walks over. Law "curfew": a stranger (reputation below 10) outdoors between dusk and dawn gets the same treatment.
+- [ ] The bell: a ring at dawn gives +2 (once a day), more than three rings a day −5, a ring outside dawn under the
+      bell law −3.
+- [ ] At −60 reputation the village's iron golems attack you; at +60 villager prices drop.
 ## M11c — Council, currency, courthouse
 ```
-/give @s lacuna:township_coin 32
+/give @s lacuna:village_coin 32
 /give @s lacuna:mint_press
 /give @s minecraft:villager_spawn_egg
 /lacuna rep set @s -30
 /time add 168000
 ```
-- [ ] A villager next to a mint press becomes a Coiner (buys raw ores/ingots for coins); next to a judge's bench a
-      Magistrate.
-- [ ] Selling many raw ores lowers the township's coin value (ledger summary); it recovers by 0.01 per day.
-- [ ] Paying coins at the judge's bench raises reputation by 5 per coin up to 0; a second pardon within 3 days is
-      refused; empty hand shows the fine.
-- [ ] After 7+ days at dawn the council announces a policy; Festival shows fireworks on the plaza, Martial Law guards
-      hit harder, Free Market/Austerity change villager prices.
-- [ ] The Last Merchant now trades in township coins.
+- [ ] An unemployed villager next to a mint press becomes a Coiner (buys raw ores, ingots and rubies for coins);
+      next to a judge's bench a Magistrate; next to a guild board a Guildmaster of that board's guild.
+- [ ] Selling many raw ores lowers the village's coin value (Mint Press screen); it recovers day by day.
+- [ ] The Judge's Bench screen: paying the fine raises reputation by 5 per coin up to 0; a second pardon within 3 days
+      is refused.
+- [ ] After 7+ days at dawn the council meets and sets a policy for the week (Council Table screen): Festival shows
+      fireworks, Martial Law makes the golems hit harder, Free Market/Austerity change villager prices.
+- [ ] The Last Merchant still deals only in rubies; Lacuna's village trades use village coins.
 ## M11d — Guilds, contracts, schools, caravan
 ```
 /lacuna rep set @s 20
-/give @s lacuna:township_coin 64
+/give @s lacuna:village_coin 64
 /give @s minecraft:paper 64
 /give @s lacuna:repair_kit
 /give @s lacuna:last_merchant_spawn_egg
 ```
-- [ ] Right click a guild board with 20 coins: you join that guild (a second guild is refused); its Guildmaster now
-      trades with you, other Guildmasters say "Guild members only".
-- [ ] Empty-hand right click on your board gives one contract (tooltip: what to deliver, reward); delivering it pays
-      coins and +3 reputation; a second contract is refused while one is active.
-- [ ] A repair kit used with a damaged tool in the other hand restores a quarter of its durability.
-- [ ] Villagers working near the library desks gain XP each dawn and level up to 3 by trading.
-- [ ] Kill a Last Merchant near a township: the ledger's price index rises by 0.2 and decays daily.
+- [ ] Guild Board screen: Join takes 20 coins (reputation 10+); a second guild is refused; that guild's Guildmaster
+      now trades with you, other Guildmasters say "Guild members only".
+- [ ] Request gives one contract (tooltip: what to deliver, the reward); Turn in with the items pays the coins and
+      +3 reputation; a second contract is refused while one is active.
+- [ ] A repair kit used with a damaged tool in the other hand restores a quarter of its durability (totems refused).
+- [ ] Villagers working near school desks or lecterns gain XP each dawn and level up to 3 by trading.
+- [ ] Kill a Last Merchant near a village: the village's price index rises by 0.2 and decays daily.
 ## M12 — Polish
-- [ ] Creative tab: relics first, then weapons/armour, materials, township/creature items, blocks.
-- [ ] Hover silk dust, township coin, updraft spring…: a grey italic hint line.
+- [ ] Creative tab: the Almanac, then relics, weapons/gadgets/armour, materials, village/creature items, blocks; no
+      technical blocks (labyrinth trigger and seal, obelisk inscription).
+- [ ] Hover silk dust, village coin, updraft spring…: a grey italic hint line.
 - [ ] The "Lacuna" advancement tab unlocks in order (ruby, Forgotten Land, coming back, Eclipser, Sun's Fury, pearl,
-      Township).
+      a friend of the village).
 - [ ] Switch the game to Italian: every Lacuna text is translated.
-- [ ] Dedicated server: `java -Dlacuna.smoke=tools/smoke_soak.txt ...` runs for 30 minutes without errors.
+- [ ] Dedicated server: `tools/smoke_soak.txt` copied to `run/lacuna_smoke_phase1.txt` and run with
+      `./gradlew runServer -PlacunaSmoke=phase1` (30 minutes) leaves the log free of errors.
 
 ## 1.0.0-beta — progression (docs/PROGRESSION.md)
 ```

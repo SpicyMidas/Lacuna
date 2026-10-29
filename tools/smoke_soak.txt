@@ -1,5 +1,6 @@
 # 30-minute soak (spec M12): deterministic pseudo-random console actions across dimensions.
-# Run on a dedicated server with -Dlacuna.smoke=tools/smoke_soak.txt; the log must stay free of errors.
+# Copy it to run/lacuna_smoke_phase1.txt and run ./gradlew runServer -PlacunaSmoke=phase1
+# (the scripted runner, debug/SmokeRunner, reads lacuna_smoke_<phase>.txt); the log must stay free of errors.
 lacuna selftest
 gamerule doDaylightCycle true
 forceload add -64 -64 64 64
