@@ -197,6 +197,9 @@ public final class ModItems {
     // ------------------------------------------------------------------ Wayfarer's Chart (live map of the Overworld)
     public static final DeferredItem<com.lacuna.mod.chart.WayfarersChartItem> WAYFARERS_CHART = item("wayfarers_chart",
             com.lacuna.mod.chart.WayfarersChartItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    // ------------------------------------------------------------------ Lacuna Almanac (the in-game guide: guide/, client/guide)
+    public static final DeferredItem<com.lacuna.mod.guide.AlmanacItem> ALMANAC = item("almanac",
+            com.lacuna.mod.guide.AlmanacItem::new, new Item.Properties().stacksTo(1));
 
     private ModItems() {}
 

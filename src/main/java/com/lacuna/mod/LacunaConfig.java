@@ -95,6 +95,9 @@ public final class LacunaConfig {
     public static final ModConfigSpec.BooleanValue SHADOW_POSSESSION_ENABLED;
     public static final ModConfigSpec.BooleanValue SHADOW_POSSESSION_PLAYERS;
 
+    // ---------------------------------------------------------------- the Lacuna Almanac (in-game guide)
+    public static final ModConfigSpec.BooleanValue GIVE_ALMANAC_ON_FIRST_JOIN;
+
     public static final ModConfigSpec SPEC;
 
     static {
@@ -209,6 +212,11 @@ public final class LacunaConfig {
                 + "until it fights back and casts you out (off: clicking only spectates, as in vanilla).").define("enabled", true);
         SHADOW_POSSESSION_PLAYERS = B.comment("Players can be possessed too (also requires PvP to be enabled on the server).")
                 .define("players", true);
+        B.pop();
+
+        B.push("almanac");
+        GIVE_ALMANAC_ON_FIRST_JOIN = B.comment("Give every player a Lacuna Almanac (the in-game guide: what everything does and where "
+                + "to find it) the first time they join a world.").define("giveOnFirstJoin", true);
         B.pop();
 
         SPEC = B.build();
