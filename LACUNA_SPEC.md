@@ -22,7 +22,7 @@ features: if something cannot be made safe, use the fallback listed in the spec.
 
 ## 1. Mission and working rules
 
-1. Build a content mod about magical items "beyond human comprehension": a pocket dimension (the Forgotten Land), light/shadow/time/space items, new materials and gear, four wood families, mobs, structures, and large civilized "Townships" (bigger villages).
+1. Build a content mod about magical items "beyond human comprehension": a pocket dimension (the Forgotten Land), light/shadow/time/space items, new materials and gear, four wood families, mobs, structures, and large civilized "Townships" (bigger villages). *Revision 2: the Townships became a civic system inside vanilla villages, see section 18.*
 2. Work in milestones (section 7). Each milestone ends **green** (all gates pass) and **committed**.
 3. Every number in this spec is a default and must live in config or one `Balance` class, never scattered as magic numbers.
 4. Prefer vanilla systems (data-driven JSON, vanilla models/renderers/particles/sounds, vanilla entity models with retextures) over custom code. Less custom code = fewer crashes.
@@ -88,12 +88,12 @@ features: if something cannot be made safe, use the fallback listed in the spec.
 6. `bash tools/smoke.sh` passes: boots a dedicated server (`eula=true`, `--nogui`), creates a fresh world, runs a scripted console session (including `/lacuna selftest`, `/execute in lacuna:forgotten_land run forceload add 0 0 255 255`, `/place structure ...` for every structure added so far, `/locate` checks), saves (`save-all`), restarts the server on the same world, verifies state persisted, then `stop`. The log must contain **no** `ERROR`, `Exception`, `Failed to`, `Missing`, `Unknown registry`, or `Couldn't load` lines (an allow-list file `tools/log_allowlist.txt` may whitelist known-benign vanilla lines).
 7. Keep `docs/TESTING.md` updated with the manual **client** checks for this milestone (the human runs `runClient`; Claude Code cannot see the GUI). Client-only code must still be exercised as far as possible via `validate_assets.py` and by making all renderers/models use vanilla classes.
 
-Add a debug command tree `/lacuna` (permission level 2): `selftest`, `banish [targets]`, `return [targets]`, `rep get|set <player> <value>`, `township info`, `givekit` (gives one of every item), `scent`. `selftest` runs internal invariants (registries complete, recipes parse, coordinate math round-trips, tags non-empty) and logs a PASS/FAIL summary.
+Add a debug command tree `/lacuna` (permission level 2): `selftest`, `banish [targets]`, `return [targets]`, `rep get|set <player> <value>`, `township info` (now `village` with `locate`, `visit`, `list`), `givekit` (gives one of every item), `scent`. `selftest` runs internal invariants (registries complete, recipes parse, coordinate math round-trips, tags non-empty) and logs a PASS/FAIL summary.
 
 ## 5. Conventions
 
 - Registries in `registry/` classes: `ModItems`, `ModBlocks`, `ModBlockEntities`, `ModEntities`, `ModComponents`, `ModAttachments`, `ModEffects`, `ModSounds` (vanilla events wrapped only), `ModCreativeTabs`, `ModVillagers` (professions/POI).
-- Logic in feature packages: `banish/`, `beam/`, `eclipse/`, `solar/`, `pearl/`, `chrono/`, `mirror/`, `lantern/`, `flute/`, `chart/`, `gear/`, `wood/`, `mob/`, `worldgen/`, `township/`, `client/`.
+- Logic in feature packages: `banish/`, `beam/`, `eclipse/`, `solar/`, `pearl/`, `chrono/`, `mirror/`, `lantern/`, `flute/`, `chart/`, `gear/`, `wood/`, `mob/`, `worldgen/`, `township/` (now `village/`), `client/`.
 - Pure math/logic classes (no MC types) live in `logic/`: `CoordMath`, `BeamMath`, `ChargeMath`, `ReputationMath`, `PriceMath`, `ScentTrail`, each unit-tested.
 - One creative tab "Lacuna" (icon: Totem of Banishing), grouped logically.
 - Tooltips: every special item gets 1–2 lore lines (gray italic) plus functional lines (durability/charge/cooldown). Lang file `en_us` generated via datagen; add `it_it` in M12.
@@ -128,11 +128,11 @@ Add a debug command tree `/lacuna` (permission level 2): `selftest`, `banish [ta
 | 4 | Umbral Iron (needed by Eclipser), Eclipser + Shadow Walk, Solar Flare, Sun's Fury |
 | 5 | Fractured Pearl, Arrival/Departure shards, anchor block |
 | 6 | Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute + Echo, Wayfarer's Chart (beta; replaced the Orrery) |
-| 7 | Starlace, Zenithite, Umbral/Ruby tool sets, 5 special weapons |
+| 7 | Starlace, Zenithite, Umbral/Ruby tool sets (revision 11: Umbral Steel only), 5 special weapons |
 | 8 | Four wood families (full sets), saplings, worldgen |
 | 9 | Mobs: Lantern Moth, Gloomcrawler, Clockwork Hound (+ Silk Dust, Decoy) |
 | 10 | FL biomes (5), Overworld/FL structures, Last Merchant caravan, Mirror Labyrinth |
-| 11 | Townships (11a structures, 11b reputation/laws, 11c council/currency/courthouse, 11d guilds/contracts/schools) |
+| 11 | Townships (11a structures, 11b reputation/laws, 11c council/currency/courthouse, 11d guilds/contracts/schools); revision 2: the civic system runs in vanilla villages |
 | 12 | Polish: Italian lang, advancements, optional signs/boats, optional TerraBlender, final QA |
 
 ---
@@ -278,7 +278,7 @@ All have durability bars as stated and the shared repair rules (anvil with the l
 - **Starlace Boots glide:** while falling with `fallDistance > 4` and sneaking, apply `slow_falling` for 80 ticks once per fall, 200-tick cooldown, costs 1 durability. Server-side only; no motion hacking.
 - `zenithite_ore` block (stone/deepslate), `zenithite_shard` item, `zenithite_block`.
 
-**Ruby tool set** (M1) and **Umbral Iron tool set** now: sword, pickaxe, axe, shovel, hoe. Umbral (stronger than Ruby): durability 1500, speed 8.5, damage bonus 4 (sword 8 / axe 10 vs Ruby 7 / 9), enchantability 15, netherite-level mining; **bonus +25% damage dealt (any Umbral tool/weapon) when the wielder stands where `getMaxLocalRawBrightness ≤ 4`**. **Nightforged** (all five tools): +30% mining speed while the light at the eyes is ≤ 7. **Umbral Rend** (sword): the 3rd consecutive hit on a target within 4 s detonates for +6 armor-piercing damage (`lacuna:umbral_rend`), heals the wielder 2, Slowness II + Darkness 2 s. **Eclipse Cleave** (axe): fully charged hits (strength ≥ 0.9) send a shadow shockwave: other mobs within 3 blocks of the target take 60% of the hit (`lacuna:eclipse_cleave`) and are knocked back (owner pets, villagers, player-made golems and, without PvP, players are spared).
+**Ruby tool set** (M1) and **Umbral Iron tool set** now: sword, pickaxe, axe, shovel, hoe. *Revision 2: Umbral Iron is Umbral Steel; revision 11: the Ruby tools are gone (rubies are the Last Merchant's currency), the Umbral Steel set keeps the numbers below.* Umbral (stronger than Ruby): durability 1500, speed 8.5, damage bonus 4 (sword 8 / axe 10 vs Ruby 7 / 9), enchantability 15, netherite-level mining; **bonus +25% damage dealt (any Umbral tool/weapon) when the wielder stands where `getMaxLocalRawBrightness ≤ 4`**. **Nightforged** (all five tools): +30% mining speed while the light at the eyes is ≤ 7. **Umbral Rend** (sword): the 3rd consecutive hit on a target within 4 s detonates for +6 armor-piercing damage (`lacuna:umbral_rend`), heals the wielder 2, Slowness II + Darkness 2 s. **Eclipse Cleave** (axe): fully charged hits (strength ≥ 0.9) send a shadow shockwave: other mobs within 3 blocks of the target take 60% of the hit (`lacuna:eclipse_cleave`) and are knocked back (owner pets, villagers, player-made golems and, without PvP, players are spared).
 
 **Five special weapons** (all shown with the use bar; none enchantable except Unbreaking; repair material listed):
 
@@ -338,6 +338,8 @@ For every mob: attributes via `EntityAttributeCreationEvent`, `SpawnPlacementReg
 - **Caravan of the Last Merchant**: a wandering trader style entity `last_merchant` (retextured `VillagerModel`, retextured trader llamas optional), spawned by a custom world-tick spawner like the vanilla wandering trader (default every ~3 days, 25% chance at day, near a random player in the Overworld, despawns after 3 in-game days). **Trades in mined materials, not emeralds:** buys raw ores/ingots/ruby/umbral iron and sells (before M11 the currency is `emerald` as a placeholder, behind a single `CurrencyService` interface; M11c swaps it for `township_coin`) `divine_glass_shard`, `ruby`, `chronal_shard`, `echo_shard` at fair prices. **Stock reflects what the nearest player mined recently** (read vanilla `Stats.BLOCK_MINED` for ores; the top mined ore type gets an extra "bulk buy" offer). 8% chance of one `solar_flare_fragment` offer. If a Last Merchant dies within 128 blocks of a Township (M11), that township's price index rises (M11d). Never persists after despawn.
 
 ## 18. M11 — Townships (bigger, cooler, more civilized villages)
+
+*Revision 2 (player feedback): the Township structures, walls, gates and `township_*` blocks are gone. The civic system of 18.2-18.4 (reputation, laws with a curfew instead of the gates, bell, council, village coins, Coiner, Magistrate and Guildmaster, courthouse, guilds and contracts, schools, caravan effect) runs in vanilla villages (records created lazily per village structure start, or founded around a player-placed Village Ledger), which grow a civic square or civic houses (village hall, mint, guild hall, schoolhouse; `village/VillagePools`). The currency item is `village_coin`, the protected-block tag `lacuna:village_protected`; the Last Merchant deals in rubies only.*
 
 Vanilla villages stay untouched; **Townships are a new structure family** that generates in village-like biomes (plains, savanna, taiga, snowy plains, desert), rare, large, walled, with districts and civic life. Split into four sub-milestones with gates after each. **Do M11 only after M0–M10 are green.**
 
