@@ -27,6 +27,7 @@ public final class EclipseEvents {
         bus.addListener(ShadowWalk::onLogin);
         bus.addListener(ShadowWalk::onChangedDimension);
         bus.addListener(ShadowWalk::onTravel);
+        bus.addListener(ShadowWalk::onTeleport);
         bus.addListener(ShadowWalk::onChangeTarget);
         bus.addListener(ShadowWalk::onServerStopping);
         Possession.register(bus);

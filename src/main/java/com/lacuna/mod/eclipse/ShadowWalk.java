@@ -11,7 +11,10 @@ import com.lacuna.mod.registry.ModParticles;
 import com.lacuna.mod.util.SafeRun;
 import com.lacuna.mod.util.SafeSpot;
 import com.lacuna.mod.util.Teleporter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -23,6 +26,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -46,6 +50,13 @@ public final class ShadowWalk {
     private static final String FX_FEATURE = "shadow_walk_fx";
     /** True while {@link #suspend}/{@link #resume} swap the effect themselves (not a walk starting or ending). */
     private static boolean swapping;
+    /**
+     * Where each shadow walker stood at the end of its last tick. Vanilla lets any spectator jump to a player or an
+     * entity through the spectator menu; a shadow only goes where it can drift, so such a jump is undone.
+     */
+    private static final Map<UUID, Vec3> TRAIL = new HashMap<>();
+    /** Farther than a shadow drifts in one tick (spectator flight tops out near 3 blocks per tick). */
+    private static final double MAX_DRIFT_SQR = 16.0 * 16.0;
 
     private ShadowWalk() {}
 
@@ -92,6 +103,7 @@ public final class ShadowWalk {
 
     /** Restores the remembered game mode (if we are still the ones who set SPECTATOR) and frees a stuck player. */
     public static void restore(ServerPlayer player) {
+        TRAIL.remove(player.getUUID());
         Possession.onWalkEnding(player);
         if (!player.hasData(ModAttachments.SHADOW_WALK)) {
             return;
@@ -204,8 +216,28 @@ public final class ShadowWalk {
         ShadowWalkState state = player.getData(ModAttachments.SHADOW_WALK);
         if (!state.active() || player.serverLevel().getGameTime() >= state.until() || !enabled()) {
             restoreQuietly(player);
-        } else if (!SafeRun.isDisabled(FX_FEATURE) && !Possession.isPossessing(player)) {
+            return;
+        }
+        holdToTrail(player);
+        if (!SafeRun.isDisabled(FX_FEATURE) && !Possession.isPossessing(player)) {
             SafeRun.run(FX_FEATURE, () -> motes(player)); // a possessing shadow shows as its host's glowing eyes instead
+        }
+    }
+
+    /** Undoes a spectator-menu jump: back to where the shadow stood last tick (a host's body carries it freely). */
+    private static void holdToTrail(ServerPlayer player) {
+        Vec3 pos = player.position();
+        Vec3 last = TRAIL.put(player.getUUID(), pos);
+        if (last != null && player.getCamera() == player && last.distanceToSqr(pos) > MAX_DRIFT_SQR) {
+            player.connection.teleport(last.x, last.y, last.z, player.getYRot(), player.getXRot());
+            TRAIL.put(player.getUUID(), last);
+        }
+    }
+
+    /** A move with an event (an operator's /tp, another mod) is meant: the shadow's trail starts over there. */
+    public static void onTeleport(EntityTeleportEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player && !TRAIL.isEmpty()) {
+            TRAIL.remove(player.getUUID());
         }
     }
 
@@ -278,5 +310,6 @@ public final class ShadowWalk {
         for (ServerPlayer player : List.copyOf(server.getPlayerList().getPlayers())) {
             restoreQuietly(player);
         }
+        TRAIL.clear();
     }
 }
