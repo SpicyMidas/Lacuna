@@ -30,13 +30,16 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * Server side of the Wayfarer's Chart. Every tick, each player holding a chart (either hand) gets a session: the
  * {@link ChartView} of their dimension, the tiles around their translated position (nearest first) and the markers.
  * Tiles are sampled inside one shared per-tick budget ({@code items.wayfarersChartBudgetMicros}) and sent only when a
- * holder does not have their current version yet, a few per tick. Nothing is saved: the cache lives as long as the
+ * holder does not have their current version yet, a few per tick. A session outlives a put-away chart by
+ * {@link #IDLE_TICKS}, so switching items does not resend everything. Nothing is saved: the cache lives as long as the
  * server runs.
  */
 public final class ChartService {
     public static final String FEATURE = "wayfarers_chart";
     /** Extra pixels around the 128-pixel view whose tiles are fetched ahead. */
     private static final int MARGIN = 8;
+    /** A session whose holder has not held a chart for this long is dropped (with what it knew was sent). */
+    private static final int IDLE_TICKS = 600;
 
     private static final Map<UUID, Session> SESSIONS = new HashMap<>();
     private static final ChartAtlas ATLAS = new ChartAtlas();
@@ -93,6 +96,7 @@ public final class ChartService {
             }
         }
         if (now % 100 == 0) {
+            SESSIONS.values().removeIf(session -> now - session.heldAt > IDLE_TICKS);
             ATLAS.evict(now);
         }
     }
@@ -120,11 +124,11 @@ public final class ChartService {
     /** One holder: what was last sent to them and which tiles they want, nearest first. */
     private static final class Session {
         private ServerPlayer player;
+        private long heldAt;
         private ChartNet.State sentState;
         private ChartView view;
         private int zoom = -1;
         private long markersDue;
-        private List<ChartNet.Marker> markers = List.of();
         private final List<ChartGrid.TileKey> wanted = new ArrayList<>();
         private int rangeX0;
         private int rangeZ0;
@@ -136,15 +140,15 @@ public final class ChartService {
 
         void update(ServerPlayer holder, ItemStack chart, ServerLevel overworld, long now) {
             player = holder;
+            heldAt = now;
             int newZoom = WayfarersChartItem.zoom(chart);
             ChartView newView = ChartView.of(holder);
             if (newZoom != zoom || !newView.equals(view) || now >= markersDue) {
                 zoom = newZoom;
                 view = newView;
-                markers = markers(holder, overworld);
                 markersDue = now + 20;
                 ChartNet.State state = new ChartNet.State(holder.level().dimension(), zoom, view.follow() ? view.scale() : 0.0,
-                        view.anchor(), markers);
+                        view.anchor(), markers(holder, overworld));
                 if (!state.equals(sentState)) {
                     sentState = state;
                     PacketDistributor.sendToPlayer(holder, state);
@@ -205,7 +209,7 @@ public final class ChartService {
                 list.add(new ChartNet.Marker(ChartNet.Marker.HOME, respawn.getX(), respawn.getZ()));
             }
             if (ModDimensions.isForgottenLand(holder.level())) {
-                // where the banishment took them from: walking toward it leads home to the same place
+                // the place the banishment took them from
                 BanishmentSavedData.get(holder.server).byEntity(holder.getUUID())
                         .filter(r -> r.originDimension == Level.OVERWORLD)
                         .ifPresent(r -> list.add(new ChartNet.Marker(ChartNet.Marker.BANISHED_FROM, r.originPos.getX(), r.originPos.getZ())));

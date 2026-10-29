@@ -93,7 +93,7 @@ Add a debug command tree `/lacuna` (permission level 2): `selftest`, `banish [ta
 ## 5. Conventions
 
 - Registries in `registry/` classes: `ModItems`, `ModBlocks`, `ModBlockEntities`, `ModEntities`, `ModComponents`, `ModAttachments`, `ModEffects`, `ModSounds` (vanilla events wrapped only), `ModCreativeTabs`, `ModVillagers` (professions/POI).
-- Logic in feature packages: `banish/`, `beam/`, `eclipse/`, `solar/`, `pearl/`, `chrono/`, `mirror/`, `lantern/`, `flute/`, `orrery/`, `gear/`, `wood/`, `mob/`, `worldgen/`, `township/`, `client/`.
+- Logic in feature packages: `banish/`, `beam/`, `eclipse/`, `solar/`, `pearl/`, `chrono/`, `mirror/`, `lantern/`, `flute/`, `chart/`, `gear/`, `wood/`, `mob/`, `worldgen/`, `township/`, `client/`.
 - Pure math/logic classes (no MC types) live in `logic/`: `CoordMath`, `BeamMath`, `ChargeMath`, `ReputationMath`, `PriceMath`, `ScentTrail`, each unit-tested.
 - One creative tab "Lacuna" (icon: Totem of Banishing), grouped logically.
 - Tooltips: every special item gets 1–2 lore lines (gray italic) plus functional lines (durability/charge/cooldown). Lang file `en_us` generated via datagen; add `it_it` in M12.
@@ -127,7 +127,7 @@ Add a debug command tree `/lacuna` (permission level 2): `selftest`, `banish [ta
 | 3 | Divine Magnifying Glass |
 | 4 | Umbral Iron (needed by Eclipser), Eclipser + Shadow Walk, Solar Flare, Sun's Fury |
 | 5 | Fractured Pearl, Arrival/Departure shards, anchor block |
-| 6 | Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute + Echo, Orrery |
+| 6 | Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute + Echo, Wayfarer's Chart (beta; replaced the Orrery) |
 | 7 | Starlace, Zenithite, Umbral/Ruby tool sets, 5 special weapons |
 | 8 | Four wood families (full sets), saplings, worldgen |
 | 9 | Mobs: Lantern Moth, Gloomcrawler, Clockwork Hound (+ Silk Dust, Decoy) |
@@ -168,7 +168,7 @@ Add a debug command tree `/lacuna` (permission level 2): `selftest`, `banish [ta
 - **Rules inside the Forgotten Land**
   - No natural hostile spawns (biome spawners empty except the mobs listed in M9/M10).
   - **You cannot leave**: cancel `EntityTravelToDimensionEvent`, ender pearls, chorus fruit, Departure Shards (see M5), Chronoshard cross-dimension rewinds. Commands run by operators are never blocked. The only exits are the timer expiring, the Totem used from inside, or death (respawn follows vanilla rules to the overworld).
-  - Sun's Fury and the Orrery's locate do not work inside; Divine Magnifying Glass does.
+  - Sun's Fury does not work inside; Divine Magnifying Glass does.
   - Bed/respawn anchor use is blocked (message).
 
 ### 9.2 Totem of Banishing
@@ -263,9 +263,14 @@ All have durability bars as stated and the shared repair rules (anvil with the l
 - `echo_fragment` repairs the flute (+20 durability).
 - If no valid deaths: message "The bones stay silent." (no cost).
 
-**Orrery of Thresholds** (block `orrery_of_thresholds`, no durability)
-- Recipe: `DKD / RCR / SSS` D = `divine_glass_shard`, K = `compass`, R = `ruby`, C = `clock`, S = `smooth_stone_slab`. Decorative pedestal with rings (static model; optional slow-rotating rings via block entity renderer **only** in M12 polish).
-- Right click (5 s cooldown per player, no GUI): action bar shows the overworld ⇄ Forgotten Land coordinate translation for the player's position (`÷12` / `×12`) and the **direction and distance** to the nearest structure in structure tag `lacuna:orrery_targets` (Obelisk, Sunken Bell Tower) within `orrery.radiusChunks` (default 48; use `ServerLevel#findNearestMapStructure`, run server-side, rate-limited globally to avoid lag spikes). Inside the Forgotten Land the locate part is skipped.
+**Wayfarer's Chart** (item `wayfarers_chart`, stack 1, no durability). *Beta (player feedback): replaces the Orrery of Thresholds, which only printed the coordinate translation; the block, its recipe, config keys and the `lacuna:orrery_targets` structure tag are gone.*
+- Recipe (`tools/content/m19_wayfarers_chart.py`, easy to rebalance): `.D. / RMR / .C.` D = `divine_glass_shard`, R = `ruby`, M = empty `map`, C = `compass`.
+- Held in either hand it is drawn exactly where and how vanilla draws a filled map (two-handed in the main hand with an empty off hand, else one-handed). It shows a 128 x 128-pixel, north-up live map of the **Overworld centred on the holder** that scrolls smoothly as they move (world-anchored 32 x 32-pixel tiles under a texture slid by fractions of a pixel, not vanilla's 128-pixel grid), the holder's arrow in the middle turning with them, and a caption with the coordinates. Sneak + use cycles the scale 1/2/4/8/16 blocks per pixel (component `lacuna:chart_zoom`, default 4).
+- Other dimensions show the Overworld around the **translated position**: the Forgotten Land × `forgottenLand.scale` (the caption gives the same Overworld numbers as the banishment countdown), any other dimension × the ratio of the dimension types' `coordinate_scale` (the Nether: 8). The End has no positional link, so the chart rests on where leaving leads: the holder's Overworld bed/anchor, else the world spawn ("no bearing").
+- Server sampling never loads or generates a chunk. Loaded chunks are surveyed like `MapItem#update` (WORLD_SURFACE heightmap, map colour, water depth, slope shading); a surveyed pixel stays surveyed while its tile is cached. Elsewhere the land is sketched from the generator: the biome the Overworld's biome source would place there (a multi-noise source is asked at surface depth 0, so no cave biomes) mapped through `c:` biome tags to a map colour plus a speckle colour (`chart/ChartInk`), and an approximate surface height from the depth noise at Y 0 (`y ≈ 128 × depth`) for the vanilla slope and water-depth shading. The client draws sketched pixels faded toward the parchment.
+- Budget: one shared per-tick budget for all holders (`items.wayfarersChartBudgetMicros`, default 2000 µs; passes resume pixel by pixel), tiles refreshed every 40 ticks while shown, at most 768 tiles cached server-wide, at most 4 tiles (packed vanilla map colours + 1 bit per pixel "sketched") sent per holder per tick, only when the holder lacks the current version. Tiles are shared by every holder; nothing is saved.
+- Markers (8 x 8 sprites in the vanilla map decoration atlas): world spawn, the holder's Overworld bed/anchor, and inside the Forgotten Land the place their banishment started; out-of-view markers are pinned, smaller, to the edge.
+- Config: `items.wayfarersChart` (default true).
 
 ## 14. M7 — Gear
 
@@ -368,7 +373,7 @@ Vanilla villages stay untouched; **Townships are a new structure family** that g
 ## 19. M12 — Polish and optional items
 
 - `it_it` language file (datagen), tooltips polish, advancements tree (root "Lacuna": first ruby, enter the Forgotten Land, survive a banishment, forge the Eclipser, throw Sun's Fury, link a Fractured Pearl, find a Township), `README.md` for players.
-- Optional (only if stable): **signs/hanging signs/boats** for the four wood families (carefully wiring block entity types and entity types; keep behind `wood.extras` config), Orrery ring animation via a block entity renderer, emissive eyes layers for mobs, TerraBlender overworld biome injection for the five Forgotten Land biomes as a **separate optional milestone** (add the dependency only if the mod still passes every gate with it).
+- Optional (only if stable): **signs/hanging signs/boats** for the four wood families (carefully wiring block entity types and entity types; keep behind `wood.extras` config), emissive eyes layers for mobs, TerraBlender overworld biome injection for the five Forgotten Land biomes as a **separate optional milestone** (add the dependency only if the mod still passes every gate with it).
 - Final QA: 30 min dedicated server soak with a scripted bot-free console (random `/lacuna` actions, `/time`, `/place` across dimensions), memory/tick profiling note in PROGRESS.md, then a release build `./gradlew build` and `docs/CHANGELOG.md`.
 
 ## 20. Asset style guide and texture list (generated by `tools/gen_textures.py`, deterministic, seeded)
@@ -395,12 +400,12 @@ Vanilla villages stay untouched; **Townships are a new structure family** that g
 
 **Item/model rules:** tools/weapons use `item/handheld` (and `item/handheld_rod`-style where suited); items with states use `overrides`/predicates registered with `ItemProperties` client-side (safe, SafeRun). Block models via datagen (cubes, cross, slabs, stairs, fences, doors, trapdoors, etc.). Every texture named after its registry id.
 
-**Texture list (must all exist and pass `validate_assets.py`):** all items and blocks in this spec (including four wood families, murals, ruin stone family, ashen snow with 4 footprint variants, clear ice, mirror glass, buried watch, rusted gear, spore mushroom, updraft spring, Sunken Bell, Obelisk parts, arrival anchor, orrery, township blocks, silk dust glow, decal), mob/entity textures (lantern moth, gloomcrawler, clockwork hound, echo, decoy, reflection, last merchant), armor layers, spawn eggs (color pairs), and mob effect icons (`shadow_walk`, `rooted`, 18x18).
+**Texture list (must all exist and pass `validate_assets.py`):** all items and blocks in this spec (including four wood families, murals, ruin stone family, ashen snow with 4 footprint variants, clear ice, mirror glass, buried watch, rusted gear, spore mushroom, updraft spring, Sunken Bell, Obelisk parts, arrival anchor, Wayfarer's Chart and its map markers, township blocks, silk dust glow, decal), mob/entity textures (lantern moth, gloomcrawler, clockwork hound, echo, decoy, reflection, last merchant), armor layers, spawn eggs (color pairs), and mob effect icons (`shadow_walk`, `rooted`, 18x18).
 
 ## 21. Tags, damage types, loot (checklist)
 
 - **Damage types:** `solar_beam` (is_fire), `eclipse`, `echo_strike`, `solar_ray` (is_fire, bypasses nothing special), `pyrrhic_bolt`, `gravemaw_wave`, `reflection_touch`, all with messages in lang.
-- **Tags:** `lacuna:cannot_be_banished`, `lacuna:unreflectable`, `lacuna:reflectable`, `lacuna:solar_immune`, `lacuna:ruin_blocks`, `lacuna:township_protected`, `lacuna:moth_attractor`, `lacuna:divine_sight_targets`, `lacuna:not_meltable`, structure tags `lacuna:orrery_targets`, `lacuna:townships`; add Lacuna items/blocks to the right vanilla/common tags (`c:ores`, `c:gems`, `c:ingots`, `minecraft:swords`, `minecraft:pickaxes`, `mineable/*`, `needs_*_tool`, `logs`, `planks`, `leaves`, `saplings`, etc.).
+- **Tags:** `lacuna:cannot_be_banished`, `lacuna:unreflectable`, `lacuna:reflectable`, `lacuna:solar_immune`, `lacuna:ruin_blocks`, `lacuna:township_protected`, `lacuna:moth_attractor`, `lacuna:divine_sight_targets`, `lacuna:not_meltable`, structure tag `lacuna:townships`; add Lacuna items/blocks to the right vanilla/common tags (`c:ores`, `c:gems`, `c:ingots`, `minecraft:swords`, `minecraft:pickaxes`, `mineable/*`, `needs_*_tool`, `logs`, `planks`, `leaves`, `saplings`, etc.).
 - **Loot tables:** all blocks (ores, clusters, leaves with sapling/ember/shard drops), mobs, chests `lacuna:chests/ruin_cache`, `mirror_hoard`, `bell_tower`, structure chests, fishing not needed.
 - **Recipes:** all in this spec, generated by datagen with correct 1.21.1 JSON (`result.id`/`count`, ingredient objects) and recipe unlock advancements (hidden is fine).
 
