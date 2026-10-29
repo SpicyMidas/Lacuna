@@ -5,8 +5,8 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 /**
  * One cached tile of the Overworld chart: what it shows now ({@link #colors}, packed vanilla map colours, and
  * {@link #rumour}, one bit per pixel for land sketched from the climate rather than surveyed) and, while it is being
- * (re)sampled, the pass in progress. A pass works into fresh arrays row by row, so it can stop at the tick budget and
- * resume next tick; published arrays are never written again (payloads may still be encoding them).
+ * (re)sampled, the pass in progress. A pass works into fresh arrays pixel by pixel, so it can stop at the tick budget
+ * and resume next tick; published arrays are never written again (payloads may still be encoding them).
  */
 final class ChartTile {
     static final int IDLE = Integer.MIN_VALUE;
@@ -24,14 +24,15 @@ final class ChartTile {
     long sampledAt;
     long wantedAt;
 
-    // the pass in progress: next row to sample (-1 = the row north of the tile), IDLE when none
-    int row = IDLE;
+    // the pass in progress: next pixel to sample (row-major; the TILE negative ones are the row north of the tile),
+    // IDLE when none
+    int cursor = IDLE;
     boolean firstPass;
     byte[] nextColors;
     byte[] nextRumour;
     short[] nextHeights;
     short[] nextNorth;
-    /** Height of the last pixel sampled in each column (the north neighbour of the next row). */
+    /** Height of the last pixel sampled in each column (the north neighbour of the next one in it). */
     short[] above;
     /** Climate samples of this pass by quart column ({@code ink << 32 | height}): pixels share quarts below zoom 4. */
     final Long2LongOpenHashMap climate = new Long2LongOpenHashMap();
@@ -46,7 +47,7 @@ final class ChartTile {
     }
 
     boolean busy() {
-        return row != IDLE;
+        return cursor != IDLE;
     }
 
     static boolean bit(byte[] bits, int i) {

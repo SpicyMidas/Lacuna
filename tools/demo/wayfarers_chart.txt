@@ -23,8 +23,11 @@ wait 240
 look 0 70
 wait 4
 shot chart_forgotten_land
-cmd execute in minecraft:the_nether run tp @s 60 120 60
-wait 240
+cmd execute in minecraft:the_nether run tp @s 60 100 60
+wait 60
+cmd fill ~-2 ~-1 ~-2 ~2 ~3 ~2 minecraft:air
+cmd setblock ~ ~-1 ~ minecraft:glass
+wait 180
 look 0 70
 wait 4
 shot chart_nether

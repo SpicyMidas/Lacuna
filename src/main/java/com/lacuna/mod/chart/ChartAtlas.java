@@ -33,10 +33,10 @@ import org.jetbrains.annotations.Nullable;
  * leaves the cache);</li>
  * <li>anywhere else it is sketched from the world generator's climate: the biome the noise would put there (asked
  * with the surface depth, so caves never show) gives a {@link ChartInk}, and the generator's terrain depth gives an
- * approximate surface height for the same slope and water-depth shading. One climate sample costs a few
- * microseconds and is taken once per quart column at most.</li>
+ * approximate surface height for the same slope and water-depth shading. A climate sample is the dearest step (tens
+ * of microseconds on a slow machine), so it is taken once per quart column at most.</li>
  * </ul>
- * Work is spent row by row inside the caller's deadline, so any number of charts share one per-tick budget.
+ * Work is spent pixel by pixel inside the caller's deadline, so any number of charts share one per-tick budget.
  * Main thread only.
  */
 final class ChartAtlas {
@@ -44,10 +44,9 @@ final class ChartAtlas {
 
     private final Map<ChartGrid.TileKey, ChartTile> tiles = new HashMap<>();
     private final ChartInk.Resolver inks = new ChartInk.Resolver();
-    private final BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
-    private final BlockPos.MutableBlockPos depthCursor = new BlockPos.MutableBlockPos();
+    private final BlockPos.MutableBlockPos column = new BlockPos.MutableBlockPos();
+    private final BlockPos.MutableBlockPos below = new BlockPos.MutableBlockPos();
     private long versions;
-    static long DEBUG_CLIMATE_SAMPLES, DEBUG_CLIMATE_NANOS, DEBUG_SURVEYS, DEBUG_PASSES; // TEMP-CHART-DEBUG
 
     // bound per work() call
     private ServerLevel level;
@@ -74,21 +73,21 @@ final class ChartAtlas {
         return tile.busy() || !tile.ready() || now - tile.sampledAt >= Balance.CHART_REFRESH_TICKS;
     }
 
-    /** Advances the tile's pass until it completes (true) or {@code deadline} ({@link System#nanoTime()}) passes. */
-    boolean work(ServerLevel overworld, ChartTile tile, long now, long deadline) {
+    /** Advances the tile's pass until it completes or {@code deadline} ({@link System#nanoTime()}) passes. */
+    void work(ServerLevel overworld, ChartTile tile, long now, long deadline) {
         bind(overworld);
         if (!tile.busy()) {
             begin(tile);
         }
-        while (tile.row < ChartGrid.TILE) {
-            if (System.nanoTime() >= deadline) {
-                return false;
+        while (tile.cursor < ChartGrid.TILE_PIXELS) {
+            // a climate sample costs tens of microseconds on a slow machine: look at the clock every few pixels
+            if ((tile.cursor & 3) == 0 && System.nanoTime() >= deadline) {
+                return;
             }
-            sampleRow(tile);
-            tile.row++;
+            samplePixel(tile, tile.cursor);
+            tile.cursor++;
         }
         finish(tile, now);
-        return true;
     }
 
     /** Drops the least recently wanted tiles once the cache is over its size (never one wanted in the last 5 s). */
@@ -153,7 +152,7 @@ final class ChartAtlas {
         }
         tile.above = new short[ChartGrid.TILE];
         tile.climate.clear();
-        tile.row = -1;
+        tile.cursor = -ChartGrid.TILE;
     }
 
     private void finish(ChartTile tile, long now) {
@@ -173,62 +172,58 @@ final class ChartAtlas {
         tile.climate.clear();
         tile.climate.trim();
         tile.sampledAt = now;
-        tile.row = ChartTile.IDLE;
-        DEBUG_PASSES++; // TEMP-CHART-DEBUG
+        tile.cursor = ChartTile.IDLE;
     }
 
-    private void sampleRow(ChartTile tile) {
+    /** Pixel {@code index} of the pass (row-major, negative: the row north of the tile, which only shades row 0). */
+    private void samplePixel(ChartTile tile, int index) {
         ChartGrid.TileKey key = tile.key;
         int zoom = key.zoom();
         int bpp = 1 << zoom;
-        int half = bpp >> 1;
-        int r = tile.row;
+        int r = index >> ChartGrid.TILE_SHIFT;
+        int c = index & (ChartGrid.TILE - 1);
+        int px = (key.tx() << ChartGrid.TILE_SHIFT) + c;
         int pz = (key.tz() << ChartGrid.TILE_SHIFT) + r;
-        int bz = pz * bpp + half;
-        for (int c = 0; c < ChartGrid.TILE; c++) {
-            int px = (key.tx() << ChartGrid.TILE_SHIFT) + c;
-            int bx = px * bpp + half;
-            LevelChunk chunk = chunk(bx, bz);
-            if (r < 0) {
-                // the row north of the tile only shades row 0
-                short h;
-                if (chunk != null) {
-                    survey(chunk, bx, bz);
-                    h = (short) surveyHeight;
-                } else if (tile.firstPass) {
-                    h = (short) climateHeight(tile, bx, bz);
-                } else {
-                    h = tile.nextNorth[c];
-                }
-                tile.nextNorth[c] = h;
-                tile.above[c] = h;
-                continue;
-            }
-            int i = r * ChartGrid.TILE + c;
-            int checker = (px + pz) & 1;
-            if (!level.getWorldBorder().isWithinBounds(bx, bz)) {
-                tile.nextColors[i] = 0;
-                ChartTile.setBit(tile.nextRumour, i, false);
-                tile.nextHeights[i] = tile.above[c];
-            } else if (chunk != null) {
-                MapColor color = survey(chunk, bx, bz);
-                tile.nextColors[i] = color == MapColor.WATER ? water(surveyDepth, checker)
-                        : land(color, surveyHeight, tile.above[c], bpp, checker);
-                ChartTile.setBit(tile.nextRumour, i, false);
-                tile.nextHeights[i] = (short) surveyHeight;
+        int bx = px * bpp + (bpp >> 1);
+        int bz = pz * bpp + (bpp >> 1);
+        LevelChunk chunk = chunk(bx, bz);
+        if (r < 0) {
+            short h;
+            if (chunk != null) {
+                survey(chunk, bx, bz);
+                h = (short) surveyHeight;
             } else if (tile.firstPass) {
-                long sample = climate(tile, bx, bz);
-                ChartInk ink = ChartInk.byId((int) (sample >> 32));
-                int height = (int) sample;
-                MapColor color = ink.colorAt(hash(px, pz, zoom));
-                tile.nextColors[i] = ink.water && color == MapColor.WATER
-                        ? water(Math.max(1, seaLevel - height), checker) : land(color, height, tile.above[c], bpp, checker);
-                ChartTile.setBit(tile.nextRumour, i, true);
-                tile.nextHeights[i] = (short) height;
+                h = (short) climateHeight(tile, bx, bz);
+            } else {
+                h = tile.nextNorth[c];
             }
-            // else: unloaded on a refresh pass, the pixel keeps what it showed (surveyed land stays surveyed)
-            tile.above[c] = tile.nextHeights[i];
+            tile.nextNorth[c] = h;
+            tile.above[c] = h;
+            return;
         }
+        int checker = (px + pz) & 1;
+        if (!level.getWorldBorder().isWithinBounds(bx, bz)) {
+            tile.nextColors[index] = 0;
+            ChartTile.setBit(tile.nextRumour, index, false);
+            tile.nextHeights[index] = tile.above[c];
+        } else if (chunk != null) {
+            MapColor color = survey(chunk, bx, bz);
+            tile.nextColors[index] = color == MapColor.WATER ? water(surveyDepth, checker)
+                    : land(color, surveyHeight, tile.above[c], bpp, checker);
+            ChartTile.setBit(tile.nextRumour, index, false);
+            tile.nextHeights[index] = (short) surveyHeight;
+        } else if (tile.firstPass) {
+            long sample = climate(tile, bx, bz);
+            ChartInk ink = ChartInk.byId((int) (sample >> 32));
+            int height = (int) sample;
+            MapColor color = ink.colorAt(hash(px, pz, zoom));
+            tile.nextColors[index] = ink.water && color == MapColor.WATER
+                    ? water(Math.max(1, seaLevel - height), checker) : land(color, height, tile.above[c], bpp, checker);
+            ChartTile.setBit(tile.nextRumour, index, true);
+            tile.nextHeights[index] = (short) height;
+        }
+        // else: unloaded on a refresh pass, the pixel keeps what it showed (surveyed land stays surveyed)
+        tile.above[c] = tile.nextHeights[index];
     }
 
     @Nullable
@@ -250,29 +245,28 @@ final class ChartAtlas {
         BlockState state;
         if (y <= minY + 1) {
             state = Blocks.BEDROCK.defaultBlockState();
-            cursor.set(bx, minY, bz);
+            column.set(bx, minY, bz);
         } else {
             do {
-                cursor.set(bx, --y, bz);
-                state = chunk.getBlockState(cursor);
-            } while (state.getMapColor(level, cursor) == MapColor.NONE && y > minY);
+                column.set(bx, --y, bz);
+                state = chunk.getBlockState(column);
+            } while (state.getMapColor(level, column) == MapColor.NONE && y > minY);
             if (y > minY && !state.getFluidState().isEmpty()) {
-                int below = y - 1;
+                int y2 = y - 1;
                 BlockState under;
                 do {
-                    depthCursor.set(bx, below--, bz);
-                    under = chunk.getBlockState(depthCursor);
+                    below.set(bx, y2--, bz);
+                    under = chunk.getBlockState(below);
                     depth++;
-                } while (below > minY && !under.getFluidState().isEmpty());
-                if (!state.isFaceSturdy(level, cursor, Direction.UP)) {
+                } while (y2 > minY && !under.getFluidState().isEmpty());
+                if (!state.isFaceSturdy(level, column, Direction.UP)) {
                     state = state.getFluidState().createLegacyBlock();
                 }
             }
         }
         surveyHeight = y;
         surveyDepth = depth;
-        DEBUG_SURVEYS++; // TEMP-CHART-DEBUG
-        return state.getMapColor(level, cursor);
+        return state.getMapColor(level, column);
     }
 
     private int climateHeight(ChartTile tile, int bx, int bz) {
@@ -288,12 +282,11 @@ final class ChartAtlas {
     private long climate(ChartTile tile, int bx, int bz) {
         int qx = QuartPos.fromBlock(bx);
         int qz = QuartPos.fromBlock(bz);
-        long column = ChunkPos.asLong(qx, qz);
-        long cached = tile.climate.get(column);
+        long quartColumn = ChunkPos.asLong(qx, qz);
+        long cached = tile.climate.get(quartColumn);
         if (cached != Long.MIN_VALUE) {
             return cached;
         }
-        long debugStart = System.nanoTime(); // TEMP-CHART-DEBUG
         Climate.TargetPoint point = sampler.sample(qx, 0, qz);
         int height = Math.round(Climate.unquantizeCoord(point.depth()) * 128.0F);
         height = Math.max(minY, Math.min(level.getMaxBuildHeight(), height));
@@ -302,9 +295,7 @@ final class ChartAtlas {
                         point.erosion(), 0L, point.weirdness()))
                 : biomes.getNoiseBiome(qx, QuartPos.fromBlock(seaLevel), qz, sampler);
         long sample = ((long) inks.of(biome).ordinal() << 32) | (height & 0xFFFFFFFFL);
-        tile.climate.put(column, sample);
-        DEBUG_CLIMATE_SAMPLES++; // TEMP-CHART-DEBUG
-        DEBUG_CLIMATE_NANOS += System.nanoTime() - debugStart; // TEMP-CHART-DEBUG
+        tile.climate.put(quartColumn, sample);
         return sample;
     }
 
