@@ -1,0 +1,46 @@
+{
+  "criteria": {
+    "fed": {
+      "conditions": {
+        "location": [
+          {
+            "condition": "minecraft:location_check",
+            "predicate": {
+              "block": {
+                "blocks": "lacuna:chrono_hourglass"
+              }
+            }
+          },
+          {
+            "condition": "minecraft:match_tool",
+            "predicate": {
+              "items": "lacuna:chronal_shard"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:item_used_on_block"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.borrowed_seconds.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:chrono_hourglass"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.borrowed_seconds.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "fed"
+    ]
+  ]
+}

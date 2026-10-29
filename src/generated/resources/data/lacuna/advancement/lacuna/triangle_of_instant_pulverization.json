@@ -19,7 +19,7 @@
       "translate": "advancements.lacuna.triangle_of_instant_pulverization.title"
     }
   },
-  "parent": "lacuna:lacuna/root",
+  "parent": "lacuna:lacuna/find_relic",
   "requirements": [
     [
       "code"

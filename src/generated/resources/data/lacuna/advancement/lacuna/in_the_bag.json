@@ -1,0 +1,33 @@
+{
+  "criteria": {
+    "bagged": {
+      "conditions": {
+        "item": {
+          "items": "lacuna:comically_large_bag"
+        }
+      },
+      "trigger": "lacuna:used_relic"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.in_the_bag.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:comically_large_bag"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.in_the_bag.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "bagged"
+    ]
+  ]
+}

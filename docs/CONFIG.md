@@ -38,6 +38,7 @@ load after registration; they live in `Balance`.
 | starfall | starlaceBandage | true | Starlace Bandages mummify creatures (shears always unwrap them) |
 | shadowPossession | enabled | true | While shadow walking, clicking a creature or player possesses it (see its point of view and steer it until it fights back and casts you out); off: clicking only spectates, as in vanilla |
 | shadowPossession | players | true | Players can be possessed too (also requires PvP on the server) |
+| almanac | giveOnFirstJoin | true | Every player gets a Lacuna Almanac (the in-game guide) the first time they join a world; the flag lives in the player's persisted data, so turning it off and on again never gives a second one |
 
 ## Client (`config/lacuna-client.toml`)
 

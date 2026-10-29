@@ -330,6 +330,7 @@ public final class Possession {
         if (host instanceof Mob mob) {
             HostControl.seize(mob);
         }
+        com.lacuna.mod.util.LacunaAdvancements.award(possessor, "lacuna/possession");
         SafeRun.run(FX_FEATURE, () -> {
             ServerLevel level = possessor.serverLevel();
             Vec3 c = host.position().add(0, host.getBbHeight() * 0.6, 0);

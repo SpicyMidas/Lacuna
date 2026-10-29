@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "ingot": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:umbral_steel_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.umbral_steel.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:umbral_steel_ingot"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.umbral_steel.title"
+    }
+  },
+  "parent": "lacuna:lacuna/mine_ruby",
+  "requirements": [
+    [
+      "ingot"
+    ]
+  ]
+}

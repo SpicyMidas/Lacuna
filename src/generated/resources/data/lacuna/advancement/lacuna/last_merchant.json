@@ -1,0 +1,39 @@
+{
+  "criteria": {
+    "trade": {
+      "conditions": {
+        "villager": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "lacuna:last_merchant"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:villager_trade"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.last_merchant.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:last_merchant_spawn_egg"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.last_merchant.title"
+    }
+  },
+  "parent": "lacuna:lacuna/mine_ruby",
+  "requirements": [
+    [
+      "trade"
+    ]
+  ]
+}

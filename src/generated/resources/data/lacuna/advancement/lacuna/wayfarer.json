@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "chart": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:wayfarers_chart"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.wayfarer.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:wayfarers_chart"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.wayfarer.title"
+    }
+  },
+  "parent": "lacuna:lacuna/mine_ruby",
+  "requirements": [
+    [
+      "chart"
+    ]
+  ]
+}

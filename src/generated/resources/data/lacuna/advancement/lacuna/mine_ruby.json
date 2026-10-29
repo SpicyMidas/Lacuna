@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "ruby": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:ruby"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.mine_ruby.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:ruby"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.mine_ruby.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "ruby"
+    ]
+  ]
+}

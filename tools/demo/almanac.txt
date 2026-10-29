@@ -1,0 +1,67 @@
+# Lacuna Almanac: the guide book screen. A fresh world hands the book out on first join; it is opened with a right
+# click and leafed through with the arrow keys: the contents (title page, chapters), entry spreads (Getting Started,
+# a relic with its generated sources, the Quintessence), then the same book reflowed at GUI scale 4 (320 x 180).
+world lacuna_almanac flat
+wait 60
+cmd gamerule sendCommandFeedback false
+cmd time set noon
+cmd item replace entity @s weapon.mainhand with lacuna:almanac
+wait 20
+look 0 60
+use on
+wait 2
+use off
+wait 30
+shot almanac_contents
+key 262
+wait 10
+shot almanac_contents_2
+key 262
+key 262
+key 262
+wait 10
+shot almanac_spread_4
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+wait 10
+shot almanac_spread_11
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+wait 10
+shot almanac_spread_19
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+key 262
+wait 10
+shot almanac_spread_29
+guiscale 4
+wait 20
+shot almanac_scale4
+key 268
+wait 10
+shot almanac_scale4_contents
+guiscale 2
+wait 20
+key 256
+wait 10
+cmd advancement grant @s only lacuna:lacuna/root
+wait 40
+quit

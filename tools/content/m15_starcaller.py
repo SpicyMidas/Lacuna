@@ -30,7 +30,7 @@ def build(g):
            "Ancora caldo della caduta. Ripara la Tromba Richiamastelle, intesse il tessuto stellare.")
     falling_star(g)
     starlace(g)
-    adv(g, "wish_upon_a_star", "lacuna:starcaller_trumpet", code(), "root", frame="goal",
+    adv(g, "wish_upon_a_star", "lacuna:starcaller_trumpet", code(), "find_relic", frame="goal",
         en=("Wish Upon a Star", "Call a falling star down with the Starcaller Trumpet."),
         it=("Esprimi un desiderio", "Fai cadere una stella con la Tromba Richiamastelle."))
 

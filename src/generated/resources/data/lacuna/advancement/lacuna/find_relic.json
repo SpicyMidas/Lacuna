@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "relic": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#lacuna:relics"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.find_relic.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:mirror_of_recursion"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.find_relic.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "relic"
+    ]
+  ]
+}

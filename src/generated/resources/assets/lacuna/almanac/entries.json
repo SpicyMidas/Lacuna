@@ -1,0 +1,865 @@
+{
+  "chapters": [
+    {
+      "icon": "minecraft:compass",
+      "id": "getting_started",
+      "title": "almanac.lacuna.chapter.getting_started"
+    },
+    {
+      "icon": "lacuna:chiseled_ruin_glyph",
+      "id": "forgotten_land",
+      "title": "almanac.lacuna.chapter.forgotten_land"
+    },
+    {
+      "icon": "lacuna:eclipser",
+      "id": "relics",
+      "title": "almanac.lacuna.chapter.relics"
+    },
+    {
+      "icon": "lacuna:lacunar_quintessence",
+      "id": "totems",
+      "title": "almanac.lacuna.chapter.totems"
+    },
+    {
+      "icon": "lacuna:umbral_steel_pickaxe",
+      "id": "gear",
+      "title": "almanac.lacuna.chapter.gear"
+    },
+    {
+      "icon": "lacuna:ruby",
+      "id": "materials",
+      "title": "almanac.lacuna.chapter.materials"
+    },
+    {
+      "icon": "lacuna:cindervine_planks",
+      "id": "blocks",
+      "title": "almanac.lacuna.chapter.blocks"
+    },
+    {
+      "icon": "lacuna:village_ledger",
+      "id": "villages",
+      "title": "almanac.lacuna.chapter.villages"
+    },
+    {
+      "icon": "lacuna:lantern_moth_spawn_egg",
+      "id": "creatures",
+      "title": "almanac.lacuna.chapter.creatures"
+    }
+  ],
+  "entries": [
+    {
+      "chapter": "getting_started",
+      "icon": "lacuna:almanac",
+      "id": "welcome",
+      "text": "almanac.lacuna.welcome.text",
+      "title": "almanac.lacuna.welcome",
+      "where": "almanac.lacuna.welcome.where"
+    },
+    {
+      "chapter": "getting_started",
+      "icon": "lacuna:totem_of_banishing",
+      "icons": [
+        "lacuna:ruby",
+        "lacuna:lacunar_quintessence"
+      ],
+      "id": "path",
+      "text": "almanac.lacuna.path.text",
+      "title": "almanac.lacuna.path",
+      "where": "almanac.lacuna.path.where"
+    },
+    {
+      "chapter": "getting_started",
+      "icon": "minecraft:anvil",
+      "icons": [
+        "lacuna:repair_kit"
+      ],
+      "id": "mending",
+      "text": "almanac.lacuna.mending.text",
+      "title": "almanac.lacuna.mending",
+      "where": "almanac.lacuna.mending.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:chiseled_ruin_glyph",
+      "id": "forgotten_land",
+      "text": "almanac.lacuna.forgotten_land.text",
+      "title": "almanac.lacuna.forgotten_land",
+      "where": "almanac.lacuna.forgotten_land.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:forgotten_portal_frame",
+      "icons": [
+        "minecraft:crying_obsidian"
+      ],
+      "id": "forgotten_portal",
+      "text": "almanac.lacuna.forgotten_portal.text",
+      "title": "block.lacuna.forgotten_portal",
+      "where": "almanac.lacuna.forgotten_portal.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:ruin_stone",
+      "icons": [
+        "lacuna:echo_birch_sapling",
+        "lacuna:divine_glass_cluster"
+      ],
+      "id": "forgotten_plains",
+      "text": "almanac.lacuna.forgotten_plains.text",
+      "title": "biome.lacuna.forgotten_plains",
+      "where": "almanac.lacuna.forgotten_plains.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:ashen_snow_block",
+      "icons": [
+        "lacuna:clear_ice",
+        "lacuna:cindervine_sapling"
+      ],
+      "id": "cinderfrost_flats",
+      "text": "almanac.lacuna.cinderfrost_flats.text",
+      "title": "biome.lacuna.cinderfrost_flats",
+      "where": "almanac.lacuna.cinderfrost_flats.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:updraft_spring",
+      "icons": [
+        "lacuna:zenithite_ore",
+        "lacuna:crystal_willow_sapling"
+      ],
+      "id": "inverted_falls",
+      "text": "almanac.lacuna.inverted_falls.text",
+      "title": "biome.lacuna.inverted_falls",
+      "where": "almanac.lacuna.inverted_falls.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:spore_mushroom",
+      "icons": [
+        "lacuna:tidebloom_roots",
+        "lacuna:lantern_moth_spawn_egg"
+      ],
+      "id": "whispering_marsh",
+      "text": "almanac.lacuna.whispering_marsh.text",
+      "title": "biome.lacuna.whispering_marsh",
+      "where": "almanac.lacuna.whispering_marsh.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:buried_watch",
+      "icons": [
+        "lacuna:rusted_gear",
+        "lacuna:chronal_shard"
+      ],
+      "id": "clockwork_dunes",
+      "text": "almanac.lacuna.clockwork_dunes.text",
+      "title": "biome.lacuna.clockwork_dunes",
+      "where": "almanac.lacuna.clockwork_dunes.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:ruin_stone_bricks",
+      "icons": [
+        "lacuna:cracked_ruin_stone_bricks",
+        "lacuna:ruin_pillar",
+        "minecraft:chest"
+      ],
+      "id": "ruins",
+      "text": "almanac.lacuna.ruins.text",
+      "title": "almanac.lacuna.ruins",
+      "where": "almanac.lacuna.ruins.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "minecraft:painting",
+      "icons": [
+        "lacuna:mural_block_1",
+        "lacuna:mural_block_2",
+        "lacuna:mural_block_5"
+      ],
+      "id": "memory_murals",
+      "text": "almanac.lacuna.memory_murals.text",
+      "title": "almanac.lacuna.memory_murals",
+      "where": "almanac.lacuna.memory_murals.where"
+    },
+    {
+      "chapter": "forgotten_land",
+      "icon": "lacuna:mirror_glass",
+      "icons": [
+        "lacuna:labyrinth_trigger",
+        "lacuna:labyrinth_exit"
+      ],
+      "id": "mirror_labyrinth",
+      "text": "almanac.lacuna.mirror_labyrinth.text",
+      "title": "almanac.lacuna.mirror_labyrinth",
+      "where": "almanac.lacuna.mirror_labyrinth.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "minecraft:chest",
+      "id": "about_relics",
+      "text": "almanac.lacuna.about_relics.text",
+      "title": "almanac.lacuna.about_relics",
+      "where": "almanac.lacuna.about_relics.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "minecraft:wither_skeleton_skull",
+      "icons": [
+        "minecraft:trial_key"
+      ],
+      "id": "treasure",
+      "text": "almanac.lacuna.treasure.text",
+      "title": "almanac.lacuna.treasure",
+      "where": "almanac.lacuna.treasure.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:suns_fury",
+      "icons": [
+        "lacuna:solar_flare"
+      ],
+      "id": "suns_fury",
+      "text": "almanac.lacuna.suns_fury.text",
+      "title": "item.lacuna.suns_fury",
+      "where": "almanac.lacuna.suns_fury.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:eclipser",
+      "id": "eclipser",
+      "text": "almanac.lacuna.eclipser.text",
+      "title": "item.lacuna.eclipser",
+      "where": "almanac.lacuna.eclipser.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "minecraft:ender_eye",
+      "id": "shadow_walk",
+      "text": "almanac.lacuna.shadow_walk.text",
+      "title": "almanac.lacuna.shadow_walk",
+      "where": "almanac.lacuna.shadow_walk.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:gravemaw_greatsword",
+      "id": "gravemaw_greatsword",
+      "text": "almanac.lacuna.gravemaw_greatsword.text",
+      "title": "item.lacuna.gravemaw_greatsword",
+      "where": "almanac.lacuna.gravemaw_greatsword.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:tidecaller_sickle",
+      "icons": [
+        "minecraft:prismarine_shard"
+      ],
+      "id": "tidecaller_sickle",
+      "text": "almanac.lacuna.tidecaller_sickle.text",
+      "title": "item.lacuna.tidecaller_sickle",
+      "where": "almanac.lacuna.tidecaller_sickle.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:ember_triangle",
+      "icons": [
+        "lacuna:ember"
+      ],
+      "id": "ember_triangle",
+      "text": "almanac.lacuna.ember_triangle.text",
+      "title": "item.lacuna.ember_triangle",
+      "where": "almanac.lacuna.ember_triangle.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:quickening_wand",
+      "icons": [
+        "lacuna:silk_dust"
+      ],
+      "id": "quickening_wand",
+      "text": "almanac.lacuna.quickening_wand.text",
+      "title": "item.lacuna.quickening_wand",
+      "where": "almanac.lacuna.quickening_wand.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:starcaller_trumpet",
+      "icons": [
+        "lacuna:star_fragment"
+      ],
+      "id": "starcaller_trumpet",
+      "text": "almanac.lacuna.starcaller_trumpet.text",
+      "title": "item.lacuna.starcaller_trumpet",
+      "where": "almanac.lacuna.starcaller_trumpet.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:mirror_of_recursion",
+      "id": "mirror_of_recursion",
+      "text": "almanac.lacuna.mirror_of_recursion.text",
+      "title": "item.lacuna.mirror_of_recursion",
+      "where": "almanac.lacuna.mirror_of_recursion.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:chronoshard_pocket_watch",
+      "icons": [
+        "lacuna:chronal_shard"
+      ],
+      "id": "chronoshard_pocket_watch",
+      "text": "almanac.lacuna.chronoshard_pocket_watch.text",
+      "title": "item.lacuna.chronoshard_pocket_watch",
+      "where": "almanac.lacuna.chronoshard_pocket_watch.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:null_lantern",
+      "icons": [
+        "minecraft:ender_pearl",
+        "minecraft:echo_shard"
+      ],
+      "id": "null_lantern",
+      "text": "almanac.lacuna.null_lantern.text",
+      "title": "item.lacuna.null_lantern",
+      "where": "almanac.lacuna.null_lantern.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:divine_magnifying_glass",
+      "id": "divine_magnifying_glass",
+      "text": "almanac.lacuna.divine_magnifying_glass.text",
+      "title": "item.lacuna.divine_magnifying_glass",
+      "where": "almanac.lacuna.divine_magnifying_glass.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:echo_dagger",
+      "id": "echo_dagger",
+      "text": "almanac.lacuna.echo_dagger.text",
+      "title": "item.lacuna.echo_dagger",
+      "where": "almanac.lacuna.echo_dagger.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:pyrrhic_scepter",
+      "id": "pyrrhic_scepter",
+      "text": "almanac.lacuna.pyrrhic_scepter.text",
+      "title": "item.lacuna.pyrrhic_scepter",
+      "where": "almanac.lacuna.pyrrhic_scepter.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:heartwood_bow",
+      "icons": [
+        "lacuna:echo_birch_planks"
+      ],
+      "id": "heartwood_bow",
+      "text": "almanac.lacuna.heartwood_bow.text",
+      "title": "item.lacuna.heartwood_bow",
+      "where": "almanac.lacuna.heartwood_bow.where"
+    },
+    {
+      "chapter": "relics",
+      "icon": "lacuna:whisperbone_flute",
+      "icons": [
+        "lacuna:echo_fragment"
+      ],
+      "id": "whisperbone_flute",
+      "text": "almanac.lacuna.whisperbone_flute.text",
+      "title": "item.lacuna.whisperbone_flute",
+      "where": "almanac.lacuna.whisperbone_flute.where"
+    },
+    {
+      "chapter": "totems",
+      "icon": "lacuna:lacunar_quintessence",
+      "id": "lacunar_quintessence",
+      "text": "almanac.lacuna.lacunar_quintessence.text",
+      "title": "item.lacuna.lacunar_quintessence",
+      "where": "almanac.lacuna.lacunar_quintessence.where"
+    },
+    {
+      "chapter": "totems",
+      "icon": "lacuna:totem_of_banishing",
+      "id": "totem_of_banishing",
+      "text": "almanac.lacuna.totem_of_banishing.text",
+      "title": "item.lacuna.totem_of_banishing",
+      "where": "almanac.lacuna.totem_of_banishing.where"
+    },
+    {
+      "chapter": "totems",
+      "icon": "lacuna:totem_of_confusion",
+      "id": "totem_of_confusion",
+      "text": "almanac.lacuna.totem_of_confusion.text",
+      "title": "item.lacuna.totem_of_confusion",
+      "where": "almanac.lacuna.totem_of_confusion.where"
+    },
+    {
+      "chapter": "totems",
+      "icon": "minecraft:totem_of_undying",
+      "id": "totem_of_undying",
+      "text": "almanac.lacuna.totem_of_undying.text",
+      "title": "almanac.lacuna.totem_of_undying",
+      "where": "almanac.lacuna.totem_of_undying.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:umbral_steel_sword",
+      "icons": [
+        "lacuna:umbral_steel_pickaxe",
+        "lacuna:umbral_steel_axe",
+        "lacuna:umbral_steel_shovel",
+        "lacuna:umbral_steel_hoe"
+      ],
+      "id": "umbral_steel_tools",
+      "text": "almanac.lacuna.umbral_steel_tools.text",
+      "title": "almanac.lacuna.umbral_steel_tools",
+      "where": "almanac.lacuna.umbral_steel_tools.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:starlace_chestplate",
+      "icons": [
+        "lacuna:starlace_helmet",
+        "lacuna:starlace_leggings",
+        "lacuna:starlace_boots",
+        "lacuna:starlace_cloth"
+      ],
+      "id": "starlace_armor",
+      "text": "almanac.lacuna.starlace_armor.text",
+      "title": "almanac.lacuna.starlace_armor",
+      "where": "almanac.lacuna.starlace_armor.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:starlace_bandage",
+      "id": "starlace_bandage",
+      "text": "almanac.lacuna.starlace_bandage.text",
+      "title": "item.lacuna.starlace_bandage",
+      "where": "almanac.lacuna.starlace_bandage.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:fractured_pearl",
+      "icons": [
+        "lacuna:arrival_shard",
+        "lacuna:departure_shard"
+      ],
+      "id": "fractured_pearl",
+      "text": "almanac.lacuna.fractured_pearl.text",
+      "title": "item.lacuna.fractured_pearl",
+      "where": "almanac.lacuna.fractured_pearl.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:comically_large_bag",
+      "id": "comically_large_bag",
+      "text": "almanac.lacuna.comically_large_bag.text",
+      "title": "item.lacuna.comically_large_bag",
+      "where": "almanac.lacuna.comically_large_bag.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:chrono_hourglass",
+      "icons": [
+        "lacuna:chronal_shard"
+      ],
+      "id": "chrono_hourglass",
+      "text": "almanac.lacuna.chrono_hourglass.text",
+      "title": "block.lacuna.chrono_hourglass",
+      "where": "almanac.lacuna.chrono_hourglass.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:clockwork_decoy",
+      "id": "clockwork_decoy",
+      "text": "almanac.lacuna.clockwork_decoy.text",
+      "title": "item.lacuna.clockwork_decoy",
+      "where": "almanac.lacuna.clockwork_decoy.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:repair_kit",
+      "id": "repair_kit",
+      "text": "almanac.lacuna.repair_kit.text",
+      "title": "item.lacuna.repair_kit",
+      "where": "almanac.lacuna.repair_kit.where"
+    },
+    {
+      "chapter": "gear",
+      "icon": "lacuna:wayfarers_chart",
+      "id": "wayfarers_chart",
+      "text": "almanac.lacuna.wayfarers_chart.text",
+      "title": "item.lacuna.wayfarers_chart",
+      "where": "almanac.lacuna.wayfarers_chart.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:ruby",
+      "icons": [
+        "lacuna:ruby_ore",
+        "lacuna:deepslate_ruby_ore",
+        "lacuna:ruby_block"
+      ],
+      "id": "ruby",
+      "text": "almanac.lacuna.ruby.text",
+      "title": "item.lacuna.ruby",
+      "where": "almanac.lacuna.ruby.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:umbral_steel_ingot",
+      "icons": [
+        "lacuna:umbral_steel_ore",
+        "lacuna:raw_umbral_steel",
+        "lacuna:umbral_steel_nugget",
+        "lacuna:umbral_steel_block"
+      ],
+      "id": "umbral_steel",
+      "text": "almanac.lacuna.umbral_steel.text",
+      "title": "almanac.lacuna.umbral_steel",
+      "where": "almanac.lacuna.umbral_steel.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:divine_glass_shard",
+      "icons": [
+        "lacuna:divine_glass_cluster",
+        "lacuna:divine_glass",
+        "lacuna:divine_glass_pane"
+      ],
+      "id": "divine_glass",
+      "text": "almanac.lacuna.divine_glass.text",
+      "title": "almanac.lacuna.divine_glass",
+      "where": "almanac.lacuna.divine_glass.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:zenithite_shard",
+      "icons": [
+        "lacuna:zenithite_ore",
+        "lacuna:deepslate_zenithite_ore",
+        "lacuna:zenithite_block"
+      ],
+      "id": "zenithite",
+      "text": "almanac.lacuna.zenithite.text",
+      "title": "almanac.lacuna.zenithite",
+      "where": "almanac.lacuna.zenithite.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:exilite_ingot",
+      "icons": [
+        "lacuna:exilite_debris",
+        "lacuna:exilite_shard",
+        "lacuna:exilite_block"
+      ],
+      "id": "exilite",
+      "text": "almanac.lacuna.exilite.text",
+      "title": "almanac.lacuna.exilite",
+      "where": "almanac.lacuna.exilite.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:star_fragment",
+      "icons": [
+        "lacuna:molten_star_rock",
+        "lacuna:prime_star_rock",
+        "lacuna:extinguished_star_rock"
+      ],
+      "id": "star_rock",
+      "text": "almanac.lacuna.star_rock.text",
+      "title": "almanac.lacuna.star_rock",
+      "where": "almanac.lacuna.star_rock.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:solar_flare",
+      "icons": [
+        "lacuna:solar_flare_fragment"
+      ],
+      "id": "solar_flare",
+      "text": "almanac.lacuna.solar_flare.text",
+      "title": "item.lacuna.solar_flare",
+      "where": "almanac.lacuna.solar_flare.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:chronal_shard",
+      "icons": [
+        "lacuna:buried_watch"
+      ],
+      "id": "chronal_shard",
+      "text": "almanac.lacuna.chronal_shard.text",
+      "title": "item.lacuna.chronal_shard",
+      "where": "almanac.lacuna.chronal_shard.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:echo_fragment",
+      "id": "echo_fragment",
+      "text": "almanac.lacuna.echo_fragment.text",
+      "title": "item.lacuna.echo_fragment",
+      "where": "almanac.lacuna.echo_fragment.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:ember",
+      "id": "ember",
+      "text": "almanac.lacuna.ember.text",
+      "title": "item.lacuna.ember",
+      "where": "almanac.lacuna.ember.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:crystal_willow_shard",
+      "id": "crystal_willow_shard",
+      "text": "almanac.lacuna.crystal_willow_shard.text",
+      "title": "item.lacuna.crystal_willow_shard",
+      "where": "almanac.lacuna.crystal_willow_shard.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:silk_dust",
+      "id": "silk_dust",
+      "text": "almanac.lacuna.silk_dust.text",
+      "title": "item.lacuna.silk_dust",
+      "where": "almanac.lacuna.silk_dust.where"
+    },
+    {
+      "chapter": "materials",
+      "icon": "lacuna:clockwork_gear",
+      "id": "clockwork_gear",
+      "text": "almanac.lacuna.clockwork_gear.text",
+      "title": "item.lacuna.clockwork_gear",
+      "where": "almanac.lacuna.clockwork_gear.where"
+    },
+    {
+      "chapter": "blocks",
+      "icon": "lacuna:cindervine_log",
+      "icons": [
+        "lacuna:cindervine_planks",
+        "lacuna:cindervine_leaves",
+        "lacuna:cindervine_sapling",
+        "lacuna:cindervine_door"
+      ],
+      "id": "cindervine",
+      "text": "almanac.lacuna.cindervine.text",
+      "title": "almanac.lacuna.cindervine",
+      "where": "almanac.lacuna.cindervine.where"
+    },
+    {
+      "chapter": "blocks",
+      "icon": "lacuna:crystal_willow_log",
+      "icons": [
+        "lacuna:crystal_willow_planks",
+        "lacuna:crystal_willow_leaves",
+        "lacuna:crystal_willow_strands",
+        "lacuna:crystal_willow_sapling"
+      ],
+      "id": "crystal_willow",
+      "text": "almanac.lacuna.crystal_willow.text",
+      "title": "almanac.lacuna.crystal_willow",
+      "where": "almanac.lacuna.crystal_willow.where"
+    },
+    {
+      "chapter": "blocks",
+      "icon": "lacuna:tidebloom_log",
+      "icons": [
+        "lacuna:tidebloom_planks",
+        "lacuna:tidebloom_leaves",
+        "lacuna:tidebloom_roots",
+        "lacuna:tidebloom_sapling"
+      ],
+      "id": "tidebloom",
+      "text": "almanac.lacuna.tidebloom.text",
+      "title": "almanac.lacuna.tidebloom",
+      "where": "almanac.lacuna.tidebloom.where"
+    },
+    {
+      "chapter": "blocks",
+      "icon": "lacuna:echo_birch_log",
+      "icons": [
+        "lacuna:echo_birch_planks",
+        "lacuna:echo_birch_leaves",
+        "lacuna:echo_birch_sapling",
+        "lacuna:echo_birch_door"
+      ],
+      "id": "echo_birch",
+      "text": "almanac.lacuna.echo_birch.text",
+      "title": "almanac.lacuna.echo_birch",
+      "where": "almanac.lacuna.echo_birch.where"
+    },
+    {
+      "chapter": "blocks",
+      "icon": "lacuna:chiseled_exilite",
+      "icons": [
+        "lacuna:exilite",
+        "lacuna:polished_exilite",
+        "lacuna:exilite_bricks",
+        "lacuna:exilite_brick_stairs",
+        "lacuna:exilite_brick_wall"
+      ],
+      "id": "exilite_stonework",
+      "text": "almanac.lacuna.exilite_stonework.text",
+      "title": "almanac.lacuna.exilite_stonework",
+      "where": "almanac.lacuna.exilite_stonework.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "minecraft:bell",
+      "id": "civic_villages",
+      "text": "almanac.lacuna.civic_villages.text",
+      "title": "almanac.lacuna.civic_villages",
+      "where": "almanac.lacuna.civic_villages.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "lacuna:village_ledger",
+      "id": "village_ledger",
+      "text": "almanac.lacuna.village_ledger.text",
+      "title": "block.lacuna.village_ledger",
+      "where": "almanac.lacuna.village_ledger.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "minecraft:emerald",
+      "id": "reputation",
+      "text": "almanac.lacuna.reputation.text",
+      "title": "almanac.lacuna.reputation",
+      "where": "almanac.lacuna.reputation.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "minecraft:iron_sword",
+      "icons": [
+        "minecraft:bell"
+      ],
+      "id": "laws",
+      "text": "almanac.lacuna.laws.text",
+      "title": "almanac.lacuna.laws",
+      "where": "almanac.lacuna.laws.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "lacuna:council_table",
+      "id": "council",
+      "text": "almanac.lacuna.council.text",
+      "title": "almanac.lacuna.council",
+      "where": "almanac.lacuna.council.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "lacuna:village_coin",
+      "icons": [
+        "lacuna:mint_press"
+      ],
+      "id": "village_coin",
+      "text": "almanac.lacuna.village_coin.text",
+      "title": "almanac.lacuna.village_coin",
+      "where": "almanac.lacuna.village_coin.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "lacuna:judge_bench",
+      "id": "court",
+      "text": "almanac.lacuna.court.text",
+      "title": "almanac.lacuna.court",
+      "where": "almanac.lacuna.court.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "lacuna:guild_board",
+      "icons": [
+        "lacuna:guild_contract"
+      ],
+      "id": "guilds",
+      "text": "almanac.lacuna.guilds.text",
+      "title": "almanac.lacuna.guilds",
+      "where": "almanac.lacuna.guilds.where"
+    },
+    {
+      "chapter": "villages",
+      "icon": "lacuna:school_desk",
+      "icons": [
+        "minecraft:lectern"
+      ],
+      "id": "schools",
+      "text": "almanac.lacuna.schools.text",
+      "title": "almanac.lacuna.schools",
+      "where": "almanac.lacuna.schools.where"
+    },
+    {
+      "chapter": "creatures",
+      "icon": "lacuna:lantern_moth_spawn_egg",
+      "icons": [
+        "lacuna:silk_dust"
+      ],
+      "id": "lantern_moth",
+      "text": "almanac.lacuna.lantern_moth.text",
+      "title": "entity.lacuna.lantern_moth",
+      "where": "almanac.lacuna.lantern_moth.where"
+    },
+    {
+      "chapter": "creatures",
+      "icon": "lacuna:last_merchant_spawn_egg",
+      "icons": [
+        "lacuna:ruby"
+      ],
+      "id": "last_merchant",
+      "text": "almanac.lacuna.last_merchant.text",
+      "title": "entity.lacuna.last_merchant",
+      "where": "almanac.lacuna.last_merchant.where"
+    },
+    {
+      "chapter": "creatures",
+      "icon": "lacuna:labyrinth_trigger",
+      "icons": [
+        "lacuna:lacunar_quintessence"
+      ],
+      "id": "reflection",
+      "text": "almanac.lacuna.reflection.text",
+      "title": "entity.lacuna.reflection",
+      "where": "almanac.lacuna.reflection.where"
+    },
+    {
+      "chapter": "creatures",
+      "icon": "lacuna:prime_star_rock",
+      "icons": [
+        "lacuna:star_fragment"
+      ],
+      "id": "falling_stars",
+      "text": "almanac.lacuna.falling_stars.text",
+      "title": "almanac.lacuna.falling_stars",
+      "where": "almanac.lacuna.falling_stars.where"
+    },
+    {
+      "chapter": "creatures",
+      "icon": "lacuna:sunken_bell",
+      "id": "sunken_bell_tower",
+      "text": "almanac.lacuna.sunken_bell_tower.text",
+      "title": "almanac.lacuna.sunken_bell_tower",
+      "where": "almanac.lacuna.sunken_bell_tower.where"
+    },
+    {
+      "chapter": "creatures",
+      "icon": "lacuna:obelisk_inscription",
+      "id": "obelisk",
+      "text": "almanac.lacuna.obelisk.text",
+      "title": "almanac.lacuna.obelisk",
+      "where": "almanac.lacuna.obelisk.where"
+    },
+    {
+      "chapter": "creatures",
+      "icon": "minecraft:husk_spawn_egg",
+      "icons": [
+        "minecraft:spider_spawn_egg",
+        "minecraft:pillager_spawn_egg"
+      ],
+      "id": "common_creatures",
+      "text": "almanac.lacuna.common_creatures.text",
+      "title": "almanac.lacuna.common_creatures",
+      "where": "almanac.lacuna.common_creatures.where"
+    }
+  ]
+}

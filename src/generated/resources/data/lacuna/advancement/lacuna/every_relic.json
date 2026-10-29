@@ -1,0 +1,220 @@
+{
+  "criteria": {
+    "chronoshard_pocket_watch": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:chronoshard_pocket_watch"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "divine_magnifying_glass": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:divine_magnifying_glass"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "echo_dagger": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:echo_dagger"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "eclipser": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:eclipser"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "ember_triangle": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:ember_triangle"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "gravemaw_greatsword": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:gravemaw_greatsword"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "heartwood_bow": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:heartwood_bow"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "mirror_of_recursion": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:mirror_of_recursion"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "null_lantern": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:null_lantern"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "pyrrhic_scepter": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:pyrrhic_scepter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "quickening_wand": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:quickening_wand"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "starcaller_trumpet": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:starcaller_trumpet"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "suns_fury": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:suns_fury"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "tidecaller_sickle": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:tidecaller_sickle"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "whisperbone_flute": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:whisperbone_flute"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.every_relic.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:suns_fury"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.every_relic.title"
+    }
+  },
+  "parent": "lacuna:lacuna/find_relic",
+  "requirements": [
+    [
+      "suns_fury"
+    ],
+    [
+      "eclipser"
+    ],
+    [
+      "gravemaw_greatsword"
+    ],
+    [
+      "tidecaller_sickle"
+    ],
+    [
+      "ember_triangle"
+    ],
+    [
+      "quickening_wand"
+    ],
+    [
+      "starcaller_trumpet"
+    ],
+    [
+      "mirror_of_recursion"
+    ],
+    [
+      "chronoshard_pocket_watch"
+    ],
+    [
+      "null_lantern"
+    ],
+    [
+      "divine_magnifying_glass"
+    ],
+    [
+      "echo_dagger"
+    ],
+    [
+      "pyrrhic_scepter"
+    ],
+    [
+      "heartwood_bow"
+    ],
+    [
+      "whisperbone_flute"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  }
+}
