@@ -1,6 +1,7 @@
 package com.lacuna.mod.client.gear;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.lacuna.mod.client.fx.FxRenderTypes;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -84,13 +85,16 @@ public final class TideRenderTypes {
         }
     }
 
-    /** True when the vortex shader is in use (else the meshes shade themselves for the fallback type). */
+    /**
+     * True when the vortex shader is in use (else the meshes shade themselves for the fallback type): it loaded and no
+     * shader pack is in use ({@link ShaderPackCompat}).
+     */
     static boolean shaded() {
-        return vortex != null;
+        return ShaderPackCompat.usable(vortex);
     }
 
     /** The tide's water batch: the vortex shader, or the wave's translucent fill. */
     static RenderType vortex() {
-        return vortex != null ? VORTEX : FxRenderTypes.shade(FxRenderTypes.BEAM);
+        return ShaderPackCompat.usable(vortex) ? VORTEX : FxRenderTypes.shade(FxRenderTypes.BEAM);
     }
 }

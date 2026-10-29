@@ -3,6 +3,7 @@ package com.lacuna.mod.client.sight;
 import com.lacuna.mod.Balance;
 import com.lacuna.mod.LacunaConfig;
 import com.lacuna.mod.client.LacunaClientConfig;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.lacuna.mod.client.render.SectionSweep;
 import com.lacuna.mod.client.render.StencilSupport;
 import com.lacuna.mod.registry.ModTags;
@@ -63,12 +64,16 @@ public final class DivineXray {
         forgeBus.addListener(DivineXray::onLogout);
     }
 
-    /** True when the X-ray window replaces the outline mode (config, feature health and stencil availability). */
+    /**
+     * True when the X-ray window replaces the outline mode (config, feature health and stencil availability; off while
+     * an Iris / Oculus shader pack is in use, whose buffers the stencil window cannot draw into).
+     */
     public static boolean isActive() {
         return LacunaConfig.get(LacunaConfig.DIVINE_SIGHT_ENABLED)
                 && LacunaClientConfig.get(LacunaClientConfig.SIGHT_MODE) == LacunaClientConfig.SightMode.XRAY
                 && !SafeRun.isDisabled(FEATURE)
-                && !StencilSupport.failed();
+                && !StencilSupport.failed()
+                && !ShaderPackCompat.active();
     }
 
     static List<BlockPos> glass() {

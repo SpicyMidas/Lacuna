@@ -1,6 +1,7 @@
 package com.lacuna.mod.client.portal;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.lacuna.mod.client.fx.FxShaders;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -34,8 +35,8 @@ public final class ForgottenPortalRenderTypes {
 
     private ForgottenPortalRenderTypes() {}
 
-    /** The portal faces: our shader, or vanilla's end portal when it is unavailable. */
+    /** The portal faces: our shader, or vanilla's end portal when it is unavailable or a shader pack is in use. */
     public static RenderType surface() {
-        return FxShaders.forgottenPortal() != null ? SURFACE : RenderType.endPortal();
+        return ShaderPackCompat.usable(FxShaders.forgottenPortal()) ? SURFACE : RenderType.endPortal();
     }
 }

@@ -1,6 +1,7 @@
 package com.lacuna.mod.client.solar;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.lacuna.mod.client.fx.FxRenderTypes;
 import com.lacuna.mod.client.fx.FxShaders;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -137,10 +138,14 @@ public final class SolarVolume {
 
     /**
      * The late, depth-aware twin of a solar / effect render type as currently resolved, or null to draw it after
-     * particles as before (not light, or its late shader did not load).
+     * particles as before (not light, its late shader did not load, or a shader pack is in use: the pack's buffers
+     * hold the scene depth, {@link ShaderPackCompat}).
      */
     @Nullable
     static Late late(RenderType type) {
+        if (ShaderPackCompat.active()) {
+            return null;
+        }
         if (volume != null) {
             if (type == SolarRenderTypes.COLUMN_ADD) {
                 return ADD_WORLD;

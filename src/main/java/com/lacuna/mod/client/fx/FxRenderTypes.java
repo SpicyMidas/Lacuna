@@ -1,6 +1,7 @@
 package com.lacuna.mod.client.fx;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import java.util.IdentityHashMap;
@@ -145,9 +146,12 @@ public final class FxRenderTypes {
         return SHADE.apply(texture);
     }
 
-    /** True when the procedural beam shader compiled; {@link #beam()} falls back to {@code additive(BEAM)}. */
+    /**
+     * True when the procedural beam shader compiled and may be used (no shader pack in use, {@link ShaderPackCompat});
+     * {@link #beam()} falls back to {@code additive(BEAM)}.
+     */
     public static boolean hasBeamShader() {
-        return FxShaders.beam() != null;
+        return ShaderPackCompat.usable(FxShaders.beam());
     }
 
     /**
@@ -155,11 +159,11 @@ public final class FxRenderTypes {
      * colour = tint, alpha = intensity. Falls back to the textured additive beam.
      */
     public static RenderType beam() {
-        return FxShaders.beam() != null ? BEAM_SHADED : additive(BEAM);
+        return ShaderPackCompat.usable(FxShaders.beam()) ? BEAM_SHADED : additive(BEAM);
     }
 
     /** Procedural soft glow / flare over a quad with u,v in 0..1. Falls back to the textured glow. */
     public static RenderType glowShader() {
-        return FxShaders.glow() != null ? GLOW_SHADED : additive(GLOW);
+        return ShaderPackCompat.usable(FxShaders.glow()) ? GLOW_SHADED : additive(GLOW);
     }
 }

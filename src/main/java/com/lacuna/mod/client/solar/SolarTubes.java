@@ -1,6 +1,7 @@
 package com.lacuna.mod.client.solar;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -91,7 +92,7 @@ final class SolarTubes {
      */
     static boolean curve(PoseStack.Pose pose, double ax, double ay, double az, double kx, double ky, double kz, double bx, double by,
                          double bz, float ra, float rb, int argbA, int argbB, float va, float vb, int profile, int flags) {
-        if (shader == null || count >= MAX) {
+        if (!ShaderPackCompat.usable(shader) || count >= MAX) {
             return false;
         }
         if (Math.max(argbA >>> 24, argbB >>> 24) == 0 || Math.max(ra, rb) <= 1.0E-3F) {
