@@ -691,3 +691,46 @@ milestones above and in the spec).
 - Not done: item frames show the chart's icon, not a live map.
 
 Gates: 3 ✔ (validate_assets 0 errors), compile ✔, one client boot run ✔; GameTests and smoke not rerun (rule #1).
+
+## Beta — the Lacuna Almanac and the progression advancements
+
+- **Lacuna Almanac** (`lacuna:almanac`, `guide/AlmanacItem`; recipe: shapeless book + ruby): right click opens a
+  client-only book screen (`client/guide`, no dependency). Two parchment pages in a dark violet leather cover with a ruby
+  inlay and gold corners, all from one generated sheet (`tools/art/m20_almanac.py`, `textures/gui/almanac.png`, drawn as
+  tiled 9-slices so it stays crisp at any size), plus the 16x16 book item.
+  - Data-driven: `tools/content/m20_almanac.py` lists 9 chapters and 78 entries (id, chapter, icon, extra icons) and
+    writes `assets/lacuna/almanac/entries.json`; the pages (title, text, "where to find it", en + it) are in
+    `tools/content/almanac_pages.py`. Adding a page is one ENTRIES row plus its text. Relic sources and the
+    Quintessence's are generated from the loot tables the other modules write (Mirror Hoard, Sunken Bell Tower, ruin
+    caches, village mints, the boss and vanilla chest add-ons) and from `MerchantPricing.java`, so the book never
+    disagrees with the game; the "Bosses & Treasure" page is generated the same way.
+  - Contents grouped by chapter (title page, clickable rows with item icons, hover highlight); every entry from a fresh
+    page: icon + title, extra icons (hover = the item's tooltip), the text (light markup: paragraphs, bullets, bold) and
+    a framed "Where to find it" box, all wrapped to the page width and paginated automatically, a running chapter
+    header and page numbers. Chapter tabs on the fore-edge (the first one is the contents) jump to each chapter's part
+    of the contents. Arrows, Left/Right, Page Up/Down, the mouse wheel; Home or Backspace go back to the contents;
+    `BOOK_PAGE_TURN` softly on every turn. The page is remembered for the game session (entry + page within it, so it
+    survives a reflow). The book is re-typeset for every window size (largest 376 x 228, smallest 200 x 128) instead of
+    being scaled.
+  - First join: `almanac.giveOnFirstJoin` (default true) hands every player one; the flag is
+    `lacuna_almanac_given` in the player's `PlayerPersisted` NeoForge data (kept through death and the End exit).
+- **Advancements as a progression guide** (`tools/content/m20_milestones.py`, 20 new, en + it, descriptions hint at
+  where to go): ruby, Umbral Steel, an Umbral tool, trading with the Last Merchant, the Wayfarer's Chart, any relic
+  (new item tag `lacuna:relics`), every relic (challenge, 100 XP), possession, the Wand of Quickening, the Totem of
+  Banishing, lighting a Forgotten Portal, zenithite, Exilite Debris (challenge, 50 XP), finding a Mirror Labyrinth,
+  defeating the Reflection (goal), finding a Sunken Bell Tower and ringing its bell, reading an obelisk, the
+  Comically Large Bag, feeding a Chrono Hourglass, Silk Dust from a Lantern Moth. The root now also opens with the
+  Almanac (so the tab shows from the first join), and the tree is re-parented into branches (Overworld, relics,
+  Quintessence → totem → Forgotten Land, world).
+  - Vanilla triggers wherever possible (`inventory_changed`, `villager_trade`, `location` with structures,
+    `player_killed_entity`, `item_used_on_block`, `default_block_use`). New generic trigger `lacuna:used_relic`
+    (`guide/UsedRelicTrigger`, optional item predicate) fired with one line where a power takes effect: an item woken
+    by the Wand of Quickening, a creature or player bagged. Possession and a lit portal use the existing code-granted
+    criterion (`LacunaAdvancements.award`), one line each.
+- Fixed while writing the pages: the Departure Shard tooltip said "same dimension" (it works across dimensions, never
+  into or out of the Forgotten Land).
+- Client boot run (`tools/demo/almanac.txt`, new demo op `guiscale`): the gift arrived on first join (root advancement
+  granted), the book opened, contents and entry spreads screenshotted, no advancement or resource errors in the log.
+  GUI scale 4 could not be shown (the 854 x 480 demo window caps the scale at 2); the layout reflows from the screen size.
+
+Gates: 3 ✔ (validate_assets 0 errors), compile ✔, one client boot run ✔; GameTests and smoke not rerun (rule #1).

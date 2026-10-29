@@ -359,3 +359,21 @@ All `/lacuna` commands need permission level 2.
       Star Rock (without Silk Touch) very rarely gives one.
 - [ ] Advancement tab: "The Shape of the Gap" (obtain a Quintessence) leads to "A Land Nobody Remembers"; "Blade of
       the Eclipse" asks to claim the Eclipser.
+
+## Beta — Lacuna Almanac and progression advancements
+- [ ] New world: an Almanac is in the inventory on first join (not again after death, relog or the End exit); the
+      Lacuna advancement tab is there at once. With `almanac.giveOnFirstJoin = false` nobody gets one; book + ruby
+      crafts it.
+- [ ] Right click: the book opens on the contents (title page, chapters with icons); rows highlight on hover and open
+      their entry; chapter tabs on the right jump to each chapter's part of the contents (tooltips name them).
+- [ ] Arrows, Left/Right, Page Up/Down and the mouse wheel turn pages with a soft page sound; Home/Backspace go back to
+      the contents; Escape closes; reopening shows the same page.
+- [ ] Entry pages: icon and title, extra icons (hover shows the item tooltip), text wrapped inside the page, the framed
+      "Where to find it" box (continued on the next page when it does not fit), page numbers, running chapter header.
+- [ ] GUI scale 1-4 and a small window: the book always fits and re-flows (fewer lines per page), nothing overflows.
+- [ ] Italian: every page, tab and heading is translated.
+- [ ] Advancements: the tab shows the branches (ruby → Umbral Steel / merchant / pearl / chart; relic → Eclipser,
+      wand, every relic; Quintessence → totem → portal / Forgotten Land → zenithite, exilite, labyrinth → Reflection;
+      bell tower → ring the bell; obelisk, bag, hourglass, silk dust). Bag a pig, wake an item with the wand, feed a
+      chronal shard to an hourglass, ring a sunken bell, read an obelisk: each grants its milestone.
+
