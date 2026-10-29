@@ -22,9 +22,9 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * Client wiring of the Totem of Confusion: the copy renderer (the owner's skin on a player model), the raised-totem
- * model switch, the owner's movement input streamed to the server while they have copies, and the vanilla totem
- * "item activation" animation (with our totem) on the owner's screen when the copies appear.
+ * Client wiring of the Totem of Confusion: the copy renderer (the owner's skin on a player model), the owner's
+ * movement input streamed to the server while they have copies, and the vanilla totem "item activation" animation
+ * (with our totem) on the owner's screen when the copies appear.
  */
 public final class ConfusionClient {
     private ConfusionClient() {}

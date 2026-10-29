@@ -55,9 +55,9 @@ public final class Confusion {
     public static final String ADVANCEMENT = "lacuna/which_one_is_real";
 
     // ------------------------------------------------------------------ the totem
-    /** Three raises per totem. */
+    /** Three uses per totem. */
     public static final int USES = 3;
-    /** 45 s between raises. */
+    /** 45 s between uses. */
     public static final int COOLDOWN = 900;
     /** Chance that the player swaps places with one of the copies instead of staying among them. */
     public static final float SWAP_CHANCE = 0.75F;
@@ -119,7 +119,7 @@ public final class Confusion {
         MirrorInput.clear();
     }
 
-    // ------------------------------------------------------------------ raising the totem
+    // ------------------------------------------------------------------ using the totem
 
     /** Conjures the copies around {@code player}; true when it happened (the totem then wears and cools down). */
     public static boolean activate(ServerPlayer player) {
@@ -292,7 +292,7 @@ public final class Confusion {
         return out;
     }
 
-    /** Removes {@code owner}'s copies at once (a fresh raise replaces the old crowd). */
+    /** Removes {@code owner}'s copies at once (a fresh use replaces the old crowd). */
     static void removeCopies(ServerPlayer owner) {
         for (ConfusionCopy copy : copiesOf(owner)) {
             copy.vanish(false);
