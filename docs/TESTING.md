@@ -104,6 +104,7 @@ All `/lacuna` commands need permission level 2.
 /give @s lacuna:mirror_of_recursion
 /give @s lacuna:null_lantern
 /give @s lacuna:whisperbone_flute
+/give @s lacuna:wayfarers_chart
 /summon skeleton ~8 ~ ~
 ```
 - [ ] Watch: carry it 20 s+ (first snapshot is immediate), walk away, wait ≥ 20 s, use it: back where you were,
@@ -119,6 +120,20 @@ All `/lacuna` commands need permission level 2.
       lantern: it relights at 100 %.
 - [ ] Flute: kill 2 cows nearby, play the flute: 2 translucent Echoes appear and fight what you hit; after 10 s
       they fade and drop Echo Fragments. With no recent deaths: "The bones stay silent."
+- [ ] Wayfarer's Chart in the main hand, off hand empty: held with both hands like a filled map (look down to raise
+      it); in the off hand or next to another item: one-handed. It shows the Overworld around you and scrolls smoothly
+      as you walk (not in vanilla map squares); the white arrow in the middle turns with you. Loaded land is in full
+      map colours; land farther out is sketched faintly by biome (sea, rivers, forest, desert, snow, mountains). The
+      gold star (world spawn) and the red bed (your bed) show, pinned smaller to the edge when out of view. The caption
+      reads X / Z; the corner shows the scale.
+- [ ] Sneak + use: page sound, action bar "Chart scale: 1 pixel = 8 blocks" (cycles 1, 2, 4, 8, 16); the tooltip
+      shows the current scale.
+- [ ] Forgotten Land: the chart shows the Overworld around your position × 12 (caption "Overworld X · Z" and "Here
+      X · Z · ×12", the same Overworld numbers as the banishment countdown) with a violet mark where the banishment
+      took you from. Nether: × 8. The End: the chart rests on your bed (or the world spawn) with "No bearing on the
+      Overworld from here", no arrow.
+- [ ] Two players far apart both holding charts in the Forgotten Land: the server keeps 20 TPS (`/tick query`) and
+      no Overworld chunk gets loaded for them (`/forceload query` and the F3 chunk count stay unchanged).
 
 ## M7 — Gear
 ```

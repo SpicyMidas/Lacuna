@@ -22,8 +22,9 @@ load after registration; they live in `Balance`.
 | eclipser | shadowWalk | true | Spectator-based Shadow Walk |
 | sunsFury | enabled / destructionRadius / maxBlockChangesPerUse | true / 6 / 12000 | Sun's Fury |
 | sunsFury | changeTime | true | Set time to next noon + clear weather |
-| items | fracturedPearl, pocketWatch, mirrorOfRecursion, nullLantern, whisperboneFlute | true | Utility items |
+| items | fracturedPearl, pocketWatch, mirrorOfRecursion, nullLantern, whisperboneFlute, wayfarersChart | true | Utility items |
 | items | nullLanternRadius | 16 | |
+| items | wayfarersChartBudgetMicros | 2000 | Server time all held Wayfarer's Charts together may spend sampling the Overworld per tick, in microseconds (the chart never loads or generates chunks; a smaller budget only fills new land in more slowly) |
 | gear | specialWeapons / starlaceGlide | true / true | |
 | gear | starlaceAbilities | true | Starlace set: Constellation Step (mid-air jump, full set), Starfall (fall damage halved at 2+ pieces; full set: falls over 5 blocks land as a starlight shockwave), Starlit (+5 % speed per piece at night under open sky / in the End) |
 | gear | umbralDarkBonus | 0.25 | Extra damage fraction for Umbral gear in darkness |
