@@ -5,6 +5,9 @@ utilities are crafted. Relics — the special weapons and gadgets — are never 
 one exception in between: they are crafted, but only from a **Lacunar Quintessence**, a legendary essence that is
 itself only found.
 
+In game, the **Lacuna Almanac** (every player gets one on first join; book + ruby) has a page for everything below,
+and the Lacuna advancement tab follows the same path.
+
 Chances below are per chest, per kill or per block; "+Looting" means +1 % per Looting level. Data lives in
 `tools/content/m19_progression.py` (essence, ruin caches, vanilla sources), `m10_biomes_structures.py` (Sunken Bell
 Tower, Mirror Hoard, Reflection), `m11_villages.py` (mint), `m15_starcaller.py` (star rocks) and
@@ -106,6 +109,7 @@ One attempt every 3 days, 25 % by day (about one visit in 12 days); he stays 3 d
 | Fractured Pearl | `DRD / RPR / DRD` 4 divine glass shards, 4 rubies, ender pearl (also 10 rubies at the merchant) |
 | Clockwork Decoy | shapeless: 3 clockwork gears, redstone, white wool |
 | Wayfarer's Chart | `.D. / RMR / .C.` divine glass shard, 2 rubies, empty map, compass |
+| Lacuna Almanac | shapeless: book + ruby (every player is also handed one on first joining a world) |
 | Comically Large Bag | `SLS / LPL / LCL` 2 string, 5 leather, ender pearl, lead (also 2 % in village mints) |
 | Chrono Hourglass | `GCG / #S# / GCG` 4 gold, 2 chronal shards, 2 glass, sand (runs on chronal shards) |
 | Repair Kit | `UGU / LIL` 2 umbral steel ingots, clockwork gear, 2 leather, iron ingot (also the Smiths' Guild) |
