@@ -39,6 +39,7 @@ def build(g):
                  "facing=north": {"model": m, "x": 90}, "facing=south": {"model": m, "x": 90, "y": 180},
                  "facing=east": {"model": m, "x": 90, "y": 90}, "facing=west": {"model": m, "x": 90, "y": 270}}})
     g.props("arrival_anchor", facing=["north", "south", "east", "west", "up", "down"])
+    g.tag("block", "minecraft:mineable/pickaxe", "lacuna:arrival_anchor")  # amethyst-like: a pickaxe frees the shard faster
 
     g.shaped("fractured_pearl", ["DRD", "RPR", "DRD"],
              {"D": "lacuna:divine_glass_shard", "R": "lacuna:ruby", "P": "minecraft:ender_pearl"},
