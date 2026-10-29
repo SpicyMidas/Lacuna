@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -91,7 +92,7 @@ final class ChartPainter {
         }
         int x = Mth.floor(at.x);
         int z = Mth.floor(at.z);
-        if (state.scale() == 1.0) {
+        if (state.dimension().equals(Level.OVERWORLD)) {
             lines.add(Component.translatable("lacuna.chart.position", x, z));
             return lines;
         }
