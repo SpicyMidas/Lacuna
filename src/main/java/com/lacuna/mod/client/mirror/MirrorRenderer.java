@@ -1,5 +1,7 @@
 package com.lacuna.mod.client.mirror;
 
+import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.mirror.MirrorCapture.Draw;
 import com.lacuna.mod.client.mirror.MirrorReflections.Plane;
 import com.lacuna.mod.client.render.StencilSupport;
 import com.lacuna.mod.util.SafeRun;
@@ -10,65 +12,92 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexBuffer;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import net.neoforged.neoforge.client.event.RenderNameTagEvent;
 import net.neoforged.neoforge.common.util.TriState;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+import org.joml.Quaternionf;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 
 /**
  * Faint reflections in Mirror Glass. Runs at {@code AFTER_TRANSLUCENT_BLOCKS}, so the glass itself is already drawn.
- * For each of the (at most {@value #MAX_PLANES}) mirror planes nearest the camera that face it:
+ * <p>
+ * Planning (CPU): every mirror plane within the reflection range ({@code mirror.range}) that faces the camera and has
+ * a face inside the frustum is on screen; the bounds of its visible faces give a pixel rectangle. Planes are ranked by
+ * that rectangle's size, then by distance, and walking that ranking each plane collects the entities whose mirror image
+ * can show in it (in front of it and within range, the image inside the frustum and projecting onto the visible faces,
+ * an unobstructed light path to the glass, mirror blocks counting as opaque), until {@code mirror.maxPlanes} planes
+ * reflect something. Then:
  * <ol>
- *   <li>image: the creatures in front of the plane whose mirror image can show in it (frustum, projection onto the
- *       plane's faces, an unobstructed light path to the glass) are drawn with their own renderers, armour and held
- *       items included, into a private offscreen target, under a true reflection matrix about the plane (the image is
- *       left-right swapped like a real mirror; winding flipped to match, name tags, shadows and hit boxes off). The
- *       offscreen depth buffer makes the image occlude itself properly and keeps it independent from the world;</li>
+ *   <li>record: each entity needed is rendered once per mirror axis (X, Y or Z) through its own renderer into
+ *       {@link MirrorCapture}: at most {@value #MAX_RECORDS} renders a frame whatever the number of planes, the camera
+ *       entity first (you show up in first person too), then nearest first. Billboards (experience orbs, thrown items,
+ *       flames) are turned towards the mirrored camera, which only depends on the axis. Name tags, shadows and hit
+ *       boxes are off;</li>
+ *   <li>image: per reflecting plane, inside its pixel rectangle (scissor), a private offscreen target is cleared and the
+ *       recorded geometry of the plane's entities is replayed under a true reflection matrix about the plane (swapped
+ *       like a real mirror, winding flipped to match; translucent and glint layers last). The offscreen depth buffer
+ *       makes the image occlude itself and keeps it independent from the world;</li>
  *   <li>mark: the plane's visible faces, nudged towards the viewer, set the shared stencil bit (depth-tested against
  *       the world, no colour/depth writes), so anything standing in front of the glass keeps its pixels;</li>
  *   <li>composite: inside the stencil, with the depth test off (the image sits "behind" the glass), a screen quad lays
  *       the offscreen image over the glass at about {@value #ALPHA} alpha, tinted cool silver-violet, with a slow
  *       shimmer;</li>
- *   <li>sheen: a very soft additive gradient on the faces that follows the view direction (it slides as the viewer
- *       moves) and brightens at grazing angles, so the glass reads as a mirror even with nothing to reflect.</li>
+ *   <li>sheen: on every plane on screen, in one batch, a very soft additive gradient on the faces that follows the view
+ *       direction (it slides as the viewer moves) and brightens at grazing angles, depth-tested like the mark, so the
+ *       glass reads as a mirror even with nothing to reflect.</li>
  * </ol>
  * Fast/Fancy draw into the main target. Under Fabulous the glass lives in the translucent target, which is bound during
  * this stage: the composite goes there (it carries the shared stencil once the post chains were rebuilt), otherwise
- * into the main target, where the glass is laid over it later. Render types that would switch to another target in the
- * image pass are dropped. Any exception restores the GL state and disables the feature only.
+ * into the main target, where the glass is laid over it later. Any exception restores the GL state and disables the
+ * feature only; an entity type whose renderer throws is left out of the reflections instead.
  */
 public final class MirrorRenderer {
-    private static final int MAX_PLANES = 3;
-    private static final int MAX_REFLECTED = 8;
-    private static final double PLANE_RANGE = MirrorReflections.SCAN_RANGE;
+    /** Planes on screen considered at most (largest first); the sheen covers them all. */
+    private static final int MAX_VIEWS = 96;
+    private static final int MAX_SHEEN_FACES = 8192;
+    private static final int MAX_SHOWN_PER_PLANE = 24;
+    /** Entity renders per frame at most: one per entity and mirror axis, shared by all the planes of that axis. */
+    private static final int MAX_RECORDS = 64;
+    /** Planes tested for entities per plane allowed to reflect (the rest of the ranking only gets the sheen). */
+    private static final int TESTED_PER_IMAGE = 3;
+    private static final double FINE_SHEEN_SQ = 16.0 * 16.0;
     private static final float FACE_OFFSET = 0.0025F;
     private static final float ALPHA = 0.35F;
     private static final float TINT_R = 0.83F;
@@ -77,17 +106,34 @@ public final class MirrorRenderer {
     private static final float SHEEN_ALPHA = 0.07F;
     private static final int GRID = 8;
     private static final int SHEEN_SUB = 2;
-    private static final int OUT_MAIN = 0;
-    private static final int OUT_FABULOUS_TARGET = 1;
-    private static final int OUT_ELSEWHERE = 2;
-    private static final String[] FABULOUS_TARGETS = {
-            "item_entity_target", "translucent_target", "particles_target", "weather_target", "clouds_target"};
 
-    private static final Map<RenderType, Integer> OUTPUTS = new IdentityHashMap<>();
+    private static final MirrorCapture CAPTURE = new MirrorCapture();
+    private static final Set<EntityType<?>> FAILED = new HashSet<>();
     private static TextureTarget image;
     private static boolean drawingImage;
 
-    private record Job(Plane plane, int[] faces, List<LivingEntity> shown) {}
+    /** A plane on screen this frame: its faces inside the frustum, their cell bounds and pixel rectangle. */
+    private record View(Plane plane, int[] faces, int minU, int maxU, int minV, int maxV, int x0, int y0, int x1, int y1,
+                        double area, double distSq) {}
+
+    /** A plane that reflects entities this frame. */
+    private record Job(View view, List<Entity> shown) {}
+
+    /** A reflectable entity this frame: its interpolated box, centre and eye. */
+    private record Subject(Entity entity, float partial, AABB box, Vec3 center, Vec3 eye) {}
+
+    /** The frame's plan: reflecting planes, and per mirror axis the entities to record (in order) and its first plane. */
+    private static final class Frame {
+        final List<Job> jobs = new ArrayList<>();
+        final List<List<Subject>> records = List.of(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        final List<Set<Entity>> recorded = List.of(identitySet(), identitySet(), identitySet());
+        final Plane[] first = new Plane[3];
+        int count;
+
+        private static Set<Entity> identitySet() {
+            return Collections.newSetFromMap(new IdentityHashMap<>());
+        }
+    }
 
     private MirrorRenderer() {}
 
@@ -109,14 +155,15 @@ public final class MirrorRenderer {
         }
     }
 
-    /** Frees the offscreen target (render thread). */
+    /** Frees the offscreen target and the recorded geometry (render thread). */
     static void release() {
         drawingImage = false;
         if (image != null) {
             image.destroyBuffers();
             image = null;
         }
-        OUTPUTS.clear();
+        CAPTURE.release();
+        FAILED.clear();
     }
 
     private static void render(RenderLevelStageEvent event) {
@@ -135,45 +182,26 @@ public final class MirrorRenderer {
             return;
         }
         Vec3 cam = event.getCamera().getPosition();
-        float partial = event.getPartialTick().getGameTimeDeltaPartialTick(false);
-        List<Job> jobs = plan(level, cam, event.getFrustum(), partial);
-        if (jobs.isEmpty()) {
+        Frustum frustum = event.getFrustum();
+        int range = MirrorReflections.range();
+        Matrix4f clip = new Matrix4f(RenderSystem.getProjectionMatrix()).mul(RenderSystem.getModelViewMatrix());
+        List<View> views = views(cam, frustum, clip, target.width, target.height, range);
+        if (views.isEmpty()) {
             return;
         }
-        float time = level.getGameTime() + partial;
-        // vanilla flushes its pending batches (block outline lines) right after this stage: do it now, into the stage
-        // target, so the image pass below starts from an empty buffer source
-        MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
-        buffers.endBatch();
+        DeltaTracker delta = event.getPartialTick();
+        Frame frame = plan(level, views, cam, frustum, delta, range);
+        float time = level.getGameTime() + delta.getGameTimeDeltaPartialTick(false);
         try {
-            for (Job job : jobs) {
-                boolean hasImage = !job.shown().isEmpty() && drawImage(mc, buffers, job, cam, partial, main, Minecraft.useShaderTransparency());
-                target.bindWrite(true);
-                StencilSupport.begin(mask);
-
-                // mark the visible faces of this plane
-                StencilSupport.mark(mask);
-                RenderSystem.colorMask(false, false, false, false);
-                RenderSystem.depthMask(false);
-                RenderSystem.enableDepthTest();
-                RenderSystem.depthFunc(GL11.GL_LEQUAL);
-                RenderSystem.disableCull();
-                RenderSystem.disableBlend();
-                drawFaces(job, cam);
-
-                // inside the marked faces: the image, then the sheen (depth test off: the image is behind the glass)
-                StencilSupport.inside(mask);
-                RenderSystem.colorMask(true, true, true, true);
-                RenderSystem.disableDepthTest();
-                RenderSystem.enableBlend();
-                if (hasImage) {
-                    composite(image.getColorTextureId(), time);
-                }
-                sheen(job, cam, time);
-                StencilSupport.clear(mask);
+            if (!frame.jobs.isEmpty()) {
+                images(mc, frame, cam, target, mask, time);
             }
+            target.bindWrite(false);
+            sheen(views, cam, time);
         } finally {
             StencilSupport.end();
+            RenderSystem.disableScissor();
+            VertexBuffer.unbind();
             GL11.glFrontFace(GL11.GL_CCW);
             RenderSystem.colorMask(true, true, true, true);
             RenderSystem.depthMask(true);
@@ -188,91 +216,182 @@ public final class MirrorRenderer {
 
     // ------------------------------------------------------------------ planning (CPU only)
 
-    /** The nearest planes facing the camera with a face on screen, and the creatures each one reflects. */
-    private static List<Job> plan(ClientLevel level, Vec3 cam, Frustum frustum, float partial) {
-        List<Plane> facing = new ArrayList<>();
-        double maxSq = PLANE_RANGE * PLANE_RANGE;
+    /** The planes on screen, largest on screen first, then nearest. */
+    private static List<View> views(Vec3 cam, Frustum frustum, Matrix4f clip, int width, int height, int range) {
+        double maxSq = (double) range * range;
+        List<View> out = new ArrayList<>();
+        Vector4f corner = new Vector4f();
         for (Plane p : MirrorReflections.planes()) {
-            if (p.front(cam) > 0.02 && p.distanceSq(cam) <= maxSq) {
-                facing.add(p);
-            }
-        }
-        if (facing.isEmpty()) {
-            return List.of();
-        }
-        facing.sort(Comparator.comparingDouble(p -> p.distanceSq(cam)));
-        List<Job> jobs = new ArrayList<>(MAX_PLANES);
-        int budget = MAX_REFLECTED;
-        for (Plane p : facing) {
-            int[] faces = visibleFaces(p, frustum);
-            if (faces.length == 0) {
+            if (p.front(cam) <= 0.02) {
                 continue;
             }
-            List<LivingEntity> shown = budget > 0 ? reflected(level, p, cam, frustum, partial, budget) : List.of();
-            budget -= shown.size();
-            jobs.add(new Job(p, faces, shown));
-            if (jobs.size() >= MAX_PLANES) {
-                break;
+            double distSq = p.distanceSq(cam);
+            if (distSq > maxSq || !frustum.isVisible(p.box(p.minU(), p.maxU(), p.minV(), p.maxV()))) {
+                continue;
+            }
+            View v = view(p, cam, frustum, clip, corner, width, height, distSq);
+            if (v != null) {
+                out.add(v);
             }
         }
-        return jobs;
+        out.sort(Comparator.comparingDouble((View v) -> -v.area()).thenComparingDouble(View::distSq));
+        return out.size() > MAX_VIEWS ? List.copyOf(out.subList(0, MAX_VIEWS)) : out;
     }
 
-    private static int[] visibleFaces(Plane p, Frustum frustum) {
+    private static View view(Plane p, Vec3 cam, Frustum frustum, Matrix4f clip, Vector4f corner, int width, int height,
+                             double distSq) {
         int[] cells = p.cells();
-        int[] out = new int[cells.length];
+        int[] faces = new int[cells.length];
         int n = 0;
+        int minU = Integer.MAX_VALUE;
+        int maxU = Integer.MIN_VALUE;
+        int minV = Integer.MAX_VALUE;
+        int maxV = Integer.MIN_VALUE;
         for (int i = 0; i < cells.length; i += 2) {
             int u = cells[i];
             int v = cells[i + 1];
-            if (frustum.isVisible(faceBox(p, u, v))) {
-                out[n++] = u;
-                out[n++] = v;
+            if (frustum.isVisible(p.box(u, u, v, v))) {
+                faces[n++] = u;
+                faces[n++] = v;
+                minU = Math.min(minU, u);
+                maxU = Math.max(maxU, u);
+                minV = Math.min(minV, v);
+                maxV = Math.max(maxV, v);
             }
         }
-        return n == out.length ? out : Arrays.copyOf(out, n);
-    }
-
-    private static AABB faceBox(Plane p, int u, int v) {
-        double a0 = p.coord() - 0.01;
-        double a1 = p.coord() + 0.01;
-        return switch (p.axis()) {
-            case X -> new AABB(a0, v, u, a1, v + 1, u + 1);
-            case Y -> new AABB(u, a0, v, u + 1, a1, v + 1);
-            case Z -> new AABB(u, v, a0, u + 1, v + 1, a1);
-        };
-    }
-
-    private static List<LivingEntity> reflected(ClientLevel level, Plane p, Vec3 cam, Frustum frustum, float partial, int budget) {
-        List<LivingEntity> out = new ArrayList<>(Math.min(budget, 4));
-        for (LivingEntity e : MirrorReflections.entities()) {
-            if (out.size() >= budget) {
+        if (n == 0) {
+            return null;
+        }
+        // pixel rectangle of the visible faces' bounds; a corner at or behind the camera plane means the whole screen
+        double ra = p.coord() - p.a(cam);
+        float sx0 = Float.MAX_VALUE;
+        float sy0 = Float.MAX_VALUE;
+        float sx1 = -Float.MAX_VALUE;
+        float sy1 = -Float.MAX_VALUE;
+        boolean whole = false;
+        for (int c = 0; c < 4; c++) {
+            float u = (float) (((c & 1) == 0 ? minU : maxU + 1) - p.u(cam));
+            float v = (float) (((c & 2) == 0 ? minV : maxV + 1) - p.v(cam));
+            switch (p.axis()) {
+                case X -> corner.set((float) ra, v, u, 1.0F);
+                case Y -> corner.set(u, (float) ra, v, 1.0F);
+                case Z -> corner.set(u, v, (float) ra, 1.0F);
+            }
+            clip.transform(corner);
+            if (corner.w <= 0.05F) {
+                whole = true;
                 break;
             }
-            if (e.isRemoved() || e.level() != level || e.isInvisible() || e.isSpectator()) {
+            float x = corner.x / corner.w;
+            float y = corner.y / corner.w;
+            sx0 = Math.min(sx0, x);
+            sx1 = Math.max(sx1, x);
+            sy0 = Math.min(sy0, y);
+            sy1 = Math.max(sy1, y);
+        }
+        int x0 = 0;
+        int y0 = 0;
+        int x1 = width;
+        int y1 = height;
+        if (!whole) {
+            x0 = Mth.clamp(Mth.floor((sx0 + 1.0F) * 0.5F * width) - 2, 0, width);
+            x1 = Mth.clamp(Mth.ceil((sx1 + 1.0F) * 0.5F * width) + 2, 0, width);
+            y0 = Mth.clamp(Mth.floor((sy0 + 1.0F) * 0.5F * height) - 2, 0, height);
+            y1 = Mth.clamp(Mth.ceil((sy1 + 1.0F) * 0.5F * height) + 2, 0, height);
+            if (x1 <= x0 || y1 <= y0) {
+                return null;
+            }
+        }
+        double area = (double) (x1 - x0) * (y1 - y0) / ((double) width * height);
+        return new View(p, n == faces.length ? faces : Arrays.copyOf(faces, n), minU, maxU, minV, maxV, x0, y0, x1, y1,
+                area, distSq);
+    }
+
+    /** Which planes reflect which entities, within the plane and render budgets. */
+    private static Frame plan(ClientLevel level, List<View> views, Vec3 cam, Frustum frustum, DeltaTracker delta, int range) {
+        Frame frame = new Frame();
+        List<Subject> subjects = subjects(level, delta);
+        if (subjects.isEmpty()) {
+            return frame;
+        }
+        int maxPlanes = MirrorReflections.maxPlanes();
+        int tested = 0;
+        for (View v : views) {
+            if (frame.jobs.size() >= maxPlanes || tested++ >= maxPlanes * TESTED_PER_IMAGE) {
+                break;
+            }
+            Plane p = v.plane();
+            int axis = p.axis().ordinal();
+            Set<Entity> recorded = frame.recorded.get(axis);
+            List<Entity> shown = new ArrayList<>();
+            for (Subject s : subjects) {
+                if (shown.size() >= MAX_SHOWN_PER_PLANE) {
+                    break;
+                }
+                boolean known = recorded.contains(s.entity());
+                if (!known && frame.count >= MAX_RECORDS || !reflects(level, v, s, cam, frustum, range)) {
+                    continue;
+                }
+                if (!known) {
+                    recorded.add(s.entity());
+                    frame.records.get(axis).add(s);
+                    frame.count++;
+                    if (frame.first[axis] == null) {
+                        frame.first[axis] = p;
+                    }
+                }
+                shown.add(s.entity());
+            }
+            if (!shown.isEmpty()) {
+                frame.jobs.add(new Job(v, shown));
+            }
+        }
+        return frame;
+    }
+
+    private static List<Subject> subjects(ClientLevel level, DeltaTracker delta) {
+        List<Entity> entities = MirrorReflections.entities();
+        List<Subject> out = new ArrayList<>(entities.size());
+        for (Entity e : entities) {
+            if (e.isRemoved() || e.level() != level || e.isInvisible() || e.isSpectator() || FAILED.contains(e.getType())) {
                 continue;
             }
-            AABB box = e.getBoundingBox().move(Mth.lerp(partial, e.xOld, e.getX()) - e.getX(),
-                    Mth.lerp(partial, e.yOld, e.getY()) - e.getY(), Mth.lerp(partial, e.zOld, e.getZ()) - e.getZ());
-            Vec3 center = box.getCenter();
-            double front = p.front(center);
-            if (front <= 0.0 || front > MirrorReflections.ENTITY_RANGE) {
-                continue;
-            }
-            AABB mirrored = p.reflect(box);
-            if (!frustum.isVisible(mirrored) || !projectsOnto(p, cam, mirrored)) {
-                continue;
-            }
-            if (!reachesGlass(level, p, cam, e.getEyePosition(partial)) && !reachesGlass(level, p, cam, center)) {
-                continue;
-            }
-            out.add(e);
+            float partial = delta.getGameTimeDeltaPartialTick(!level.tickRateManager().isEntityFrozen(e));
+            AABB box = e.getBoundingBox().move(x(e, partial) - e.getX(), y(e, partial) - e.getY(), z(e, partial) - e.getZ());
+            out.add(new Subject(e, partial, box, box.getCenter(), e.getEyePosition(partial)));
         }
         return out;
     }
 
-    /** Whether the image box, seen from the camera through the plane, overlaps the plane's faces. */
-    private static boolean projectsOnto(Plane p, Vec3 cam, AABB box) {
+    private static double x(Entity e, float partial) {
+        return e.tickCount == 0 ? e.getX() : Mth.lerp(partial, e.xOld, e.getX());
+    }
+
+    private static double y(Entity e, float partial) {
+        return e.tickCount == 0 ? e.getY() : Mth.lerp(partial, e.yOld, e.getY());
+    }
+
+    private static double z(Entity e, float partial) {
+        return e.tickCount == 0 ? e.getZ() : Mth.lerp(partial, e.zOld, e.getZ());
+    }
+
+    /** Whether the entity's mirror image can show in the plane's visible faces. */
+    private static boolean reflects(ClientLevel level, View v, Subject s, Vec3 cam, Frustum frustum, double range) {
+        Plane p = v.plane();
+        double front = p.front(s.center());
+        if (front <= 0.0 || front > range) {
+            return false;
+        }
+        AABB mirrored = p.reflect(s.box());
+        if (!frustum.isVisible(mirrored) || !projectsOnto(v, cam, mirrored)) {
+            return false;
+        }
+        return reachesGlass(level, p, cam, s.eye()) || reachesGlass(level, p, cam, s.center());
+    }
+
+    /** Whether the image box, seen from the camera through the plane, overlaps the plane's visible faces. */
+    private static boolean projectsOnto(View view, Vec3 cam, AABB box) {
+        Plane p = view.plane();
         double ca = p.a(cam);
         double cu = p.u(cam);
         double cv = p.v(cam);
@@ -298,12 +417,13 @@ public final class MirrorRenderer {
             minV = Math.min(minV, pv);
             maxV = Math.max(maxV, pv);
         }
-        return maxU >= p.minU() - 0.25 && minU <= p.maxU() + 1.25 && maxV >= p.minV() - 0.25 && minV <= p.maxV() + 1.25;
+        return maxU >= view.minU() - 0.25 && minU <= view.maxU() + 1.25
+                && maxV >= view.minV() - 0.25 && minV <= view.maxV() + 1.25;
     }
 
     /**
      * Whether light from {@code point} reaches the plane where the camera would see its image: nothing may block the
-     * segment from the point to the spot on the glass (no glimpses of creatures around corners).
+     * segment from the point to the spot on the glass (no glimpses of entities around corners or through mirror walls).
      */
     private static boolean reachesGlass(ClientLevel level, Plane p, Vec3 cam, Vec3 point) {
         Vec3 mirrored = p.reflect(point);
@@ -323,134 +443,197 @@ public final class MirrorRenderer {
             case Y -> spot.add(0.0, nudge, 0.0);
             case Z -> spot.add(0.0, 0.0, nudge);
         };
-        if (point.distanceToSqr(to) < 0.01) {
-            return true;
-        }
-        return level.clip(new ClipContext(point, to, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE,
-                CollisionContext.empty())).getType() == HitResult.Type.MISS;
+        return point.distanceToSqr(to) < 0.01 || clearPath(level, point, to);
     }
 
-    // ------------------------------------------------------------------ the image (offscreen)
+    /** A block raycast where mirror blocks are opaque and every other block uses its visual shape (glass is clear). */
+    private static boolean clearPath(ClientLevel level, Vec3 from, Vec3 to) {
+        ClipContext context = new ClipContext(from, to, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, CollisionContext.empty());
+        return BlockGetter.traverseBlocks(from, to, context, (ctx, pos) -> blocks(level, ctx, from, to, pos), ctx -> Boolean.TRUE);
+    }
 
-    private static TextureTarget image(RenderTarget main) {
+    private static Boolean blocks(ClientLevel level, ClipContext ctx, Vec3 from, Vec3 to, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        if (MirrorReflections.isMirror(state)) {
+            return Boolean.FALSE;
+        }
+        return level.clipWithInteractionOverride(from, to, pos, ctx.getBlockShape(state, level, pos), state) != null
+                ? Boolean.FALSE : null;
+    }
+
+    // ------------------------------------------------------------------ the images (offscreen)
+
+    private static TextureTarget image(RenderTarget target) {
         if (image == null) {
-            image = new TextureTarget(main.width, main.height, true, Minecraft.ON_OSX);
+            image = new TextureTarget(target.width, target.height, true, Minecraft.ON_OSX);
             image.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        } else if (image.width != main.width || image.height != main.height) {
-            image.resize(main.width, main.height, Minecraft.ON_OSX);
+        } else if (image.width != target.width || image.height != target.height) {
+            image.resize(target.width, target.height, Minecraft.ON_OSX);
         }
         return image;
     }
 
-    /** Draws the plane's creatures, mirrored, into the offscreen image; true when at least one was drawn. */
-    private static boolean drawImage(Minecraft mc, MultiBufferSource.BufferSource source, Job job, Vec3 cam, float partial,
-                                     RenderTarget main, boolean shaderTransparency) {
-        TextureTarget rt = image(main);
+    /** Records the entities, then per reflecting plane: image, stencil mark, composite. */
+    private static void images(Minecraft mc, Frame frame, Vec3 cam, RenderTarget target, int mask, float time) {
+        TextureTarget rt = image(target);
+        // bound while recording too: anything a renderer would draw directly lands here and is cleared below
+        rt.bindWrite(true);
+        List<Map<Entity, List<Draw>>> recorded = record(mc, frame, cam);
+        for (Job job : frame.jobs) {
+            View v = job.view();
+            RenderSystem.enableScissor(v.x0(), v.y0(), v.x1() - v.x0(), v.y1() - v.y0());
+            if (!drawImage(job, recorded.get(v.plane().axis().ordinal()), cam, rt)) {
+                continue;
+            }
+            target.bindWrite(false);
+            GL11.glEnable(GL11.GL_STENCIL_TEST);
+            StencilSupport.clear(mask);
+
+            // mark the visible faces of this plane
+            StencilSupport.mark(mask);
+            RenderSystem.colorMask(false, false, false, false);
+            RenderSystem.depthMask(false);
+            RenderSystem.enableDepthTest();
+            RenderSystem.depthFunc(GL11.GL_LEQUAL);
+            RenderSystem.disableCull();
+            RenderSystem.disableBlend();
+            drawFaces(v, cam);
+
+            // inside the marked faces, the image (depth test off: it is behind the glass)
+            StencilSupport.inside(mask);
+            RenderSystem.colorMask(true, true, true, true);
+            RenderSystem.disableDepthTest();
+            RenderSystem.enableBlend();
+            composite(rt.getColorTextureId(), time);
+            StencilSupport.clear(mask);
+            StencilSupport.end();
+        }
+        RenderSystem.disableScissor();
+    }
+
+    /** Renders each entity the frame needs once per mirror axis; the draws per axis, by entity. */
+    private static List<Map<Entity, List<Draw>>> record(Minecraft mc, Frame frame, Vec3 cam) {
+        List<Map<Entity, List<Draw>>> out = List.of(new IdentityHashMap<>(), new IdentityHashMap<>(), new IdentityHashMap<>());
+        EntityRenderDispatcher dispatcher = mc.getEntityRenderDispatcher();
+        Quaternionf orientation = dispatcher.cameraOrientation();
+        boolean hitBoxes = dispatcher.shouldRenderHitBoxes();
+        CAPTURE.frame();
+        dispatcher.setRenderShadow(false);
+        dispatcher.setRenderHitBoxes(false);
+        drawingImage = true;
+        try {
+            for (Direction.Axis axis : Direction.Axis.values()) {
+                List<Subject> subjects = frame.records.get(axis.ordinal());
+                Plane first = frame.first[axis.ordinal()];
+                if (subjects.isEmpty() || first == null) {
+                    continue;
+                }
+                dispatcher.overrideCameraOrientation(mirrored(orientation, axis));
+                // translucent layers sorted as seen in the first (largest) plane of this axis
+                float k = (float) (2.0 * (first.coord() - first.a(cam)));
+                VertexSorting sorting = VertexSorting.byDistance(axis == Direction.Axis.X ? k : 0.0F,
+                        axis == Direction.Axis.Y ? k : 0.0F, axis == Direction.Axis.Z ? k : 0.0F);
+                Map<Entity, List<Draw>> draws = out.get(axis.ordinal());
+                for (Subject s : subjects) {
+                    Entity e = s.entity();
+                    if (FAILED.contains(e.getType())) {
+                        continue;
+                    }
+                    float partial = s.partial();
+                    try {
+                        draws.put(e, CAPTURE.record(dispatcher, e, x(e, partial) - cam.x, y(e, partial) - cam.y,
+                                z(e, partial) - cam.z, Mth.lerp(partial, e.yRotO, e.getYRot()), partial,
+                                dispatcher.getPackedLightCoords(e, partial), sorting));
+                    } catch (RuntimeException ex) {
+                        if (FAILED.add(e.getType())) {
+                            Lacuna.LOGGER.warn("Lacuna: {} cannot be drawn in mirrors; left out of reflections",
+                                    BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()), ex);
+                        }
+                    }
+                }
+            }
+        } finally {
+            drawingImage = false;
+            dispatcher.overrideCameraOrientation(orientation);
+            dispatcher.setRenderShadow(true);
+            dispatcher.setRenderHitBoxes(hitBoxes);
+            VertexBuffer.unbind();
+        }
+        return out;
+    }
+
+    /**
+     * The camera orientation for an axis' mirror world. Recorded with it, a camera-facing billboard faces the camera
+     * again once reflected: the reflection times this rotation is the camera's rotation times a flip in the sprite's own
+     * plane (left-right for walls, upside down for floors and ceilings), as a real mirror would show it.
+     */
+    private static Quaternionf mirrored(Quaternionf camera, Direction.Axis axis) {
+        Matrix3f reflection = new Matrix3f().scaling(axis == Direction.Axis.X ? -1.0F : 1.0F,
+                axis == Direction.Axis.Y ? -1.0F : 1.0F, axis == Direction.Axis.Z ? -1.0F : 1.0F);
+        Matrix3f flip = axis == Direction.Axis.Y ? new Matrix3f().scaling(1.0F, -1.0F, 1.0F)
+                : new Matrix3f().scaling(-1.0F, 1.0F, 1.0F);
+        return reflection.mul(new Matrix3f().set(camera)).mul(flip).getNormalizedRotation(new Quaternionf());
+    }
+
+    /** Clears the image inside the scissor and replays the plane's entities mirrored; false when there is nothing. */
+    private static boolean drawImage(Job job, Map<Entity, List<Draw>> recorded, Vec3 cam, TextureTarget rt) {
+        List<Draw> draws = new ArrayList<>();
+        for (Entity e : job.shown()) {
+            List<Draw> d = recorded.get(e);
+            if (d != null) {
+                draws.addAll(d);
+            }
+        }
+        if (draws.isEmpty()) {
+            return false;
+        }
         StencilSupport.end();
+        rt.bindWrite(false);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.depthMask(true);
-        rt.clear(Minecraft.ON_OSX);
-        rt.bindWrite(true);
+        RenderSystem.clearColor(0.0F, 0.0F, 0.0F, 0.0F);
+        RenderSystem.clearDepth(1.0);
+        RenderSystem.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
         RenderSystem.enableDepthTest();
         RenderSystem.depthFunc(GL11.GL_LEQUAL);
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
 
         // reflection about the plane, in camera-relative coordinates: a' = 2 (coord - cam_a) - a
-        Plane p = job.plane();
-        PoseStack pose = new PoseStack();
+        Plane p = job.view().plane();
         float k = (float) (2.0 * (p.coord() - p.a(cam)));
-        switch (p.axis()) {
-            case X -> {
-                pose.translate(k, 0.0F, 0.0F);
-                pose.scale(-1.0F, 1.0F, 1.0F);
-            }
-            case Y -> {
-                pose.translate(0.0F, k, 0.0F);
-                pose.scale(1.0F, -1.0F, 1.0F);
-            }
-            case Z -> {
-                pose.translate(0.0F, 0.0F, k);
-                pose.scale(1.0F, 1.0F, -1.0F);
-            }
-        }
-        MultiBufferSource filtered = type -> stays(type, shaderTransparency) ? source.getBuffer(type) : Discard.INSTANCE;
-        EntityRenderDispatcher dispatcher = mc.getEntityRenderDispatcher();
-        boolean hitBoxes = dispatcher.shouldRenderHitBoxes();
-        int drawn = 0;
-        boolean flushed = false;
-        dispatcher.setRenderShadow(false);
-        dispatcher.setRenderHitBoxes(false);
-        drawingImage = true;
-        // the reflection flips the winding: keep culling the real back faces
-        GL11.glFrontFace(GL11.GL_CW);
+        Matrix4fStack modelView = RenderSystem.getModelViewStack();
+        modelView.pushMatrix();
         try {
-            for (LivingEntity e : job.shown()) {
-                double x = Mth.lerp(partial, e.xOld, e.getX()) - cam.x;
-                double y = Mth.lerp(partial, e.yOld, e.getY()) - cam.y;
-                double z = Mth.lerp(partial, e.zOld, e.getZ()) - cam.z;
-                float yRot = Mth.lerp(partial, e.yRotO, e.getYRot());
-                dispatcher.render(e, x, y, z, yRot, partial, pose, filtered, dispatcher.getPackedLightCoords(e, partial));
-                drawn++;
+            switch (p.axis()) {
+                case X -> modelView.translate(k, 0.0F, 0.0F).scale(-1.0F, 1.0F, 1.0F);
+                case Y -> modelView.translate(0.0F, k, 0.0F).scale(1.0F, -1.0F, 1.0F);
+                case Z -> modelView.translate(0.0F, 0.0F, k).scale(1.0F, 1.0F, -1.0F);
             }
-            source.endBatch();
-            flushed = true;
+            RenderSystem.applyModelViewMatrix();
+            // the reflection flips the winding: keep culling the real back faces
+            GL11.glFrontFace(GL11.GL_CW);
+            MirrorCapture.replay(draws, false, rt);
+            MirrorCapture.replay(draws, true, rt);
         } finally {
-            if (!flushed) {
-                // a renderer failed mid-batch: whatever it left goes into the image, never into the world view
-                try {
-                    source.endBatch();
-                } catch (RuntimeException ignored) {
-                    // the feature is being disabled anyway
-                }
-            }
+            VertexBuffer.unbind();
             GL11.glFrontFace(GL11.GL_CCW);
-            drawingImage = false;
-            dispatcher.setRenderShadow(true);
-            dispatcher.setRenderHitBoxes(hitBoxes);
+            modelView.popMatrix();
+            RenderSystem.applyModelViewMatrix();
         }
-        return drawn > 0;
-    }
-
-    /** Render types that keep drawing into the bound target (the image) instead of switching to another one. */
-    private static boolean stays(RenderType type, boolean shaderTransparency) {
-        Integer out = OUTPUTS.get(type);
-        if (out == null) {
-            if (OUTPUTS.size() > 1024) {
-                OUTPUTS.clear();
-            }
-            out = output(type);
-            OUTPUTS.put(type, out);
-        }
-        return out == OUT_MAIN || out == OUT_FABULOUS_TARGET && !shaderTransparency;
-    }
-
-    private static int output(RenderType type) {
-        if (type.isOutline()) {
-            return OUT_ELSEWHERE;
-        }
-        String s = type.toString();
-        if (s.contains("outline_target")) {
-            return OUT_ELSEWHERE;
-        }
-        for (String t : FABULOUS_TARGETS) {
-            if (s.contains(t)) {
-                return OUT_FABULOUS_TARGET;
-            }
-        }
-        return OUT_MAIN;
+        return true;
     }
 
     // ------------------------------------------------------------------ marking, composite and sheen
 
-    private static void drawFaces(Job job, Vec3 cam) {
-        Plane p = job.plane();
+    private static void drawFaces(View view, Vec3 cam) {
+        Plane p = view.plane();
         double ra = p.coord() + p.sign() * FACE_OFFSET - p.a(cam);
         double cu = p.u(cam);
         double cv = p.v(cam);
         RenderSystem.setShader(GameRenderer::getPositionShader);
         BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        int[] faces = job.faces();
+        int[] faces = view.faces();
         for (int i = 0; i < faces.length; i += 2) {
             double u = faces[i] - cu;
             double v = faces[i + 1] - cv;
@@ -480,7 +663,10 @@ public final class MirrorRenderer {
         modelView.identity();
         RenderSystem.applyModelViewMatrix();
         try {
-            RenderSystem.defaultBlendFunc();
+            // "over" with the alpha kept premultiplied: Fabulous' transparency pass reads the translucent target as
+            // premultiplied (dst * (1 - a) + rgb), so replacing the glass' alpha would wash the image out
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.setShaderTexture(0, texture);
             BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
@@ -508,32 +694,48 @@ public final class MirrorRenderer {
         bb.addVertex(s * 2.0F - 1.0F, t * 2.0F - 1.0F, 0.0F).setUv(s, t).setColor(TINT_R, TINT_G, TINT_B, ALPHA * shimmer);
     }
 
-    /** Soft additive bands that follow the view direction, brighter at grazing angles. */
-    private static void sheen(Job job, Vec3 cam, float time) {
-        Plane p = job.plane();
-        double ra = p.coord() + p.sign() * FACE_OFFSET - p.a(cam);
-        double cu = p.u(cam);
-        double cv = p.v(cam);
+    /**
+     * Soft additive bands on every plane on screen, in one batch: they follow the view direction and brighten at
+     * grazing angles. Depth-tested with the faces nudged towards the viewer, like the stencil mark.
+     */
+    private static void sheen(List<View> views, Vec3 cam, float time) {
         float drift = 0.08F * Mth.sin(time * 0.004F);
+        RenderSystem.colorMask(true, true, true, true);
+        RenderSystem.depthMask(false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthFunc(GL11.GL_LEQUAL);
+        RenderSystem.disableCull();
+        RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
                 GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        int[] faces = job.faces();
-        float step = 1.0F / SHEEN_SUB;
-        for (int i = 0; i < faces.length; i += 2) {
-            for (int su = 0; su < SHEEN_SUB; su++) {
-                for (int sv = 0; sv < SHEEN_SUB; sv++) {
-                    double u0 = faces[i] + su * step - cu;
-                    double v0 = faces[i + 1] + sv * step - cv;
-                    sheenPoint(bb, p.axis(), ra, u0, v0, drift);
-                    sheenPoint(bb, p.axis(), ra, u0 + step, v0, drift);
-                    sheenPoint(bb, p.axis(), ra, u0 + step, v0 + step, drift);
-                    sheenPoint(bb, p.axis(), ra, u0, v0 + step, drift);
+        int budget = MAX_SHEEN_FACES;
+        for (View view : views) {
+            Plane p = view.plane();
+            double ra = p.coord() + p.sign() * FACE_OFFSET - p.a(cam);
+            double cu = p.u(cam);
+            double cv = p.v(cam);
+            int sub = view.distSq() <= FINE_SHEEN_SQ ? SHEEN_SUB : 1;
+            float step = 1.0F / sub;
+            int[] faces = view.faces();
+            for (int i = 0; i < faces.length && budget > 0; i += 2, budget--) {
+                for (int su = 0; su < sub; su++) {
+                    for (int sv = 0; sv < sub; sv++) {
+                        double u0 = faces[i] + su * step - cu;
+                        double v0 = faces[i + 1] + sv * step - cv;
+                        sheenPoint(bb, p.axis(), ra, u0, v0, drift);
+                        sheenPoint(bb, p.axis(), ra, u0 + step, v0, drift);
+                        sheenPoint(bb, p.axis(), ra, u0 + step, v0 + step, drift);
+                        sheenPoint(bb, p.axis(), ra, u0, v0 + step, drift);
+                    }
                 }
             }
         }
-        BufferUploader.drawWithShader(bb.buildOrThrow());
+        MeshData mesh = bb.build();
+        if (mesh != null) {
+            BufferUploader.drawWithShader(mesh);
+        }
         RenderSystem.defaultBlendFunc();
     }
 
@@ -548,40 +750,5 @@ public final class MirrorRenderer {
 
     private static float band(float x, float width) {
         return (float) Math.exp(-(x * x) / (width * width));
-    }
-
-    /** Swallows the geometry of render types that would draw outside the image. */
-    private enum Discard implements VertexConsumer {
-        INSTANCE;
-
-        @Override
-        public VertexConsumer addVertex(float x, float y, float z) {
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setColor(int r, int g, int b, int a) {
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv(float u, float v) {
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv1(int u, int v) {
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setUv2(int u, int v) {
-            return this;
-        }
-
-        @Override
-        public VertexConsumer setNormal(float x, float y, float z) {
-            return this;
-        }
     }
 }

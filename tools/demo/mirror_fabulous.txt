@@ -1,0 +1,47 @@
+# Mirror reflections under Fabulous (set graphicsMode:2 in run/options.txt first): a ring of ten single mirror blocks
+# around the player (a few dozen planes in every orientation), then the mirror room of mirror_planes.txt with
+# hovering billboards (snowball, ender pearl) next to the mobs, seen in the east wall and the ceiling.
+world lacuna_mirror_fab flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd gamerule doDaylightCycle false
+cmd time set 6000
+cmd tp @s 0.5 -60 -30.5 180 8
+wait 20
+cmd setblock 3 -60 -33 lacuna:mirror_glass
+cmd setblock 2 -58 -35 lacuna:mirror_glass
+cmd setblock 0 -59 -35 lacuna:mirror_glass
+cmd setblock -2 -60 -34 lacuna:mirror_glass
+cmd setblock -4 -57 -32 lacuna:mirror_glass
+cmd setblock 4 -57 -31 lacuna:mirror_glass
+cmd setblock -3 -59 -30 lacuna:mirror_glass
+cmd setblock 1 -56 -33 lacuna:mirror_glass
+cmd setblock -1 -61 -33 lacuna:mirror_glass
+cmd setblock 0 -55 -31 lacuna:mirror_glass
+cmd fill -2 -61 -2 2 -61 2 lacuna:mirror_glass
+cmd fill -2 -55 -2 2 -55 2 lacuna:mirror_glass
+cmd fill -5 -60 7 5 -56 7 lacuna:mirror_glass
+cmd fill 7 -60 -4 7 -56 5 lacuna:mirror_glass
+cmd summon zombie 3.5 -60 4.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[160f,0f]}
+cmd summon cow -2.5 -60 4.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[200f,0f]}
+cmd summon armor_stand 5.5 -60 0.5 {ShowArms:1b,Rotation:[90f,0f],ArmorItems:[{id:"minecraft:diamond_boots",count:1},{id:"minecraft:diamond_leggings",count:1},{id:"minecraft:diamond_chestplate",count:1},{id:"minecraft:diamond_helmet",count:1}]}
+cmd summon item 1.5 -60 3.5 {Item:{id:"minecraft:diamond_sword",count:1},PickupDelay:32767,Age:-32768}
+cmd summon item 0.5 -60 4.5 {Item:{id:"minecraft:glass",count:8},PickupDelay:32767,Age:-32768}
+cmd summon snowball 1.5 -58.5 4.5 {NoGravity:1b}
+cmd summon ender_pearl -0.5 -58.5 4.0 {NoGravity:1b}
+cmd summon cow 0.5 -60 -36.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[0f,0f]}
+wait 40
+shot fab_ring
+cmd tp @s 4.5 -60 2.5 -90 6
+wait 30
+shot fab_east
+cmd tp @s 0.5 -60 -1.5 0 -75
+wait 30
+shot fab_ceiling
+cmd tp @s 0.5 -60 -9.5 0 2
+wait 30
+shot fab_overview
+log mirror fabulous demo done
+quit

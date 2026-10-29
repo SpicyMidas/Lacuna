@@ -75,11 +75,17 @@ public final class LacunaClientConfig {
 
     // ---------------------------------------------------------------- mirror (Mirror Glass reflections)
     public static final ModConfigSpec.BooleanValue MIRROR_REFLECTIONS;
+    public static final ModConfigSpec.IntValue MIRROR_RANGE;
+    public static final ModConfigSpec.IntValue MIRROR_MAX_PLANES;
 
     static {
         B.push("mirror");
-        MIRROR_REFLECTIONS = B.comment("Mirror Glass and the Labyrinth Seal show a faint reflection of you and of nearby players and creatures.")
+        MIRROR_REFLECTIONS = B.comment("Mirror Glass and the Labyrinth Seal show a faint reflection of you and of nearby players, creatures, dropped items and other entities.")
                 .define("reflections", true);
+        MIRROR_RANGE = B.comment("Reflection range (blocks): mirrors this close to the camera reflect, and so do entities up to this far in front of a mirror.")
+                .defineInRange("range", 32, 8, 64);
+        MIRROR_MAX_PLANES = B.comment("Mirror planes (a floor, a ceiling, each wall...) reflecting entities at the same time, largest on screen first; the others keep only the sheen.")
+                .defineInRange("maxPlanes", 16, 1, 48);
         B.pop();
     }
 

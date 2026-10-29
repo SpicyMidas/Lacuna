@@ -1,0 +1,55 @@
+# Mirror reflections with many planes: a mirror floor, ceiling, south wall, east wall, west window and three single
+# blocks (each a handful of planes), with mobs, an armour stand, dropped items (sword, glass, enchanted apple), a
+# minecart, a boat, a hovering falling block and arrow. First-person views of each orientation, then from 17 and 25
+# blocks away, then third person.
+world lacuna_mirror flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doMobSpawning false
+cmd gamerule doDaylightCycle false
+cmd time set 6000
+cmd tp @s 0.5 -60 -1.5 0 12
+wait 20
+cmd fill -2 -61 -2 2 -61 2 lacuna:mirror_glass
+cmd fill -2 -55 -2 2 -55 2 lacuna:mirror_glass
+cmd fill -5 -60 7 5 -56 7 lacuna:mirror_glass
+cmd fill 7 -60 -4 7 -56 5 lacuna:mirror_glass
+cmd fill -6 -59 -1 -6 -57 2 lacuna:mirror_glass
+cmd setblock 4 -60 -3 lacuna:mirror_glass
+cmd setblock -3 -58 -4 lacuna:mirror_glass
+cmd setblock -4 -60 5 lacuna:mirror_glass
+cmd summon zombie 3.5 -60 4.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[160f,0f]}
+cmd summon cow -2.5 -60 4.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[200f,0f]}
+cmd summon armor_stand 5.5 -60 0.5 {ShowArms:1b,Rotation:[90f,0f],ArmorItems:[{id:"minecraft:diamond_boots",count:1},{id:"minecraft:diamond_leggings",count:1},{id:"minecraft:diamond_chestplate",count:1},{id:"minecraft:diamond_helmet",count:1}]}
+cmd summon item 1.5 -60 3.5 {Item:{id:"minecraft:diamond_sword",count:1},PickupDelay:32767,Age:-32768}
+cmd summon item 0.5 -60 4.5 {Item:{id:"minecraft:glass",count:8},PickupDelay:32767,Age:-32768}
+cmd summon item -0.5 -60 3.0 {Item:{id:"minecraft:enchanted_golden_apple",count:1},PickupDelay:32767,Age:-32768}
+cmd summon minecart -3.5 -60 -1.5
+cmd summon boat -3.5 -60 2.5 {Type:"oak"}
+cmd summon falling_block -1.5 -58 5.5 {BlockState:{Name:"minecraft:red_sand"},NoGravity:1b,Time:-100000}
+cmd summon arrow 2.5 -58.5 5.5 {NoGravity:1b}
+select 0
+wait 40
+shot mirror_room
+look 0 75
+wait 15
+shot mirror_floor
+look 0 -75
+wait 15
+shot mirror_ceiling
+cmd tp @s 4.5 -60 2.5 -90 6
+wait 30
+shot mirror_east
+cmd tp @s 0.5 -60 -9.5 0 2
+wait 30
+shot mirror_overview
+cmd tp @s 0.5 -60 -17.5 0 2
+wait 30
+shot mirror_far
+cmd tp @s 0.5 -60 1.5 0 10
+camera back
+wait 30
+shot mirror_third_person
+log mirror demo done
+quit
