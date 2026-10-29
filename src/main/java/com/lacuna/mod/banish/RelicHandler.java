@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.common.util.TriState;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
@@ -85,14 +86,26 @@ public final class RelicHandler {
     }
 
     public static void onPickup(ItemEntityPickupEvent.Pre event) {
-        ItemEntity item = event.getItemEntity();
+        if (lockedFor(event.getItemEntity(), event.getPlayer().getUUID())) {
+            event.setCanPickup(TriState.FALSE);
+        }
+    }
+
+    /**
+     * True while {@code item} is kept from {@code player}: an Unreadable Relic of someone else in its owner-only time, or
+     * an item vanilla reserved for another player. Lacuna powers that take dropped items (the Wand of Quickening) skip it.
+     */
+    public static boolean reservedFromOthers(ItemEntity item, Player player) {
+        UUID target = item.getTarget();
+        return target != null && !target.equals(player.getUUID()) || lockedFor(item, player.getUUID());
+    }
+
+    private static boolean lockedFor(ItemEntity item, UUID player) {
         if (!item.hasData(ModAttachments.RELIC_OWNER)) {
-            return;
+            return false;
         }
         String owner = item.getData(ModAttachments.RELIC_OWNER);
         long until = item.getData(ModAttachments.RELIC_OWNER_UNTIL);
-        if (!owner.isEmpty() && item.level().getGameTime() < until && !owner.equals(event.getPlayer().getUUID().toString())) {
-            event.setCanPickup(TriState.FALSE);
-        }
+        return !owner.isEmpty() && item.level().getGameTime() < until && !owner.equals(player.toString());
     }
 }

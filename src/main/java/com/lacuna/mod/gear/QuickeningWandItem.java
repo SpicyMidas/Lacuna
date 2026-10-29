@@ -127,8 +127,9 @@ public class QuickeningWandItem extends Item {
         AABB box = new AABB(eye, eye.add(look.scale(reach))).inflate(radius + 0.5);
         ItemEntity best = null;
         double bestScore = Double.MAX_VALUE;
+        // another player's Unreadable Relic (or an item kept for someone else) cannot be woken and walked off with
         for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, box, e -> e.isAlive() && !e.getItem().isEmpty()
-                && !QuickeningBolt.isFrozen(e))) {
+                && !QuickeningBolt.isFrozen(e) && !com.lacuna.mod.banish.RelicHandler.reservedFromOthers(e, player))) {
             Vec3 rel = item.position().add(0.0, 0.15, 0.0).subtract(eye);
             double along = rel.dot(look);
             if (along < 0.0 || along > reach) {
