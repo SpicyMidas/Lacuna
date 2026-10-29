@@ -31,7 +31,7 @@ import org.apache.commons.io.FileUtils;
  * Script lines: {@code world <name> flat|normal|biome:<biome id> [seed]}, {@code wait <ticks>}, {@code cmd <command>},
  * {@code shot <name>}, {@code hud on|off}, {@code look <yaw> <pitch>}, {@code use on|off}, {@code attack},
  * {@code sneak on|off}, {@code forward on|off}, {@code select <0-8>}, {@code camera first|back|front},
- * {@code log <text>}, {@code clearchat}, {@code quit},
+ * {@code log <text>}, {@code clearchat}, {@code guiscale <0-4>}, {@code quit},
  * {@code fx <kind> x y z [x2 y2 z2] [p0 p1 p2]} (client effect handler, ~ offsets allowed),
  * {@code particle <id> x y z [count]}, {@code key <glfw key code>} (to the open screen).
  * Blank lines and lines starting with # are ignored. Screenshots land in run/screenshots/.
@@ -133,6 +133,11 @@ public final class ClientDemo {
                     mc.player.yBodyRotO = mc.player.yBodyRot;
                 }
                 case "select" -> mc.player.getInventory().selected = Integer.parseInt(arg.trim());
+                // guiscale <0-4>: change the GUI scale (screens re-lay themselves out), e.g. to check a screen at scale 4
+                case "guiscale" -> {
+                    mc.options.guiScale().set(Integer.parseInt(arg.trim()));
+                    mc.resizeDisplay();
+                }
                 case "log" -> Lacuna.LOGGER.info("[DEMO] {}", arg);
                 case "clearchat" -> mc.gui.getChat().clearMessages(false);
                 // key <glfw code>: a key press sent to the open screen (Tab/Enter drive its buttons, 256 = Escape)

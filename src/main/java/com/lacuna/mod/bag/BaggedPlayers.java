@@ -245,6 +245,7 @@ public final class BaggedPlayers {
         level.gameEvent(bagger, GameEvent.ENTITY_INTERACT, at);
         BagCapture.thwump(level, at, 0.6F, 1.8F, true);
         bagger.displayClientMessage(Component.translatable("lacuna.bag.bagged", target.getDisplayName()).withStyle(ChatFormatting.GOLD), true);
+        com.lacuna.mod.guide.Guide.usedRelic(bagger, bag);
         return InteractionResult.SUCCESS;
     }
 

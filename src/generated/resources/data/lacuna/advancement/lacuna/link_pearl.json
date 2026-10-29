@@ -19,7 +19,7 @@
       "translate": "advancements.lacuna.link_pearl.title"
     }
   },
-  "parent": "lacuna:lacuna/root",
+  "parent": "lacuna:lacuna/mine_ruby",
   "requirements": [
     [
       "code"

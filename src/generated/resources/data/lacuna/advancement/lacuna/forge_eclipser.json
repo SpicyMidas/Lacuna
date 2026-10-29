@@ -26,7 +26,7 @@
       "translate": "advancements.lacuna.forge_eclipser.title"
     }
   },
-  "parent": "lacuna:lacuna/root",
+  "parent": "lacuna:lacuna/find_relic",
   "requirements": [
     [
       "eclipser"

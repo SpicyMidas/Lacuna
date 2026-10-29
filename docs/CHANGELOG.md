@@ -3,6 +3,29 @@
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->
+- **Lacuna Almanac (new):** an in-game guidebook given to every player on first join (or crafted from a book and a
+  ruby). It is a two-page book in the mod's colours with 9 chapters and 78 entries covering every relic, totem, tool,
+  material, wood set, biome, structure, creature, event and the village civic life. Each entry has icons, a short
+  guide and a highlighted "Where to find it" box.
+  - Relic and Quintessence sources are generated from the actual loot tables and merchant prices, so they are always
+    right.
+  - Clickable contents and chapter tabs; arrows, keys or the mouse wheel turn pages.
+  - The book remembers the last page and adapts to any window size.
+  - The first-join gift can be turned off with `almanac.giveOnFirstJoin`.
+- **21 new advancements** that double as a progression guide, their descriptions hinting where to look:
+  - first ruby, Umbral Steel and its tools;
+  - trading with the Last Merchant, the chart;
+  - any relic, and all 15 relics (challenge);
+  - possession, waking an item;
+  - the Quintessence, crafting the Totem of Banishing, lighting the portal;
+  - zenithite, exilite debris;
+  - entering a Mirror Labyrinth and defeating the Reflection;
+  - Sunken Bell Towers and their bell, obelisks;
+  - bagging something, feeding the hourglass, Silk Dust.
+
+  The existing ones were re-hung into a clearer tree.
+- **Fixed:** the Departure Shard tooltip said "same dimension"; shards work across dimensions (never into or out of
+  the Forgotten Land).
 - **Villages: no more trees in the way.** A final generation pass removes whole trees (logs, then the leaves they kept
   alive, vines, nests, cocoa) that grew into a village's buildings, doorways or streets, even in dense forest.
   Nothing is left floating, the snow cover is restored, and blocks that belong to the buildings themselves are never

@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "shard": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:zenithite_shard"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.zenithite.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:zenithite_shard"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.zenithite.title"
+    }
+  },
+  "parent": "lacuna:lacuna/enter_forgotten_land",
+  "requirements": [
+    [
+      "shard"
+    ]
+  ]
+}

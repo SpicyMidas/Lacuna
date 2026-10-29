@@ -1,0 +1,36 @@
+{
+  "criteria": {
+    "rang": {
+      "conditions": {
+        "location": [
+          {
+            "block": "lacuna:sunken_bell",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:default_block_use"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.ore_song.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:ruby_ore"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.ore_song.title"
+    }
+  },
+  "parent": "lacuna:lacuna/sunken_bell_tower",
+  "requirements": [
+    [
+      "rang"
+    ]
+  ]
+}

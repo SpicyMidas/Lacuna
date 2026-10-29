@@ -19,7 +19,7 @@
       "translate": "advancements.lacuna.which_one_is_real.title"
     }
   },
-  "parent": "lacuna:lacuna/root",
+  "parent": "lacuna:lacuna/lacunar_quintessence",
   "requirements": [
     [
       "code"

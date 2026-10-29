@@ -1,0 +1,36 @@
+{
+  "criteria": {
+    "read": {
+      "conditions": {
+        "location": [
+          {
+            "block": "lacuna:obelisk_inscription",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:default_block_use"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.obelisk.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:obelisk_inscription"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.obelisk.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "read"
+    ]
+  ]
+}

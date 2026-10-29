@@ -1,0 +1,41 @@
+{
+  "criteria": {
+    "inside": {
+      "conditions": {
+        "player": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "location": {
+                "structures": "lacuna:sunken_bell_tower"
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:location"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.sunken_bell_tower.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:sunken_bell"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.sunken_bell_tower.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "inside"
+    ]
+  ]
+}

@@ -19,7 +19,7 @@
       "translate": "advancements.lacuna.wish_upon_a_star.title"
     }
   },
-  "parent": "lacuna:lacuna/root",
+  "parent": "lacuna:lacuna/find_relic",
   "requirements": [
     [
       "code"

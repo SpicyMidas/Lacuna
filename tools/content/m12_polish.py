@@ -36,29 +36,30 @@ def code():
 
 
 def advancements(g):
-    adv(g, "root", "lacuna:totem_of_banishing", {"ruby": has("lacuna:ruby")},
+    # the Almanac every player gets on first join opens the tab at once (a ruby still does, the gift can be turned off)
+    adv(g, "root", "lacuna:totem_of_banishing", {"almanac": has("lacuna:almanac"), "ruby": has("lacuna:ruby")},
         background="lacuna:textures/block/ruin_stone_bricks.png",
-        en=("Lacuna", "Find your first ruby: the world remembers more than it shows."),
-        it=("Lacuna", "Trova il tuo primo rubino: il mondo ricorda più di quanto mostri."))
+        en=("Lacuna", "Pick up the Lacuna Almanac, or find a ruby: the world remembers more than it shows."),
+        it=("Lacuna", "Prendi l'Almanacco di Lacuna, o trova un rubino: il mondo ricorda più di quanto mostri."))
     adv(g, "enter_forgotten_land", "lacuna:chiseled_ruin_glyph",
         {"enter": {"trigger": "minecraft:changed_dimension", "conditions": {"to": "lacuna:forgotten_land"}}},
-        "lacunar_quintessence",
+        "totem_of_banishing",
         en=("A Land Nobody Remembers", "Enter the Forgotten Land."), it=("Una terra che nessuno ricorda", "Entra nella Terra Dimenticata."))
     adv(g, "survive_banishment", "lacuna:totem_of_banishing",
         {"return": {"trigger": "minecraft:changed_dimension", "conditions": {"from": "lacuna:forgotten_land", "to": "minecraft:overworld"}}},
         "enter_forgotten_land", frame="goal",
         en=("Remembered Again", "Come back from the Forgotten Land."), it=("Di nuovo ricordato", "Torna dalla Terra Dimenticata."))
-    adv(g, "forge_eclipser", "lacuna:eclipser", {"eclipser": has("lacuna:eclipser")}, "root", frame="goal",
+    adv(g, "forge_eclipser", "lacuna:eclipser", {"eclipser": has("lacuna:eclipser")}, "find_relic", frame="goal",
         en=("Blade of the Eclipse", "Claim the Eclipser, a relic no smith can forge."),
         it=("Lama dell'eclisse", "Conquista l'Eclissatore, una reliquia che nessun fabbro sa forgiare."))
     adv(g, "throw_suns_fury", "lacuna:suns_fury", code(), "forge_eclipser", frame="challenge",
         en=("A Piece of the Sun", "Throw Sun's Fury."), it=("Un pezzo di sole", "Scaglia la Furia del Sole."))
-    adv(g, "link_pearl", "lacuna:fractured_pearl", code(), "root",
+    adv(g, "link_pearl", "lacuna:fractured_pearl", code(), "mine_ruby",
         en=("Two Halves", "Split a Fractured Pearl into its linked shards."), it=("Due metà", "Dividi una perla fratturata nelle sue schegge collegate."))
     adv(g, "village_friend", "lacuna:village_ledger", code(), "root",
         en=("A Friend of the Village", "Become Friendly with a village: trade, defend it, ring its bell at dawn."),
         it=("Amico del villaggio", "Diventa Amichevole con un villaggio: commercia, difendilo, suona la sua campana all'alba."))
-    adv(g, "triangle_of_instant_pulverization", "lacuna:ember_triangle", code(), "root", frame="challenge",
+    adv(g, "triangle_of_instant_pulverization", "lacuna:ember_triangle", code(), "find_relic", frame="challenge",
         en=("Triangle of Instant Pulverization", "Turn a creature to dust with the Ember Triangle."),
         it=("Triangolo di polverizzazione istantanea", "Riduci in polvere una creatura con il Triangolo di brace."))
 

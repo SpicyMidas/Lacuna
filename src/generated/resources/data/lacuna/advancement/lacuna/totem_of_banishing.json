@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "totem": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:totem_of_banishing"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.totem_of_banishing.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:totem_of_banishing"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.totem_of_banishing.title"
+    }
+  },
+  "parent": "lacuna:lacuna/lacunar_quintessence",
+  "requirements": [
+    [
+      "totem"
+    ]
+  ]
+}

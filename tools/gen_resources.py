@@ -34,6 +34,7 @@ CONTENT_MODULES = [
     "m17_exile", "m17_shadow_possession", "m18_civic_gui",
     "m19_progression", "m19_wayfarers_chart",
     "m20_compat",
+    "m20_almanac", "m20_milestones",
 ]
 
 

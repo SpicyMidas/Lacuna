@@ -12,8 +12,8 @@ def build(g):
     g.name("item.lacuna.arrival_shard.lore", "The right half. It wants to stay.", "La metà destra. Vuole restare.")
     g.name("item.lacuna.arrival_shard.use", "Use: throw; it anchors where it lands.", "Usa: lancia; si ancora dove atterra.")
     g.name("item.lacuna.departure_shard.lore", "The left half. It wants to go back.", "La metà sinistra. Vuole tornare.")
-    g.name("item.lacuna.departure_shard.use", "Use: travel to the linked anchor (same dimension).",
-           "Usa: viaggia all'ancora collegata (stessa dimensione).")
+    g.name("item.lacuna.departure_shard.use", "Use: travel to the linked anchor, from any dimension (never into or out of the Forgotten Land).",
+           "Usa: viaggia all'ancora collegata, da qualunque dimensione (mai per entrare o uscire dalla Terra Dimenticata).")
     g.name("lacuna.pearl.linked", "Linked: %s", "Collegata: %s")
     g.name("lacuna.pearl.unlinked", "Unlinked", "Non collegata")
     g.name("lacuna.pearl.cracked", "Cracked", "Incrinata")

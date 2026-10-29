@@ -65,6 +65,7 @@ public class TotemOfBanishingItem extends Item implements ForgottenLandRules.NoA
         if (ForgottenPortals.openWithTotem(player, serverLevel, context.getClickedPos())) {
             spend(context.getItemInHand(), player, context.getHand(), Balance.TOTEM_SELF_COOLDOWN);
             toll(player);
+            com.lacuna.mod.util.LacunaAdvancements.award(player, "lacuna/open_portal");
         }
         return InteractionResult.CONSUME; // handled either way: never fall through to a crossing
     }
