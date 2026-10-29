@@ -21,7 +21,8 @@ import org.lwjgl.glfw.GLFW;
  * clickable); every entry follows on its own pages: icon, title, any extra icons, the text and a highlighted "where to
  * find it" box. Chapter tabs on the fore-edge (the first one is the contents) jump to the chapter's part of the
  * contents. Arrows, the arrow keys, Page Up / Down and the mouse wheel turn pages; Home or Backspace go back to the
- * contents; Escape or the inventory key close it. The book is re-typeset for every window size (GUI scale 1-4, small windows) instead of being scaled.
+ * contents; Escape or the inventory key close it. The book is re-typeset for every window size (GUI scale 1-4, small
+ * windows) instead of being scaled.
  */
 public final class AlmanacScreen extends Screen {
     private static final int MAX_W = 376;
