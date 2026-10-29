@@ -318,7 +318,7 @@ final class AlmanacLayout {
             if (!entry.whereKey().isEmpty() && Language.getInstance().has(entry.whereKey())) {
                 gap(5);
                 add(new El(Kind.WHERE_HEAD, 14), LINE);
-                for (FormattedCharSequence line : font.split(markup(text(entry.whereKey()), Style.EMPTY), width - 12)) {
+                for (FormattedCharSequence line : font.split(markup(text(entry.whereKey()), Style.EMPTY), width - 8)) {
                     El l = new El(Kind.WHERE_TEXT, LINE);
                     l.lines = List.of(line);
                     add(l);
