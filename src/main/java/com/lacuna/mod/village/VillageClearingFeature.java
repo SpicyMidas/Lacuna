@@ -885,7 +885,8 @@ public class VillageClearingFeature extends Feature<NoneFeatureConfiguration> {
         }
 
         // ------------------------------------------------------------------ snow
-        /** The ground under a removed canopy gets the snow and ice freeze_top_layer gives the open ground. */
+        /** The ground under a removed canopy gets the snow and ice freeze_top_layer gives the open ground (chunks still
+         *  to be decorated get theirs from their own pass). */
         void freeze() {
             Long2IntOpenHashMap top = new Long2IntOpenHashMap();
             top.defaultReturnValue(Integer.MIN_VALUE);
@@ -897,6 +898,9 @@ public class VillageClearingFeature extends Feature<NoneFeatureConfiguration> {
             for (Long2IntMap.Entry e : top.long2IntEntrySet()) {
                 int x = ChunkPos.getX(e.getLongKey());
                 int z = ChunkPos.getZ(e.getLongKey());
+                if (!decorated(x >> 4, z >> 4)) {
+                    continue; // its own freeze pass comes after its streets (snow first would lift them a block)
+                }
                 boolean open = true;
                 for (int y = e.getIntValue() + 1; y <= Math.min(maxY, e.getIntValue() + 24) && open; y++) {
                     open = level.getBlockState(p.set(x, y, z)).isAir();

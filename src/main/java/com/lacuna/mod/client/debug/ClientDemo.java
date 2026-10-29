@@ -28,7 +28,7 @@ import org.apache.commons.io.FileUtils;
  * ({@code ./gradlew runClient -PclientDemo=path/to/script.txt} under xvfb). Never active in normal play:
  * {@link #register} does nothing unless the {@code lacuna.clientDemo} system property names a script.
  * <p>
- * Script lines: {@code world <name> flat|normal [seed]}, {@code wait <ticks>}, {@code cmd <command>},
+ * Script lines: {@code world <name> flat|normal|biome:<biome id> [seed]}, {@code wait <ticks>}, {@code cmd <command>},
  * {@code shot <name>}, {@code hud on|off}, {@code look <yaw> <pitch>}, {@code use on|off}, {@code attack},
  * {@code sneak on|off}, {@code forward on|off}, {@code select <0-8>}, {@code camera first|back|front},
  * {@code log <text>}, {@code clearchat}, {@code quit},
@@ -203,10 +203,21 @@ public final class ClientDemo {
         LevelSettings settings = new LevelSettings(name, GameType.CREATIVE, false, Difficulty.NORMAL, true, rules,
                 WorldDataConfiguration.DEFAULT);
         WorldOptions options = new WorldOptions(seed, !flat, false);
-        Lacuna.LOGGER.info("[DEMO] creating world {} (flat={})", name, flat);
-        mc.createWorldOpenFlows().createFreshLevel(name, settings, options,
-                registries -> registries.registryOrThrow(Registries.WORLD_PRESET)
-                        .getHolderOrThrow(flat ? WorldPresets.FLAT : WorldPresets.NORMAL).value().createWorldDimensions(),
-                new TitleScreen());
+        // "biome:<id>" instead of flat|normal: a normal overworld made of that one biome (e.g. biome:minecraft:taiga)
+        String biome = a.length > 1 && a[1].startsWith("biome:") ? a[1].substring("biome:".length()) : null;
+        Lacuna.LOGGER.info("[DEMO] creating world {} (flat={}, biome={})", name, flat, biome);
+        mc.createWorldOpenFlows().createFreshLevel(name, settings, options, registries -> {
+            var dimensions = registries.registryOrThrow(Registries.WORLD_PRESET)
+                    .getHolderOrThrow(flat ? WorldPresets.FLAT : WorldPresets.NORMAL).value().createWorldDimensions();
+            if (biome == null) {
+                return dimensions;
+            }
+            var holder = registries.registryOrThrow(Registries.BIOME).getHolderOrThrow(
+                    net.minecraft.resources.ResourceKey.create(Registries.BIOME, net.minecraft.resources.ResourceLocation.parse(biome)));
+            var noise = registries.registryOrThrow(Registries.NOISE_SETTINGS)
+                    .getHolderOrThrow(net.minecraft.world.level.levelgen.NoiseGeneratorSettings.OVERWORLD);
+            return dimensions.replaceOverworldGenerator(registries, new net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator(
+                    new net.minecraft.world.level.biome.FixedBiomeSource(holder), noise));
+        }, new TitleScreen());
     }
 }
