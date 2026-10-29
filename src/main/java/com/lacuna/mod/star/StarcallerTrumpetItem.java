@@ -1,10 +1,12 @@
 package com.lacuna.mod.star;
 
 import com.lacuna.mod.LacunaConfig;
+import com.lacuna.mod.gear.Enchants;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.util.SafeRun;
 import java.util.List;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
@@ -17,6 +19,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -120,6 +123,16 @@ public class StarcallerTrumpetItem extends Item {
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack repair) {
         return repair.is(ModItems.STAR_FRAGMENT.get());
+    }
+
+    @Override
+    public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+        return Enchants.unbreakingOnly(enchantment);
+    }
+
+    @Override
+    public boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
+        return Enchants.unbreakingOnly(enchantment);
     }
 
     @Override

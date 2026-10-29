@@ -1,6 +1,10 @@
 {
   "values": [
     "minecraft:cherry_grove",
-    "minecraft:meadow"
+    "minecraft:meadow",
+    {
+      "id": "#c:is_magical",
+      "required": false
+    }
   ]
 }

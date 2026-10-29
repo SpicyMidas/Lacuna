@@ -1,6 +1,7 @@
 package com.lacuna.mod.client.solar;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.lacuna.mod.client.fx.FxRenderTypes;
 import com.lacuna.mod.client.fx.FxShaders;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -29,7 +30,8 @@ import org.jetbrains.annotations.Nullable;
  * All output premultiplied colour. Light is always <b>additive</b> (it piles up into white-hot cores and never darkens
  * what is behind it); only the light pools lying on the ground keep the covering <b>over</b> blend
  * ({@code ONE, ONE_MINUS_SRC_ALPHA}). Like {@link FxShaders}, a shader that fails to load
- * is logged and replaced by the framework's beam / glow / textured types.
+ * is logged and replaced by the framework's beam / glow / textured types (so is every one while an Iris / Oculus shader
+ * pack is in use, {@link ShaderPackCompat}).
  * <p>
  * The light (columns, sunbeams, the trail, flares and glows) is drawn with depth and volume after the level by
  * {@link SolarVolume} whenever its shaders loaded: these types then only name it (the swap happens in
@@ -137,7 +139,7 @@ public final class SolarRenderTypes {
 
     /** Additive column light (u across, v = blocks along; colour = tint, alpha = intensity), or the beam fallback. */
     public static RenderType column() {
-        return column != null ? COLUMN_ADD : FxRenderTypes.beam();
+        return ShaderPackCompat.usable(column) ? COLUMN_ADD : FxRenderTypes.beam();
     }
 
     /**
@@ -153,7 +155,7 @@ public final class SolarRenderTypes {
      * the terrain (vanilla does not fog the sun either), so the shafts keep leaving the disc at any render distance.
      */
     public static RenderType skyColumn() {
-        return column != null ? SKY_COLUMN_ADD : FxRenderTypes.beam();
+        return ShaderPackCompat.usable(column) ? SKY_COLUMN_ADD : FxRenderTypes.beam();
     }
 
     /** {@link #columnOver()} for sunlight from the sky (see {@link #skyColumn()}): additive too. */
@@ -163,34 +165,34 @@ public final class SolarRenderTypes {
 
     /** Additive starburst flare (u,v 0..1 over a billboard): the corona shader in world space, or the glow fallback. */
     public static RenderType flare() {
-        return corona != null ? FLARE_ADD : FxRenderTypes.glowShader();
+        return ShaderPackCompat.usable(corona) ? FLARE_ADD : FxRenderTypes.glowShader();
     }
 
     /** Additive procedural ring marks (u = mode * 2 + 0..1, v 0..1), or the textured ring. */
     public static RenderType ring() {
-        return ring != null ? RING_ADD : FxRenderTypes.additive(FxRenderTypes.RING);
+        return ShaderPackCompat.usable(ring) ? RING_ADD : FxRenderTypes.additive(FxRenderTypes.RING);
     }
 
     /** Ring marks that also cover the background (light pools on bright ground). */
     public static RenderType ringOver() {
-        return ring != null ? RING_OVER : FxRenderTypes.additive(FxRenderTypes.GLOW);
+        return ShaderPackCompat.usable(ring) ? RING_OVER : FxRenderTypes.additive(FxRenderTypes.GLOW);
     }
 
     /** Soft round glow that covers the background (u,v 0..1). */
     public static RenderType glowOver() {
-        return FxShaders.glow() != null ? GLOW_OVER : FxRenderTypes.glowShader();
+        return ShaderPackCompat.usable(FxShaders.glow()) ? GLOW_OVER : FxRenderTypes.glowShader();
     }
 
     /** Sun corona in the sky (u,v 0..1 over the quad), with glow-shader and textured fallbacks. */
     public static RenderType skyCorona() {
-        if (corona != null) {
+        if (ShaderPackCompat.usable(corona)) {
             return SKY_CORONA;
         }
-        return FxShaders.glow() != null ? SKY_GLOW : SKY_GLOW_TEXTURED;
+        return ShaderPackCompat.usable(FxShaders.glow()) ? SKY_GLOW : SKY_GLOW_TEXTURED;
     }
 
     /** Large warm wash around the sun: additive light (a covering wash greyed the blue sky around the sun). */
     public static RenderType skyWash() {
-        return FxShaders.glow() != null ? SKY_GLOW : SKY_GLOW_TEXTURED;
+        return ShaderPackCompat.usable(FxShaders.glow()) ? SKY_GLOW : SKY_GLOW_TEXTURED;
     }
 }

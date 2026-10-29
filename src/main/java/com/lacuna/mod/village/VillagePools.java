@@ -30,7 +30,10 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
  *       sometimes get one along their streets.</li>
  * </ul>
  * The vanilla pool files are not overridden: elements are appended to the loaded pools through the access-transformed
- * {@code templates}/{@code rawTemplates} fields. Idempotent; behind {@code villages.civicBuildings}.
+ * {@code templates}/{@code rawTemplates} fields, after whatever other mods and data packs put there, so their pieces
+ * keep their share. A pool another mod emptied (to retire that village style) is left empty, and a failure here only
+ * costs the civic buildings ({@value #FEATURE}), never the rest of the village system. Idempotent; behind
+ * {@code villages.civicBuildings}.
  */
 public final class VillagePools {
     public static final List<String> TYPES = List.of("plains", "desert", "savanna", "taiga", "snowy");
@@ -47,6 +50,8 @@ public final class VillagePools {
      */
     public static final int HOUSE_WEIGHT = 1;
     private static final int MAX_RAW_WEIGHT = 150; // the pool codec's limit per element entry
+    /** SafeRun feature of the injection alone: a failure must not disable the whole village system. */
+    public static final String FEATURE = "village_pools";
     private static final ResourceKey<StructureProcessorList> EMPTY = ResourceKey.create(Registries.PROCESSOR_LIST,
             ResourceLocation.withDefaultNamespace("empty"));
     private static final ResourceKey<StructureProcessorList> MOSSY = ResourceKey.create(Registries.PROCESSOR_LIST,
@@ -58,7 +63,7 @@ public final class VillagePools {
         if (!VillageService.enabled() || !LacunaConfig.get(LacunaConfig.VILLAGES_CIVIC_BUILDINGS)) {
             return;
         }
-        SafeRun.run(VillageService.FEATURE, () -> {
+        SafeRun.run(FEATURE, () -> {
             int added = inject(event.getServer().registryAccess());
             Lacuna.LOGGER.info("Lacuna: {} civic building entries added to the vanilla village pools", added);
         });
@@ -106,6 +111,10 @@ public final class VillagePools {
         StructureTemplatePool pool = pools.get(ResourceLocation.withDefaultNamespace("village/" + type + "/" + name));
         if (pool == null) {
             Lacuna.LOGGER.warn("Lacuna: vanilla pool minecraft:village/{}/{} is missing, no civic buildings there", type, name);
+        } else if (pool.size() == 0) {
+            // another mod or data pack retired this village style on purpose: do not bring it back with civic pieces
+            Lacuna.LOGGER.info("Lacuna: pool minecraft:village/{}/{} is empty, no civic buildings there", type, name);
+            return null;
         }
         return pool;
     }

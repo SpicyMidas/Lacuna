@@ -3,6 +3,22 @@
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->
+- **Compatibility:**
+  - **Dedicated servers:** checked against the real server jar; a server boots cleanly with the mod.
+  - **Shader packs:** Iris/Oculus packs are detected. While one is on, the stencil and custom-shader effects (mirror
+    reflections, the Divine Glass X-ray, beams, solar rays, the tide vortex, the portal) switch to plain fallbacks
+    instead of breaking.
+  - **Recipe viewers:** technical blocks are hidden from JEI/EMI/REI.
+  - **Common tags:** added for ores, storage blocks, tools, job sites, beacon payment and bases, and modded biomes.
+    Piston-proof blocks are marked so block-moving mods (Carry On, Create…) leave them alone, and summoned creatures
+    can't be captured by other mods.
+  - **Village buildings:** they are added to the village pools in a way that survives other mods editing those
+    pools.
+  - **Metadata:** the mod list shows a logo, the description, credits and links.
+- **Config:** every option now explains itself. The Mirror Labyrinth and Sunken Bell switches actually work now:
+  - Mirror Labyrinth switch off: the exit opens without the Reflection fight.
+  - Sunken Bell switch off: the bell only rings.
+- **Starcaller Trumpet** takes only Unbreaking, like the other relics.
 - **Wayfarer's Chart (new):** a live map of the Overworld, held like a vanilla map, that follows you instead of
   being tied to one area. It scrolls smoothly as you walk and has an arrow for you and markers for the world spawn,
   your bed and where you were banished from. In the Nether or the Forgotten Land it shows the Overworld around your

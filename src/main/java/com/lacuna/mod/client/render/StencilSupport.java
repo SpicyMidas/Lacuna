@@ -1,6 +1,7 @@
 package com.lacuna.mod.client.render;
 
 import com.lacuna.mod.Lacuna;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -30,8 +31,14 @@ public final class StencilSupport {
         return bit == -1;
     }
 
-    /** Reserves the bit and enables the stencil buffer (once, between frames); true when the stencil is usable. */
+    /**
+     * Reserves the bit and enables the stencil buffer (once, between frames); true when the stencil is usable. Never
+     * while a shader pack is in use: the pack draws the world into its own buffers ({@link ShaderPackCompat}).
+     */
     public static boolean ensure(Minecraft mc) {
+        if (ShaderPackCompat.active()) {
+            return false;
+        }
         if (bit == -2) {
             bit = StencilManager.reserveBit();
             if (bit < 0) {
@@ -56,9 +63,13 @@ public final class StencilSupport {
         return main.isStencilEnabled();
     }
 
-    /** Stencil mask of the reserved bit, or 0 when it is not reserved or the main target has no stencil yet. */
+    /**
+     * Stencil mask of the reserved bit, or 0 when it is not reserved, the main target has no stencil yet or a shader
+     * pack is in use.
+     */
     public static int mask() {
-        return bit >= 0 && Minecraft.getInstance().getMainRenderTarget().isStencilEnabled() ? 1 << bit : 0;
+        return bit >= 0 && Minecraft.getInstance().getMainRenderTarget().isStencilEnabled() && !ShaderPackCompat.active()
+                ? 1 << bit : 0;
     }
 
     /** Enables the stencil test and clears our bit in the bound target. */
