@@ -1,13 +1,15 @@
 package com.lacuna.mod.client.guide;
 
 import com.lacuna.mod.Lacuna;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
 /**
  * The Almanac's GUI sheet (textures/gui/almanac.png, painted by tools/art/m20_almanac.py) and how its pieces are drawn.
  * Every stretchable piece is a 9-slice whose edges and centre are tiled, never stretched, so the leather grain and the
- * parchment stay pixel-crisp at any book size. The regions below mirror the art module.
+ * parchment stay pixel-crisp at any book size. The regions below mirror the art module. Blits are immediate and the
+ * sheet has translucent pixels (the spine's shadow, the hover wash), so every piece is drawn with blending on.
  */
 final class AlmanacUi {
     static final ResourceLocation SHEET = Lacuna.id("textures/gui/almanac.png");
@@ -32,47 +34,65 @@ final class AlmanacUi {
 
     /** The leather cover with its ruby inlay and gold corner caps, around the whole book. */
     static void cover(GuiGraphics g, int x, int y, int w, int h) {
+        begin();
         nineSlice(g, x, y, w, h, 0, 0, 64, 64, 12);
+        end();
     }
 
     static void leftPage(GuiGraphics g, int x, int y, int w, int h) {
+        begin();
         nineSlice(g, x, y, w, h, 64, 0, 48, 48, 6);
+        end();
     }
 
     static void rightPage(GuiGraphics g, int x, int y, int w, int h) {
+        begin();
         nineSlice(g, x, y, w, h, 112, 0, 48, 48, 6);
+        end();
     }
 
     /** The fold between the pages: a 16 px strip centred on the seam, repeated down its height. */
     static void spine(GuiGraphics g, int centreX, int y, int h) {
+        begin();
         tile(g, centreX - 8, y, 16, h, 160, 0, 16, 48);
+        end();
     }
 
     /** The "where to find it" box: warm parchment, a ruby bar on the left, a thin gold rim. */
     static void whereBox(GuiGraphics g, int x, int y, int w, int h) {
+        begin();
         nineSlice(g, x, y, w, h, 176, 0, 24, 24, 5);
+        end();
     }
 
     /** A hovered contents row. */
     static void rowHover(GuiGraphics g, int x, int y, int w, int h) {
+        begin();
         nineSlice(g, x, y, w, h, 176, 24, 24, 12, 3);
+        end();
     }
 
     /** A chapter tab sticking out of the book's fore-edge: 0 normal, 1 hovered, 2 the current chapter. */
     static void tab(GuiGraphics g, int x, int y, int w, int h, int state) {
         int u = state == 1 ? 220 : 200;
         int v = state == 2 ? 20 : 0;
+        begin();
         nineSlice(g, x, y, w, h, u, v, 20, 20, 4);
+        end();
     }
 
     static void arrow(GuiGraphics g, int x, int y, boolean next, boolean hover) {
+        begin();
         g.blit(SHEET, x, y, next ? ARROW_W : 0, hover ? 74 : 64, ARROW_W, ARROW_H);
+        end();
     }
 
     /** The flourish under titles: centred in {@code w}, with thin ink rules running out to both sides. */
     static void ornament(GuiGraphics g, int x, int y, int w) {
         int ox = x + (w - ORNAMENT_W) / 2;
+        begin();
         g.blit(SHEET, ox, y, 64, 48, ORNAMENT_W, ORNAMENT_H);
+        end();
         int mid = y + ORNAMENT_H / 2;
         if (ox - 2 > x + 4) {
             g.fill(x + 4, mid, ox - 2, mid + 1, RULE);
@@ -83,7 +103,18 @@ final class AlmanacUi {
     }
 
     static void glyph(GuiGraphics g, int index, int x, int y) {
+        begin();
         g.blit(SHEET, x, y, 128 + index * 10, 48, 9, 9);
+        end();
+    }
+
+    private static void begin() {
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+    }
+
+    private static void end() {
+        RenderSystem.disableBlend();
     }
 
     /** 9-slice of the sheet region (u, v, rw, rh) with a uniform border, edges and centre tiled. */
