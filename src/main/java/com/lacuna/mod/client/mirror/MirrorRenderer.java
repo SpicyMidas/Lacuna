@@ -671,7 +671,10 @@ public final class MirrorRenderer {
         modelView.identity();
         RenderSystem.applyModelViewMatrix();
         try {
-            RenderSystem.defaultBlendFunc();
+            // "over" with the alpha kept premultiplied: Fabulous' transparency pass reads the translucent target as
+            // premultiplied (dst * (1 - a) + rgb), so replacing the glass' alpha would wash the image out
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.setShaderTexture(0, texture);
             BufferBuilder bb = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
