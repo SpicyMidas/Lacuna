@@ -200,6 +200,7 @@ public final class QuickeningBolt {
             AnimatedItemEntity.enforceCap(level, player, animated);
             player.displayClientMessage(Component.translatable("lacuna.quickening.awake", animated.getMainHandItem().getHoverName())
                     .withStyle(ChatFormatting.LIGHT_PURPLE), true);
+            com.lacuna.mod.guide.Guide.usedRelic(player, com.lacuna.mod.registry.ModItems.QUICKENING_WAND.get());
         }
 
         /** Nothing left to wake: the heart paid for it flows back to the caster. */

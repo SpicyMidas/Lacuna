@@ -219,6 +219,7 @@ public final class BagCapture {
         level.gameEvent(player, GameEvent.ENTITY_INTERACT, at);
         thwump(level, at, width, height, true);
         player.displayClientMessage(Component.translatable("lacuna.bag.bagged", name).withStyle(ChatFormatting.GOLD), true);
+        com.lacuna.mod.guide.Guide.usedRelic(player, bag);
         return InteractionResult.SUCCESS;
     }
 
