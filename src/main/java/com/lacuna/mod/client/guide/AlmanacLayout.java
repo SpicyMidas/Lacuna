@@ -205,8 +205,7 @@ final class AlmanacLayout {
             }
             if (y > 0 && y + el.h + keep > height) {
                 if (el.kind == Kind.GAP || el.kind == Kind.WHERE_END) {
-                    turn();
-                    return;
+                    return; // padding never opens a page: whatever follows turns it if it must
                 }
                 turn();
             }
@@ -230,7 +229,6 @@ final class AlmanacLayout {
 
         void contents(AlmanacBook book) {
             start(null, null, true);
-            El title = new El(Kind.BOOK_TITLE, 0);
             Component big = Component.translatable("almanac.lacuna.ui.title_big");
             float scale = font.width(big) * 2 <= width ? 2.0F : font.width(big) * 1.5F <= width ? 1.5F : 1.0F;
             El t = new El(Kind.BOOK_TITLE, Math.round(LINE * scale) + 2 + LINE + 3);
