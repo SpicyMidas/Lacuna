@@ -59,7 +59,7 @@ PAGES = {
          "trumpet, Silk Dust for the wand, ender pearls for the pearl shards.\n"
          "A **Repair Kit** restores a quarter of any item held in the other hand.\n"
          "**Totems** are the exception: their uses are final, and nothing mends them.",
-         "Each item's details (Shift) name its material. Repair Kits: crafted, or from the Smiths' Guild."),
+         "Each relic's page in this Almanac names its material. Repair Kits: crafted, or from the Smiths' Guild."),
         ("Usura e riparazione",
          "Reliquie e congegni si consumano con l'uso. Si riparano all'incudine con il loro materiale, mai unendone due: "
          "acciaio umbrale per l'Eclissatore, lo Spadone, la Lanterna nulla e l'Orologio; frammenti di vetro divino per la "
@@ -67,7 +67,8 @@ PAGES = {
          "Polvere di seta per la bacchetta, perle di Ender per le schegge della perla.\n"
          "Un **Kit di riparazione** ripristina un quarto di qualunque oggetto tenuto nell'altra mano.\n"
          "Fanno eccezione i **totem**: i loro utilizzi sono definitivi e niente li ripara.",
-         "I dettagli di ogni oggetto (Maiusc) ne indicano il materiale. Kit di riparazione: si fabbricano, o dalla Gilda dei fabbri."),
+         "La pagina di ogni reliquia in questo almanacco ne indica il materiale. Kit di riparazione: si fabbricano, o "
+         "dalla Gilda dei fabbri."),
     ),
 
     # ============================================================================================ the forgotten land
