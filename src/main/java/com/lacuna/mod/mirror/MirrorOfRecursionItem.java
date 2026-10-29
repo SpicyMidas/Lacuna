@@ -24,6 +24,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -147,12 +148,14 @@ public class MirrorOfRecursionItem extends Item {
         } else {
             dir = projectile.getDeltaMovement().reverse().normalize();
         }
-        projectile.setOwner(player);
+        if (!(projectile instanceof ThrownTrident)) {
+            projectile.setOwner(player);
+            if (projectile instanceof AbstractArrow arrow) {
+                arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+            }
+        } // a trident stays its thrower's: it can still be picked up and Loyalty brings it home, never lost to a mirror
         projectile.setDeltaMovement(dir.scale(speed));
         projectile.hasImpulse = true;
-        if (projectile instanceof AbstractArrow arrow) {
-            arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-        }
         if (projectile.level() instanceof ServerLevel level) {
             level.sendParticles(ParticleTypes.END_ROD, projectile.getX(), projectile.getY(), projectile.getZ(), 6, 0.1, 0.1, 0.1, 0.05);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.AMETHYST_BLOCK_HIT, SoundSource.PLAYERS, 1.0F, 1.5F);
