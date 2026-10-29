@@ -6,7 +6,6 @@ import com.lacuna.mod.lantern.NullLanternItem;
 import com.lacuna.mod.registry.ModEntities;
 import com.lacuna.mod.registry.ModItems;
 import com.lacuna.mod.util.SafeRun;
-import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;

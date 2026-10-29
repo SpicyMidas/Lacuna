@@ -1,6 +1,5 @@
 package com.lacuna.mod.client.fx;
 
-import com.lacuna.mod.network.FxPayload;
 import com.lacuna.mod.registry.ModParticles;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
