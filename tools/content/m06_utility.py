@@ -1,19 +1,11 @@
-"""M6: Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute + Echo, Orrery."""
+"""M6: Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute + Echo."""
 from gen_resources import mod
 from content import worldgen as wg
-
-
-def box(frm, to, tex, uv_side=None):
-    faces = {}
-    for d in ("north", "south", "east", "west", "up", "down"):
-        faces[d] = {"texture": tex}
-    return {"from": frm, "to": to, "faces": faces}
 
 
 def build(g):
     items(g)
     null_lantern(g)
-    orrery(g)
     tags(g)
 
 
@@ -101,39 +93,6 @@ def items(g):
     # the watch, the mirror, the lantern and the flute are relics: no recipes (sources in m19_progression)
     g.shared["ruin_cache_rare"].append(wg.loot_entry("lacuna:chronal_shard", 10))
     g.shared["ruin_cache_rare"][0]["weight"] -= 10
-
-
-def orrery(g):
-    t_base, t_ring, t_core = "#base", "#ring", "#core"
-    elements = [
-        box([3, 0, 3], [13, 2, 13], t_base),
-        box([6, 2, 6], [10, 8, 10], t_base),
-        box([2, 8, 7.5], [14, 9, 8.5], t_ring),           # ring along X
-        box([7.5, 8, 2], [8.5, 9, 14], t_ring),           # ring along Z
-        {"from": [2, 10, 7.5], "to": [14, 11, 8.5], "rotation": {"angle": 45, "axis": "y", "origin": [8, 10, 8]},
-         "faces": {d: {"texture": t_ring} for d in ("north", "south", "east", "west", "up", "down")}},
-        box([6.5, 9, 6.5], [9.5, 12, 9.5], t_core),
-    ]
-    g.single("orrery_of_thresholds", "Orrery of Thresholds", "Planetario delle soglie",
-             {"parent": "minecraft:block/block", "render_type": "minecraft:cutout",
-              "textures": {"particle": "lacuna:block/orrery_base", "base": "lacuna:block/orrery_base",
-                           "ring": "lacuna:block/orrery_ring", "core": "lacuna:block/orrery_core"},
-              "elements": elements})
-    g.tag("block", "minecraft:mineable/pickaxe", mod("orrery_of_thresholds"))
-    g.shaped("orrery_of_thresholds", ["DKD", "RCR", "SSS"],
-             {"D": "lacuna:divine_glass_shard", "K": "minecraft:compass", "R": "lacuna:ruby", "C": "minecraft:clock",
-              "S": "minecraft:smooth_stone_slab"}, "lacuna:orrery_of_thresholds", category="decorations", unlock="minecraft:compass")
-    for key, en, it in [
-        ("lacuna.orrery.coords_ow", "Here %s %s ≈ Forgotten Land %s %s", "Qui %s %s ≈ Terra Dimenticata %s %s"),
-        ("lacuna.orrery.coords_fl", "Here %s %s ≈ Overworld %s %s", "Qui %s %s ≈ Mondo %s %s"),
-        ("lacuna.orrery.found", "%s — a threshold lies %s, %s blocks away", "%s — una soglia si trova a %s, a %s blocchi"),
-        ("lacuna.orrery.nothing", "%s — no threshold within reach", "%s — nessuna soglia a portata"),
-        ("lacuna.orrery.busy", "%s — the rings are still turning", "%s — gli anelli stanno ancora girando"),
-    ]:
-        g.name(key, en, it)
-    for d, en, it in [("n", "north", "nord"), ("ne", "north-east", "nord-est"), ("e", "east", "est"), ("se", "south-east", "sud-est"),
-                      ("s", "south", "sud"), ("sw", "south-west", "sud-ovest"), ("w", "west", "ovest"), ("nw", "north-west", "nord-ovest")]:
-        g.name(f"lacuna.direction.{d}", en, it)
 
 
 def tags(g):

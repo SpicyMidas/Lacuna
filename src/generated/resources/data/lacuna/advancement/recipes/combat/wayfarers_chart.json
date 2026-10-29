@@ -12,7 +12,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "lacuna:orrery_of_thresholds"
+        "recipe": "lacuna:wayfarers_chart"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "lacuna:orrery_of_thresholds"
+      "lacuna:wayfarers_chart"
     ]
   }
 }

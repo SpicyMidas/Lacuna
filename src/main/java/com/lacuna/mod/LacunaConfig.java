@@ -56,8 +56,8 @@ public final class LacunaConfig {
     public static final ModConfigSpec.BooleanValue LANTERN_ENABLED;
     public static final ModConfigSpec.IntValue LANTERN_RADIUS;
     public static final ModConfigSpec.BooleanValue FLUTE_ENABLED;
-    public static final ModConfigSpec.BooleanValue ORRERY_ENABLED;
-    public static final ModConfigSpec.IntValue ORRERY_RADIUS_CHUNKS;
+    public static final ModConfigSpec.BooleanValue CHART_ENABLED;
+    public static final ModConfigSpec.IntValue CHART_BUDGET_MICROS;
 
     // ---------------------------------------------------------------- gear
     public static final ModConfigSpec.BooleanValue SPECIAL_WEAPONS_ENABLED;
@@ -155,8 +155,10 @@ public final class LacunaConfig {
         LANTERN_ENABLED = B.define("nullLantern", true);
         LANTERN_RADIUS = B.defineInRange("nullLanternRadius", Balance.LANTERN_RADIUS, 1, 64);
         FLUTE_ENABLED = B.define("whisperboneFlute", true);
-        ORRERY_ENABLED = B.define("orrery", true);
-        ORRERY_RADIUS_CHUNKS = B.defineInRange("orreryRadiusChunks", Balance.ORRERY_RADIUS_CHUNKS, 1, 128);
+        CHART_ENABLED = B.comment("Wayfarer's Chart: a live map of the Overworld around its holder (in other dimensions: around their translated position).")
+                .define("wayfarersChart", true);
+        CHART_BUDGET_MICROS = B.comment("Server time all held Wayfarer's Charts may spend sampling the Overworld per tick, in microseconds.")
+                .defineInRange("wayfarersChartBudgetMicros", Balance.CHART_BUDGET_MICROS, 100, 20000);
         B.pop();
 
         B.push("gear");

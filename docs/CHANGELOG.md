@@ -3,6 +3,14 @@
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->
+- **Wayfarer's Chart (new):** a live map of the Overworld, held like a vanilla map, that follows you instead of
+  being tied to one area. It scrolls smoothly as you walk and has an arrow for you and markers for the world spawn,
+  your bed and where you were banished from. In the Nether or the Forgotten Land it shows the Overworld around your
+  translated position, with both sets of coordinates. Land you have seen is inked in full colour; the rest is
+  sketched faintly from what the world would grow there, and no chunks are ever loaded or generated to draw it.
+  Sneak + use to zoom (1 to 16 blocks per pixel). Crafted from an empty map, a compass, 2 rubies and a divine glass
+  shard.
+- **Orrery of Thresholds removed** (the block that printed the Forgotten Land coordinates): the chart replaces it.
 - **Crafting rebalanced: relics are found, not crafted.** The Eclipser, Sun's Fury, Divine Magnifying Glass,
   Chronoshard Pocket Watch, Mirror of Recursion, Null Lantern, Whisperbone Flute, Gravemaw Greatsword, Tidecaller
   Sickle, Heartwood Bow, Echo Dagger, Pyrrhic Scepter, Ember Triangle, Wand of Quickening and Starcaller Trumpet no

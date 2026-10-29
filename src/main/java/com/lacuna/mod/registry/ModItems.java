@@ -194,6 +194,9 @@ public final class ModItems {
     // ------------------------------------------------------------------ Lacunar Quintessence (legendary essence: totems)
     public static final DeferredItem<com.lacuna.mod.essence.QuintessenceItem> LACUNAR_QUINTESSENCE = item("lacunar_quintessence",
             com.lacuna.mod.essence.QuintessenceItem::new, new Item.Properties().rarity(Rarity.EPIC).fireResistant());
+    // ------------------------------------------------------------------ Wayfarer's Chart (live map of the Overworld)
+    public static final DeferredItem<com.lacuna.mod.chart.WayfarersChartItem> WAYFARERS_CHART = item("wayfarers_chart",
+            com.lacuna.mod.chart.WayfarersChartItem::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
 
     private ModItems() {}
 

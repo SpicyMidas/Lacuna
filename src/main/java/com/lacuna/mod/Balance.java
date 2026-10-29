@@ -162,10 +162,17 @@ public final class Balance {
     public static final float ECHO_MAX_ATTACK = 6.0F;
     public static final double ECHO_SPEED = 0.3;
 
-    // ---------------------------------------------------------------- orrery (M6)
-    public static final int ORRERY_COOLDOWN = 100;
-    public static final int ORRERY_RADIUS_CHUNKS = 48;
-    public static final int ORRERY_GLOBAL_INTERVAL = 20;
+    // ---------------------------------------------------------------- wayfarer's chart
+    /** Zoom of a new chart: 4 blocks per pixel, a 512-block wide view. */
+    public static final int CHART_DEFAULT_ZOOM = 2;
+    /** Server time all held charts may spend sampling the Overworld per tick, in microseconds (config default). */
+    public static final int CHART_BUDGET_MICROS = 2000;
+    /** A shown tile is surveyed again this often (ticks), so loaded land stays as live as on a vanilla map. */
+    public static final int CHART_REFRESH_TICKS = 40;
+    /** Tiles kept in the server's chart cache (about 3 KB each). */
+    public static final int CHART_MAX_TILES = 768;
+    /** Tiles sent to one holder per tick at most. */
+    public static final int CHART_TILES_PER_TICK = 4;
 
     // ---------------------------------------------------------------- gear (M7)
     /** Umbral Steel outclasses Ruby: netherite mining level, 1500 uses, speed 8.5, +4 damage, enchantability 15. */

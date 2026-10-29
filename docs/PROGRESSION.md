@@ -105,6 +105,7 @@ One attempt every 3 days, 25 % by day (about one visit in 12 days); he stays 3 d
 | Solar Flare | `.F. / FDF / .F.` 4 Solar Flare Fragments + Divine Glass (for the Sun's Fury forge) |
 | Fractured Pearl | `DRD / RPR / DRD` 4 divine glass shards, 4 rubies, ender pearl (also 10 rubies at the merchant) |
 | Clockwork Decoy | shapeless: 3 clockwork gears, redstone, white wool |
+| Wayfarer's Chart | `.D. / RMR / .C.` divine glass shard, 2 rubies, empty map, compass |
 | Comically Large Bag | `SLS / LPL / LCL` 2 string, 5 leather, ender pearl, lead (also 2 % in village mints) |
 | Chrono Hourglass | `GCG / #S# / GCG` 4 gold, 2 chronal shards, 2 glass, sand (runs on chronal shards) |
 | Repair Kit | `UGU / LIL` 2 umbral steel ingots, clockwork gear, 2 leather, iron ingot (also the Smiths' Guild) |
@@ -115,7 +116,7 @@ One attempt every 3 days, 25 % by day (about one visit in 12 days); he stays 3 d
 Why a few gadgets stay craftable: the **Fractured Pearl** (rubies + Forgotten Land shards), **Chrono Hourglass**
 (two chronal shards, and it burns more of them to run) and **Comically Large Bag** (an ender pearl) are utilities
 gated by rare materials, not legendary power; the **Clockwork Decoy**, **Starlace Bandage** and **Repair Kit** are
-consumables. The **Solar Flare** stays an assembled material because the Last Merchant forges Sun's Fury from it.
+consumables, and the **Wayfarer's Chart** is a navigation tool everyone should be able to make. The **Solar Flare** stays an assembled material because the Last Merchant forges Sun's Fury from it.
 
 ## Materials and drops
 

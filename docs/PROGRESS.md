@@ -664,3 +664,30 @@ milestones above and in the spec).
   ingot); Repair Kits gain a recipe (`UGU / LIL`) and refuse `#lacuna:repair_kit_refuses` (the totems: their uses are
   final). Ruin-cache rare pool normalised to exactly 1000 (the exilite entry had not been subtracted from the empty
   weight).
+
+## Beta — the Wayfarer's Chart replaces the Orrery
+
+- Removed the Orrery of Thresholds completely (player request): block + item, recipe and its unlock advancement, model,
+  textures, lang (`lacuna.orrery.*`, the `lacuna.direction.*` keys only it used), loot table, `mineable/pickaxe` entry,
+  config keys `items.orrery` / `items.orreryRadiusChunks`, its `Balance` numbers and the structure tag
+  `lacuna:orrery_targets` (smoke phase 1 now locates `lacuna:obelisk` directly). Old worlds simply lose the block.
+- Wayfarer's Chart (`chart/`, `client/chart/`, content/art module `m19_wayfarers_chart`): held like a vanilla filled
+  map, a live 128 x 128 map of the Overworld centred on the holder that scrolls smoothly (world-anchored 32 x 32-pixel
+  tiles, the texture slid by fractions of a pixel). Other dimensions show the Overworld around the translated position
+  (Forgotten Land × `forgottenLand.scale`, else the `coordinate_scale` ratio: Nether × 8; the End rests on the holder's
+  bed or the world spawn). Sneak + use: 1/2/4/8/16 blocks per pixel. Markers: world spawn, bed/anchor, banishment
+  origin; caption with the coordinates.
+- Server sampling never loads or generates a chunk: loaded chunks are surveyed like `MapItem#update` (and stay surveyed
+  while cached), the rest is sketched from the generator (multi-noise biome at surface depth through `c:` biome tags
+  to map colours, surface height ≈ 128 × depth noise at Y 0) and drawn faded. One shared per-tick budget
+  (`items.wayfarersChartBudgetMicros`, 2000 µs) with passes resuming pixel by pixel; tiles shared by all holders,
+  refreshed every 40 ticks while shown, at most 768 cached, at most 4 sent per holder per tick, only when changed.
+- Client boot run (`tools/demo/wayfarers_chart.txt`, normal world, software rendering): the chart in hand in the
+  Overworld at 1:4 and 1:8 and from the Forgotten Land (Overworld X 480 · Z -300 from X 40 · Z -25, ×12), surveyed
+  land in full colour next to the faded sketch (rivers, forests, plains, cherry groves, snow, sand). Measured on that
+  CPU-starved machine: 20-40 µs per climate sample, about 80 samples per tick within the budget, so a fully unexplored
+  view at 1:8 fills in about 15 s, nearest tiles first. The Nether shot of that run landed inside netherrack; the
+  script now carves a pocket.
+- Not done: item frames show the chart's icon, not a live map.
+
+Gates: 3 ✔ (validate_assets 0 errors), compile ✔, one client boot run ✔; GameTests and smoke not rerun (rule #1).

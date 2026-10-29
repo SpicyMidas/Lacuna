@@ -1,0 +1,34 @@
+# Wayfarer's Chart held in first person: in the Overworld (4, then 8 blocks per pixel after a sneak + use), then from
+# the Forgotten Land and the Nether, where it shows the Overworld around the translated position.
+world lacuna_chart normal chart1
+wait 100
+cmd time set 6000
+cmd gamerule sendCommandFeedback false
+cmd clear @s
+cmd item replace entity @s weapon.mainhand with lacuna:wayfarers_chart
+wait 240
+look 0 70
+wait 4
+shot chart_overworld
+sneak on
+wait 4
+use on
+wait 1
+use off
+sneak off
+wait 200
+shot chart_overworld_zoom8
+cmd execute in lacuna:forgotten_land run tp @s 40 140 -25
+wait 240
+look 0 70
+wait 4
+shot chart_forgotten_land
+cmd execute in minecraft:the_nether run tp @s 60 100 60
+wait 60
+cmd fill ~-2 ~-1 ~-2 ~2 ~3 ~2 minecraft:air
+cmd setblock ~ ~-1 ~ minecraft:glass
+wait 180
+look 0 70
+wait 4
+shot chart_nether
+quit

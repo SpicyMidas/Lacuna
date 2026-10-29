@@ -51,5 +51,6 @@ public final class LacunaClient {
         com.lacuna.mod.client.star.StarClient.register(modBus, NeoForge.EVENT_BUS);
         com.lacuna.mod.client.confusion.ConfusionClient.register(modBus, NeoForge.EVENT_BUS);
         com.lacuna.mod.client.mummy.MummyClient.register(modBus);
+        com.lacuna.mod.client.chart.ChartClient.register(NeoForge.EVENT_BUS);
     }
 }

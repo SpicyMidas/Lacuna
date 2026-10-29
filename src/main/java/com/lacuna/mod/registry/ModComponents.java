@@ -49,5 +49,10 @@ public final class ModComponents {
             COMPONENTS.registerComponentType("bag_contents",
                     b -> b.persistent(com.lacuna.mod.bag.BagContents.CODEC).networkSynchronized(com.lacuna.mod.bag.BagContents.STREAM_CODEC).cacheEncoding());
 
+    /** Wayfarer's Chart zoom level (0..4: 1, 2, 4, 8, 16 blocks per pixel). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> CHART_ZOOM =
+            COMPONENTS.registerComponentType("chart_zoom",
+                    b -> b.persistent(Codec.intRange(0, 4)).networkSynchronized(ByteBufCodecs.VAR_INT));
+
     private ModComponents() {}
 }
