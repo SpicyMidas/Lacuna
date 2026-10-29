@@ -1,0 +1,38 @@
+{
+  "criteria": {
+    "debris": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:exilite_debris"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.exilite.description"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:exilite_debris"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.exilite.title"
+    }
+  },
+  "parent": "lacuna:lacuna/enter_forgotten_land",
+  "requirements": [
+    [
+      "debris"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  }
+}

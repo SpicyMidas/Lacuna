@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "dust": {
+      "conditions": {
+        "items": [
+          {
+            "items": "lacuna:silk_dust"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.moth_to_a_flame.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:silk_dust"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.moth_to_a_flame.title"
+    }
+  },
+  "parent": "lacuna:lacuna/root",
+  "requirements": [
+    [
+      "dust"
+    ]
+  ]
+}

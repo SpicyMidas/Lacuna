@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "code": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.open_portal.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:forgotten_portal_frame"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.open_portal.title"
+    }
+  },
+  "parent": "lacuna:lacuna/totem_of_banishing",
+  "requirements": [
+    [
+      "code"
+    ]
+  ]
+}

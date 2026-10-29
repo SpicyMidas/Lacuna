@@ -22,7 +22,7 @@
       "translate": "advancements.lacuna.enter_forgotten_land.title"
     }
   },
-  "parent": "lacuna:lacuna/lacunar_quintessence",
+  "parent": "lacuna:lacuna/totem_of_banishing",
   "requirements": [
     [
       "enter"

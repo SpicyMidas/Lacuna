@@ -1,0 +1,33 @@
+{
+  "criteria": {
+    "woke": {
+      "conditions": {
+        "item": {
+          "items": "lacuna:quickening_wand"
+        }
+      },
+      "trigger": "lacuna:used_relic"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.its_alive.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:quickening_wand"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.its_alive.title"
+    }
+  },
+  "parent": "lacuna:lacuna/find_relic",
+  "requirements": [
+    [
+      "woke"
+    ]
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "criteria": {
+    "killed": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "lacuna:reflection"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:player_killed_entity"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.defeat_reflection.description"
+    },
+    "frame": "goal",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:lacunar_quintessence"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.defeat_reflection.title"
+    }
+  },
+  "parent": "lacuna:lacuna/mirror_labyrinth",
+  "requirements": [
+    [
+      "killed"
+    ]
+  ]
+}

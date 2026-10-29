@@ -29,6 +29,6 @@ def build(g):
            "Hai preso il posto di una delle tue copie.")
     g.name("lacuna.confusion.stay", "Your copies gather around you.", "Le tue copie si radunano intorno a te.")
     g.name("entity.lacuna.confusion_copy", "Confusion Copy", "Copia della Confusione")
-    adv(g, "which_one_is_real", "lacuna:totem_of_confusion", code(), "root",
+    adv(g, "which_one_is_real", "lacuna:totem_of_confusion", code(), "lacunar_quintessence",
         en=("Which One Is Real?", "Hide among copies of yourself with a Totem of Confusion."),
         it=("Qual è quello vero?", "Nasconditi tra le copie di te stesso con un Totem della Confusione."))

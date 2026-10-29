@@ -1,0 +1,41 @@
+{
+  "criteria": {
+    "tool": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "lacuna:umbral_steel_sword",
+              "lacuna:umbral_steel_pickaxe",
+              "lacuna:umbral_steel_axe",
+              "lacuna:umbral_steel_shovel",
+              "lacuna:umbral_steel_hoe"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancements.lacuna.nightforged.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "id": "lacuna:umbral_steel_pickaxe"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancements.lacuna.nightforged.title"
+    }
+  },
+  "parent": "lacuna:lacuna/umbral_steel",
+  "requirements": [
+    [
+      "tool"
+    ]
+  ]
+}
