@@ -1,6 +1,7 @@
 package com.lacuna.mod.client.mirror;
 
 import com.lacuna.mod.client.LacunaClientConfig;
+import com.lacuna.mod.client.compat.ShaderPackCompat;
 import com.lacuna.mod.client.render.SectionSweep;
 import com.lacuna.mod.client.render.StencilSupport;
 import com.lacuna.mod.registry.ModBlocks;
@@ -80,7 +81,8 @@ public final class MirrorReflections {
     public static boolean isActive() {
         return LacunaClientConfig.get(LacunaClientConfig.MIRROR_REFLECTIONS)
                 && !SafeRun.isDisabled(FEATURE)
-                && !StencilSupport.failed();
+                && !StencilSupport.failed()
+                && !ShaderPackCompat.active();
     }
 
     /** Reflection range in blocks: mirrors this close to the camera, entities this far in front of a mirror. */

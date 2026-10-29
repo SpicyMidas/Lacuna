@@ -3,6 +3,19 @@
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->
+- **Mirror Glass reflections fixed:**
+  - **Every mirror on screen reflects at once:** floor, ceiling, walls and loose blocks, however many there are. Before,
+    only the 3 nearest mirror faces were drawn, so mirrors went blank as soon as there were several, or when you
+    stepped 2-3 blocks back.
+  - **Range:** reflections now hold up to 32 blocks away (`range` in the client config, `maxPlanes` for how many mirror
+    faces show entities).
+  - **What is reflected:** every kind of entity — you (also in first person), mobs, dropped items, armour stands,
+    boats, minecarts, falling blocks, arrows and other projectiles, item frames and paintings. Flames and thrown items
+    turn to face the reflected view.
+  - **Performance:** each entity is drawn once per mirror orientation and replayed in every mirror, so many mirrors
+    cost little more than one.
+  - **Fabulous graphics:** reflections no longer look washed out.
+  - **Labyrinth walls:** mobs behind them no longer show through.
 - **Compatibility:**
   - **Dedicated servers:** checked against the real server jar; a server boots cleanly with the mod.
   - **Shader packs:** Iris/Oculus packs are detected. While one is on, the stencil and custom-shader effects (mirror
