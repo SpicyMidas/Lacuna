@@ -40,15 +40,20 @@ public final class ForgottenLandRules {
         return server != null && server.getTickCount() == lastOpCommandTick;
     }
 
-    private static boolean sealed(Entity entity) {
+    /**
+     * True when the land keeps {@code entity}. {@code byCommand}: the move may come from an operator command, which is
+     * let through; portals, pearls and chorus fruit never are, even in a tick when some operator command ran (a
+     * command-block clock runs one every tick).
+     */
+    private static boolean sealed(Entity entity, boolean byCommand) {
         return LacunaConfig.get(LacunaConfig.FL_ENABLED) && !entity.level().isClientSide()
                 && ModDimensions.isForgottenLand(entity.level()) && !Teleporter.isLacunaTransfer()
-                && !operatorCommandRunning(entity.getServer());
+                && !(byCommand && operatorCommandRunning(entity.getServer()));
     }
 
     public static void onTravel(EntityTravelToDimensionEvent event) {
         Entity entity = event.getEntity();
-        if (sealed(entity)) {
+        if (sealed(entity, entity.portalProcess == null)) {
             event.setCanceled(true);
             if (entity instanceof ServerPlayer player) {
                 player.displayClientMessage(Component.translatable("lacuna.fl.cannot_leave"), true);
@@ -57,14 +62,14 @@ public final class ForgottenLandRules {
     }
 
     public static void onEnderPearl(EntityTeleportEvent.EnderPearl event) {
-        if (sealed(event.getEntity())) {
+        if (sealed(event.getEntity(), false)) {
             event.setCanceled(true);
             event.getPlayer().displayClientMessage(Component.translatable("lacuna.fl.cannot_leave"), true);
         }
     }
 
     public static void onChorusFruit(EntityTeleportEvent.ChorusFruit event) {
-        if (sealed(event.getEntity())) {
+        if (sealed(event.getEntity(), false)) {
             event.setCanceled(true);
             if (event.getEntity() instanceof Player player) {
                 player.displayClientMessage(Component.translatable("lacuna.fl.cannot_leave"), true);
