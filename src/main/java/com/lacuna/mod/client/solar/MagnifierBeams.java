@@ -137,6 +137,7 @@ public final class MagnifierBeams {
         int hot = mix(rgb, 0xFFFFFF, 0.7F);
         Ray ray = ray(ctx.level(), player, trace, lens);
         Vec3 end = ray.end();
+        scorch(ctx, player, trace, ray);
         Vec3 a = ctx.rel(lens);
         Vec3 b = ctx.rel(end);
         float len = (float) lens.distanceTo(end);
@@ -187,6 +188,30 @@ public final class MagnifierBeams {
         }
     }
 
+    /**
+     * The burning spot of the drawn beam leaves a short-lived pixel scorch trail on the block faces it sweeps (not
+     * underwater, not on creatures): on the face the drawn ray meets, or, if that ray found none, on the face the view
+     * ray hit, at the beam's end.
+     */
+    private static void scorch(FxRenderContext ctx, Player player, BeamTrace trace, Ray ray) {
+        Direction face = null;
+        Vec3 at = ray.end();
+        if (!trace.beam().underwater()) {
+            if (ray.face() != null) {
+                face = ray.face().getDirection();
+            } else if (trace.hitsBlock()) {
+                face = trace.blockHit().getDirection();
+                Vec3 surface = trace.blockHit().getLocation();
+                at = switch (face.getAxis()) {
+                    case X -> new Vec3(surface.x, at.y, at.z);
+                    case Y -> new Vec3(at.x, surface.y, at.z);
+                    case Z -> new Vec3(at.x, at.y, surface.z);
+                };
+            }
+        }
+        MagnifierScorch.touch(ctx.level(), player, at, face, ctx.level().random);
+    }
+
     private static int mix(int a, int b, float t) {
         int r = (int) Mth.lerp(t, (a >> 16) & 0xFF, (b >> 16) & 0xFF);
         int g = (int) Mth.lerp(t, (a >> 8) & 0xFF, (b >> 8) & 0xFF);
@@ -204,14 +229,13 @@ public final class MagnifierBeams {
         }
         Vec3 cam = mc.gameRenderer.getMainCamera().getPosition();
         RandomSource random = level.random;
+        MagnifierScorch.tick();
         for (Player player : level.players()) {
             if (!beaming(player) || player.position().distanceToSqr(cam) > 64.0 * 64.0) {
                 continue;
             }
             BeamTrace trace = BeamTrace.of(level, player, player.getEyePosition(), player.getViewVector(1.0F), 1.0F);
             Ray ray = ray(level, player, trace, lensAt(player, trace.eye()));
-            // the burning spot leaves a short-lived pixel scorch trail on the faces it sweeps
-            MagnifierScorch.burn(level, player, trace.beam().underwater() ? null : ray.face(), random);
             Vec3 hit = ray.end().subtract(trace.look().scale(0.08));
             if (trace.beam().underwater()) {
                 if (trace.hitsSomething()) {
