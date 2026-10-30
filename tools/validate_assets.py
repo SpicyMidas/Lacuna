@@ -43,6 +43,8 @@ SIZE_RULES = [
     (re.compile(r"^textures/environment/"), {(128, 128), (256, 256)}),
     # map decoration sprites (stitched into the vanilla map_decorations atlas), e.g. the Wayfarer's Chart markers
     (re.compile(r"^textures/map/decorations/"), {(8, 8)}),
+    # the held Wayfarer's Chart's flat roll strip (client/chart/ChartRolls)
+    (re.compile(r"^textures/map/wayfarers_chart_roll"), {(64, 6)}),
     # hand-drawn high-resolution items/blocks (tools/art/hand), e.g. the 32x32 Gravemaw Greatsword
     (re.compile(r"^textures/(item|block)/"), {(32, 32), (24, 24), (16, 16)}),
 ]

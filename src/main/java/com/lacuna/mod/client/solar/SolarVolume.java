@@ -201,8 +201,8 @@ public final class SolarVolume {
         RenderSystem.disableDepthTest();
         RenderSystem.defaultBlendFunc();
         try {
-            // the shafts of light as 3D volumes first (their bright bodies cover what is behind them), then the light
-            // that only adds (glows and flares on top of the shafts)
+            // the shafts of light as 3D volumes first (screened light), then the light that only adds (glows and flares
+            // on top of the shafts)
             SolarTubes.draw(MODEL_VIEW);
             RenderSystem.disableDepthTest();
             RenderSystem.defaultBlendFunc();

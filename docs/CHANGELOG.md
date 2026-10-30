@@ -1,13 +1,20 @@
 # Changelog
 
+## 1.0.0-beta.3 — beta feedback
+
+<!-- beta3 -->
+- **Divine light again:** the 3D rays looked like yellow plastic and didn't match the bright sun. Their light is now
+  exposed like the sun's own disc: bright light burns out to white, the fringe stays golden. It is screened over the
+  scene, so it can't bloom into a wide white blur over the sky and never tints or greys anything. This applies to the
+  Sun's Fury pillar, focus beams and trail, the magnifying glass beam and the other 3D rays. The striations and light
+  streaks are softer, and the opaque golden body is gone. The rays still look the same width over sky and terrain,
+  since only what stands in front hides them.
+- **Wayfarer's Chart rolls are flat:** drawn as a strip in the item icon's colours (dark outline, light parchment band,
+  shaded ends, wooden knobs) along the top and bottom of the held chart, instead of 3D rolls.
+
 ## 1.0.0-beta.2 — beta feedback
 
 <!-- beta2 -->
-- **Rays look the same over any background:** the Sun's Fury pillar, the magnifying glass beam and the other 3D rays
-  used to bloom wider and whiter over a bright sky and look thinner and dimmer over blocks, because their light only
-  added to what was behind it. Now the light is a luminous medium: it covers what is behind it as much as it shines,
-  in its own colour, so a ray has the same width and strength over the sky, over terrain and at night. Only the
-  faintest outer haze still simply adds light.
 - **Sun's Fury, more legendary:**
   - **Same beam over sky and terrain:** it looked wide and strong against the sky but thin and weak in front of
     blocks, because terrain behind the beam cut its light. Now only what stands in front hides it.

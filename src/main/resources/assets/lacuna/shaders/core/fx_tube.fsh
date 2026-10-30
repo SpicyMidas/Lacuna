@@ -8,8 +8,9 @@
 // part of the chord that lies between the tube's end cuts, beyond the eye and in front of the scene, in closed form
 // (Gaussian profiles: erf). So the ray is as thick as the volume really is from any angle, seen from the side it
 // has the profile of the old flat ribbon, seen along its length it glows brighter (up to a soft saturation), and
-// it melts into the ground, walls and clouds it enters: only what is in front of it hides it. Premultiplied output
-// (ONE, ONE_MINUS_SRC_ALPHA): the light covers what is behind it as much as it shines, in its own colour.
+// it melts into the ground, walls and clouds it enters: only what is in front of it hides it. Output is light, exposed
+// (bright light burns out to white) and screened over the scene (ONE, ONE_MINUS_SRC_COLOR): no wide white bloom over a
+// bright sky, no tint or grey over anything.
 // Layers (normalised radius x = distance from the axis / radius): a hot core line (core colour, strength core.a), a
 // body and a wide halo in the rim colour (intensity rim.a). style.x softness 0 (crisp rod) .. 1 (soft haze),
 // style.y flags (1 flowing turbulence and ripple rings, 2 no distance dimming, 4 fades near the eye), style.z flow
@@ -191,12 +192,6 @@ void main() {
     float body = glow(path(kBody, b2n, ua, ub, dn)) * flow * ripple;
     float halo = glow(path(kHalo, b2n, ua, ub, dn)) * (0.35 + 0.25 * n1);
     vec3 col = core.rgb * hot * 1.4 + rim.rgb * (body * 1.1 + halo * 0.6);
-    vec3 light = col * intensity * ColorModulator.rgb;
-    // the light as a luminous medium (as in solar_tube.fsh): it covers what is behind it as much as it shines, in its
-    // own colour at full brightness (it never greys anything), so a ray looks the same width and strength over the
-    // bright sky and over dark terrain instead of blooming over the one and thinning over the other
-    float lum = max(max(light.r, light.g), light.b);
-    // (the faintest haze stays a plain addition, so it never washes a dark sky in a dim tint)
-    float shine = clamp((1.0 - exp(-2.5 * lum)) * smoothstep(0.04, 0.35, lum), 0.0, 0.985);
-    fragColor = vec4(max(light / max(lum, 1.0e-4) * shine, light), shine);
+    // exposed like light (as in solar_tube.fsh), then screened over the scene
+    fragColor = vec4((1.0 - exp(-col * intensity * 1.15)) * ColorModulator.rgb, 0.0);
 }

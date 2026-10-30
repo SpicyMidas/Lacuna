@@ -156,13 +156,13 @@ public final class SolarVisuals {
     }
 
     /**
-     * {@link #tube} with the 3D extras ({@link SolarTubes}): a bright body {@code cover} (0..1) under the light, rotating
+     * {@link #tube} with the 3D extras ({@link SolarTubes}): a {@code bodyGlow} (0..1) lifting the dense light to white, soft
      * light {@code streaks} and rising {@code embers} (the flat fallback has none of them).
      */
     static void tube(PoseStack.Pose pose, VertexConsumer fallback, Vec3 a, Vec3 b, float widthA, float widthB, int argbA, int argbB,
-                     float vA, float vB, boolean sunbeam, float cover, float streaks, float embers) {
+                     float vA, float vB, boolean sunbeam, float bodyGlow, float streaks, float embers) {
         if (SolarTubes.straight(pose, a, b, widthA * 0.5F, widthB * 0.5F, argbA, argbB, vA, vB,
-                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0, cover, streaks, embers)) {
+                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0, bodyGlow, streaks, embers)) {
             return;
         }
         if (sunbeam) {
@@ -216,7 +216,7 @@ public final class SolarVisuals {
             int[] c = new int[n];
             if (SolarTubes.room(3 * n)) {
                 // a comet of light as 3D volumes along a smooth curve through the trail: a wide soft glow, the golden
-                // body with its white-hot core, and a thin white thread with a bright body of its own
+                // body with its white-hot core, and a thin white thread glowing white in its body
                 for (int i = 0; i < n; i++) {
                     float wk = wake(k[i]);
                     w[i] = 2.6F * wk + 0.1F;
@@ -274,9 +274,9 @@ public final class SolarVisuals {
      * One layer of the flight trail as 3D light ({@link SolarTubes}): a quadratic B-spline through the camera-relative
      * {@code points} (straight halves at both ends, curved pieces from midpoint to midpoint around every inner point),
      * so the pieces meet with one tangent and the light flows through the bends without seams. Width, colour and v are
-     * those of the points, averaged at the midpoints; the body {@code cover} follows the layer's alpha.
+     * those of the points, averaged at the midpoints; the {@code bodyGlow} follows the layer's alpha.
      */
-    private static void trail(PoseStack.Pose pose, List<Vec3> points, float[] width, int[] argb, float[] v, int profile, float cover) {
+    private static void trail(PoseStack.Pose pose, List<Vec3> points, float[] width, int[] argb, float[] v, int profile, float bodyGlow) {
         int n = points.size();
         for (int i = 0; i < n; i++) {
             // piece i runs from the start of point i's span to its end: P0 -> M01, M(i-1,i) -> M(i,i+1), M(n-2,n-1) -> Pn-1
@@ -295,7 +295,7 @@ public final class SolarVisuals {
             float vTo = i == n - 1 ? v[i] : 0.5F * (v[i] + v[i + 1]);
             float alpha = Math.max(cFrom >>> 24, cTo >>> 24) / 255.0F;
             SolarTubes.curve(pose, from.x, from.y, from.z, knot.x, knot.y, knot.z, to.x, to.y, to.z, wFrom * 0.5F, wTo * 0.5F, cFrom, cTo,
-                    vFrom, vTo, profile, 0, cover * alpha, 0.0F, 0.0F);
+                    vFrom, vTo, profile, 0, bodyGlow * alpha, 0.0F, 0.0F);
         }
     }
 
@@ -456,9 +456,9 @@ public final class SolarVisuals {
         shaft(pose, vc, t, kx, ky, kz, ax, ay, az, widthT, widthS, alphaT, alphaS, rgbT, rgbS, u0, 0.0F);
     }
 
-    /** {@link #shaft} with a bright body {@code cover} (0..1) under the light when drawn in 3D. */
+    /** {@link #shaft} with a {@code bodyGlow} (0..1) lifting its dense light to white when drawn in 3D. */
     private static void shaft(PoseStack.Pose pose, VertexConsumer vc, Vec3 t, double kx, double ky, double kz, double ax, double ay,
-                              double az, float widthT, float widthS, float alphaT, float alphaS, int rgbT, int rgbS, int u0, float cover) {
+                              double az, float widthT, float widthS, float alphaT, float alphaS, int rgbT, int rgbS, int u0, float bodyGlow) {
         if (Math.max(alphaT, alphaS) <= 0.002F) {
             return;
         }
@@ -468,7 +468,7 @@ public final class SolarVisuals {
         double chord = Math.sqrt((ax - t.x) * (ax - t.x) + (ay - t.y) * (ay - t.y) + (az - t.z) * (az - t.z));
         if (SolarTubes.curve(pose, t.x, t.y, t.z, kx, ky, kz, ax, ay, az, widthT * 0.5F, widthS * 0.5F, FxDraw.argb(alphaT, rgbT),
                 FxDraw.argb(alphaS, rgbS), 0.0F, (float) (0.5 * (chord + toK + toA)),
-                u0 == 2 ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, SolarTubes.SKY | SolarTubes.NEAR_FADE, cover, 0.0F, 0.0F)) {
+                u0 == 2 ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, SolarTubes.SKY | SolarTubes.NEAR_FADE, bodyGlow, 0.0F, 0.0F)) {
             return;
         }
         double along = 0.0;
@@ -577,10 +577,9 @@ public final class SolarVisuals {
         tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
                 FxDraw.argb(0.22F * a * glare, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
 
-        // inner layers: they pile up into a white-hot core. Each lays a bright body of its own colour under its light
-        // (cover), golden outside, white-gold towards the core, so the pillar reads as thick and blinding over a bright
-        // sky as over dark terrain (light that only adds bleaches into the sky and thins out over the ground); three
-        // light streaks wind up the body, turning
+        // inner layers: they pile up into a white-hot core. Each glows towards white where it is dense (bodyGlow),
+        // golden outside and white-gold towards the core like the sun it falls from; soft light streaks wind up the
+        // body, turning
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
         int gold = FxDraw.argb(0.32F * a * glare, GOLD);
         int warm = FxDraw.argb(0.42F * a * glare, WARM);

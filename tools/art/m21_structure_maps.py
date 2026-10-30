@@ -4,9 +4,9 @@
     tones) - the targets of the exploration maps found in chests or bought from the Last Merchant (exploration/
     StructureMaps registers the decoration types; Lacuna's textures/map/decorations are stitched into the vanilla
     map_decorations atlas).
-  * map/wayfarers_chart_roll (16x16) - the held Wayfarer's Chart's two rolls (client/chart/ChartRolls): rows 0-7 the
-    rolled parchment (the vanilla map background's colours, with the outer wrap's edge as a darker line), rows 8-15
-    left the end of the roll seen from the side (wound layers around the rod), right the wood of the end knobs.
+  * map/wayfarers_chart_roll (64x6) - the held Wayfarer's Chart's two rolls (client/chart/ChartRolls), flat as on the
+    item icon and in its colours: a dark outline above and below, the light parchment band, its shaded ends and the
+    wooden knobs past the sheet's sides.
   * block/forgotten_obelisk_inscription - the Obelisk Inscription's glyphs cut into the Forgotten Land's grey ruin stone
     (the broken obelisks there are ruin stone, not polished blackstone).
 """
@@ -52,52 +52,28 @@ ANCIENT_CITY = [
 ]
 ANCIENT_CITY_PALETTE = {"a": OUTLINE, "b": c("#6A6A74"), "d": c("#34343C"), "e": c("#0E6670"), "f": c("#52EEF5")}
 
-# the vanilla map background's parchment and border colours
-PAPER = c("#D6BE96")
-PAPER_DARK = c("#99876C")
-PAPER_LINE = c("#B9A27E")
-PAPER_LIGHT = c("#E2CDA8")
-WOOD = [c("#4A3826"), c("#5A4630"), c("#6E5638"), c("#8A7352")]
+# the item icon's roll colours (art/m19_wayfarers_chart): outline, knob, shaded end, parchment band
+ROLL_OUTLINE = c("#5A4630")
+ROLL_KNOB = c("#8A7352")
+ROLL_END = c("#C9B48A")
+ROLL_BAND = c("#E4D2A4")
+ROLL_LIGHT = c("#EEDFB6")
+ROLL_SHADE = c("#D6C294")
 
 
 def chart_roll():
-    img = new(16, 16)
+    """The icon's roll at the held chart's scale: 64 texels along the sheet (knobs included), 6 across."""
+    w, h = 64, 6
+    img = new(w, h)
     px = img.load()
-    r = rng("wayfarers_chart_roll")
-    # rows 0-7: the rolled parchment; v runs around the roll, u along it (one texel per map pixel)
-    for y in range(8):
-        for x in range(16):
-            col = PAPER
-            roll = r.random()
-            if roll < 0.12:
-                col = PAPER_LIGHT
-            elif roll < 0.22:
-                col = lerp(PAPER, PAPER_LINE, 0.5)
-            px[x, y] = col
-    for x in range(16):
-        px[x, 2] = PAPER_LINE          # the outer wrap's edge, running along the roll
-        px[x, 3] = lerp(PAPER, PAPER_LIGHT, 0.6)
-    # rows 8-15, cols 0-7: the roll's end, wound layers around the wooden rod
-    for y in range(8):
-        for x in range(8):
-            d = ((x - 3.5) ** 2 + (y - 3.5) ** 2) ** 0.5
-            if d > 4.0:
-                col = PAPER_DARK
-            elif d < 1.3:
-                col = WOOD[1]
-            elif d < 1.9:
-                col = WOOD[0]
-            else:
-                col = PAPER if int(d * 2) % 2 == 0 else PAPER_LINE
-            px[x, 8 + y] = col
-    # rows 8-15, cols 8-15: the knobs' wood, the grain running along the axis (u)
-    for y in range(8):
-        base = WOOD[1 + (y * 5 + 2) % 3]
-        for x in range(8):
-            col = base
-            if r.random() < 0.18:
-                col = WOOD[0]
-            px[8 + x, 8 + y] = col
+    for x in range(3, w - 3):
+        px[x, 0] = ROLL_OUTLINE
+        px[x, h - 1] = ROLL_OUTLINE
+    for y in range(1, h - 1):
+        band = ROLL_LIGHT if y == 1 else ROLL_SHADE if y == h - 2 else ROLL_BAND
+        for x in range(w):
+            end = min(x, w - 1 - x)
+            px[x, y] = ROLL_OUTLINE if end == 0 else ROLL_KNOB if end < 3 else ROLL_END if end < 5 else band
     return img
 
 

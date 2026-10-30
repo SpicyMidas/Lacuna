@@ -12,18 +12,18 @@
 // the chord where they are (the shaft melts into the ground it enters); whatever lies BEHIND the axis (sky, terrain,
 // trees or clouds beyond the shaft, even inside its wide outer layers) never thins it, so a shaft looks equally wide and
 // strong against the sky and against the landscape.
-// Output is premultiplied for ONE, ONE_MINUS_SRC_ALPHA: the light is a luminous medium (it covers what is behind it as
-// much as it shines, in its own colour at full brightness: it never greys anything, and it dims with distance instead
-// of taking the fog colour), so its width and strength do not depend on the background; TubeFx.x > 0 also lays a bright, opaque-ish
-// body of its own colour under that light (bright gold or white, never darker than a bright sky), so the shaft reads
-// with the same body over the blue sky and over dark terrain.
+// Output is light, exposed like the sun's own disc and screened over the scene (ONE, ONE_MINUS_SRC_COLOR): bright light
+// burns out to white-gold and faint light stays a golden glow, and the shaft neither blooms into a wide white blur
+// over a bright sky (a plain addition saturates there) nor greys or tints anything. It dims with distance instead of
+// taking the fog colour. TubeFx.x > 0 lifts the dense body of the light towards white, so the shaft is white-hot like
+// the sun it falls from.
 // Same layers, colours and motion as solar_column.fsh / beam_volume.fsh: TubeMode.x 0 = the pillar (white-hot core,
 // striated golden body, bands pouring down, heat shimmer, soft halo), 1 = the soft hazy sunbeam, 2 = the energy beam of
 // the Divine Magnifying Glass (flowing turbulence, ripple rings, hot core). TubeMode.y flags: 2 = sunlight from the
 // sky's sun disc (no distance dimming), 4 = fades out where it passes close to the eye, 8 = fades out only right at the
 // eye (within about two blocks).
-// TubeFx: x = body cover (0..1, the body's opacity where the light is densest; independent of the light's own
-// intensity), y = rotating light streaks winding up the shaft, z = rising embers (both scaled by the intensity).
+// TubeFx: x = body glow (0..1, how much the light's dense body is lifted towards white; independent of the light's own
+// intensity), y = soft light streaks winding up the shaft, z = rising embers (both scaled by the intensity).
 
 uniform vec4 ColorModulator;
 uniform float GameTime;
@@ -46,14 +46,8 @@ const float PI = 3.14159265;
 const float TAU = 6.2831853;
 /** Soft saturation of the light seen along a shaft: at most this many times its brightness seen across it. */
 const float GLOW_LIMIT = 2.5;
-/**
- * How quickly the light hides what is behind it (see main: the light is a luminous medium, not a pure addition). A
- * purely additive glow is only as visible as the background lets it be: over a bright sky its faint outer layers push
- * the sky to white and the shaft looks wider and stronger, over dark terrain the same layers barely show and it looks
- * thin and weak. Covering the background in proportion to the light (premultiplied, in the light's own colour at full
- * brightness, so it never greys anything) makes the shaft the same width and strength over sky, terrain and night.
- */
-const float COVER_K = 2.5;
+/** Exposure of the light (1 - exp(-light * EXPOSURE), per channel): faint light unchanged, bright light burns to white. */
+const float EXPOSURE = 1.15;
 
 float hash(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));
@@ -121,10 +115,6 @@ void clip_plane(vec3 o, vec3 n, vec3 dir, inout float t0, inout float t1) {
     } else {
         t1 = min(t1, tc);
     }
-}
-
-vec3 bright(vec3 c) {
-    return c / max(max(c.r, c.g), max(c.b, 1.0e-3));
 }
 
 void main() {
@@ -272,7 +262,7 @@ void main() {
 
         float core = glow(path(70.0, b2n, ua, ub, dn)) * (0.92 + 0.08 * surge);
         float mid = glow(path(7.5, b2n, ua, ub, dn));
-        float bodyLight = mid * (0.5 + 0.8 * streak) * band;
+        float bodyLight = mid * (0.78 + 0.4 * streak) * band;
         float halo = glow(path(2.2, b2n, ua, ub, dn)) * (0.38 + 0.35 * fine) * (0.85 + 0.15 * band);
         col = white * core * 1.75 + mix(tint, white, 0.3) * bodyLight * 1.05 + tint * halo * 0.5;
         body = mid * (0.8 + 0.25 * band) + core;
@@ -312,7 +302,7 @@ void main() {
                 if (layer == 0) {
                     // three slender helical streaks turning around the shaft and climbing it
                     float ph = ang * 3.0 + hh * (TAU / 26.0) - t * 2.6;
-                    float s = pow(0.5 + 0.5 * cos(ph), 22.0);
+                    float s = pow(0.5 + 0.5 * cos(ph), 9.0);
                     s *= 0.55 + 0.45 * sin(hh * 0.06 - t * 1.7 + ang);
                     streaks += s * weight;
                 } else {
@@ -337,26 +327,17 @@ void main() {
         streaks *= TubeFx.y;
         embers *= TubeFx.z;
     }
-    col += mix(tint, white, 0.65) * streaks * 1.6 + vec3(1.0, 0.72, 0.32) * embers * 2.2;
+    col += mix(tint, white, 0.75) * streaks * 0.7 + vec3(1.0, 0.72, 0.32) * embers * 2.2;
 
     // a soft rim (no outline where the round volume meets the sky)
     float rim = 1.0 - smoothstep(0.8, 1.0, x);
     intensity *= rim;
-    vec3 light = col * intensity * ColorModulator.rgb;
-    // the light as a luminous medium: it covers what is behind it as much as it shines (alpha from its brightness) and
-    // shows its own colour at full brightness there, so the same shaft reads the same over any background; where it is
-    // brighter still (the white-hot core) the extra adds on top. The faintest outer haze stays a plain addition: covered,
-    // it would wash a night sky in a dim tint (or grey a bright one) across the whole wide halo.
-    float lum = max(max(light.r, light.g), light.b);
-    float shine = clamp((1.0 - exp(-COVER_K * lum)) * smoothstep(0.04, 0.35, lum), 0.0, 0.985);
-    vec3 emit = max(light / max(lum, 1.0e-4) * shine, light);
-    // the body: a bright cover of the light's own colour (white towards the core), as opaque as the light is dense
-    float cover = 0.0;
-    vec3 paint = vec3(0.0);
+    vec3 light = col * intensity;
+    // the body: where the light is dense it glows towards white (white-gold at the core), like the sun's disc
     if (TubeFx.x > 0.001) {
-        cover = clamp(TubeFx.x * fade * rim * (1.0 - exp(-1.6 * body)), 0.0, 0.97);
-        paint = bright(mix(tint, white, clamp(0.25 + 0.7 * hot, 0.0, 1.0))) * ColorModulator.rgb * cover;
+        light += mix(tint, white, clamp(0.45 + 0.55 * hot, 0.0, 1.0)) * TubeFx.x * fade * rim * (1.0 - exp(-1.2 * body)) * 0.8;
     }
-    // premultiplied: the light over the body over the scene
-    fragColor = vec4(emit + (1.0 - shine) * paint, 1.0 - (1.0 - shine) * (1.0 - cover));
+    // exposed like sunlight (bright light burns out to white, faint light stays golden), then screened over the scene
+    vec3 lit = (1.0 - exp(-light * EXPOSURE)) * ColorModulator.rgb;
+    fragColor = vec4(lit, 0.0);
 }
