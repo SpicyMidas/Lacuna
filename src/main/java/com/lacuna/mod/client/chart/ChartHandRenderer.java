@@ -17,7 +17,8 @@ import net.neoforged.neoforge.client.event.RenderHandEvent;
 /**
  * First person: the Wayfarer's Chart is held exactly like a vanilla filled map (both hands when it is in the main hand
  * and the off hand is empty, otherwise one-handed beside the arm), with {@link ChartPainter} drawing the chart where
- * vanilla draws the map. The transforms are vanilla's {@code ItemInHandRenderer} map ones (private there).
+ * vanilla draws the map, and {@link ChartRolls} rolling it up along the top and bottom edges like the item icon. The
+ * transforms are vanilla's {@code ItemInHandRenderer} map ones (private there).
  */
 final class ChartHandRenderer {
     static final String FEATURE = "wayfarers_chart_hand";
@@ -107,6 +108,8 @@ final class ChartHandRenderer {
         pose.translate(-0.5F, -0.5F, 0.0F);
         pose.scale(0.0078125F, 0.0078125F, 0.0078125F);
         ChartPainter.paint(pose, buffers, light, player, partialTick);
+        // rolled up at the top and bottom, like the item icon (the worn left and right edges stay)
+        ChartRolls.render(pose, buffers, light);
     }
 
     /** ItemInHandRenderer#calculateMapTilt: the chart is raised into view as the player looks down. */
