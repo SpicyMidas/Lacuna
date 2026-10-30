@@ -201,6 +201,11 @@ public final class ModItems {
     public static final DeferredItem<com.lacuna.mod.guide.AlmanacItem> ALMANAC = item("almanac",
             com.lacuna.mod.guide.AlmanacItem::new, new Item.Properties().stacksTo(1));
 
+    // ------------------------------------------------------------------ Illusioner (vanilla's unused illager, illusioner/**)
+    public static final DeferredItem<DeferredSpawnEggItem> ILLUSIONER_SPAWN_EGG = item("illusioner_spawn_egg",
+            p -> new DeferredSpawnEggItem(() -> net.minecraft.world.entity.EntityType.ILLUSIONER, 0x272D55, 0xE8A93A, p),
+            new Item.Properties());
+
     private ModItems() {}
 
     /**

@@ -49,7 +49,7 @@ public final class ModCreativeTabs {
             ModItems.CHRONAL_SHARD, ModItems.ECHO_FRAGMENT, ModItems.EMBER, ModItems.CRYSTAL_WILLOW_SHARD, ModItems.SILK_DUST, ModItems.CLOCKWORK_GEAR,
             // villages and creatures
             ModItems.VILLAGE_COIN, ModBlocks.VILLAGE_LEDGER, ModItems.GUILD_CONTRACT, ModItems.REPAIR_KIT, ModItems.CLOCKWORK_DECOY,
-            ModItems.LANTERN_MOTH_SPAWN_EGG, ModItems.LAST_MERCHANT_SPAWN_EGG);
+            ModItems.LANTERN_MOTH_SPAWN_EGG, ModItems.LAST_MERCHANT_SPAWN_EGG, ModItems.ILLUSIONER_SPAWN_EGG);
 
     /** Structure mechanics, obtainable only with commands: never shown in the tab. */
     private static final List<Supplier<? extends ItemLike>> TECHNICAL = List.of(

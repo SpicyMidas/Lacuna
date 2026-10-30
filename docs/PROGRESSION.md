@@ -139,6 +139,7 @@ consumables, and the **Wayfarer's Chart** is a navigation tool everyone should b
 | Crystal Willow Shard | Crystal Willow leaves 5 % |
 | Silk Dust | Lantern Moths 0-2 (+Looting) |
 | Clockwork Gear | husks 0-2, pillagers 0-1 (+Looting) |
+| Totem of Confusion | crafted (above); Illusioners 25 % (player kill, +5 % per Looting level) — later raid waves on normal/hard, dark forests at night (rare), about 3 in 10 woodland mansion mages |
 | Exilite Debris | hidden veins below Y −8 in the Forgotten Land (diamond pickaxe); exilite shards also 1.2 % in ruin caches |
 | Village Coin | Coiner trades (ore → coins), mint strongboxes, guild contracts |
 | Guild Contract | a guild board, for members |

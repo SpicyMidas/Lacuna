@@ -13,7 +13,8 @@
     "lacuna:pillager_outpost_relics",
     "lacuna:woodland_mansion_relics",
     "lacuna:desert_pyramid_relics",
-    "lacuna:end_city_treasure_relics"
+    "lacuna:end_city_treasure_relics",
+    "lacuna:illusioner_totem_drops"
   ],
   "replace": false
 }
