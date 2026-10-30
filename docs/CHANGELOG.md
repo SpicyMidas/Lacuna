@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-beta.4 — beta feedback
+
+<!-- beta4 -->
+- **Sun's Fury has its full width again:** its broad golden body (about 20 blocks) glows as strongly as the white-hot
+  core, over the day sky as over terrain and at night. The outer layers no longer ease off by day.
+
 ## 1.0.0-beta.3 — beta feedback
 
 <!-- beta3 -->

@@ -558,16 +558,14 @@ public final class SolarVisuals {
         Vec3 bottom = ctx.rel(base.add(0, -6.0, 0));
         Vec3 top = ctx.rel(new Vec3(base.x, topY, base.z));
 
-        // the pillar, outer layers: a faint amber haze and a golden halo, additive like all the light (while fading
-        // they keep their colour longer than their width: the pillar thins into a golden thread)
+        // the pillar, outer layers: a faint amber haze and a golden halo (while fading they keep their colour longer than
+        // their width: the pillar thins into a golden thread)
         float day = daylight(ctx.level(), pt);
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
-        // (nested 3D shells, SolarTubes: seen from any side, from below or from inside, they keep their thickness)
-        // additive light reads stronger against the night sky than on a bright day sky (where too much of it only
-        // bleaches into a wide white slab): the outer layers ease off by day
-        float glare = 1.0F - 0.45F * day;
-        int haze = FxDraw.argb(0.08F * soft * glare, AMBER);
-        int halo = FxDraw.argb(0.16F * soft * glare, GOLD);
+        // (nested 3D shells, SolarTubes: seen from any side, from below or from inside, they keep their thickness; their
+        // light is screened over the scene, so it never bleaches the day sky into a white slab and needs no easing by day)
+        int haze = FxDraw.argb(0.1F * soft, AMBER);
+        int halo = FxDraw.argb(0.24F * soft, GOLD);
         float hazeWidth = 64.0F * swell * breathe;
         float haloWidth = 30.0F * swell * breathe;
         tube(pose, over, bottom, top, hazeWidth, hazeWidth, haze, haze, -6.0F, height, false);
@@ -575,18 +573,18 @@ public final class SolarVisuals {
         tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false, 0.0F, 0.0F, 4.0F);
         // a bright splash where it meets the ground: a cone of light widening into the ground
         tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
-                FxDraw.argb(0.22F * a * glare, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
+                FxDraw.argb(0.22F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
 
         // inner layers: they pile up into a white-hot core. Each glows towards white where it is dense (bodyGlow),
-        // golden outside and white-gold towards the core like the sun it falls from; soft light streaks wind up the
-        // body, turning
+        // golden outside and white-gold towards the core like the sun it falls from: a broad golden body around 20
+        // blocks wide, as bright over the day sky as over terrain; soft light streaks wind up the body, turning
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
-        int gold = FxDraw.argb(0.32F * a * glare, GOLD);
-        int warm = FxDraw.argb(0.42F * a * glare, WARM);
+        int gold = FxDraw.argb(0.55F * a, GOLD);
+        int warm = FxDraw.argb(0.6F * a, WARM);
         int pale = FxDraw.argb(0.7F * a * (1.0F - 0.25F * day), PALE);
         int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
-        tube(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, gold, gold, -6.0F, height, true, 0.3F * a, 2.2F, 0.0F);
-        tube(pose, beam, bottom, top, 13.0F * swell, 13.0F * swell, warm, warm, -6.0F, height, false, 0.5F * a, 0.0F, 0.0F);
+        tube(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, gold, gold, -6.0F, height, true, 0.75F * a, 2.2F, 0.0F);
+        tube(pose, beam, bottom, top, 13.0F * swell, 13.0F * swell, warm, warm, -6.0F, height, false, 0.85F * a, 0.0F, 0.0F);
         tube(pose, beam, bottom, top, 6.5F * swell, 6.5F * swell, pale, pale, -6.0F, height, false, 0.7F * a, 0.0F, 0.0F);
         tube(pose, beam, bottom, top, 3.2F * swell, 3.2F * swell, white, white, -6.0F, height, false, 0.95F * a, 0.0F, 0.0F);
 
