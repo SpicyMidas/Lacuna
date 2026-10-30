@@ -152,8 +152,17 @@ public final class SolarVisuals {
      */
     static void tube(PoseStack.Pose pose, VertexConsumer fallback, Vec3 a, Vec3 b, float widthA, float widthB, int argbA, int argbB,
                       float vA, float vB, boolean sunbeam) {
+        tube(pose, fallback, a, b, widthA, widthB, argbA, argbB, vA, vB, sunbeam, 0.0F, 0.0F, 0.0F);
+    }
+
+    /**
+     * {@link #tube} with the 3D extras ({@link SolarTubes}): a bright body {@code cover} (0..1) under the light, rotating
+     * light {@code streaks} and rising {@code embers} (the flat fallback has none of them).
+     */
+    static void tube(PoseStack.Pose pose, VertexConsumer fallback, Vec3 a, Vec3 b, float widthA, float widthB, int argbA, int argbB,
+                     float vA, float vB, boolean sunbeam, float cover, float streaks, float embers) {
         if (SolarTubes.straight(pose, a, b, widthA * 0.5F, widthB * 0.5F, argbA, argbB, vA, vB,
-                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0)) {
+                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0, cover, streaks, embers)) {
             return;
         }
         if (sunbeam) {
@@ -194,7 +203,7 @@ public final class SolarVisuals {
         int n = points.size();
         float t = ctx.time(spear.tickCount);
         if (n >= 2) {
-            // one continuous strip per layer from the butt (index 0) to the tail: shared edges, no seams
+            // each layer runs from the butt (index 0) to the tail in one piece: no seams
             List<Vec3> rel = new ArrayList<>(n);
             float[] v = new float[n];
             float[] k = new float[n];
@@ -205,31 +214,53 @@ public final class SolarVisuals {
             }
             float[] w = new float[n];
             int[] c = new int[n];
-            VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
-            // the wide glow swells in just behind the spear instead of starting with a hard edge
-            for (int i = 0; i < n; i++) {
-                float wk = wake(k[i]);
-                w[i] = 2.2F * wk + 0.1F;
-                c[i] = FxDraw.argb(0.3F * wk * Math.min(1.0F, 1.6F * k[i]), AMBER);
+            if (SolarTubes.room(3 * n)) {
+                // a comet of light as 3D volumes along a smooth curve through the trail: a wide soft glow, the golden
+                // body with its white-hot core, and a thin white thread with a bright body of its own
+                for (int i = 0; i < n; i++) {
+                    float wk = wake(k[i]);
+                    w[i] = 2.6F * wk + 0.1F;
+                    c[i] = FxDraw.argb(0.62F * wk * Math.min(1.0F, 1.6F * k[i]), SunLight.mix(AMBER, GOLD, k[i]));
+                }
+                trail(pose, rel, w, c, v, SolarTubes.SUNBEAM, 0.0F);
+                for (int i = 0; i < n; i++) {
+                    w[i] = 1.1F * k[i] + 0.05F;
+                    c[i] = FxDraw.argb(0.85F * k[i] * k[i], GOLD);
+                }
+                trail(pose, rel, w, c, v, SolarTubes.PILLAR, 0.0F);
+                for (int i = 0; i < n; i++) {
+                    w[i] = 0.36F * k[i] + 0.02F;
+                    c[i] = FxDraw.argb(k[i] * k[i], WHITE);
+                }
+                trail(pose, rel, w, c, v, SolarTubes.PILLAR, 0.6F);
+            } else {
+                // without the tube shader: one continuous camera-facing strip per layer
+                VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
+                // the wide glow swells in just behind the spear instead of starting with a hard edge
+                for (int i = 0; i < n; i++) {
+                    float wk = wake(k[i]);
+                    w[i] = 2.2F * wk + 0.1F;
+                    c[i] = FxDraw.argb(0.3F * wk * Math.min(1.0F, 1.6F * k[i]), AMBER);
+                }
+                strip(pose, over, rel, w, c, v, 0);
+                VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
+                for (int i = 0; i < n; i++) {
+                    float wk = wake(k[i]);
+                    w[i] = 2.6F * wk + 0.1F;
+                    c[i] = FxDraw.argb(0.5F * wk * Math.min(1.0F, 1.6F * k[i]), GOLD);
+                }
+                strip(pose, beam, rel, w, c, v, 2);
+                for (int i = 0; i < n; i++) {
+                    w[i] = 1.1F * k[i] + 0.05F;
+                    c[i] = FxDraw.argb(0.85F * k[i] * k[i], GOLD);
+                }
+                strip(pose, beam, rel, w, c, v, 0);
+                for (int i = 0; i < n; i++) {
+                    w[i] = 0.36F * k[i] + 0.02F;
+                    c[i] = FxDraw.argb(k[i] * k[i], WHITE);
+                }
+                strip(pose, beam, rel, w, c, v, 0);
             }
-            strip(pose, over, rel, w, c, v, 0);
-            VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
-            for (int i = 0; i < n; i++) {
-                float wk = wake(k[i]);
-                w[i] = 2.6F * wk + 0.1F;
-                c[i] = FxDraw.argb(0.5F * wk * Math.min(1.0F, 1.6F * k[i]), GOLD);
-            }
-            strip(pose, beam, rel, w, c, v, 2);
-            for (int i = 0; i < n; i++) {
-                w[i] = 1.1F * k[i] + 0.05F;
-                c[i] = FxDraw.argb(0.85F * k[i] * k[i], GOLD);
-            }
-            strip(pose, beam, rel, w, c, v, 0);
-            for (int i = 0; i < n; i++) {
-                w[i] = 0.36F * k[i] + 0.02F;
-                c[i] = FxDraw.argb(k[i] * k[i], WHITE);
-            }
-            strip(pose, beam, rel, w, c, v, 0);
         }
         // the head of the spear blazes like a small sun
         Vec3 tip = ctx.rel(head.add(dir.scale(0.75)));
@@ -237,6 +268,44 @@ public final class SolarVisuals {
         FxDraw.billboard(pose, flare, ctx.camera(), tip, 1.15F + 0.12F * Mth.sin(t * 0.9F), t * 0.04F, FxDraw.argb(0.85F, GOLD));
         VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
         FxDraw.billboard(pose, glow, ctx.camera(), tip, 0.4F, -t * 0.05F, FxDraw.argb(0.9F, PALE));
+    }
+
+    /**
+     * One layer of the flight trail as 3D light ({@link SolarTubes}): a quadratic B-spline through the camera-relative
+     * {@code points} (straight halves at both ends, curved pieces from midpoint to midpoint around every inner point),
+     * so the pieces meet with one tangent and the light flows through the bends without seams. Width, colour and v are
+     * those of the points, averaged at the midpoints; the body {@code cover} follows the layer's alpha.
+     */
+    private static void trail(PoseStack.Pose pose, List<Vec3> points, float[] width, int[] argb, float[] v, int profile, float cover) {
+        int n = points.size();
+        for (int i = 0; i < n; i++) {
+            // piece i runs from the start of point i's span to its end: P0 -> M01, M(i-1,i) -> M(i,i+1), M(n-2,n-1) -> Pn-1
+            Vec3 p = points.get(i);
+            Vec3 from = i == 0 ? p : p.add(points.get(i - 1)).scale(0.5);
+            Vec3 to = i == n - 1 ? p : p.add(points.get(i + 1)).scale(0.5);
+            if (from.distanceToSqr(to) < 1.0E-6) {
+                continue;
+            }
+            Vec3 knot = i == 0 || i == n - 1 ? from.add(to).scale(0.5) : p;
+            float wFrom = i == 0 ? width[0] : 0.5F * (width[i - 1] + width[i]);
+            float wTo = i == n - 1 ? width[i] : 0.5F * (width[i] + width[i + 1]);
+            int cFrom = i == 0 ? argb[0] : mean(argb[i - 1], argb[i]);
+            int cTo = i == n - 1 ? argb[i] : mean(argb[i], argb[i + 1]);
+            float vFrom = i == 0 ? v[0] : 0.5F * (v[i - 1] + v[i]);
+            float vTo = i == n - 1 ? v[i] : 0.5F * (v[i] + v[i + 1]);
+            float alpha = Math.max(cFrom >>> 24, cTo >>> 24) / 255.0F;
+            SolarTubes.curve(pose, from.x, from.y, from.z, knot.x, knot.y, knot.z, to.x, to.y, to.z, wFrom * 0.5F, wTo * 0.5F, cFrom, cTo,
+                    vFrom, vTo, profile, 0, cover * alpha, 0.0F, 0.0F);
+        }
+    }
+
+    /** The mean of two ARGB colours, channel by channel (alpha included). */
+    private static int mean(int a, int b) {
+        int out = 0;
+        for (int shift = 0; shift < 32; shift += 8) {
+            out |= ((((a >>> shift) & 0xFF) + ((b >>> shift) & 0xFF)) / 2) << shift;
+        }
+        return out;
     }
 
     /** Trail glow profile along the trail ({@code t} = 1 at the spear, 0 at the tail): swells in, then tapers away. */
@@ -370,7 +439,7 @@ public final class SolarVisuals {
             float a = focus * sun;
             shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, 3.5F * focus, (float) (far * 0.02) * focus, 0.2F * a, 0.2F * a, gold, gold, 0);
             shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 1.4F * focus * quiver, 1.4F * focus * quiver, 0.9F * a, 0.9F * a, pale, pale, 0);
-            shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 0.45F * focus, 0.45F * focus, a, a, white, white, 0);
+            shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 0.45F * focus, 0.45F * focus, a, a, white, white, 0, 0.6F * a);
         }
     }
 
@@ -384,6 +453,12 @@ public final class SolarVisuals {
      */
     private static void shaft(PoseStack.Pose pose, VertexConsumer vc, Vec3 t, double kx, double ky, double kz, double ax, double ay,
                               double az, float widthT, float widthS, float alphaT, float alphaS, int rgbT, int rgbS, int u0) {
+        shaft(pose, vc, t, kx, ky, kz, ax, ay, az, widthT, widthS, alphaT, alphaS, rgbT, rgbS, u0, 0.0F);
+    }
+
+    /** {@link #shaft} with a bright body {@code cover} (0..1) under the light when drawn in 3D. */
+    private static void shaft(PoseStack.Pose pose, VertexConsumer vc, Vec3 t, double kx, double ky, double kz, double ax, double ay,
+                              double az, float widthT, float widthS, float alphaT, float alphaS, int rgbT, int rgbS, int u0, float cover) {
         if (Math.max(alphaT, alphaS) <= 0.002F) {
             return;
         }
@@ -393,7 +468,7 @@ public final class SolarVisuals {
         double chord = Math.sqrt((ax - t.x) * (ax - t.x) + (ay - t.y) * (ay - t.y) + (az - t.z) * (az - t.z));
         if (SolarTubes.curve(pose, t.x, t.y, t.z, kx, ky, kz, ax, ay, az, widthT * 0.5F, widthS * 0.5F, FxDraw.argb(alphaT, rgbT),
                 FxDraw.argb(alphaS, rgbS), 0.0F, (float) (0.5 * (chord + toK + toA)),
-                u0 == 2 ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, SolarTubes.SKY | SolarTubes.NEAR_FADE)) {
+                u0 == 2 ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, SolarTubes.SKY | SolarTubes.NEAR_FADE, cover, 0.0F, 0.0F)) {
             return;
         }
         double along = 0.0;
@@ -496,21 +571,25 @@ public final class SolarVisuals {
         float hazeWidth = 64.0F * swell * breathe;
         float haloWidth = 30.0F * swell * breathe;
         tube(pose, over, bottom, top, hazeWidth, hazeWidth, haze, haze, -6.0F, height, false);
-        tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false);
+        // embers rising through the halo
+        tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false, 0.0F, 0.0F, 4.0F);
         // a bright splash where it meets the ground: a cone of light widening into the ground
         tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
                 FxDraw.argb(0.22F * a * glare, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
 
-        // inner layers: they pile up into a white-hot core
+        // inner layers: they pile up into a white-hot core. Each lays a bright body of its own colour under its light
+        // (cover), golden outside, white-gold towards the core, so the pillar reads as thick and blinding over a bright
+        // sky as over dark terrain (light that only adds bleaches into the sky and thins out over the ground); three
+        // light streaks wind up the body, turning
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
         int gold = FxDraw.argb(0.32F * a * glare, GOLD);
         int warm = FxDraw.argb(0.42F * a * glare, WARM);
         int pale = FxDraw.argb(0.7F * a * (1.0F - 0.25F * day), PALE);
         int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
-        tube(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, gold, gold, -6.0F, height, true);
-        tube(pose, beam, bottom, top, 13.0F * swell, 13.0F * swell, warm, warm, -6.0F, height, false);
-        tube(pose, beam, bottom, top, 6.5F * swell, 6.5F * swell, pale, pale, -6.0F, height, false);
-        tube(pose, beam, bottom, top, 2.8F * swell, 2.8F * swell, white, white, -6.0F, height, false);
+        tube(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, gold, gold, -6.0F, height, true, 0.3F * a, 2.2F, 0.0F);
+        tube(pose, beam, bottom, top, 13.0F * swell, 13.0F * swell, warm, warm, -6.0F, height, false, 0.5F * a, 0.0F, 0.0F);
+        tube(pose, beam, bottom, top, 6.5F * swell, 6.5F * swell, pale, pale, -6.0F, height, false, 0.7F * a, 0.0F, 0.0F);
+        tube(pose, beam, bottom, top, 3.2F * swell, 3.2F * swell, white, white, -6.0F, height, false, 0.95F * a, 0.0F, 0.0F);
 
         // rings of light pouring down the pillar
         VertexConsumer marks = ctx.buffers().getBuffer(SolarRenderTypes.ring());

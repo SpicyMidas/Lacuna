@@ -28,18 +28,23 @@ import org.lwjgl.opengl.GL11;
  * shaft: the {@code lacuna:solar_tube} vertex shader bends and scales it onto the shaft's axis (a quadratic Bezier
  * curve, straight for the pillar) and radii, and the fragment shader integrates the light along each view ray through
  * the round volume against the scene depth ({@link SolarDepth}; at most one depth copy per frame, none under
- * Fabulous). Only back faces are drawn, so every pixel of the tube's footprint is shaded exactly once whether the eye
- * is outside the shaft or inside it (looking straight up the pillar from within). Additive, no depth test, no depth
- * writes, after the level ({@link SolarVolume#drawLate}).
+ * Fabulous): only what stands in front of the light hides it, so a shaft looks the same against the sky and against
+ * the landscape. Only back faces are drawn, so every pixel of the tube's footprint is shaded exactly once whether the
+ * eye is outside the shaft or inside it (looking straight up the pillar from within). No depth test, no depth writes,
+ * after the level ({@link SolarVolume#drawLate}). Premultiplied blend ({@code ONE, ONE_MINUS_SRC_ALPHA}, destination
+ * alpha kept): the light itself adds; a tube with a body {@code cover} also lays a bright body of its own colour
+ * under its light (it reads the same over the blue sky and over dark terrain), and {@code streaks} / {@code embers}
+ * add rotating helical light streaks and rising embers inside the volume.
  * <p>
  * Shafts are queued during the after-particles pass ({@link #straight}, {@link #curve}; fixed arrays, no allocation)
  * and drawn in the late pass. When the shader did not load (or the queue is full) the callers fall back to their
  * camera-facing ribbons.
  */
 final class SolarTubes {
-    /** Profiles ({@code TubeMode.x}): the pillar's core / body / halo, or the soft hazy sunbeam. */
+    /** Profiles ({@code TubeMode.x}): the pillar's core / body / halo, the soft hazy sunbeam, the glass' energy beam. */
     static final int PILLAR = 0;
     static final int SUNBEAM = 1;
+    static final int BEAM = 2;
     /** Flags ({@code TubeMode.y}): sunlight from the sky's sun disc (no distance dimming). */
     static final int SKY = 2;
     /** Flag: fades out where it passes within a few blocks of the eye (a shaft right past the eyes never fills the screen). */
@@ -47,8 +52,8 @@ final class SolarTubes {
 
     private static final int SIDES = 16;
     private static final int RINGS = 48;
-    private static final int MAX = 96;
-    private static final int STRIDE = 23;
+    private static final int MAX = 192;
+    private static final int STRIDE = 26;
     private static final float[] DATA = new float[MAX * STRIDE];
     private static int count;
 
@@ -70,6 +75,11 @@ final class SolarTubes {
         }
     }
 
+    /** True when {@code tubes} more shafts can be drawn in 3D this frame (shader loaded, no shader pack, room left). */
+    static boolean room(int tubes) {
+        return ShaderPackCompat.usable(shader) && count + tubes <= MAX;
+    }
+
     static boolean pending() {
         return count > 0;
     }
@@ -81,8 +91,14 @@ final class SolarTubes {
     /** A straight shaft from {@code a} to {@code b} (pose space), radius {@code ra} at {@code a} and {@code rb} at {@code b}. */
     static boolean straight(PoseStack.Pose pose, Vec3 a, Vec3 b, float ra, float rb, int argbA, int argbB, float va, float vb, int profile,
                             int flags) {
+        return straight(pose, a, b, ra, rb, argbA, argbB, va, vb, profile, flags, 0.0F, 0.0F, 0.0F);
+    }
+
+    /** {@link #straight} with a body cover (0..1), rotating light streaks and rising embers (strengths, 0 = none). */
+    static boolean straight(PoseStack.Pose pose, Vec3 a, Vec3 b, float ra, float rb, int argbA, int argbB, float va, float vb, int profile,
+                            int flags, float cover, float streaks, float embers) {
         return curve(pose, a.x, a.y, a.z, (a.x + b.x) * 0.5, (a.y + b.y) * 0.5, (a.z + b.z) * 0.5, b.x, b.y, b.z, ra, rb, argbA, argbB, va,
-                vb, profile, flags);
+                vb, profile, flags, cover, streaks, embers);
     }
 
     /**
@@ -92,6 +108,13 @@ final class SolarTubes {
      */
     static boolean curve(PoseStack.Pose pose, double ax, double ay, double az, double kx, double ky, double kz, double bx, double by,
                          double bz, float ra, float rb, int argbA, int argbB, float va, float vb, int profile, int flags) {
+        return curve(pose, ax, ay, az, kx, ky, kz, bx, by, bz, ra, rb, argbA, argbB, va, vb, profile, flags, 0.0F, 0.0F, 0.0F);
+    }
+
+    /** {@link #curve} with a body cover (0..1), rotating light streaks and rising embers (strengths, 0 = none). */
+    static boolean curve(PoseStack.Pose pose, double ax, double ay, double az, double kx, double ky, double kz, double bx, double by,
+                         double bz, float ra, float rb, int argbA, int argbB, float va, float vb, int profile, int flags, float cover,
+                         float streaks, float embers) {
         if (!ShaderPackCompat.usable(shader) || count >= MAX) {
             return false;
         }
@@ -111,6 +134,9 @@ final class SolarTubes {
         DATA[o + 20] = vb;
         DATA[o + 21] = profile;
         DATA[o + 22] = flags;
+        DATA[o + 23] = cover;
+        DATA[o + 24] = streaks;
+        DATA[o + 25] = embers;
         count++;
         return true;
     }
@@ -140,7 +166,9 @@ final class SolarTubes {
         SolarDepth.bind(s);
         Matrix4f projection = RenderSystem.getProjectionMatrix();
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+        // premultiplied: light adds (alpha 0), a body cover lays its colour over what is behind; destination alpha kept
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
         RenderSystem.depthMask(false);
         RenderSystem.disableDepthTest();
         RenderSystem.enableCull();
@@ -157,6 +185,7 @@ final class SolarTubes {
                 s.safeGetUniform("TubeColorB").set(DATA[o + 15], DATA[o + 16], DATA[o + 17], DATA[o + 18]);
                 s.safeGetUniform("TubeV").set(DATA[o + 19], DATA[o + 20]);
                 s.safeGetUniform("TubeMode").set(DATA[o + 21], DATA[o + 22]);
+                s.safeGetUniform("TubeFx").set(DATA[o + 23], DATA[o + 24], DATA[o + 25]);
                 tube.drawWithShader(modelView, projection, s);
             }
         } finally {

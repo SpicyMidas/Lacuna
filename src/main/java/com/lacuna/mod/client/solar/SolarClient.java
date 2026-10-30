@@ -28,6 +28,7 @@ public final class SolarClient {
         modBus.addListener(SolarRenderTypes::onRegisterShaders);
         modBus.addListener(SolarVolume::onRegisterShaders);
         modBus.addListener(SolarTubes::onRegisterShaders);
+        modBus.addListener(MagnifierLens::onAddLayers);
         modBus.addListener(SolarClient::onClientSetup);
         forgeBus.addListener(SolarClient::onClientTick);
         forgeBus.addListener(SolarClient::onRenderLevel);
@@ -100,5 +101,7 @@ public final class SolarClient {
     private static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         SolarVisuals.clear();
         SolarSky.reset();
+        MagnifierScorch.clear();
+        MagnifierLens.clear();
     }
 }

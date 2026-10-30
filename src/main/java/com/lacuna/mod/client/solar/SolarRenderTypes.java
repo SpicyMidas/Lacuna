@@ -84,6 +84,21 @@ public final class SolarRenderTypes {
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
     private static final RenderType GLOW_OVER = create("lacuna_solar_glow_over", GLOW_SHADER, OVER,
             RenderStateShard.LEQUAL_DEPTH_TEST, true, null);
+    /**
+     * The Divine Magnifying Glass' scorch marks ({@link MagnifierScorch}): dark grey, alpha-blended (they darken the
+     * face they lie on), depth-tested, polygon offset against the face, after particles. Vanilla position / colour
+     * shader, so shader packs keep them.
+     */
+    private static final RenderType SCORCH = RenderType.create("lacuna_magnifier_scorch", DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS, 4096, false, false, RenderType.CompositeState.builder()
+                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
+                    .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .setCullState(RenderStateShard.NO_CULL)
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
+                    .setLayeringState(RenderStateShard.POLYGON_OFFSET_LAYERING)
+                    .setOutputState(RenderStateShard.PARTICLES_TARGET)
+                    .createCompositeState(false));
     // sky: right after the sky into the main target, no depth (terrain drawn later covers it)
     private static final RenderType SKY_CORONA = create("lacuna_sky_corona", CORONA_SHADER, RenderStateShard.ADDITIVE_TRANSPARENCY,
             RenderStateShard.NO_DEPTH_TEST, false, null);
@@ -133,8 +148,13 @@ public final class SolarRenderTypes {
      * order: the covering layers first, then the light that adds on top of them.
      */
     static java.util.List<RenderType> drawOrder() {
-        return java.util.List.of(columnOver(), skyColumnOver(), ringOver(), glowOver(), ring(), column(), skyColumn(), FxRenderTypes.beam(),
-                FxRenderTypes.glowShader(), flare());
+        return java.util.List.of(SCORCH, columnOver(), skyColumnOver(), ringOver(), glowOver(), ring(), column(), skyColumn(),
+                FxRenderTypes.beam(), FxRenderTypes.glowShader(), flare());
+    }
+
+    /** Scorch marks of the Divine Magnifying Glass on block faces (position / colour quads). */
+    static RenderType scorch() {
+        return SCORCH;
     }
 
     /** Additive column light (u across, v = blocks along; colour = tint, alpha = intensity), or the beam fallback. */
