@@ -3,6 +3,19 @@
 ## 1.0.0-beta.2 — beta feedback
 
 <!-- beta2 -->
+- **Sun's Fury, more legendary:**
+  - **Same beam over sky and terrain:** it looked wide and strong against the sky but thin and weak in front of
+    blocks, because terrain behind the beam cut its light. Now only what stands in front hides it.
+  - **Look:** a blinding white-gold core, a solid golden body that reads over bright sky and dark ground alike,
+    helical light streaks winding up the pillar and rising embers.
+  - **Flight trail:** now a 3D tube.
+  - **Deeper crater:** a rounded bowl 20 blocks deep at the centre and 6 at the rim (it was a flat 8). It still
+    respects mobGriefing, claims and protected blocks.
+- **Divine Magnifying Glass:**
+  - **3D beam:** the veil, cone, inner light and core are all real tubes.
+  - **Beam origin:** seen by other players (or in third person) the beam now starts exactly at the lens in the
+    holder's hand, following the arm's swing, sneaking and riding.
+  - **Scorch trail:** where the beam touches a block it leaves a pixelly dark grey trail that fades in under a second.
 - **The Illusioner joins the game:** vanilla's unused illager now wears an evoker-cut robe of starcloth (night blue,
   gold and silver trim, a gold constellation on the back) and a pointed hood over a shadowed face with starlight eyes.
   - **Where:** the last raid waves on normal and hard, dark forests at night (rare), and about 3 in 10 woodland
