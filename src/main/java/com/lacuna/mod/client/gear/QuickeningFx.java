@@ -6,6 +6,7 @@ import com.lacuna.mod.client.fx.FxHandlers;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.FxTubes;
 import com.lacuna.mod.beam.BeamTrace;
 import com.lacuna.mod.gear.AnimatedAbilities;
 import com.lacuna.mod.gear.AnimatedItemEntity;
@@ -17,6 +18,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -126,16 +128,26 @@ public final class QuickeningFx {
             Vec3 b = ctx.rel(trace.stop());
             float len = (float) lens.distanceTo(trace.stop());
             PoseStack.Pose pose = ctx.pose().last();
-            VertexConsumer beam = ctx.buffers().getBuffer(FxRenderTypes.beam());
-            FxDraw.ribbon(pose, beam, a, b, 0.32F, 0.22F, FxDraw.argb(0.35F * shimmer, rgb), FxDraw.argb(0.5F * shimmer, rgb), 0.0F, len);
-            FxDraw.ribbon(pose, beam, a, b, 0.14F, 0.09F, FxDraw.argb(0.85F * shimmer, rgb), FxDraw.argb(0.95F * shimmer, rgb), 0.0F, len);
-            FxDraw.ribbon(pose, beam, a, b, 0.03F, 0.04F, FxDraw.argb(in, WHITE), FxDraw.argb(in, WHITE), 0.0F, len);
+            // the beam's halo, body and white core as nested volumetric rays (FxTubes), or the flat ribbons
+            RenderType beam = FxRenderTypes.beam();
+            FxTubes.beamOrRibbon(pose, ctx.buffers(), beam, a, b, 0.32F, 0.22F, FxDraw.argb(0.35F * shimmer, rgb),
+                    FxDraw.argb(0.5F * shimmer, rgb), 0.0F, len, 0);
+            FxTubes.beamOrRibbon(pose, ctx.buffers(), beam, a, b, 0.14F, 0.09F, FxDraw.argb(0.85F * shimmer, rgb),
+                    FxDraw.argb(0.95F * shimmer, rgb), 0.0F, len, 0);
+            FxTubes.beamOrRibbon(pose, ctx.buffers(), beam, a, b, 0.03F, 0.04F, FxDraw.argb(in, WHITE), FxDraw.argb(in, WHITE), 0.0F, len, 0);
             VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
             FxDraw.billboard(pose, glow, ctx.camera(), a, 0.28F * shimmer, t * 0.05F, FxDraw.argb(0.9F * in, WHITE));
             if (trace.hitsSomething()) {
                 FxDraw.billboard(pose, glow, ctx.camera(), b, 0.5F + 0.08F * Mth.sin(t * 3.1F), -t * 0.04F, FxDraw.argb(0.9F * shimmer, rgb));
             }
         }
+    }
+
+    private static int mix(int a, int b, float t) {
+        int r = (int) Mth.lerp(t, (a >> 16) & 0xFF, (b >> 16) & 0xFF);
+        int g = (int) Mth.lerp(t, (a >> 8) & 0xFF, (b >> 8) & 0xFF);
+        int bl = (int) Mth.lerp(t, a & 0xFF, b & 0xFF);
+        return r << 16 | g << 8 | bl;
     }
 
     private static final class Bolt implements ClientFx {
@@ -262,8 +274,24 @@ public final class QuickeningFx {
             float pt = ctx.partialTick();
             float time = ctx.time(age);
             Vec3 head = burstAge >= 0 ? (fizzle ? last : end(pt)) : prev.lerp(last, pt);
-            // tapering ribbon of light through the last positions
-            if (trailCount > 1) {
+            // tapering trail of light through the last positions: a volumetric chain (FxTubes; it may start right at
+            // the eye in first person: faded there), or the flat ribbons
+            if (trailCount > 1 && FxTubes.chain().begin(pose, trailCount, 0.3F, FxTubes.FLOW | FxTubes.NEAR_FADE)) {
+                FxTubes.Chain chain = FxTubes.chain();
+                Vec3 a = ctx.rel(head);
+                float v = 0.0F;
+                for (int i = 0; i < trailCount; i++) {
+                    Vec3 p = i == 0 ? a : ctx.rel(trail[i]);
+                    float f = 1.0F - i / (float) TRAIL;
+                    if (i > 0) {
+                        v += (float) p.distanceTo(a);
+                        a = p;
+                    }
+                    int argb = FxDraw.argb(0.85F * f, mix(PINK, ROSE, i / (float) (trailCount - 1)));
+                    chain.point(p, 0.11F * f, argb, FxTubes.hot(argb), v);
+                }
+                chain.end();
+            } else if (trailCount > 1) {
                 VertexConsumer vc = ctx.buffers().getBuffer(FxRenderTypes.beam());
                 Vec3 a = ctx.rel(head);
                 float v = 0.0F;
