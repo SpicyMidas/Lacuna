@@ -20,7 +20,8 @@
     "lacuna:village_cartographer_structure_maps",
     "lacuna:stronghold_library_structure_maps",
     "lacuna:village_mint_structure_maps",
-    "lacuna:sunken_bell_tower_structure_maps"
+    "lacuna:sunken_bell_tower_structure_maps",
+    "lacuna:illusioner_totem_drops"
   ],
   "replace": false
 }

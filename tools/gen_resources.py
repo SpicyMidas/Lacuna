@@ -35,7 +35,7 @@ CONTENT_MODULES = [
     "m19_progression", "m19_wayfarers_chart",
     "m20_compat",
     "m20_almanac", "m20_milestones",
-    "m21_structure_maps",
+    "m21_structure_maps", "m21_illusioner",
 ]
 
 

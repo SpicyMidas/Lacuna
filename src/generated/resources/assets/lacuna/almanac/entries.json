@@ -824,6 +824,18 @@
     },
     {
       "chapter": "creatures",
+      "icon": "lacuna:illusioner_spawn_egg",
+      "icons": [
+        "lacuna:totem_of_confusion",
+        "minecraft:bow"
+      ],
+      "id": "illusioner",
+      "text": "almanac.lacuna.illusioner.text",
+      "title": "almanac.lacuna.illusioner",
+      "where": "almanac.lacuna.illusioner.where"
+    },
+    {
+      "chapter": "creatures",
       "icon": "lacuna:prime_star_rock",
       "icons": [
         "lacuna:star_fragment"

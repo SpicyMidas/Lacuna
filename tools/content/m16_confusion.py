@@ -23,8 +23,8 @@ def build(g):
            " I mostri ostili che ti danno la caccia ne vengono attirati")
     g.name("item.lacuna.totem_of_confusion.cooldown", "Cooldown: %s s", "Ricarica: %s s")
     g.name("item.lacuna.totem_of_confusion.uses", "Uses left: %s/%s", "Usi rimasti: %s/%s")
-    g.name("item.lacuna.totem_of_confusion.tip", "Only you are told whether you swapped.",
-           "Solo tu sai se ti sei scambiato di posto.")
+    g.name("item.lacuna.totem_of_confusion.tip", "Only you are told whether you swapped. Illusioners sometimes drop one.",
+           "Solo tu sai se ti sei scambiato di posto. Gli illusionisti a volte ne lasciano uno.")
     g.name("lacuna.confusion.swap", "You slipped into one of your copies' places.",
            "Hai preso il posto di una delle tue copie.")
     g.name("lacuna.confusion.stay", "Your copies gather around you.", "Le tue copie si radunano intorno a te.")

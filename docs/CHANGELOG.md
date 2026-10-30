@@ -3,6 +3,18 @@
 ## 1.0.0-beta.2 — beta feedback
 
 <!-- beta2 -->
+- **The Illusioner joins the game:** vanilla's unused illager now wears an evoker-cut robe of starcloth (night blue,
+  gold and silver trim, a gold constellation on the back) and a pointed hood over a shadowed face with starlight eyes.
+  - **Where:** the last raid waves on normal and hard, dark forests at night (rare), and about 3 in 10 woodland
+    mansion mages.
+  - **Duplication:** it engages with a spell that makes 3-4 identical duplicates appear around it, and half the time
+    it swaps places with one. The duplicates strafe and shoot harmless illusory arrows, pop in one hit and fade after
+    15 s. It keeps its blindness spell and bow.
+  - **Loot:** a Totem of Confusion 25 % of the time (player kill, +5 % per Looting level).
+  - **Also:** it has its own spawn egg and an Almanac page.
+- **Last Merchant robe:** much richer up close: a shoulder capelet, gold-stitched front and an inner panel, pleats,
+  a leather belt with a brass buckle, pouches and a coin purse tied with ruby cord, an embroidered hem and cuffs,
+  darned patches, a merchant's mark on the back and strapped boots.
 - **Structure maps (new):** explorer maps, like vanilla treasure maps, that lead to a Sunken Bell Tower, an Obelisk of
   Unreadable Names or an Ancient City. Each has its own map marker.
   - Found in shipwreck map chests, ocean ruins, village cartographers, stronghold libraries, village mints and Sunken

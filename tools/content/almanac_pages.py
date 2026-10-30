@@ -1188,4 +1188,24 @@ PAGES = {
          "I bottini rari richiedono che sia un giocatore a uccidere; Saccheggio aiuta sempre.",
          "Ragni ovunque col buio, husk nei deserti, predoni negli avamposti e nelle incursioni."),
     ),
+    "illusioner": (
+        ("Illusioner",
+         "The evoker's forgotten sibling, robed in starcloth under a pointed hood. It keeps its **bow** and its "
+         "**blindness** spell, but its own spell is **duplication**: when it spots you, and every 20-25 seconds, it raises "
+         "its arms and **3-4 duplicates** step out of a burst of blue smoke around it; half the time it slips into one of "
+         "their places itself. The duplicates strafe and shoot as it does, but their arrows are illusions; **one hit pops "
+         "a duplicate**, and they all fade after 15 seconds or when the real one falls.\n"
+         "Killed by a player, it drops a **Totem of Confusion** 25% of the time (+5% per Looting level).",
+         "Raids: the last waves on normal and hard. Dark forests at night (rare). Some of the mages of woodland mansions."),
+        ("Illusionista",
+         "Il fratello dimenticato dell'evocatore, avvolto nella stoffa stellata sotto un cappuccio a punta. Tiene il suo "
+         "**arco** e l'incantesimo di **cecità**, ma il suo incantesimo è la **duplicazione**: quando ti vede, e ogni 20-25 "
+         "secondi, alza le braccia e **3-4 duplicati** escono da uno sbuffo di fumo blu intorno a lui; una volta su due "
+         "prende lui stesso il posto di uno di loro. I duplicati si spostano e tirano come lui, ma le loro frecce sono "
+         "illusioni; **un colpo dissolve un duplicato**, e svaniscono tutti dopo 15 secondi o quando cade quello vero.\n"
+         "Se a ucciderlo è un giocatore, lascia un **Totem della Confusione** il 25% delle volte (+5% per livello di "
+         "Saccheggio).",
+         "Incursioni: le ultime ondate a difficoltà normale e difficile. Foreste scure di notte (raro). Alcuni dei maghi "
+         "delle magioni della foresta."),
+    ),
 }
