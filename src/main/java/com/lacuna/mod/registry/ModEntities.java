@@ -82,6 +82,12 @@ public final class ModEntities {
             "confusion_copy", () -> EntityType.Builder.<com.lacuna.mod.confusion.ConfusionCopy>of(com.lacuna.mod.confusion.ConfusionCopy::new,
                     MobCategory.MISC).sized(0.6F, 1.8F).eyeHeight(1.62F).clientTrackingRange(10).updateInterval(2).noSave().build("confusion_copy"));
 
+    // ------------------------------------------------------------------ Illusioner duplicates (attributes: illusioner/Illusioners)
+    public static final DeferredHolder<EntityType<?>, EntityType<com.lacuna.mod.illusioner.IllusionerDouble>> ILLUSIONER_DOUBLE =
+            ENTITIES.register("illusioner_double", () -> EntityType.Builder.<com.lacuna.mod.illusioner.IllusionerDouble>of(
+                    com.lacuna.mod.illusioner.IllusionerDouble::new, MobCategory.MISC).sized(0.6F, 1.95F).clientTrackingRange(8).noSave()
+                    .build("illusioner_double"));
+
     private ModEntities() {}
 
     /** Mod bus: attribute tables for every living Lacuna entity. */
