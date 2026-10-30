@@ -37,8 +37,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * The solar column that ends a Sun's Fury focus (spec 11.3): a {@link Balance#SOLAR_RAY_TICKS}-tick STRIKE — 5 damage every
- * 5 ticks + 10 s fire within radius 7, and the budgeted block-destruction job (rings outward, <= 400 changes per tick,
- * <= 12000 per use, only with mobGriefing and mayInteract) — then a {@link Balance#SOLAR_FADE_TICKS}-tick harmless FADE.
+ * 5 ticks + 10 s fire within radius 7, and the budgeted block-destruction job (rings outward, a bowl up to 20 blocks deep at the
+ * centre, <= 400 changes per tick, <= 24000 per use, only with mobGriefing and mayInteract) — then a {@link Balance#SOLAR_FADE_TICKS}-tick harmless FADE.
  * The pillar of light, rings, flash and shake are drawn by the clients (client/solar). Never saved (entity type is
  * noSave): the job lives only in memory.
  */
@@ -225,7 +225,8 @@ public class SolarRayEntity extends Entity {
                 if (dx * dx + dz * dz > radius * radius) {
                     continue;
                 }
-                for (int dy = -Balance.SOLAR_DESTRUCTION_BELOW; dy <= Balance.SOLAR_DESTRUCTION_ABOVE; dy++) {
+                int below = craterDepth(dx * dx + dz * dz, radius);
+                for (int dy = -below; dy <= Balance.SOLAR_DESTRUCTION_ABOVE; dy++) {
                     list.add(center.offset(dx, dy, dz));
                 }
             }
@@ -234,6 +235,20 @@ public class SolarRayEntity extends Entity {
         list.sort(Comparator.<BlockPos>comparingInt(p -> (p.getX() - center.getX()) * (p.getX() - center.getX())
                 + (p.getZ() - center.getZ()) * (p.getZ() - center.getZ())).thenComparingInt(BlockPos::getY));
         return list;
+    }
+
+    /**
+     * How deep the strike digs below the impact at squared horizontal distance {@code d2} from it: a bowl, deepest at
+     * the centre ({@link Balance#SOLAR_DESTRUCTION_BELOW}) and {@link Balance#SOLAR_DESTRUCTION_RIM_BELOW} at the rim,
+     * scaled (x0.5..x1.5) with the configured radius so a small or large crater keeps the same shape.
+     */
+    static int craterDepth(int d2, int radius) {
+        double scale = Math.max(0.5, Math.min(1.5, radius / (double) Balance.SOLAR_DESTRUCTION_RADIUS));
+        double edge = radius <= 0 ? 1.0 : Math.min(1.0, d2 / (double) (radius * radius));
+        double centre = Balance.SOLAR_DESTRUCTION_BELOW * scale;
+        double rim = Balance.SOLAR_DESTRUCTION_RIM_BELOW * scale;
+        // a rounded bowl: steep near the rim, wide and deep in the middle
+        return (int) Math.round(rim + (centre - rim) * Math.sqrt(1.0 - edge));
     }
 
     private void destroySome(ServerLevel server) {

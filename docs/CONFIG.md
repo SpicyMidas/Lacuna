@@ -19,7 +19,7 @@ load after registration; they live in `Balance`.
 | beam | affectsBlocks | true | Ignite flammables, melt snow/ice |
 | eclipser | enabled / dashMaxDistance / dashCooldownTicks | true / 14 / 400 | Eclipser dash |
 | eclipser | shadowWalk | true | Spectator-based Shadow Walk |
-| sunsFury | enabled / destructionRadius / maxBlockChangesPerUse | true / 6 / 12000 | Sun's Fury |
+| sunsFury | enabled / destructionRadius / maxBlockChangesPerUse | true / 6 / 24000 | Sun's Fury |
 | sunsFury | changeTime | true | Set time to next noon + clear weather |
 | sunsFury | focusTicks | 100 | Ticks between the landing of Sun's Fury and the strike (the sun climbs to noon meanwhile) |
 | items | fracturedPearl, pocketWatch, mirrorOfRecursion, nullLantern, whisperboneFlute, wayfarersChart | true | Utility items |

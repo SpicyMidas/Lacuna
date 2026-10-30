@@ -88,10 +88,12 @@ public final class Balance {
     public static final int SOLAR_RAY_FIRE_SECONDS = 10;
     public static final int SOLAR_RAY_HEIGHT = 80;
     public static final int SOLAR_DESTRUCTION_RADIUS = 6;
-    public static final int SOLAR_DESTRUCTION_BELOW = 8;
+    /** The strike digs a bowl: this deep (blocks below the impact) at its centre, {@link #SOLAR_DESTRUCTION_RIM_BELOW} at the rim. */
+    public static final int SOLAR_DESTRUCTION_BELOW = 20;
+    public static final int SOLAR_DESTRUCTION_RIM_BELOW = 6;
     public static final int SOLAR_DESTRUCTION_ABOVE = 40;
     public static final float SOLAR_MAX_HARDNESS = 50.0F;
-    public static final int SOLAR_MAX_CHANGES_PER_USE = 12000;
+    public static final int SOLAR_MAX_CHANGES_PER_USE = 24000;
 
     // ---------------------------------------------------------------- fractured pearl (M5)
     public static final int ARRIVAL_SHARD_DURABILITY = 10;
