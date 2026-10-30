@@ -5,6 +5,7 @@ import com.lacuna.mod.client.fx.FxDraw;
 import com.lacuna.mod.client.fx.FxManager;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.FxTubes;
 import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.network.FxPayload;
@@ -140,9 +141,9 @@ final class StarImpactFx implements ClientFx {
             VertexConsumer core = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
             FxDraw.billboard(pose, core, ctx.camera(), c.add(0.0, 0.6, 0.0), 3.0F + 5.0F * (1.0F - flash), t * 0.05F,
                     FxDraw.argb(flash, FallingStarFx.WHITE_HOT));
-            VertexConsumer beam = ctx.buffers().getBuffer(FxRenderTypes.beam());
-            FxDraw.ribbon(pose, beam, c, c.add(0.0, 7.0 * (0.4 + 0.6 * flash), 0.0), 1.4F * flash, 0.2F * flash,
-                    FxDraw.argb(flash, FallingStarFx.WHITE_HOT), FxDraw.argb(0.0F, FallingStarFx.GOLD), 0.0F, 7.0F);
+            // a volumetric pillar (FxTubes; faded around the eye of whoever stands in it), or the flat ribbon
+            FxTubes.beamOrRibbon(pose, ctx.buffers(), FxRenderTypes.beam(), c, c.add(0.0, 7.0 * (0.4 + 0.6 * flash), 0.0), 1.4F * flash,
+                    0.2F * flash, FxDraw.argb(flash, FallingStarFx.WHITE_HOT), FxDraw.argb(0.0F, FallingStarFx.GOLD), 0.0F, 7.0F, FxTubes.NEAR_FADE);
         }
         // the shockwave over the ground
         float wave = Mth.clamp(t / 10.0F, 0.0F, 1.0F);

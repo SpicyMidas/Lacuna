@@ -1,0 +1,39 @@
+# Volumetric rays (client/fx/FxTubes): the debug beam from the side, nearly end-on and entering the ground behind a
+# stone pillar, the Rewind thread, the star impact pillar, the Quickening spark trail and Pyrrhic bolts, at night.
+world lacuna_tubes flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doDaylightCycle false
+cmd gamerule doMobSpawning false
+cmd time set 18000
+cmd tp @s 0 -60 0 0 0
+cmd fill 2 -60 7 2 -57 7 minecraft:stone
+wait 40
+look 0 5
+fx debug ~-5 ~5 ~10 ~5 ~1 ~10
+fx debug ~-3 ~4 ~16 ~4 ~-2 ~9
+wait 6
+shot tubes_side
+look 0 8
+fx debug ~0.6 ~2.2 ~3 ~-1 ~1 ~30
+wait 6
+shot tubes_endon
+look 0 5
+fx rewind ~0 ~0 ~0 ~-6 ~0 ~16
+wait 4
+shot tubes_rewind
+wait 30
+fx starfall_impact ~1 ~0 ~11 ~1 ~0 ~11 3
+wait 2
+shot tubes_impact
+wait 30
+fx quickening_bolt ~5 ~3 ~12 ~0 ~1 ~0 -1 0.5 30
+wait 16
+shot tubes_spark
+wait 30
+cmd summon lacuna:pyrrhic_bolt -6 -58.5 7 {Motion:[0.45d,0.0d,0.05d],NoGravity:1b}
+cmd summon lacuna:pyrrhic_bolt 4 -58 14 {Motion:[-0.2d,0.0d,-0.4d],NoGravity:1b}
+wait 8
+shot tubes_pyrrhic
+quit
