@@ -6,8 +6,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Pipeline check effect (kind {@code debug}): a volumetric beam from {@code a} to {@code b} ({@link FxTubes}), a flare at
- * {@code b} and a
- * ground ring, for 100 ticks. Only spawned by the development ClientDemo script ({@code fx debug ...}).
+ * {@code b} and a ground ring, for 100 ticks. Only spawned by the development ClientDemo script ({@code fx debug ...}).
  */
 public final class DebugFx implements ClientFx {
     private final Vec3 a;
