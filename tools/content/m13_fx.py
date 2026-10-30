@@ -2,6 +2,8 @@
 
 PARTICLES = {
     "light_mote": ["light_mote"],
+    # Sun's Fury: sparks of light pouring down beside the pillar
+    "light_rain": ["light_streak"],
     "solar_glint": ["solar_glint_0", "solar_glint_1"],
     "crimson_spark": ["crimson_spark_0", "crimson_spark_1"],
     "shadow_mote": ["shadow_mote_0", "shadow_mote_1", "shadow_mote_2", "shadow_mote_3"],

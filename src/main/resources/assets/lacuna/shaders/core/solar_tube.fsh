@@ -23,7 +23,7 @@
 // sky's sun disc (no distance dimming), 4 = fades out where it passes close to the eye, 8 = fades out only right at the
 // eye (within about two blocks).
 // TubeFx: x = body glow (0..1, how much the light's dense body is lifted towards white; independent of the light's own
-// intensity), y = soft light streaks winding up the shaft, z = rising embers (both scaled by the intensity).
+// intensity), y = soft light streaks winding down the shaft, z = falling sparks of light (both scaled by the intensity).
 
 uniform vec4 ColorModulator;
 uniform float GameTime;
@@ -227,8 +227,8 @@ void main() {
     float hot;
     if (profile == 1) {
         // soft sunbeam: no core line, a broad hazy body
-        float drift = fbm(vec2(xs * 3.0, h * 0.05 + t * 1.2));
-        float motes = noise(vec2(xs * 11.0 + t * 0.3, h * 0.6 + t * 3.0));
+        float drift = fbm(vec2(xs * 3.0, h * 0.05 + t * 4.0));
+        float motes = noise(vec2(xs * 11.0, h * 0.6 + t * 24.0));
         float shimmer = (0.55 + 0.6 * drift) * (0.9 + 0.2 * motes);
         float wide = glow(path(4.0, b2n, ua, ub, dn));
         float inner = glow(path(16.0, b2n, ua, ub, dn));
@@ -250,15 +250,14 @@ void main() {
         hot = 1.0;
     } else {
         // heat shimmer: the outer part ripples, the core stays straight
-        float ripple = (noise(vec2(h * 0.11 + t * 1.7, 4.3)) - 0.5) * 0.16 + (noise(vec2(h * 0.37 - t * 2.9, 9.1)) - 0.5) * 0.08;
+        float ripple = (noise(vec2(h * 0.11 + t * 4.0, 4.3)) - 0.5) * 0.16 + (noise(vec2(h * 0.37 + t * 6.0, 9.1)) - 0.5) * 0.08;
         float xn = xs + ripple * smoothstep(0.15, 0.9, x);
-        // long striations sliding along the pillar, gently swaying; bands of light pouring down from the sky
-        float sway = 0.25 * sin(h * 0.045 + t * 0.6);
-        float streak = fbm(vec2((xn + sway * 0.2) * 6.0, h * 0.04 + t * 2.4));
-        float fine = noise(vec2(xn * 19.0 + t * 0.8, h * 0.11 + t * 5.0));
-        float band = 0.5 + 0.5 * sin(h * 0.16 + t * 8.0);
+        // long striations and bands of light pouring down the pillar from the sky, fast; nothing drifts sideways
+        float streak = fbm(vec2(xn * 6.0, h * 0.04 + t * 6.0));
+        float fine = noise(vec2(xn * 19.0, h * 0.06 + t * 12.0));
+        float band = 0.5 + 0.5 * sin(h * 0.16 + t * 16.0);
         band = mix(0.78, 1.2, band * band * band);
-        float surge = 0.5 + 0.5 * sin(h * 0.035 + t * 3.1);
+        float surge = 0.5 + 0.5 * sin(h * 0.035 + t * 6.0);
 
         float core = glow(path(70.0, b2n, ua, ub, dn)) * (0.92 + 0.08 * surge);
         float mid = glow(path(7.5, b2n, ua, ub, dn));
@@ -269,10 +268,10 @@ void main() {
         hot = core / max(mid + core, 1.0e-3);
     }
 
-    // rotating light streaks winding up the shaft and rising embers, both on inner cylinders of the volume: seen on
+    // light streaks winding down the shaft and falling sparks of light, both on inner cylinders of the volume: seen on
     // its near and far side (the far side dimmer), wherever that point is visible
     float streaks = 0.0;
-    float embers = 0.0;
+    float sparks = 0.0;
     if ((TubeFx.y > 0.001 || TubeFx.z > 0.001) && !alongAxis) {
         vec3 ref = abs(normalize(TubeB - TubeA).y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
         vec3 en = normalize(cross(axis, ref));
@@ -300,15 +299,15 @@ void main() {
                 float hh = along + sAx;
                 float weight = k == 0 ? 1.0 : 0.55;
                 if (layer == 0) {
-                    // three slender helical streaks turning around the shaft and climbing it
-                    float ph = ang * 3.0 + hh * (TAU / 26.0) - t * 2.6;
+                    // three slender helical streaks turning around the shaft and pouring down it
+                    float ph = ang * 3.0 + hh * (TAU / 26.0) + t * 8.0;
                     float s = pow(0.5 + 0.5 * cos(ph), 9.0);
-                    s *= 0.55 + 0.45 * sin(hh * 0.06 - t * 1.7 + ang);
+                    s *= 0.55 + 0.45 * sin(hh * 0.06 + t * 5.0 + ang);
                     streaks += s * weight;
                 } else {
-                    // sparse embers rising through the outer light, twinkling
+                    // sparks of light falling fast through the outer light, drawn out into short streaks
                     float cells = 22.0;
-                    vec2 g = vec2((ang / TAU + 0.5) * cells, (hh - t * 7.0) / 2.6);
+                    vec2 g = vec2((ang / TAU + 0.5) * cells, (hh + t * 60.0) / 2.6);
                     vec2 cell = floor(g);
                     cell.x = mod(cell.x, cells);
                     vec2 f = fract(g);
@@ -316,18 +315,18 @@ void main() {
                     if (chance > 0.7) {
                         vec2 c = vec2(0.25 + 0.5 * hash(cell + vec2(1.3, 9.2)), 0.25 + 0.5 * hash(cell + vec2(5.9, 2.4)));
                         vec2 d = (f - c) * vec2(TAU * rs / cells, 2.6);
-                        d.y *= 0.45;
+                        d.y *= 0.14;
                         float size = 0.1 + 0.08 * hash(cell + vec2(3.7, 8.8));
-                        float twinkle = 0.55 + 0.45 * sin(t * 9.0 + chance * 40.0);
-                        embers += exp(-dot(d, d) / (size * size)) * twinkle * weight * (1.0 - smoothstep(70.0, 170.0, ts));
+                        float twinkle = 0.8 + 0.2 * sin(t * 9.0 + chance * 40.0);
+                        sparks += exp(-dot(d, d) / (size * size)) * twinkle * weight * (1.0 - smoothstep(70.0, 170.0, ts));
                     }
                 }
             }
         }
         streaks *= TubeFx.y;
-        embers *= TubeFx.z;
+        sparks *= TubeFx.z;
     }
-    col += mix(tint, white, 0.75) * streaks * 0.7 + vec3(1.0, 0.72, 0.32) * embers * 2.2;
+    col += mix(tint, white, 0.75) * streaks * 0.7 + vec3(1.0, 0.72, 0.32) * sparks * 2.2;
 
     // a soft rim (no outline where the round volume meets the sky)
     float rim = 1.0 - smoothstep(0.8, 1.0, x);

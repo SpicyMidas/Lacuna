@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.0-beta.6 — beta feedback
+
+<!-- beta6 -->
+- **Sun's Fury, light pouring down:**
+  - **Particles:** the specks beside the pillar barely moved and drifted sideways; they are now drops of sunlight
+    streaking straight down beside it, fast.
+  - **Shader animation:** the bands, striations, light streaks and sparks inside the pillar now pour downwards, much
+    faster. Nothing in it drifts sideways any more.
+- **Sun's Fury, bigger and brighter:** the pillar is about 85 % wider than its first design (it was 45 % in beta.5),
+  and its golden layers and halo are brighter.
+- **Wand of Quickening spark:** the orb and its trail are drawn on their flight curve at every frame instead of
+  through the positions of the last ticks, so the spark glides and its trail flows without steps or popping.
+
 ## 1.0.0-beta.5 — beta feedback
 
 <!-- beta5 -->

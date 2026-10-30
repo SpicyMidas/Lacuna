@@ -39,6 +39,8 @@ public final class ModParticles {
 
     /** Chrono Hourglass: a tiny pale-blue clock face whose hand sweeps round as it rises and fades. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CHRONO_TICK = simple("chrono_tick");
+    /** Sun's Fury: a drop of sunlight falling fast beside the pillar (a thin streak, no drag). */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> LIGHT_RAIN = simple("light_rain");
 
     /** Banishment: a tumbling bone-and-umber stone chip of the Totem of Banishing, pinwheeling out of a totem burst. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> BANISH_MOTE = simple("banish_mote");

@@ -34,7 +34,7 @@ import org.lwjgl.opengl.GL11;
  * after the level ({@link SolarVolume#drawLate}). The light is exposed like the sun's disc (bright light burns out to
  * white-gold) and screened over the scene ({@code ONE, ONE_MINUS_SRC_COLOR}, destination alpha kept): no wide white
  * bloom over a bright sky, no tint or grey over anything. A tube with a {@code bodyGlow} lifts its dense body towards
- * white, and {@code streaks} / {@code embers} add soft helical light streaks and rising embers inside the volume.
+ * white, and {@code streaks} / {@code sparks} add soft helical light streaks and falling sparks of light inside the volume.
  * <p>
  * Shafts are queued during the after-particles pass ({@link #straight}, {@link #curve}; fixed arrays, no allocation)
  * and drawn in the late pass. When the shader did not load (or the queue is full) the callers fall back to their
@@ -96,11 +96,11 @@ final class SolarTubes {
         return straight(pose, a, b, ra, rb, argbA, argbB, va, vb, profile, flags, 0.0F, 0.0F, 0.0F);
     }
 
-    /** {@link #straight} with a body glow (0..1), soft rotating light streaks and rising embers (strengths, 0 = none). */
+    /** {@link #straight} with a body glow (0..1), soft light streaks winding down and falling sparks (strengths, 0 = none). */
     static boolean straight(PoseStack.Pose pose, Vec3 a, Vec3 b, float ra, float rb, int argbA, int argbB, float va, float vb, int profile,
-                            int flags, float bodyGlow, float streaks, float embers) {
+                            int flags, float bodyGlow, float streaks, float sparks) {
         return curve(pose, a.x, a.y, a.z, (a.x + b.x) * 0.5, (a.y + b.y) * 0.5, (a.z + b.z) * 0.5, b.x, b.y, b.z, ra, rb, argbA, argbB, va,
-                vb, profile, flags, bodyGlow, streaks, embers);
+                vb, profile, flags, bodyGlow, streaks, sparks);
     }
 
     /**
@@ -113,10 +113,10 @@ final class SolarTubes {
         return curve(pose, ax, ay, az, kx, ky, kz, bx, by, bz, ra, rb, argbA, argbB, va, vb, profile, flags, 0.0F, 0.0F, 0.0F);
     }
 
-    /** {@link #curve} with a body glow (0..1), soft rotating light streaks and rising embers (strengths, 0 = none). */
+    /** {@link #curve} with a body glow (0..1), soft light streaks winding down and falling sparks (strengths, 0 = none). */
     static boolean curve(PoseStack.Pose pose, double ax, double ay, double az, double kx, double ky, double kz, double bx, double by,
                          double bz, float ra, float rb, int argbA, int argbB, float va, float vb, int profile, int flags, float bodyGlow,
-                         float streaks, float embers) {
+                         float streaks, float sparks) {
         if (!ShaderPackCompat.usable(shader) || count >= MAX) {
             return false;
         }
@@ -138,7 +138,7 @@ final class SolarTubes {
         DATA[o + 22] = flags;
         DATA[o + 23] = bodyGlow;
         DATA[o + 24] = streaks;
-        DATA[o + 25] = embers;
+        DATA[o + 25] = sparks;
         count++;
         return true;
     }

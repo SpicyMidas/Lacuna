@@ -161,16 +161,24 @@ public class SolarRayEntity extends Entity {
             }
             level().addAlwaysVisibleParticle(ParticleTypes.FLASH, true, getX(), getY() + 1.0, getZ(), 0, 0, 0);
         }
-        // strike: motes boil up around the foot of the pillar; fade: the pillar dissolves into motes along its height
-        int motes = strike ? 7 : (int) (22 * intensity) + 2;
-        for (int i = 0; i < motes; i++) {
+        // sunlight pouring down beside the pillar: fast streaks falling straight down through its body and halo
+        // (thinning out as the pillar fades); a few motes still boil up around its foot during the strike
+        int drops = (int) Math.round((strike ? 16 : 10) * intensity) + 1;
+        for (int i = 0; i < drops; i++) {
             double a = random.nextDouble() * Math.PI * 2.0;
-            double r = strike ? 0.8 + random.nextDouble() * 4.5 : random.nextDouble() * 3.5;
-            double y = strike ? getY() + random.nextDouble() * 6.0 : getY() + random.nextDouble() * 90.0;
-            double up = strike ? 0.25 + random.nextDouble() * 0.6 : 0.01 + random.nextDouble() * 0.05;
-            double out = strike ? 0.03 : 0.05 + random.nextDouble() * 0.06;
-            level().addAlwaysVisibleParticle(ModParticles.LIGHT_MOTE.get(), true, getX() + Math.cos(a) * r, y, getZ() + Math.sin(a) * r,
-                    Math.cos(a) * out, up, Math.sin(a) * out);
+            double r = 2.0 + random.nextDouble() * 16.0;
+            double y = getY() + 12.0 + random.nextDouble() * 70.0;
+            level().addAlwaysVisibleParticle(ModParticles.LIGHT_RAIN.get(), true, getX() + Math.cos(a) * r, y, getZ() + Math.sin(a) * r,
+                    0.0, -(2.4 + random.nextDouble() * 1.6), 0.0);
+        }
+        if (strike) {
+            for (int i = 0; i < 3; i++) {
+                double a = random.nextDouble() * Math.PI * 2.0;
+                double r = 0.8 + random.nextDouble() * 4.5;
+                level().addAlwaysVisibleParticle(ModParticles.LIGHT_MOTE.get(), true, getX() + Math.cos(a) * r,
+                        getY() + random.nextDouble() * 6.0, getZ() + Math.sin(a) * r, Math.cos(a) * 0.03, 0.25 + random.nextDouble() * 0.6,
+                        Math.sin(a) * 0.03);
+            }
         }
         if (strike && age > 16 && tickCount % 4 == 0) {
             double a = random.nextDouble() * Math.PI * 2.0;
@@ -295,8 +303,9 @@ public class SolarRayEntity extends Entity {
 
     @Override
     public AABB getBoundingBoxForCulling() {
-        // haze 64 wide (swelling at the impact), shockwaves up to 48 out, the sky aperture 70 wide at 190 up
-        return new AABB(getX() - 72, getY() - 12, getZ() - 72, getX() + 72, getY() + 420, getZ() + 72);
+        // haze about 120 wide (swelling at the impact: client/solar/SolarVisuals PILLAR_SCALE), shockwaves up to 48 out,
+        // the sky aperture 70 wide at 190 up
+        return new AABB(getX() - 120, getY() - 12, getZ() - 120, getX() + 120, getY() + 420, getZ() + 120);
     }
 
     @Override

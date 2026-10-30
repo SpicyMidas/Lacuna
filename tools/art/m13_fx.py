@@ -34,6 +34,22 @@ def light_mote():
     save(img, "particle/light_mote")
 
 
+def light_streak():
+    """A falling drop of sunlight: a thin vertical streak, its head at the bottom bright, its tail fading upwards."""
+    img = new(16, 16)
+    px = img.load()
+    for y in range(16):
+        along = (y + 0.5) / 16.0          # 0 at the top (tail) .. 1 at the bottom (head)
+        length = along ** 1.6 * (1.0 - max(0.0, along - 0.88) / 0.12 * 0.6)
+        for x in range(16):
+            across = abs(x + 0.5 - 8.0) / 1.6
+            a = math.exp(-across * across) * length
+            if a > 0.02:
+                hot = math.exp(-across * across * 3.0) * along
+                px[x, y] = (255, int(232 + 23 * hot), int(176 + 72 * hot), int(255 * min(1.0, a)))
+    save(img, "particle/light_streak")
+
+
 def solar_glint():
     for frame, (arm, glow) in enumerate(((7.5, 5.5), (5.0, 4.0))):
         img = new(16, 16)
@@ -204,6 +220,7 @@ def effect_masks():
 
 def paint():
     light_mote()
+    light_streak()
     solar_glint()
     crimson_spark()
     shadow_mote()

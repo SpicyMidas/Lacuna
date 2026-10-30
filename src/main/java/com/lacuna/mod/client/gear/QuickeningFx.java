@@ -39,7 +39,10 @@ public final class QuickeningFx {
     private static final int PINK = 0xFF6BC7;
     private static final int ROSE = 0xFFA9DE;
     private static final int WHITE = 0xFFF4FB;
+    /** Length of the spark's trail, in ticks of its flight. */
     private static final int TRAIL = 14;
+    /** Points sampled along the trail every frame (on the flight curve itself, so it slides without steps). */
+    private static final int TRAIL_POINTS = 20;
 
     private QuickeningFx() {}
 
@@ -151,20 +154,21 @@ public final class QuickeningFx {
     }
 
     private static final class Bolt implements ClientFx {
+        private static final int BURST_TICKS = 10;
         private final int casterId;
         private final int targetId;
         private final Vec3 start;
         private final Vec3 fallbackEnd;
         private final int flight;
         private final float spin;
-        private final Vec3[] trail = new Vec3[TRAIL];
-        private int trailCount;
+        /** The orb's position at the last tick (for the sparks it sheds and where a lost spark gutters out). */
         private Vec3 last;
-        private Vec3 prev;
         /** Where the item was last seen (it is gone once it wakes). */
         private Vec3 lastEnd;
         private int age;
         private int burstAge = -1;
+        /** The flight age at which the burst began: the flight time, or earlier for a lost spark. */
+        private int stopAge;
         private boolean fizzle;
 
         Bolt(FxPayload p) {
@@ -186,7 +190,6 @@ public final class QuickeningFx {
             this.lastEnd = fallbackEnd;
             this.spin = p.p1();
             this.last = from;
-            this.prev = from;
         }
 
         @Nullable
@@ -199,6 +202,41 @@ public final class QuickeningFx {
         private Vec3 end(float partial) {
             Entity e = target();
             return e != null ? e.getPosition(partial).add(0.0, Math.max(0.25, e.getBbHeight() * 0.6), 0.0) : lastEnd;
+        }
+
+        /**
+         * The tapering trail of light from the orb ({@code headClock}, in ticks of flight) back to {@code tailClock}: a
+         * volumetric chain (FxTubes; it may start right at the eye in first person: faded there), or the flat ribbons.
+         */
+        private void trail(FxRenderContext ctx, PoseStack.Pose pose, Vec3 end, float headClock, float tailClock) {
+            Vec3[] points = new Vec3[TRAIL_POINTS];
+            float[] fades = new float[TRAIL_POINTS];
+            for (int i = 0; i < TRAIL_POINTS; i++) {
+                float s = Mth.lerp(i / (float) (TRAIL_POINTS - 1), headClock, tailClock);
+                points[i] = ctx.rel(at(s / flight, end));
+                fades[i] = 1.0F - (headClock - s) / TRAIL;
+            }
+            if (FxTubes.chain().begin(pose, TRAIL_POINTS, 0.3F, FxTubes.FLOW | FxTubes.NEAR_FADE)) {
+                FxTubes.Chain chain = FxTubes.chain();
+                float v = 0.0F;
+                for (int i = 0; i < TRAIL_POINTS; i++) {
+                    if (i > 0) {
+                        v += (float) points[i].distanceTo(points[i - 1]);
+                    }
+                    int argb = FxDraw.argb(0.85F * fades[i], mix(PINK, ROSE, i / (float) (TRAIL_POINTS - 1)));
+                    chain.point(points[i], 0.11F * fades[i], argb, FxTubes.hot(argb), v);
+                }
+                chain.end();
+                return;
+            }
+            VertexConsumer vc = ctx.buffers().getBuffer(FxRenderTypes.beam());
+            float v = 0.0F;
+            for (int i = 1; i < TRAIL_POINTS; i++) {
+                float seg = (float) points[i - 1].distanceTo(points[i]);
+                FxDraw.ribbon(pose, vc, points[i - 1], points[i], 0.22F * fades[i - 1], 0.22F * fades[i],
+                        FxDraw.argb(0.85F * fades[i - 1], PINK), FxDraw.argb(0.85F * fades[i], ROSE), v, v + seg);
+                v += seg;
+            }
         }
 
         /** The orb on its arc at progress {@code t}: an ease-in flight bowed upwards with a slow corkscrew. */
@@ -227,12 +265,8 @@ public final class QuickeningFx {
             RandomSource r = level.random;
             if (burstAge >= 0) {
                 burstAge++;
-                if (trailCount > 0) {
-                    trailCount--;
-                }
-                return burstAge < 10;
+                return burstAge < BURST_TICKS;
             }
-            prev = last;
             if (target() != null) {
                 lastEnd = end(1.0F);
             } else if (age < flight - 2) {
@@ -240,15 +274,13 @@ public final class QuickeningFx {
             }
             Vec3 end = end(1.0F);
             last = at(Math.min(1.0F, age / (float) flight), end);
-            System.arraycopy(trail, 0, trail, 1, TRAIL - 1);
-            trail[0] = last;
-            trailCount = Math.min(TRAIL, trailCount + 1);
             if (r.nextFloat() < 0.5F) {
                 level.addParticle(ParticleTypes.END_ROD, last.x, last.y, last.z, (r.nextDouble() - 0.5) * 0.02,
                         (r.nextDouble() - 0.5) * 0.02, (r.nextDouble() - 0.5) * 0.02);
             }
             if (age >= flight || fizzle) {
                 burstAge = 0;
+                stopAge = Math.min(age, flight);
                 if (fizzle) {
                     for (int i = 0; i < 6; i++) {
                         level.addParticle(ParticleTypes.SMOKE, last.x, last.y, last.z, (r.nextDouble() - 0.5) * 0.05, 0.03,
@@ -273,38 +305,17 @@ public final class QuickeningFx {
             PoseStack.Pose pose = ctx.pose().last();
             float pt = ctx.partialTick();
             float time = ctx.time(age);
-            Vec3 head = burstAge >= 0 ? (fizzle ? last : end(pt)) : prev.lerp(last, pt);
-            // tapering trail of light through the last positions: a volumetric chain (FxTubes; it may start right at
-            // the eye in first person: faded there), or the flat ribbons
-            if (trailCount > 1 && FxTubes.chain().begin(pose, trailCount, 0.3F, FxTubes.FLOW | FxTubes.NEAR_FADE)) {
-                FxTubes.Chain chain = FxTubes.chain();
-                Vec3 a = ctx.rel(head);
-                float v = 0.0F;
-                for (int i = 0; i < trailCount; i++) {
-                    Vec3 p = i == 0 ? a : ctx.rel(trail[i]);
-                    float f = 1.0F - i / (float) TRAIL;
-                    if (i > 0) {
-                        v += (float) p.distanceTo(a);
-                        a = p;
-                    }
-                    int argb = FxDraw.argb(0.85F * f, mix(PINK, ROSE, i / (float) (trailCount - 1)));
-                    chain.point(p, 0.11F * f, argb, FxTubes.hot(argb), v);
-                }
-                chain.end();
-            } else if (trailCount > 1) {
-                VertexConsumer vc = ctx.buffers().getBuffer(FxRenderTypes.beam());
-                Vec3 a = ctx.rel(head);
-                float v = 0.0F;
-                for (int i = 1; i < trailCount; i++) {
-                    Vec3 b = ctx.rel(trail[i]);
-                    float fa = 1.0F - (i - 1) / (float) TRAIL;
-                    float fb = 1.0F - i / (float) TRAIL;
-                    float seg = (float) a.distanceTo(b);
-                    FxDraw.ribbon(pose, vc, a, b, 0.22F * fa, 0.22F * fb, FxDraw.argb(0.85F * fa, PINK),
-                            FxDraw.argb(0.85F * fb, ROSE), v, v + seg);
-                    v += seg;
-                    a = b;
-                }
+            // the orb and its trail lie on the flight curve itself, sampled every frame at the frame's own time (not at
+            // the last ticks' positions), so the spark glides and its trail flows without steps or popping
+            Vec3 end = fizzle ? lastEnd : end(pt);
+            float clock = (burstAge >= 0 ? stopAge + burstAge : age) + pt;
+            float headClock = burstAge >= 0 ? stopAge : Math.min(clock, flight);
+            float tailClock = burstAge >= 0
+                    ? Mth.lerp(Math.min(1.0F, (burstAge + pt) / BURST_TICKS), stopAge - TRAIL, stopAge) : clock - TRAIL;
+            tailClock = Math.max(0.0F, tailClock);
+            Vec3 head = fizzle && burstAge >= 0 ? last : at(headClock / flight, end);
+            if (headClock - tailClock > 0.05F) {
+                trail(ctx, pose, end, headClock, tailClock);
             }
             Vec3 c = ctx.rel(head);
             VertexConsumer glow = ctx.buffers().getBuffer(FxRenderTypes.glowShader());
@@ -317,7 +328,7 @@ public final class QuickeningFx {
                         FxDraw.argb(0.45F, ROSE));
             } else {
                 // the burst: a flash and a widening ring of light that fades (a lost spark only gutters out)
-                float f = (burstAge + pt) / 10.0F;
+                float f = (burstAge + pt) / BURST_TICKS;
                 if (fizzle) {
                     FxDraw.billboard(pose, glow, ctx.camera(), c, 0.4F * (1.0F - f), 0.0F, FxDraw.argb(0.5F * (1.0F - f), ROSE));
                     return;

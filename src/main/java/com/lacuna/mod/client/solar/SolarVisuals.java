@@ -40,7 +40,7 @@ import net.minecraft.world.phys.Vec3;
 public final class SolarVisuals {
     private static final List<Entity> QUEUE = new ArrayList<>();
     /** How much wider than its first design the Sun's Fury pillar is drawn (every layer, the pouring rings). */
-    private static final float PILLAR_SCALE = 1.45F;
+    private static final float PILLAR_SCALE = 1.85F;
 
     static final int AMBER = 0xFF9A2A;
     static final int GOLD = 0xFFC24A;
@@ -159,12 +159,12 @@ public final class SolarVisuals {
 
     /**
      * {@link #tube} with the 3D extras ({@link SolarTubes}): a {@code bodyGlow} (0..1) lifting the dense light to white, soft
-     * light {@code streaks} and rising {@code embers} (the flat fallback has none of them).
+     * light {@code streaks} and falling {@code sparks} (the flat fallback has none of them).
      */
     static void tube(PoseStack.Pose pose, VertexConsumer fallback, Vec3 a, Vec3 b, float widthA, float widthB, int argbA, int argbB,
-                     float vA, float vB, boolean sunbeam, float bodyGlow, float streaks, float embers) {
+                     float vA, float vB, boolean sunbeam, float bodyGlow, float streaks, float sparks) {
         if (SolarTubes.straight(pose, a, b, widthA * 0.5F, widthB * 0.5F, argbA, argbB, vA, vB,
-                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0, bodyGlow, streaks, embers)) {
+                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0, bodyGlow, streaks, sparks)) {
             return;
         }
         if (sunbeam) {
@@ -566,13 +566,13 @@ public final class SolarVisuals {
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
         // (nested 3D shells, SolarTubes: seen from any side, from below or from inside, they keep their thickness; their
         // light is screened over the scene, so it never bleaches the day sky into a white slab and needs no easing by day)
-        int haze = FxDraw.argb(0.1F * soft, AMBER);
-        int halo = FxDraw.argb(0.24F * soft, GOLD);
+        int haze = FxDraw.argb(0.12F * soft, AMBER);
+        int halo = FxDraw.argb(0.3F * soft, GOLD);
         float size = PILLAR_SCALE * swell;
         float hazeWidth = 64.0F * size * breathe;
         float haloWidth = 30.0F * size * breathe;
         tube(pose, over, bottom, top, hazeWidth, hazeWidth, haze, haze, -6.0F, height, false);
-        // embers rising through the halo
+        // sparks of light falling fast through the halo
         tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false, 0.0F, 0.0F, 4.0F);
         // a bright splash where it meets the ground: a cone of light widening into the ground
         tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * size, 12.0F * size,
@@ -580,11 +580,11 @@ public final class SolarVisuals {
 
         // inner layers: they pile up into a white-hot core. Each glows towards white where it is dense (bodyGlow),
         // golden outside and white-gold towards the core like the sun it falls from: a broad golden body around 20
-        // blocks wide (times PILLAR_SCALE), as bright over the day sky as over terrain; soft light streaks wind up the body, turning
+        // blocks wide (times PILLAR_SCALE), as bright over the day sky as over terrain; soft light streaks wind down the body, turning
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
-        int gold = FxDraw.argb(0.55F * a, GOLD);
-        int warm = FxDraw.argb(0.6F * a, WARM);
-        int pale = FxDraw.argb(0.7F * a * (1.0F - 0.25F * day), PALE);
+        int gold = FxDraw.argb(0.7F * a, GOLD);
+        int warm = FxDraw.argb(0.75F * a, WARM);
+        int pale = FxDraw.argb(0.85F * a * (1.0F - 0.2F * day), PALE);
         int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
         tube(pose, beam, bottom, top, 20.0F * size, 20.0F * size, gold, gold, -6.0F, height, true, 0.75F * a, 2.2F, 0.0F);
         tube(pose, beam, bottom, top, 13.0F * size, 13.0F * size, warm, warm, -6.0F, height, false, 0.85F * a, 0.0F, 0.0F);
