@@ -161,6 +161,8 @@ public final class FxManager {
         }
         float partial = event.getPartialTick().getGameTimeDeltaPartialTick(false);
         FxRenderContext ctx = new FxRenderContext(pose, event.getCamera(), event.getCamera().getPosition(), partial, colour, mc.level);
+        // volumetric rays (FxTubes) are queued in the colour pass only; the depth pass repeats its answers
+        int tubes = FxTubes.mark();
         if (!drawAll(ctx)) {
             releaseBuffers();
             return;
@@ -169,9 +171,14 @@ public final class FxManager {
         if (Minecraft.useShaderTransparency()) {
             FxRenderContext depthCtx = new FxRenderContext(pose, event.getCamera(), event.getCamera().getPosition(), partial, depth,
                     mc.level);
-            if (!drawAll(depthCtx)) {
-                releaseBuffers();
-                return;
+            FxTubes.replay(tubes);
+            try {
+                if (!drawAll(depthCtx)) {
+                    releaseBuffers();
+                    return;
+                }
+            } finally {
+                FxTubes.replay(-1);
             }
             depth.endBatch();
         }

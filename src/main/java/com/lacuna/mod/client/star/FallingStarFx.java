@@ -5,6 +5,7 @@ import com.lacuna.mod.client.fx.ClientFx;
 import com.lacuna.mod.client.fx.FxDraw;
 import com.lacuna.mod.client.fx.FxRenderContext;
 import com.lacuna.mod.client.fx.FxRenderTypes;
+import com.lacuna.mod.client.fx.FxTubes;
 import com.lacuna.mod.client.fx.GroundDecal;
 import com.lacuna.mod.client.fx.ScreenFx;
 import com.lacuna.mod.registry.ModParticles;
@@ -223,7 +224,7 @@ final class FallingStarFx implements ClientFx {
         FxDraw.billboard(pose, core, ctx.camera(), head, 0.7F * s, 0.0F, FxDraw.argb(alpha, WHITE_HOT));
     }
 
-    /** The trail: a wide amber glow around a white-hot beam, both tapering to nothing along the recent path. */
+    /** The trail: a wide amber glow around a white-hot beam, both tapering to nothing along the recent path (volumetric). */
     private void trail(FxRenderContext ctx, PoseStack.Pose pose, Vec3 head, float s, float fade) {
         List<Vec3> pts = new ArrayList<>();
         pts.add(head);
@@ -238,8 +239,48 @@ final class FallingStarFx implements ClientFx {
         if (n < 2) {
             return;
         }
-        // one render type at a time: the shared buffer source ends a batch when another type is requested
-        VertexConsumer outer = ctx.buffers().getBuffer(FxRenderTypes.additive(FxRenderTypes.BEAM));
+        // volumetric (FxTubes): a soft amber glow around a flowing white-hot core, both seen from afar, bending with
+        // the path, faded where they pass the eye (a star striking next to the viewer); the flat ribbons below when
+        // it cannot be drawn in 3D
+        FxTubes.Chain chain = FxTubes.chain();
+        boolean outer3d = chain.begin(pose, n, 0.85F, FxTubes.FAR | FxTubes.NEAR_FADE);
+        if (outer3d) {
+            float along = 0.0F;
+            for (int i = 0; i < n; i++) {
+                float t = i / (float) (n - 1);
+                if (i > 0) {
+                    along += (float) pts.get(i).distanceTo(pts.get(i - 1));
+                }
+                chain.point(pts.get(i), 0.8F * s * (0.25F + 0.75F * taper(t)), FxDraw.argb(0.55F * fade * (1.0F - t), mix(GOLD, EMBER, t)), 0,
+                        along);
+            }
+            chain.end();
+        }
+        boolean inner3d = chain.begin(pose, n, 0.2F, FxTubes.FAR | FxTubes.FLOW | FxTubes.NEAR_FADE);
+        if (inner3d) {
+            float along = 0.0F;
+            for (int i = 0; i < n; i++) {
+                float t = i / (float) (n - 1);
+                if (i > 0) {
+                    along += (float) pts.get(i).distanceTo(pts.get(i - 1));
+                }
+                int argb = FxDraw.argb(fade * (1.0F - t), mix(WHITE_HOT, AMBER, t));
+                chain.point(pts.get(i), 0.275F * s * taper(t) + 0.01F, argb, FxTubes.hot(argb), along);
+            }
+            chain.end();
+        }
+        if (!outer3d) {
+            trailRibbons(ctx, pose, pts, s, fade, false);
+        }
+        if (!inner3d) {
+            trailRibbons(ctx, pose, pts, s, fade, true);
+        }
+    }
+
+    /** The trail as flat camera-facing ribbons (no volumetric rays): the amber glow, or the white-hot beam. */
+    private static void trailRibbons(FxRenderContext ctx, PoseStack.Pose pose, List<Vec3> pts, float s, float fade, boolean beam) {
+        int n = pts.size();
+        VertexConsumer vc = ctx.buffers().getBuffer(beam ? FxRenderTypes.beam() : FxRenderTypes.additive(FxRenderTypes.BEAM));
         float along = 0.0F;
         for (int i = 0; i < n - 1; i++) {
             Vec3 a = pts.get(i);
@@ -247,22 +288,15 @@ final class FallingStarFx implements ClientFx {
             float ta = i / (float) (n - 1);
             float tb = (i + 1) / (float) (n - 1);
             float len = (float) a.distanceTo(b);
-            FxDraw.ribbon(pose, outer, a, b, 1.6F * s * (0.25F + 0.75F * taper(ta)), 1.6F * s * (0.25F + 0.75F * taper(tb)),
-                    FxDraw.argb(0.55F * fade * (1.0F - ta), mix(GOLD, EMBER, ta)), FxDraw.argb(0.55F * fade * (1.0F - tb), mix(GOLD, EMBER, tb)),
-                    along, along + len);
-            along += len;
-        }
-        VertexConsumer inner = ctx.buffers().getBuffer(FxRenderTypes.beam());
-        along = 0.0F;
-        for (int i = 0; i < n - 1; i++) {
-            Vec3 a = pts.get(i);
-            Vec3 b = pts.get(i + 1);
-            float ta = i / (float) (n - 1);
-            float tb = (i + 1) / (float) (n - 1);
-            float len = (float) a.distanceTo(b);
-            FxDraw.ribbon(pose, inner, a, b, 0.55F * s * taper(ta) + 0.02F, 0.55F * s * taper(tb) + 0.02F,
-                    FxDraw.argb(fade * (1.0F - ta), mix(WHITE_HOT, AMBER, ta)), FxDraw.argb(fade * (1.0F - tb), mix(WHITE_HOT, AMBER, tb)),
-                    along, along + len);
+            if (beam) {
+                FxDraw.ribbon(pose, vc, a, b, 0.55F * s * taper(ta) + 0.02F, 0.55F * s * taper(tb) + 0.02F,
+                        FxDraw.argb(fade * (1.0F - ta), mix(WHITE_HOT, AMBER, ta)), FxDraw.argb(fade * (1.0F - tb), mix(WHITE_HOT, AMBER, tb)),
+                        along, along + len);
+            } else {
+                FxDraw.ribbon(pose, vc, a, b, 1.6F * s * (0.25F + 0.75F * taper(ta)), 1.6F * s * (0.25F + 0.75F * taper(tb)),
+                        FxDraw.argb(0.55F * fade * (1.0F - ta), mix(GOLD, EMBER, ta)), FxDraw.argb(0.55F * fade * (1.0F - tb), mix(GOLD, EMBER, tb)),
+                        along, along + len);
+            }
             along += len;
         }
     }

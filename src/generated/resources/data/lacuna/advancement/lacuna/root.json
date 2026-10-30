@@ -1,15 +1,5 @@
 {
   "criteria": {
-    "almanac": {
-      "conditions": {
-        "items": [
-          {
-            "items": "lacuna:almanac"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
     "ruby": {
       "conditions": {
         "items": [
@@ -39,7 +29,6 @@
   },
   "requirements": [
     [
-      "almanac",
       "ruby"
     ]
   ]

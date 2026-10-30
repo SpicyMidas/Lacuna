@@ -1,0 +1,12 @@
+{
+  "biomes": "#lacuna:has_illusioner",
+  "spawners": [
+    {
+      "maxCount": 1,
+      "minCount": 1,
+      "type": "minecraft:illusioner",
+      "weight": 2
+    }
+  ],
+  "type": "neoforge:add_spawns"
+}

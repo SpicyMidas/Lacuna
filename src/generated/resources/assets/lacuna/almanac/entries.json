@@ -824,6 +824,18 @@
     },
     {
       "chapter": "creatures",
+      "icon": "lacuna:illusioner_spawn_egg",
+      "icons": [
+        "lacuna:totem_of_confusion",
+        "minecraft:bow"
+      ],
+      "id": "illusioner",
+      "text": "almanac.lacuna.illusioner.text",
+      "title": "almanac.lacuna.illusioner",
+      "where": "almanac.lacuna.illusioner.where"
+    },
+    {
+      "chapter": "creatures",
       "icon": "lacuna:prime_star_rock",
       "icons": [
         "lacuna:star_fragment"
@@ -848,6 +860,20 @@
       "text": "almanac.lacuna.obelisk.text",
       "title": "almanac.lacuna.obelisk",
       "where": "almanac.lacuna.obelisk.where"
+    },
+    {
+      "chapter": "creatures",
+      "icon": "minecraft:filled_map",
+      "icons": [
+        "minecraft:map",
+        "lacuna:sunken_bell",
+        "lacuna:obelisk_inscription",
+        "minecraft:sculk_shrieker"
+      ],
+      "id": "structure_maps",
+      "text": "almanac.lacuna.structure_maps.text",
+      "title": "almanac.lacuna.structure_maps",
+      "where": "almanac.lacuna.structure_maps.where"
     },
     {
       "chapter": "creatures",

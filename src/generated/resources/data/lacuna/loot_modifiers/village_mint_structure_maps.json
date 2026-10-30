@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "lacuna:chests/village_mint"
+    }
+  ],
+  "table": "lacuna:extra/maps/village_mint",
+  "type": "neoforge:add_table"
+}

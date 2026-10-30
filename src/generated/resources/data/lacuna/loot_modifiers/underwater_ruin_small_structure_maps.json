@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:chests/underwater_ruin_small"
+    }
+  ],
+  "table": "lacuna:extra/maps/underwater_ruin_small",
+  "type": "neoforge:add_table"
+}

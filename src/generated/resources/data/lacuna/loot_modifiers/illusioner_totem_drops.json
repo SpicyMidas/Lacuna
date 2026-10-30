@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:entities/illusioner"
+    }
+  ],
+  "table": "lacuna:extra/illusioner_totem",
+  "type": "neoforge:add_table"
+}

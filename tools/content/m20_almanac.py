@@ -136,9 +136,12 @@ ENTRIES = [
     ("lantern_moth", "creatures", "lacuna:lantern_moth_spawn_egg", ["lacuna:silk_dust"], "entity.lacuna.lantern_moth"),
     ("last_merchant", "creatures", "lacuna:last_merchant_spawn_egg", ["lacuna:ruby"], "entity.lacuna.last_merchant"),
     ("reflection", "creatures", "lacuna:labyrinth_trigger", ["lacuna:lacunar_quintessence"], "entity.lacuna.reflection"),
+    ("illusioner", "creatures", "lacuna:illusioner_spawn_egg", ["lacuna:totem_of_confusion", "minecraft:bow"]),
     ("falling_stars", "creatures", "lacuna:prime_star_rock", ["lacuna:star_fragment"]),
     ("sunken_bell_tower", "creatures", "lacuna:sunken_bell", []),
     ("obelisk", "creatures", "lacuna:obelisk_inscription", []),
+    ("structure_maps", "creatures", "minecraft:filled_map", ["minecraft:map", "lacuna:sunken_bell", "lacuna:obelisk_inscription",
+                                                             "minecraft:sculk_shrieker"]),
     ("common_creatures", "creatures", "minecraft:husk_spawn_egg", ["minecraft:spider_spawn_egg", "minecraft:pillager_spawn_egg"]),
 ]
 

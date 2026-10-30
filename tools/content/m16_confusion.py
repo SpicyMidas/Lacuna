@@ -4,11 +4,11 @@ from content.m12_polish import adv, code
 
 def build(g):
     g.item("totem_of_confusion", "Totem of Confusion", "Totem della Confusione")
-    # the armour stand is the body, amethyst the illusion, the pearl the swap; gold and a Lacunar Quintessence (m19)
-    # make it a totem
-    g.shaped("totem_of_confusion", [" P ", "AMA", "GQG"],
-             {"P": "minecraft:ender_pearl", "A": "minecraft:amethyst_shard", "M": "minecraft:armor_stand",
-              "G": "minecraft:gold_ingot", "Q": "lacuna:lacunar_quintessence"},
+    # shaped like the legendary Totem of Undying (m19), the eyes as on the texture: the dark twin's ruby eye top left,
+    # the pale twin's amethyst eye top right, the effigy in Umbral Steel around a Lacunar Quintessence
+    g.shaped("totem_of_confusion", ["RUA", "UQU", " U "],
+             {"R": "lacuna:ruby", "A": "minecraft:amethyst_shard", "U": "lacuna:umbral_steel_ingot",
+              "Q": "lacuna:lacunar_quintessence"},
              "lacuna:totem_of_confusion", category="equipment", unlock="lacuna:lacunar_quintessence")
     g.name("item.lacuna.totem_of_confusion.lore", "Five of you. Only one is real.", "Cinque di te. Solo uno è vero.")
     g.name("item.lacuna.totem_of_confusion.use", "Use: %s copies of you appear around you",
@@ -23,8 +23,8 @@ def build(g):
            " I mostri ostili che ti danno la caccia ne vengono attirati")
     g.name("item.lacuna.totem_of_confusion.cooldown", "Cooldown: %s s", "Ricarica: %s s")
     g.name("item.lacuna.totem_of_confusion.uses", "Uses left: %s/%s", "Usi rimasti: %s/%s")
-    g.name("item.lacuna.totem_of_confusion.tip", "Only you are told whether you swapped.",
-           "Solo tu sai se ti sei scambiato di posto.")
+    g.name("item.lacuna.totem_of_confusion.tip", "Only you are told whether you swapped. Illusioners sometimes drop one.",
+           "Solo tu sai se ti sei scambiato di posto. Gli illusionisti a volte ne lasciano uno.")
     g.name("lacuna.confusion.swap", "You slipped into one of your copies' places.",
            "Hai preso il posto di una delle tue copie.")
     g.name("lacuna.confusion.stay", "Your copies gather around you.", "Le tue copie si radunano intorno a te.")

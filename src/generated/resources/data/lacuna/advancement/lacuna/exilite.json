@@ -26,7 +26,7 @@
       "translate": "advancements.lacuna.exilite.title"
     }
   },
-  "parent": "lacuna:lacuna/enter_forgotten_land",
+  "parent": "lacuna:lacuna/lacunar_quintessence",
   "requirements": [
     [
       "debris"

@@ -7,6 +7,7 @@ Used by m20_almanac.py (which lists the entries, their chapter and icons, and wr
   * markup: a newline starts a paragraph, "- " starts a bullet, **...** is bold.
 Numbers come from docs/PROGRESSION.md and Balance.java; keep them in step when rebalancing.
 """
+from content.m21_structure_maps import where as structure_maps_where
 
 PAGES = {
     # ============================================================================================ getting started
@@ -36,7 +37,8 @@ PAGES = {
          "four new trees, make friends in the villages.\n"
          "- **Relics are found, never crafted:** watch the night sky for falling stars, dive to Sunken Bell Towers, raid "
          "treasure and bosses, save rubies for the Last Merchant.\n"
-         "- **A Lacunar Quintessence** and a Totem of Undying make a Totem of Banishing: the key to the Forgotten Land.\n"
+         "- **A Lacunar Quintessence** set in Exilite Ingots (exilite debris hides in the deepest Overworld stone) makes "
+         "a Totem of Banishing: the key to the Forgotten Land.\n"
          "- **The Forgotten Land:** divine glass, zenithite, exilite, ruin caches and the Mirror Labyrinth, whose "
          "Reflection always leaves another Quintessence.",
          "The Lacuna advancement tab follows the same road: every milestone hints at where to look next."),
@@ -45,8 +47,8 @@ PAGES = {
          "acciaio umbrale, abbatti i quattro nuovi alberi, fatti amici nei villaggi.\n"
          "- **Le reliquie si trovano, non si fabbricano:** scruta il cielo notturno per le stelle cadenti, immergiti "
          "nelle torri della campana sommersa, saccheggia tesori e boss, metti da parte rubini per l'Ultimo mercante.\n"
-         "- **Una Quintessenza lacunare** e un Totem dell'immortalità fanno un Totem dell'esilio: la chiave della Terra "
-         "Dimenticata.\n"
+         "- **Una Quintessenza lacunare** incastonata in lingotti di esilite (i detriti di esilite si nascondono nella "
+         "pietra più profonda del Mondo normale) fa un Totem dell'esilio: la chiave della Terra Dimenticata.\n"
          "- **La Terra Dimenticata:** vetro divino, zenithite, esilite, i forzieri delle rovine e il Labirinto degli "
          "specchi, il cui Riflesso lascia sempre un'altra Quintessenza.",
          "La scheda dei progressi di Lacuna segue la stessa strada: ogni traguardo suggerisce dove cercare dopo."),
@@ -484,7 +486,8 @@ PAGES = {
          "- **Strike** a creature (or a player, with PvP): it is hurled away and banished. Bosses resist.\n"
          "- **Use on a ring of Forgotten Portal Frames** to light the portal.\n"
          "Six uses in all, never mended: every crossing, banishment and portal counts.",
-         "Crafted: a Lacunar Quintessence above a Totem of Undying, with 3 rubies and 2 gold ingots (RQR / GTG / .R.)."),
+         "Crafted like the Totem of Undying: a Lacunar Quintessence in the middle, 3 Exilite Ingots above and beside it, "
+         "a ruby below (.X. / XQX / .R.)."),
         (None,
          "Una mano di pietra che ricorda una terra che nessun altro ricorda.\n"
          "- **Usa:** passa nella Terra Dimenticata con un'onda d'urto che respinge tutto ciò che è vicino, a entrambi i "
@@ -492,8 +495,8 @@ PAGES = {
          "- **Colpisci** una creatura (o un giocatore, con il PvP): viene scagliata via ed esiliata. I boss resistono.\n"
          "- **Usalo su un anello di Cornici del portale dimenticato** per accendere il portale.\n"
          "Sei utilizzi in tutto, mai riparabili: ogni passaggio, esilio e portale conta.",
-         "Si fabbrica: una Quintessenza lacunare sopra un Totem dell'immortalità, con 3 rubini e 2 lingotti d'oro "
-         "(RQR / GTG / .R.)."),
+         "Si fabbrica come il Totem dell'immortalità: una Quintessenza lacunare al centro, 3 lingotti di esilite sopra e "
+         "ai lati, un rubino sotto (.X. / XQX / .R.)."),
     ),
     "totem_of_confusion": (
         (None,
@@ -501,25 +504,27 @@ PAGES = {
          "items. Three times in four you **swap places** with one of them, and only you are told. The copies mirror your "
          "every move, each on its own heading, and the hostile mobs hunting you are drawn to them.\n"
          "Two hits break a copy; they all fade after 20 seconds. Three uses, 45 s cooldown.",
-         "Crafted: an ender pearl, 2 amethyst shards, an armour stand, 2 gold ingots and a Lacunar Quintessence "
-         "(.P. / AMA / GQG)."),
+         "Crafted like the Totem of Undying, its eyes as on the totem: a ruby top left, an amethyst shard top right, 4 "
+         "Umbral Steel ingots around a Lacunar Quintessence (RUA / UQU / .U.)."),
         (None,
          "Cinque di te. Solo uno è vero. Usalo e cinque copie di te appaiono tutt'intorno, con la tua pelle, armatura e "
          "oggetti in mano. Tre volte su quattro **prendi il posto** di una di loro, e lo sai solo tu. Le copie imitano "
          "ogni tua mossa, ognuna nella sua direzione, e le creature ostili che ti cacciano vengono attirate da loro.\n"
          "Due colpi distruggono una copia; svaniscono tutte dopo 20 secondi. Tre utilizzi, 45 s di ricarica.",
-         "Si fabbrica: una perla di Ender, 2 frammenti di ametista, un supporto per armature, 2 lingotti d'oro e una "
-         "Quintessenza lacunare (.P. / AMA / GQG)."),
+         "Si fabbrica come il Totem dell'immortalità, con gli occhi come sul totem: un rubino in alto a sinistra, un "
+         "frammento di ametista in alto a destra, 4 lingotti di acciaio umbrale attorno a una Quintessenza lacunare "
+         "(RUA / UQU / .U.)."),
     ),
     "totem_of_undying": (
         ("Totem of Undying",
          "The vanilla totem that cheats death, now also crafted the legendary way: a Lacunar Quintessence set in gold, "
-         "with two emeralds for eyes. It is the heart of every Totem of Banishing.",
+         "with two emeralds for eyes. The Totems of Banishing and Confusion are crafted in its shape.",
          "Evokers (woodland mansions and raids), or crafted: 2 emeralds, 4 gold ingots and a Lacunar Quintessence "
          "(EGE / GQG / .G.)."),
         ("Totem dell'immortalità",
          "Il totem del gioco base che inganna la morte, ora anche da fabbricare alla maniera leggendaria: una Quintessenza "
-         "lacunare incastonata nell'oro, con due smeraldi per occhi. È il cuore di ogni Totem dell'esilio.",
+         "lacunare incastonata nell'oro, con due smeraldi per occhi. I Totem dell'esilio e della Confusione si "
+         "fabbricano nella sua forma.",
          "Gli evocatori (magioni della foresta e incursioni), oppure si fabbrica: 2 smeraldi, 4 lingotti d'oro e una "
          "Quintessenza lacunare (EGE / GQG / .G.)."),
     ),
@@ -746,16 +751,17 @@ PAGES = {
          "The buried stone the Totem of Banishing was carved from. Smelt the debris into a shard; 4 shards and 4 gold "
          "ingots make an **Exilite Ingot**, which never burns and pays a beacon. One ingot between two crying obsidian "
          "makes two Forgotten Portal Frames: a way home built from the land itself. Nine ingots make a Block of Exilite.",
-         "Exilite Debris, in small veins hidden in the stone below Y -8 of the Forgotten Land, about one every four chunks "
-         "(diamond pickaxe; no explosion breaks it). Shards turn up in ruin caches too."),
+         "Exilite Debris, in small veins hidden in the stone: deep in the Overworld below Y -16 (about one vein every two "
+         "chunks) and below Y -8 of the Forgotten Land (one every four chunks). Diamond pickaxe; no explosion breaks it. "
+         "Shards turn up in ruin caches too."),
         ("Esilite",
          "La pietra sepolta da cui fu scolpito il Totem dell'esilio. Fondi i detriti in un frammento; 4 frammenti e 4 "
          "lingotti d'oro fanno un **Lingotto di esilite**, che non brucia mai e paga un faro. Un lingotto tra due "
          "ossidiane piangenti fa due Cornici del portale dimenticato: una via di casa costruita con la terra stessa. Nove "
          "lingotti fanno un Blocco di esilite.",
-         "Detriti di esilite, in piccole vene nascoste nella pietra sotto Y -8 della Terra Dimenticata, circa una ogni "
-         "quattro chunk (piccone di diamante; nessuna esplosione li rompe). I frammenti si trovano anche nei forzieri "
-         "delle rovine."),
+         "Detriti di esilite, in piccole vene nascoste nella pietra: in profondità nel Mondo normale sotto Y -16 (circa "
+         "una vena ogni due chunk) e sotto Y -8 della Terra Dimenticata (una ogni quattro chunk). Piccone di diamante; "
+         "nessuna esplosione li rompe. I frammenti si trovano anche nei forzieri delle rovine."),
     ),
     "star_rock": (
         ("Star Rock & Fragments",
@@ -1136,6 +1142,25 @@ PAGES = {
          "Raro, nelle foreste, taighe, savane, giungle, badlands, colline, pianure, deserti e pianure innevate del Mondo "
          "normale; obelischi spezzati si ergono tra le rovine della Terra Dimenticata."),
     ),
+    "structure_maps": (
+        ("Structure Maps",
+         "Old maps still remember where the forgotten places stand. Each is a filled map centred on its place, marked "
+         "with its own sign: the **Sunken Bell Tower Map** (a teal bell), the **Obelisk Map** (a black pillar) and the "
+         "**Ancient City Map** (a glowing frame, deep below: Echo Daggers, Null Lanterns and Whisperbone Flutes wait "
+         "there).\n"
+         "A map is drawn when its chest is first opened, or when the Last Merchant packs it, and leads to the nearest "
+         "place no other map has shown yet. When there is none nearby, a chest's map stays blank.",
+         structure_maps_where()[0]),
+        ("Mappe delle strutture",
+         "Le vecchie mappe ricordano ancora dove sorgono i luoghi dimenticati. Ognuna è una mappa centrata sul suo "
+         "luogo, segnato con un simbolo proprio: la **Mappa della torre campanaria sommersa** (una campana verde "
+         "acqua), la **Mappa dell'obelisco** (un pilastro nero) e la **Mappa della città antica** (una cornice luminosa, "
+         "nel profondo: lì attendono Pugnali dell'eco, Lanterne nulle e Flauti d'ossosussurro).\n"
+         "Una mappa viene tracciata quando il suo forziere si apre la prima volta, o quando l'Ultimo mercante la mette "
+         "nella sacca, e porta al luogo più vicino che nessun'altra mappa ha già mostrato. Se non ce n'è nessuno "
+         "vicino, la mappa di un forziere resta bianca.",
+         structure_maps_where()[1]),
+    ),
     "treasure": (
         ("Bosses & Treasure",
          None,  # generated: the boss and chest relic chances (m19_progression)
@@ -1162,5 +1187,25 @@ PAGES = {
          "- **Falene lanterna:** 0-2 Polvere di seta.\n"
          "I bottini rari richiedono che sia un giocatore a uccidere; Saccheggio aiuta sempre.",
          "Ragni ovunque col buio, husk nei deserti, predoni negli avamposti e nelle incursioni."),
+    ),
+    "illusioner": (
+        ("Illusioner",
+         "The evoker's forgotten sibling, robed in starcloth under a pointed hood. It keeps its **bow** and its "
+         "**blindness** spell, but its own spell is **duplication**: when it spots you, and every 20-25 seconds, it raises "
+         "its arms and **3-4 duplicates** step out of a burst of blue smoke around it; half the time it slips into one of "
+         "their places itself. The duplicates strafe and shoot as it does, but their arrows are illusions; **one hit pops "
+         "a duplicate**, and they all fade after 15 seconds or when the real one falls.\n"
+         "Killed by a player, it drops a **Totem of Confusion** 25% of the time (+5% per Looting level).",
+         "Raids: the last waves on normal and hard. Dark forests at night (rare). Some of the mages of woodland mansions."),
+        ("Illusionista",
+         "Il fratello dimenticato dell'evocatore, avvolto nella stoffa stellata sotto un cappuccio a punta. Tiene il suo "
+         "**arco** e l'incantesimo di **cecità**, ma il suo incantesimo è la **duplicazione**: quando ti vede, e ogni 20-25 "
+         "secondi, alza le braccia e **3-4 duplicati** escono da uno sbuffo di fumo blu intorno a lui; una volta su due "
+         "prende lui stesso il posto di uno di loro. I duplicati si spostano e tirano come lui, ma le loro frecce sono "
+         "illusioni; **un colpo dissolve un duplicato**, e svaniscono tutti dopo 15 secondi o quando cade quello vero.\n"
+         "Se a ucciderlo è un giocatore, lascia un **Totem della Confusione** il 25% delle volte (+5% per livello di "
+         "Saccheggio).",
+         "Incursioni: le ultime ondate a difficoltà normale e difficile. Foreste scure di notte (raro). Alcuni dei maghi "
+         "delle magioni della foresta."),
     ),
 }

@@ -1,5 +1,50 @@
 # Changelog
 
+## 1.0.0-beta.2 — beta feedback
+
+<!-- beta2 -->
+- **The Illusioner joins the game:** vanilla's unused illager now wears an evoker-cut robe of starcloth (night blue,
+  gold and silver trim, a gold constellation on the back) and a pointed hood over a shadowed face with starlight eyes.
+  - **Where:** the last raid waves on normal and hard, dark forests at night (rare), and about 3 in 10 woodland
+    mansion mages.
+  - **Duplication:** it engages with a spell that makes 3-4 identical duplicates appear around it, and half the time
+    it swaps places with one. The duplicates strafe and shoot harmless illusory arrows, pop in one hit and fade after
+    15 s. It keeps its blindness spell and bow.
+  - **Loot:** a Totem of Confusion 25 % of the time (player kill, +5 % per Looting level).
+  - **Also:** it has its own spawn egg and an Almanac page.
+- **Last Merchant robe:** much richer up close: a shoulder capelet, gold-stitched front and an inner panel, pleats,
+  a leather belt with a brass buckle, pouches and a coin purse tied with ruby cord, an embroidered hem and cuffs,
+  darned patches, a merchant's mark on the back and strapped boots.
+- **Structure maps (new):** explorer maps, like vanilla treasure maps, that lead to a Sunken Bell Tower, an Obelisk of
+  Unreadable Names or an Ancient City. Each has its own map marker.
+  - Found in shipwreck map chests, ocean ruins, village cartographers, stronghold libraries, village mints and Sunken
+    Bell Towers.
+  - Half of the Last Merchant's visits offer one for 8-16 rubies.
+  - The Almanac has a page on them.
+- **Wayfarer's Chart:** held in hand it now has rolled parchment at the top and bottom, with wooden knobs as on its
+  icon, and keeps its worn side edges.
+- **Forgotten Land obelisk:** its inscription block has its own Forgotten Land version, gold glyphs cut into grey
+  ruin stone, instead of the black Overworld one.
+- **Rays in true 3D:** the other ray effects are now volumetric tubes, like Sun's Fury, instead of flat ribbons:
+  - the Rewind golden thread;
+  - the animated magnifying glass's sunbeam and the Wand of Quickening's spark trail;
+  - the Pyrrhic Scepter's fiery tail;
+  - the falling star's meteor trail and its pillar of light.
+
+  They have exact thickness from any angle, only blocks in front of them hide them, and they glow brighter seen
+  along their length. With a shader pack they fall back to the old look.
+- **Totems crafted in the Totem of Undying's shape:**
+  - Totem of Banishing: 3 Exilite Ingots around a Lacunar Quintessence, a ruby at the bottom (`.X. / XQX / .R.`).
+    No Totem of Undying needed any more.
+  - Totem of Confusion: 4 Umbral Steel ingots around the Quintessence, a ruby top left and an amethyst shard top
+    right, like the eyes on its texture (`RUA / UQU / .U.`).
+- **Exilite Debris in the Overworld:** the Totem of Banishing is made of exilite, so its hidden veins now also lie
+  deep in the Overworld (below Y -16, about one vein every two chunks), not only in the Forgotten Land.
+  "The Totem's Own Stone" now comes before the totem in the advancement tree.
+- **Forgotten Land action bar:** shows only "Returning in m:ss"; the translated coordinates are gone (the Wayfarer's
+  Chart still shows them).
+- **The Almanac no longer grants the root advancement:** the Lacuna tab opens with your first ruby.
+
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->

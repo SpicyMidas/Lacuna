@@ -221,6 +221,9 @@ public final class ModBlocks {
             com.lacuna.mod.fl.Exilite.stone()));
     public static final DeferredBlock<WallBlock> EXILITE_BRICK_WALL = block("exilite_brick_wall", () -> new WallBlock(
             com.lacuna.mod.fl.Exilite.stone().forceSolidOn()));
+    // ------------------------------------------------------------------ the Forgotten Land obelisk's inscription: the same block, in ruin stone
+    public static final DeferredBlock<ObeliskInscriptionBlock> FORGOTTEN_OBELISK_INSCRIPTION = block("forgotten_obelisk_inscription",
+            () -> new ObeliskInscriptionBlock(ruinProps().noLootTable().lightLevel(s -> 3)));
 
     private static BlockBehaviour.Properties civicProps(MapColor color, SoundType sound) {
         return BlockBehaviour.Properties.of().mapColor(color).strength(2.5F, 6.0F).sound(sound).noOcclusion()

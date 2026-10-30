@@ -4,16 +4,17 @@ fired where a power takes effect) for relic and gadget powers; the code-granted 
 (util/LacunaAdvancements) for the rest. Small XP rewards on the two challenges only.
 
 The tree (new milestones marked +):
-  root (the Almanac or a ruby)
+  root (a ruby)
     + A Gem the Mountains Cried (ruby) -> + Heavier in the Dark (umbral steel) -> + Nightforged (an umbral tool)
                                         -> + Rubies Only (trade with the Last Merchant), Two Halves (pearl),
                                            + Wayfarer (the chart)
     + Never Forged (any relic) -> Blade of the Eclipse -> A Piece of the Sun, + Through Another's Eyes (possession)
                                -> Triangle of Instant Pulverization, Wish Upon a Star, + It's Alive! (wand)
                                -> + Curator of the Forgotten (every relic, challenge)
-    The Shape of the Gap (Quintessence) -> + A Hand That Remembers (totem) -> + The Way Stays Open (portal)
+    The Shape of the Gap (Quintessence) -> + The Totem's Own Stone (exilite, challenge)
+                                        -> + A Hand That Remembers (totem) -> + The Way Stays Open (portal)
                                                                           -> A Land Nobody Remembers -> Remembered Again,
-                                           + Where Waterfalls Run Upward, + The Totem's Own Stone (challenge),
+                                           + Where Waterfalls Run Upward,
                                            + Count the Mirrors (labyrinth) -> + Only You Live There Now (Reflection)
                                         -> Which One Is Real?
     + The Drowned Are Not Alone (bell tower) -> + Ore Song (ring the bell)
@@ -43,10 +44,11 @@ def used_relic(item):
     return {"trigger": "lacuna:used_relic", "conditions": {"item": {"items": item}}}
 
 
-def clicked(block):
-    """Right-clicked {@code block} with an empty hand (or an item it ignores) and the block answered."""
+def clicked(*blocks):
+    """Right-clicked one of {@code blocks} with an empty hand (or an item it ignores) and the block answered."""
+    terms = [{"condition": "minecraft:block_state_property", "block": block} for block in blocks]
     return {"trigger": "minecraft:default_block_use", "conditions": {"location": [
-        {"condition": "minecraft:block_state_property", "block": block}]}}
+        terms[0] if len(terms) == 1 else {"condition": "minecraft:any_of", "terms": terms}]}}
 
 
 def build(g):
@@ -99,10 +101,10 @@ def build(g):
     # ---------------------------------------------------------------------------------------- totems and the land
     adv(g, "totem_of_banishing", "lacuna:totem_of_banishing", {"totem": has("lacuna:totem_of_banishing")},
         "lacunar_quintessence",
-        en=("A Hand That Remembers", "Craft a Totem of Banishing: a Lacunar Quintessence on a Totem of Undying, with "
-                                     "rubies and gold."),
-        it=("Una mano che ricorda", "Fabbrica un Totem dell'esilio: una Quintessenza lacunare su un Totem "
-                                    "dell'immortalità, con rubini e oro."))
+        en=("A Hand That Remembers", "Craft a Totem of Banishing: a Lacunar Quintessence set in Exilite Ingots, a ruby "
+                                     "at its base."),
+        it=("Una mano che ricorda", "Fabbrica un Totem dell'esilio: una Quintessenza lacunare incastonata in lingotti di "
+                                    "esilite, con un rubino alla base."))
     adv(g, "open_portal", "lacuna:forgotten_portal_frame", code(), "totem_of_banishing",
         en=("The Way Stays Open", "Light a Forgotten Portal: eight frames around a 2×2 opening, touched with the totem."),
         it=("La via resta aperta", "Accendi un Portale dimenticato: otto cornici attorno a un'apertura 2×2, toccate con "
@@ -110,12 +112,12 @@ def build(g):
     adv(g, "zenithite", "lacuna:zenithite_shard", {"shard": has("lacuna:zenithite_shard")}, "enter_forgotten_land",
         en=("Where Waterfalls Run Upward", "Mine zenithite on the floating islands of the Inverted Falls."),
         it=("Dove le cascate salgono", "Scava la zenithite sulle isole fluttuanti delle Cascate rovesciate."))
-    adv(g, "exilite", "lacuna:exilite_debris", {"debris": has("lacuna:exilite_debris")}, "enter_forgotten_land",
+    adv(g, "exilite", "lacuna:exilite_debris", {"debris": has("lacuna:exilite_debris")}, "lacunar_quintessence",
         frame="challenge",
-        en=("The Totem's Own Stone", "Dig up Exilite Debris, hidden in the stone deep below the Forgotten Land "
-                                     "(diamond pickaxe)."),
-        it=("La pietra del totem", "Dissotterra dei Detriti di esilite, nascosti nella pietra in fondo alla Terra "
-                                   "Dimenticata (piccone di diamante)."))
+        en=("The Totem's Own Stone", "Dig up Exilite Debris, hidden in the deepest stone of the Overworld (below Y -16) "
+                                     "and of the Forgotten Land (diamond pickaxe)."),
+        it=("La pietra del totem", "Dissotterra dei Detriti di esilite, nascosti nella pietra più profonda del Mondo "
+                                   "normale (sotto Y -16) e della Terra Dimenticata (piccone di diamante)."))
     reward(g, "exilite", 50)
     adv(g, "mirror_labyrinth", "lacuna:mirror_glass", {"inside": inside("lacuna:mirror_labyrinth")}, "enter_forgotten_land",
         en=("Count the Mirrors", "Walk into a Mirror Labyrinth, somewhere in the Forgotten Land."),
@@ -134,7 +136,8 @@ def build(g):
     adv(g, "ore_song", "lacuna:ruby_ore", {"rang": clicked("lacuna:sunken_bell")}, "sunken_bell_tower",
         en=("Ore Song", "Ring a Sunken Bell and see the ores around it answer."),
         it=("Il canto dei minerali", "Suona una Campana sommersa e guarda rispondere i minerali intorno."))
-    adv(g, "obelisk", "lacuna:obelisk_inscription", {"read": clicked("lacuna:obelisk_inscription")}, "root",
+    adv(g, "obelisk", "lacuna:obelisk_inscription", {"read": clicked("lacuna:obelisk_inscription",
+                                                                       "lacuna:forgotten_obelisk_inscription")}, "root",
         en=("Seven Brothers, No Names", "Read an Obelisk of Unreadable Names, a black pillar standing alone in the wilds."),
         it=("Sette fratelli, nessun nome", "Leggi un Obelisco dei nomi illeggibili, un pilastro nero solitario nelle "
                                            "terre selvagge."))

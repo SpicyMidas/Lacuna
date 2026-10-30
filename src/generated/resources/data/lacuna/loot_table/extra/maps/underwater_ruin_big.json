@@ -1,0 +1,48 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 90
+        },
+        {
+          "functions": [
+            {
+              "decoration": "lacuna:sunken_bell_tower",
+              "destination": "lacuna:on_sunken_bell_tower_maps",
+              "function": "minecraft:exploration_map",
+              "search_radius": 50,
+              "skip_existing_chunks": true,
+              "zoom": 2
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "filled_map.lacuna.sunken_bell_tower"
+              },
+              "target": "item_name"
+            },
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "gray",
+                  "translate": "filled_map.lacuna.sunken_bell_tower.lore"
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "minecraft:map",
+          "type": "minecraft:item",
+          "weight": 10
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "lacuna:extra/maps/underwater_ruin_big",
+  "type": "minecraft:chest"
+}

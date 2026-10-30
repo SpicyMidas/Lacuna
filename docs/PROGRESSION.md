@@ -19,7 +19,7 @@ Tower, Mirror Hoard, Reflection), `m11_villages.py` (mint), `m15_starcaller.py` 
    civic blocks, repair kits, the Comically Large Bag. Mobs give clockwork gears, umbral nuggets, chronal shards.
 2. **Relics and the first Quintessence**: watch the night sky (falling stars), dive for Sunken Bell Towers, meet the
    Last Merchant (rubies are his only currency, and what relics cost), raid vanilla structures and bosses.
-3. **A Totem of Banishing** (Quintessence + Totem of Undying + rubies + gold) opens the **Forgotten Land**: light a
+3. **A Totem of Banishing** (Quintessence + 3 Exilite Ingots + a ruby; exilite debris hides deep in the Overworld) opens the **Forgotten Land**: light a
    Forgotten Portal with it once and the way stays open.
 4. **Forgotten Land**: divine glass, zenithite, chronal shards, exilite; ruin caches; the **Mirror Labyrinth**, whose
    Reflection always leaves a Quintessence and whose hoard always holds a relic.
@@ -41,8 +41,8 @@ Recipes (the only way to craft a totem):
 
 | Result | Recipe |
 |---|---|
-| Totem of Banishing (6 uses, never repaired) | `RQR / GTG / .R.` — 3 rubies, 1 Quintessence, 2 gold ingots, 1 Totem of Undying |
-| Totem of Confusion | `.P. / AMA / GQG` — ender pearl, 2 amethyst shards, armour stand, 2 gold ingots, 1 Quintessence |
+| Totem of Banishing (6 uses, never repaired) | `.X. / XQX / .R.` — 3 Exilite Ingots, 1 Quintessence, 1 ruby (the Totem of Undying's shape) |
+| Totem of Confusion | `RUA / UQU / .U.` — ruby, amethyst shard, 4 Umbral Steel ingots, 1 Quintessence (the Totem of Undying's shape) |
 | Totem of Undying (vanilla, the legendary path) | `EGE / GQG / .G.` — 2 emeralds, 4 gold ingots, 1 Quintessence |
 
 Repair kits refuse totems (`#lacuna:repair_kit_refuses`): their uses are final.
@@ -87,6 +87,21 @@ One attempt every 3 days, 25 % by day (about one visit in 12 days); he stays 3 d
   Greatsword, Ember Triangle). Never a totem.
 - **Sun's Fury forge**: Solar Flare + 32 rubies → Sun's Fury, every visit.
 - **Lacunar Quintessence**: 1 visit in 5, 64 rubies + 4 ruby blocks.
+- **Structure map**: half his visits, one map drawn at random — Sunken Bell Tower 12 rubies, obelisk 8, ancient city 16
+  (scaled by the price index); none when no such place lies within 100 chunks (`exploration/MerchantMaps.java`).
+
+## Structure maps
+
+Vanilla filled maps with a target decoration of their own (a teal bell, a black obelisk, a glowing sculk frame), like
+buried treasure and explorer maps, centred on the nearest Overworld place no other map has shown yet. Chest maps are
+drawn when the chest is first opened (search radius 50 chunks; nothing nearby leaves a blank map); data in
+`tools/content/m21_structure_maps.py`. Vanilla cartographers already sell mansion, monument and trial chamber maps.
+
+| Map | Leads to | Found (one extra roll per chest) |
+|---|---|---|
+| Sunken Bell Tower Map | `lacuna:sunken_bell_tower` (zoom 2) | shipwreck map chest 15 %; big ocean ruin 10 %; small ocean ruin 5 %; village cartographer 5 %; Last Merchant |
+| Obelisk Map | `lacuna:obelisk` (zoom 1) | village cartographer 15 %; village mint 6 %; Sunken Bell Tower chest 5 %; Last Merchant |
+| Ancient City Map | `minecraft:ancient_city` (zoom 2) | stronghold library 12 %; Sunken Bell Tower chest 8 %; village cartographer 5 %; Last Merchant |
 
 ## Crafted
 
@@ -139,7 +154,8 @@ consumables, and the **Wayfarer's Chart** is a navigation tool everyone should b
 | Crystal Willow Shard | Crystal Willow leaves 5 % |
 | Silk Dust | Lantern Moths 0-2 (+Looting) |
 | Clockwork Gear | husks 0-2, pillagers 0-1 (+Looting) |
-| Exilite Debris | hidden veins below Y −8 in the Forgotten Land (diamond pickaxe); exilite shards also 1.2 % in ruin caches |
+| Totem of Confusion | crafted (above); Illusioners 25 % (player kill, +5 % per Looting level) — later raid waves on normal/hard, dark forests at night (rare), about 3 in 10 woodland mansion mages |
+| Exilite Debris | hidden veins deep in the Overworld (below Y −16, ~1 vein per 2 chunks) and below Y −8 in the Forgotten Land (diamond pickaxe); exilite shards also 1.2 % in ruin caches |
 | Village Coin | Coiner trades (ore → coins), mint strongboxes, guild contracts |
 | Guild Contract | a guild board, for members |
 | Arrival / Departure Shard | splitting a Fractured Pearl |
@@ -149,11 +165,12 @@ consumables, and the **Wayfarer's Chart** is a navigation tool everyone should b
 | Block | Where |
 |---|---|
 | Ruby, Umbral Steel ores (+ deepslate) | overworld; Silk Touch keeps the ore |
-| Zenithite ores, Divine Glass Cluster, Exilite Debris | Forgotten Land; Silk Touch keeps ores and clusters (debris drops itself) |
+| Zenithite ores, Divine Glass Cluster | Forgotten Land; Silk Touch keeps ores and clusters |
+| Exilite Debris | deep Overworld and Forgotten Land; drops itself |
 | Ashen Snow, Spore Mushroom, Rusted Gear | Forgotten Land biomes; drop themselves |
 | Clear Ice, Updraft Spring, Buried Watch | Forgotten Land biomes; Silk Touch only (the watch otherwise drops chronal shards) |
 | Molten / Prime / Extinguished Star Rock | where a star fell; Silk Touch keeps the block |
 | Sunken Bell | Sunken Bell Tower (drops itself) |
 | Logs, leaves, saplings, Crystal Willow Strands, Tidebloom Roots | the wood families' trees (overworld biomes and the Forgotten Land) |
-| Ruin stone family, Mural Fragments, Obelisk Inscription, Mirror Glass, Labyrinth Seal and Ring | structure blocks, unbreakable in survival (creative only) |
+| Ruin stone family, Mural Fragments, Obelisk Inscription (and its ruin-stone Forgotten Obelisk Inscription), Mirror Glass, Labyrinth Seal and Ring | structure blocks, unbreakable in survival (creative only) |
 | Spawn eggs (Lantern Moth, Last Merchant) | creative only |

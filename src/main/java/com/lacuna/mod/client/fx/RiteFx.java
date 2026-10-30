@@ -125,8 +125,9 @@ public final class RiteFx {
                 FxDraw.billboard(pose, glow, ctx.camera(), p, h % 3 == 0 ? 0.35F : 0.2F, 0.0F, FxDraw.argb(0.9F * fade, 0xFFD27A));
             }
             if (from.distanceToSqr(dest) < 96 * 96 && from.distanceToSqr(dest) > 1.0) {
-                FxDraw.ribbon(pose, ctx.buffers().getBuffer(FxRenderTypes.beam()), ctx.rel(from), c, 0.25F, 0.6F,
-                        FxDraw.argb(0.0F, 0xFFD27A), FxDraw.argb(0.8F * fade, 0xFFD27A), 0.0F, (float) from.distanceTo(dest));
+                // a volumetric thread (it ends at the traveller's chest: faded near the eye), or the flat ribbon
+                FxTubes.beamOrRibbon(pose, ctx.buffers(), FxRenderTypes.beam(), ctx.rel(from), c, 0.25F, 0.6F,
+                        FxDraw.argb(0.0F, 0xFFD27A), FxDraw.argb(0.8F * fade, 0xFFD27A), 0.0F, (float) from.distanceTo(dest), FxTubes.NEAR_FADE);
             }
         }
     }

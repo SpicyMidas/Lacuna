@@ -1,0 +1,58 @@
+# Illusioner (starcloth robe and hood, front and back) and the Last Merchant's robe, posed with NoAI; then a live
+# illusioner hunts a villager (Resistance V: an Invulnerable one is never a target): it casts duplication and its duplicates strafe and shoot illusory arrows.
+world lacuna_illusioner flat
+wait 60
+hud off
+cmd time set 6000
+cmd gamerule doDaylightCycle false
+cmd gamerule sendCommandFeedback false
+cmd tp @s 0.5 -60 0.5 180 14
+wait 40
+cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
+wait 30
+shot merchant_front
+cmd tp @e[type=lacuna:last_merchant] 0.5 -130 0.5
+cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[180f,0f]}
+wait 30
+shot merchant_back
+cmd tp @e[type=lacuna:last_merchant] 0.5 -130 0.5
+cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[60f,0f]}
+wait 30
+shot merchant_side
+cmd tp @e[type=lacuna:last_merchant] 0.5 -130 0.5
+cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
+wait 30
+shot illusioner_front
+cmd tp @e[type=minecraft:illusioner] 0.5 -130 0.5
+cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[180f,0f]}
+wait 30
+shot illusioner_back
+cmd tp @e[type=minecraft:illusioner] 0.5 -130 0.5
+cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[-50f,0f]}
+wait 30
+shot illusioner_side
+cmd tp @e[type=minecraft:illusioner] 0.5 -130 0.5
+cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
+cmd time set 18000
+wait 30
+shot illusioner_night
+cmd tp @e[type=minecraft:illusioner] 0.5 -130 0.5
+cmd kill @e[type=item]
+cmd time set 6000
+cmd tp @s 0.5 -60 6.5 180 10
+cmd summon minecraft:villager 3.5 -60 -1 {NoAI:1b}
+cmd effect give @e[type=minecraft:villager] minecraft:resistance infinite 4 true
+cmd summon minecraft:illusioner -2.5 -60 -3 {Rotation:[90f,0f]}
+wait 30
+shot illusioner_cast
+wait 15
+shot illusioner_duplicates_1
+wait 30
+shot illusioner_duplicates_2
+wait 40
+shot illusioner_duplicates_3
+camera back
+cmd tp @s 0.5 -60 6.5 180 25
+wait 30
+shot illusioner_duplicates_4
+quit
