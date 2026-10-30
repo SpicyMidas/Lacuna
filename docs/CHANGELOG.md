@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-beta.8 — beta feedback
+
+- **Gravemaw Greatsword icon:** it was shaded darker in the inventory than its texture. Its split model (big blade in
+  hand, 16x16 icon elsewhere) used block-style side lighting for the GUI; it now uses the flat front lighting of every
+  other item.
+
 ## 1.0.0-beta.7 — beta feedback
 
 <!-- beta7 -->

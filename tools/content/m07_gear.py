@@ -108,7 +108,9 @@ def weapons(g):
                                               "textures": {"layer0": "lacuna:item/gravemaw_greatsword_icon"}})
     icon = {"parent": "lacuna:item/gravemaw_greatsword_icon"}
     g.item("gravemaw_greatsword", "Gravemaw Greatsword", "Spadone Fauce-di-tomba", model="none")
-    g.item_model("gravemaw_greatsword", {"loader": "neoforge:separate_transforms",
+    # gui_light front like every flat item: the wrapper has no parent of its own, so it would otherwise default to the
+    # side (block) lighting that shades the icon's flat quads darker in the inventory
+    g.item_model("gravemaw_greatsword", {"loader": "neoforge:separate_transforms", "gui_light": "front",
                                          "base": {"parent": "lacuna:item/gravemaw_greatsword_held"},
                                          "perspectives": {"gui": icon, "fixed": icon, "ground": icon}})
     g.item_model("gravemaw_greatsword_held", {"parent": "minecraft:item/handheld",
