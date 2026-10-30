@@ -31,13 +31,21 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 public final class SolarSky {
     private static float boost;
     private static float boostO;
+    /** Time constant (ms) of the shown day time following the sweep's schedule: it glides over the tick steps. */
+    private static final double SWEEP_GLIDE_MS = 90.0;
+    /** The day time shown during a sweep (-1: no sweep), and when it was last moved (real time, ms). */
+    private static long shownDayTime = -1L;
+    private static long shownAt;
 
     private SolarSky() {}
 
     /**
      * Every frame while a nearby Sun's Fury sweeps the time, the sun moves along the very schedule the server follows
      * (instead of jumping once per tick when the time packets arrive), so the sun, the sky colours and the sunbeams that
-     * lean towards it glide smoothly. Never moves the time backwards; costs one pass over the rendered entities.
+     * lean towards it glide smoothly. The time shown glides after the schedule (a short exponential follow over real
+     * time) and only ever moves forwards, and it is set every frame: the server's time packets (which arrive once per
+     * tick and land a little ahead or behind the client's own count) and the client's game-time corrections can then
+     * never make the sun stutter back and forth. Costs one pass over the rendered entities.
      */
     public static void onFrame(net.neoforged.neoforge.client.event.RenderFrameEvent.Pre event) {
         Minecraft mc = Minecraft.getInstance();
@@ -47,19 +55,30 @@ public final class SolarSky {
         float pt = event.getPartialTick().getGameTimeDeltaPartialTick(true);
         for (net.minecraft.world.entity.Entity e : mc.level.entitiesForRendering()) {
             if (e instanceof SunsFuryEntity spear && spear.isFocusing()) {
-                long t = spear.smoothDayTime(pt);
-                if (t > mc.level.getDayTime()) {
-                    // the level data directly: ClientLevel#setDayTime would also flip the client's daylight rule
-                    mc.level.getLevelData().setDayTime(t);
+                long target = spear.smoothDayTime(pt);
+                if (target < 0L) {
+                    break;
                 }
+                long now = net.minecraft.Util.getMillis();
+                if (shownDayTime < 0L) {
+                    shownDayTime = Math.min(mc.level.getDayTime(), target);
+                } else if (target > shownDayTime) {
+                    double k = 1.0 - Math.exp(-Math.max(0L, now - shownAt) / SWEEP_GLIDE_MS);
+                    shownDayTime += Math.max(1L, Math.round((target - shownDayTime) * k));
+                }
+                shownAt = now;
+                // the level data directly: ClientLevel#setDayTime would also flip the client's daylight rule
+                mc.level.getLevelData().setDayTime(shownDayTime);
                 return;
             }
         }
+        shownDayTime = -1L;
     }
 
     static void reset() {
         boost = 0.0F;
         boostO = 0.0F;
+        shownDayTime = -1L;
     }
 
     /** Client tick: how strongly the sun flares right now (strongest nearby effect wins), and the vignettes. */

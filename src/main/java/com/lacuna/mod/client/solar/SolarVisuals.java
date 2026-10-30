@@ -39,6 +39,8 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class SolarVisuals {
     private static final List<Entity> QUEUE = new ArrayList<>();
+    /** How much wider than its first design the Sun's Fury pillar is drawn (every layer, the pouring rings). */
+    private static final float PILLAR_SCALE = 1.45F;
 
     static final int AMBER = 0xFF9A2A;
     static final int GOLD = 0xFFC24A;
@@ -566,27 +568,28 @@ public final class SolarVisuals {
         // light is screened over the scene, so it never bleaches the day sky into a white slab and needs no easing by day)
         int haze = FxDraw.argb(0.1F * soft, AMBER);
         int halo = FxDraw.argb(0.24F * soft, GOLD);
-        float hazeWidth = 64.0F * swell * breathe;
-        float haloWidth = 30.0F * swell * breathe;
+        float size = PILLAR_SCALE * swell;
+        float hazeWidth = 64.0F * size * breathe;
+        float haloWidth = 30.0F * size * breathe;
         tube(pose, over, bottom, top, hazeWidth, hazeWidth, haze, haze, -6.0F, height, false);
         // embers rising through the halo
         tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false, 0.0F, 0.0F, 4.0F);
         // a bright splash where it meets the ground: a cone of light widening into the ground
-        tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * swell, 12.0F * swell,
+        tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * size, 12.0F * size,
                 FxDraw.argb(0.22F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
 
         // inner layers: they pile up into a white-hot core. Each glows towards white where it is dense (bodyGlow),
         // golden outside and white-gold towards the core like the sun it falls from: a broad golden body around 20
-        // blocks wide, as bright over the day sky as over terrain; soft light streaks wind up the body, turning
+        // blocks wide (times PILLAR_SCALE), as bright over the day sky as over terrain; soft light streaks wind up the body, turning
         VertexConsumer beam = ctx.buffers().getBuffer(SolarRenderTypes.column());
         int gold = FxDraw.argb(0.55F * a, GOLD);
         int warm = FxDraw.argb(0.6F * a, WARM);
         int pale = FxDraw.argb(0.7F * a * (1.0F - 0.25F * day), PALE);
         int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
-        tube(pose, beam, bottom, top, 20.0F * swell, 20.0F * swell, gold, gold, -6.0F, height, true, 0.75F * a, 2.2F, 0.0F);
-        tube(pose, beam, bottom, top, 13.0F * swell, 13.0F * swell, warm, warm, -6.0F, height, false, 0.85F * a, 0.0F, 0.0F);
-        tube(pose, beam, bottom, top, 6.5F * swell, 6.5F * swell, pale, pale, -6.0F, height, false, 0.7F * a, 0.0F, 0.0F);
-        tube(pose, beam, bottom, top, 3.2F * swell, 3.2F * swell, white, white, -6.0F, height, false, 0.95F * a, 0.0F, 0.0F);
+        tube(pose, beam, bottom, top, 20.0F * size, 20.0F * size, gold, gold, -6.0F, height, true, 0.75F * a, 2.2F, 0.0F);
+        tube(pose, beam, bottom, top, 13.0F * size, 13.0F * size, warm, warm, -6.0F, height, false, 0.85F * a, 0.0F, 0.0F);
+        tube(pose, beam, bottom, top, 6.5F * size, 6.5F * size, pale, pale, -6.0F, height, false, 0.7F * a, 0.0F, 0.0F);
+        tube(pose, beam, bottom, top, 3.2F * size, 3.2F * size, white, white, -6.0F, height, false, 0.95F * a, 0.0F, 0.0F);
 
         // rings of light pouring down the pillar
         VertexConsumer marks = ctx.buffers().getBuffer(SolarRenderTypes.ring());
@@ -595,7 +598,7 @@ public final class SolarVisuals {
             for (int j = 0; j < 4; j++) {
                 float phase = (t / 18.0F + j / 4.0F) % 1.0F;
                 float h = 100.0F * (1.0F - phase) * (1.0F - phase);
-                float r = 7.5F * width * (1.0F + 0.6F * phase);
+                float r = 7.5F * PILLAR_SCALE * width * (1.0F + 0.6F * phase);
                 float ra = Mth.sin(phase * Mth.PI) * 0.5F * a * pour;
                 groundMark(pose, marks, ctx.rel(base.add(0, h + 0.5, 0)), r, SolarRenderTypes.THIN, FxDraw.argb(ra, GOLD));
             }

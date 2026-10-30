@@ -7,7 +7,7 @@ shadow, time and space that are found and never crafted, a legendary essence tha
 and four wood families, falling stars, strange creatures, ruins, and a civic life for vanilla villages. Its only
 dependency is NeoForge. English and Italian are included.
 
-**Version 1.0.0-beta.4** — beta. Feedback and bug reports: <https://github.com/SpicyMidas/Lacuna/issues>.
+**Version 1.0.0-beta.5** — beta. Feedback and bug reports: <https://github.com/SpicyMidas/Lacuna/issues>.
 
 ## Where to start
 

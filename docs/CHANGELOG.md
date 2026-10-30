@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0-beta.5 — beta feedback
+
+<!-- beta5 -->
+- **Smooth night-to-day sweep:** while Sun's Fury focuses, the sun now glides up the sky every frame. The server's
+  once-per-tick time updates used to land a little ahead of or behind the client's own count and made the sun, sky and
+  light stutter back and forth.
+- **Sun's Fury is larger:** the pillar is drawn 45 % wider (every layer, the ground splash and the rings pouring down
+  it).
+
 ## 1.0.0-beta.4 — beta feedback
 
 <!-- beta4 -->
