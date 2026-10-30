@@ -11,10 +11,12 @@ cmd gamerule doFireTick false
 cmd time set 6000
 # (the Almanac given on first join would sit in slot 0 and open on use)
 cmd clear @s
-# --- builds: the crater platform (top face 20 up, 40 ahead to +z), the wall behind it, the camera perch, a glass target wall
+# --- builds: the crater platform (top face 20 up, 40 ahead to +z), the wall behind it, two camera perches (20 and 44 up),
+# a brick target wall
 cmd fill ~-12 ~ ~28 ~12 ~19 ~52 minecraft:stone
 cmd fill ~-45 ~ ~60 ~45 ~34 ~60 minecraft:stone
 cmd fill ~-1 ~20 ~-1 ~1 ~20 ~1 minecraft:glass
+cmd fill ~-1 ~44 ~-1 ~1 ~44 ~1 minecraft:glass
 cmd fill ~-3 ~ ~-7 ~3 ~3 ~-7 minecraft:stone_bricks
 cmd give @s lacuna:divine_magnifying_glass
 select 0
