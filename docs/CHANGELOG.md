@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-beta.10 — beta feedback
+
+- **Sun's Fury in the hand:** the same spear as its icon, redrawn at 24x24 (finer, a leaf-shaped blade of sunlight
+  white-hot at the point) and held larger in first and third person. The 16x16 icon stays in the inventory, on the
+  ground and in frames. (Replaces beta.9's trident-like head.)
+
 ## 1.0.0-beta.9 — beta feedback
 
 - **Sun's Fury, even faster:** the light inside the pillar pours down more than twice as fast again, the spiral
@@ -7,8 +13,6 @@
 - **Sun's Fury sounds:** the strike now also swells with a deep beacon chord and a ringing crystal note. While the
   pillar burns, light roars down it and the falling light chimes like glass rain, under a low conduit hum. It fades
   with a resonating amethyst note.
-- **Sun's Fury in the hand:** a new 24x24 three-pronged spear, held like a trident: golden shaft with gilded wraps, a
-  small sun at the collar, white-hot prongs. The 16x16 icon stays in the inventory, on the ground and in frames.
 
 ## 1.0.0-beta.8 — beta feedback
 

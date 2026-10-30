@@ -98,10 +98,9 @@ def eclipser(g):
 # entries equal the right-hand ones on purpose: ItemTransform mirrors them, so the left hand is a true mirror image.
 _SF_THIRD = {"rotation": [-170, -90, 20], "translation": [0.49, -2.34, -4.17], "scale": [1.2, 1.2, 1.2]}
 _SF_FIRST = {"rotation": [-175, 58.6, 216.5], "translation": [5.36, 4.45, -9.84], "scale": [0.85, 0.85, 0.85]}
-# Held at rest: in third person larger than a tool, like a trident carried in the hand; in first person the vanilla
-# handheld pose, which keeps the whole three-pronged head in view.
+# Held at rest: the handheld pose, larger than a tool (the 24x24 spear), in first and third person.
 _SF_HELD_THIRD = {"rotation": [0, -90, 55], "translation": [0, 6.5, 0.5], "scale": [1.2, 1.2, 1.2]}
-_SF_HELD_FIRST = {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]}
+_SF_HELD_FIRST = {"rotation": [0, -90, 25], "translation": [1.13, 3.6, 1.13], "scale": [0.85, 0.85, 0.85]}
 SUNS_FURY_HELD_DISPLAY = {
     "thirdperson_righthand": _SF_HELD_THIRD,
     "thirdperson_lefthand": _SF_HELD_THIRD,
@@ -121,8 +120,8 @@ def solar(g):
     g.item("solar_flare", "Solar Flare", "Brillamento solare")
     # thrown like a trident: while it is drawn back (predicate lacuna:throwing, registered in client/solar) the
     # spear swaps to a model whose hand transforms hold it raised over the shoulder, tip forward
-    # in the inventory, on the ground and in frames the 16x16 icon; in the hand a larger 24x24 three-pronged spear,
-    # held like a trident (its tip on the same spot of the sprite, so the throwing transforms and the charge light fit)
+    # in the inventory, on the ground and in frames the 16x16 icon; in the hand the same spear drawn at 24x24 and held
+    # larger (its tip on the same spot of the sprite, so the throwing transforms and the charge light fit)
     icon = {"parent": "lacuna:item/suns_fury_icon"}
     g.item("suns_fury", "Sun's Fury", "Furia del Sole", model="none")
     g.item_model("suns_fury", {"loader": "neoforge:separate_transforms", "gui_light": "front",
