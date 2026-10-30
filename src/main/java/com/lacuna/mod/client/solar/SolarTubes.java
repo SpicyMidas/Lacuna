@@ -49,6 +49,8 @@ final class SolarTubes {
     static final int SKY = 2;
     /** Flag: fades out where it passes within a few blocks of the eye (a shaft right past the eyes never fills the screen). */
     static final int NEAR_FADE = 4;
+    /** Flag: fades out only right at the eye (within ~2 blocks): a beam aimed past the camera never fills the screen. */
+    static final int EYE_FADE = 8;
 
     private static final int SIDES = 16;
     private static final int RINGS = 48;

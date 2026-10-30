@@ -19,7 +19,8 @@
 // Same layers, colours and motion as solar_column.fsh / beam_volume.fsh: TubeMode.x 0 = the pillar (white-hot core,
 // striated golden body, bands pouring down, heat shimmer, soft halo), 1 = the soft hazy sunbeam, 2 = the energy beam of
 // the Divine Magnifying Glass (flowing turbulence, ripple rings, hot core). TubeMode.y flags: 2 = sunlight from the
-// sky's sun disc (no distance dimming), 4 = fades out where it passes close to the eye.
+// sky's sun disc (no distance dimming), 4 = fades out where it passes close to the eye, 8 = fades out only right at the
+// eye (within about two blocks).
 // TubeFx: x = body cover (0..1, the body's opacity where the light is densest; independent of the light's own
 // intensity), y = rotating light streaks winding up the shaft, z = rising embers (both scaled by the intensity).
 
@@ -205,6 +206,9 @@ void main() {
     float fade = (flags & 2) != 0 ? 1.0 : lacuna_fade_at(seen);
     if ((flags & 4) != 0) {
         fade *= smoothstep(1.5, 7.5, seen);
+    }
+    if ((flags & 8) != 0) {
+        fade *= smoothstep(0.4, 2.2, seen);
     }
     float intensity = vertexColor.a * fade;
     if (intensity <= 0.001 && TubeFx.x * fade <= 0.001) {

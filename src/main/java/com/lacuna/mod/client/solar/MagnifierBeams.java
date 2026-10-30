@@ -149,15 +149,19 @@ public final class MagnifierBeams {
         float coreWidth = firstPerson ? 0.018F : 0.03F;
         if (len > 1.0E-3F && SolarTubes.room(4)) {
             // as 3D light (round from every angle, exactly as thick seen from the side as along it): a faint outer veil,
-            // the cone of gathered light, its inner light and the white-hot core with a bright body of its own
-            SolarTubes.straight(pose, a, b, lensWidth * 0.6F, 0.225F, FxDraw.argb(0.12F * shimmer, rgb), FxDraw.argb(0.16F * shimmer, rgb),
-                    0.0F, len, SolarTubes.SUNBEAM, 0);
-            SolarTubes.straight(pose, a, b, lensWidth * 0.5F, 0.15F, FxDraw.argb(0.3F * shimmer, rgb), FxDraw.argb(0.48F * shimmer, rgb),
-                    0.0F, len, SolarTubes.BEAM, 0);
-            SolarTubes.straight(pose, a, b, lensWidth * 0.225F, 0.06F, FxDraw.argb(0.7F, rgb), FxDraw.argb(0.85F * shimmer, rgb), 0.0F, len,
-                    SolarTubes.BEAM, 0);
+            // the cone of gathered light, its inner light and the white-hot core with a bright body of its own. Seen
+            // along its length from the eye (first person) a round beam gathers more light than a flat ribbon did: the
+            // outer layers are dimmed there; anyone else's beam fades right at the eye (aimed past the camera)
+            float k = firstPerson ? 0.65F : 1.0F;
+            int flags = firstPerson ? 0 : SolarTubes.EYE_FADE;
+            SolarTubes.straight(pose, a, b, lensWidth * 0.6F, 0.225F, FxDraw.argb(0.12F * k * shimmer, rgb),
+                    FxDraw.argb(0.16F * k * shimmer, rgb), 0.0F, len, SolarTubes.SUNBEAM, flags);
+            SolarTubes.straight(pose, a, b, lensWidth * 0.5F, 0.15F, FxDraw.argb(0.3F * k * shimmer, rgb), FxDraw.argb(0.48F * k * shimmer, rgb),
+                    0.0F, len, SolarTubes.BEAM, flags);
+            SolarTubes.straight(pose, a, b, lensWidth * 0.225F, 0.06F, FxDraw.argb(0.7F * k, rgb), FxDraw.argb(0.85F * k * shimmer, rgb), 0.0F,
+                    len, SolarTubes.BEAM, flags);
             SolarTubes.straight(pose, a, b, coreWidth * 0.5F, 0.0225F, FxDraw.argb(1.0F, hot), FxDraw.argb(1.0F, hot), 0.0F, len,
-                    SolarTubes.BEAM, 0, 0.55F, 0.0F, 0.0F);
+                    SolarTubes.BEAM, flags, 0.55F, 0.0F, 0.0F);
         } else {
             // a faint outer veil of coloured light
             VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());

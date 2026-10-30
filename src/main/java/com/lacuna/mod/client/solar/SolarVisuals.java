@@ -230,9 +230,9 @@ public final class SolarVisuals {
                 trail(pose, rel, w, c, v, SolarTubes.PILLAR, 0.0F);
                 for (int i = 0; i < n; i++) {
                     w[i] = 0.36F * k[i] + 0.02F;
-                    c[i] = FxDraw.argb(k[i] * k[i], WHITE);
+                    c[i] = FxDraw.argb(0.8F * k[i] * k[i], WHITE);
                 }
-                trail(pose, rel, w, c, v, SolarTubes.PILLAR, 0.6F);
+                trail(pose, rel, w, c, v, SolarTubes.PILLAR, 0.35F);
             } else {
                 // without the tube shader: one continuous camera-facing strip per layer
                 VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
