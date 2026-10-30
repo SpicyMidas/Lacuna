@@ -12,8 +12,9 @@
 // the chord where they are (the shaft melts into the ground it enters); whatever lies BEHIND the axis (sky, terrain,
 // trees or clouds beyond the shaft, even inside its wide outer layers) never thins it, so a shaft looks equally wide and
 // strong against the sky and against the landscape.
-// Output is premultiplied for ONE, ONE_MINUS_SRC_ALPHA: the light adds (alpha 0: it never darkens or greys what is
-// behind it, and it dims with distance instead of taking the fog colour); TubeFx.x > 0 also lays a bright, opaque-ish
+// Output is premultiplied for ONE, ONE_MINUS_SRC_ALPHA: the light is a luminous medium (it covers what is behind it as
+// much as it shines, in its own colour at full brightness: it never greys anything, and it dims with distance instead
+// of taking the fog colour), so its width and strength do not depend on the background; TubeFx.x > 0 also lays a bright, opaque-ish
 // body of its own colour under that light (bright gold or white, never darker than a bright sky), so the shaft reads
 // with the same body over the blue sky and over dark terrain.
 // Same layers, colours and motion as solar_column.fsh / beam_volume.fsh: TubeMode.x 0 = the pillar (white-hot core,
@@ -45,6 +46,14 @@ const float PI = 3.14159265;
 const float TAU = 6.2831853;
 /** Soft saturation of the light seen along a shaft: at most this many times its brightness seen across it. */
 const float GLOW_LIMIT = 2.5;
+/**
+ * How quickly the light hides what is behind it (see main: the light is a luminous medium, not a pure addition). A
+ * purely additive glow is only as visible as the background lets it be: over a bright sky its faint outer layers push
+ * the sky to white and the shaft looks wider and stronger, over dark terrain the same layers barely show and it looks
+ * thin and weak. Covering the background in proportion to the light (premultiplied, in the light's own colour at full
+ * brightness, so it never greys anything) makes the shaft the same width and strength over sky, terrain and night.
+ */
+const float COVER_K = 2.5;
 
 float hash(vec2 p) {
     p = fract(p * vec2(123.34, 456.21));
@@ -334,6 +343,13 @@ void main() {
     float rim = 1.0 - smoothstep(0.8, 1.0, x);
     intensity *= rim;
     vec3 light = col * intensity * ColorModulator.rgb;
+    // the light as a luminous medium: it covers what is behind it as much as it shines (alpha from its brightness) and
+    // shows its own colour at full brightness there, so the same shaft reads the same over any background; where it is
+    // brighter still (the white-hot core) the extra adds on top. The faintest outer haze stays a plain addition: covered,
+    // it would wash a night sky in a dim tint (or grey a bright one) across the whole wide halo.
+    float lum = max(max(light.r, light.g), light.b);
+    float shine = clamp((1.0 - exp(-COVER_K * lum)) * smoothstep(0.04, 0.35, lum), 0.0, 0.985);
+    vec3 emit = max(light / max(lum, 1.0e-4) * shine, light);
     // the body: a bright cover of the light's own colour (white towards the core), as opaque as the light is dense
     float cover = 0.0;
     vec3 paint = vec3(0.0);
@@ -341,5 +357,6 @@ void main() {
         cover = clamp(TubeFx.x * fade * rim * (1.0 - exp(-1.6 * body)), 0.0, 0.97);
         paint = bright(mix(tint, white, clamp(0.25 + 0.7 * hot, 0.0, 1.0))) * ColorModulator.rgb * cover;
     }
-    fragColor = vec4(paint + light, cover);
+    // premultiplied: the light over the body over the scene
+    fragColor = vec4(emit + (1.0 - shine) * paint, 1.0 - (1.0 - shine) * (1.0 - cover));
 }

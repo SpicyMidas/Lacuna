@@ -3,6 +3,11 @@
 ## 1.0.0-beta.2 — beta feedback
 
 <!-- beta2 -->
+- **Rays look the same over any background:** the Sun's Fury pillar, the magnifying glass beam and the other 3D rays
+  used to bloom wider and whiter over a bright sky and look thinner and dimmer over blocks, because their light only
+  added to what was behind it. Now the light is a luminous medium: it covers what is behind it as much as it shines,
+  in its own colour, so a ray has the same width and strength over the sky, over terrain and at night. Only the
+  faintest outer haze still simply adds light.
 - **Sun's Fury, more legendary:**
   - **Same beam over sky and terrain:** it looked wide and strong against the sky but thin and weak in front of
     blocks, because terrain behind the beam cut its light. Now only what stands in front hides it.

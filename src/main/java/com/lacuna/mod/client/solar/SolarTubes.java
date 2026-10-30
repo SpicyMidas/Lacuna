@@ -32,7 +32,8 @@ import org.lwjgl.opengl.GL11;
  * the landscape. Only back faces are drawn, so every pixel of the tube's footprint is shaded exactly once whether the
  * eye is outside the shaft or inside it (looking straight up the pillar from within). No depth test, no depth writes,
  * after the level ({@link SolarVolume#drawLate}). Premultiplied blend ({@code ONE, ONE_MINUS_SRC_ALPHA}, destination
- * alpha kept): the light itself adds; a tube with a body {@code cover} also lays a bright body of its own colour
+ * alpha kept): the light covers what is behind it as much as it shines (same width and strength over the sky and over
+ * terrain); a tube with a body {@code cover} also lays a bright body of its own colour
  * under its light (it reads the same over the blue sky and over dark terrain), and {@code streaks} / {@code embers}
  * add rotating helical light streaks and rising embers inside the volume.
  * <p>

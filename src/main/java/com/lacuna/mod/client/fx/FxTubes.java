@@ -50,7 +50,8 @@ import org.lwjgl.opengl.GL30;
  * along its length it glows brighter (soft saturation); the eye inside it sees it all around.
  * <p>
  * <b>Depth</b>: the queue is drawn after the level ({@code AFTER_LEVEL}: clouds, weather and the Fabulous composite
- * done, the hand not yet) into the main target, additive, without a depth test; the shader reads the scene depth
+ * done, the hand not yet) into the main target, premultiplied (the light covers the scene as much as it shines, so a
+ * ray looks the same over the sky and over terrain), without a depth test; the shader reads the scene depth
  * ({@link FxDepth}) and integrates only the part of each ray in front of it: what stands in front hides the ray, what
  * stands behind never does, and a ray melts into the ground or wall it enters instead of being cut by a hard line.
  * <p>
@@ -463,7 +464,9 @@ public final class FxTubes {
         RenderSystem.setShaderFogEnd(fogEnd);
         mc.getMainRenderTarget().bindWrite(false);
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
+        // premultiplied light (fx_tube.fsh): it covers the scene as much as it shines; the target's alpha is kept
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
         RenderSystem.depthMask(false);
         RenderSystem.disableDepthTest();
         RenderSystem.enableCull();
