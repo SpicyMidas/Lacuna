@@ -56,8 +56,11 @@ public final class FxParticles {
     public static final Style UMBRAL_WISP = new Style(10, 18, 0.09F, 0.0F, 0.9F, true, true, false, 0.0F, 0.2F, 1.0F, false, 0xA874FF, 0.1F);
     public static final Style MIST = new Style(120, 220, 2.6F, -0.0004F, 0.995F, false, false, false, 0.004F, 1.4F, 0.32F, false, 0xFFFFFF, 0.04F);
 
-    /** Falls at the speed it was given: no gravity, no drag (the Sun's Fury's pouring light). */
-    public static final Style LIGHT_RAIN = new Style(8, 13, 0.32F, 0.0F, 1.0F, true, true, false, 0.0F, 0.6F, 0.95F, false, 0xFFF2D0, 0.05F);
+    /**
+     * Falls at the speed it was given: no gravity, no drag, no shrinking (it fades out on its own), stopped by the
+     * ground (the Sun's Fury's pouring light).
+     */
+    public static final Style LIGHT_RAIN = new Style(7, 12, 0.7F, 0.0F, 1.0F, true, true, false, 0.0F, 1.0F, 0.95F, true, 0xFFF2D0, 0.05F);
     public static final Style CHRONO_TICK = new Style(16, 26, 0.09F, -0.006F, 0.92F, true, true, true, 0.0F, 0.6F, 0.95F, false, 0xFFFFFF, 0.04F);
 
     private FxParticles() {}

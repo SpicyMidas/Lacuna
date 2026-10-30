@@ -17,10 +17,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,8 +26,8 @@ import org.jetbrains.annotations.Nullable;
  * frame with the server's rules ({@link BeamTrace}: range 24, solid-block clip, first living entity, water surface,
  * x0.5 underwater) and the server's colours (day yellow, night white, underwater blue). The ray leaves the lens centre
  * (found exactly on the drawn item: in first person by {@link HandPose}, in third person and for other players by
- * {@link MagnifierLens} on the arm as rendered this frame) and always runs straight along the player's view direction,
- * never bending towards whatever it hits; on a block it ends exactly where that ray meets the face. A shimmering 3D
+ * {@link MagnifierLens} on the arm as rendered this frame) and runs to exactly what the view ray hit, the spot under
+ * the crosshair (in first person it meets the centre of the screen). A shimmering 3D
  * beam ({@link SolarTubes}: veil, cone, inner light and white-hot core, round from every angle; flat shader ribbons
  * without the tube shader), a lens flare at the glass, a starburst with sparks and smoke (bubbles underwater) where it
  * burns, and a short-lived pixel scorch trail on the faces it touches ({@link MagnifierScorch}). Purely visual: damage
@@ -42,42 +39,19 @@ public final class MagnifierBeams {
     static final float LENS_X = 9.5F;
     static final float LENS_Y = 6.0F;
 
-    /** Lens position relative to the eye from the last frame, so per-tick impact particles sit on the drawn beam. */
-    private static final java.util.Map<Player, Vec3> LENS_OFFSET = new java.util.WeakHashMap<>();
 
     private MagnifierBeams() {}
-
-    /** Where the drawn ray ends: from the lens, straight along the view, as deep as the view ray reached. */
-    static Vec3 parallelStop(BeamTrace trace, Vec3 lens) {
-        double depth = Math.max(0.0, trace.stop().subtract(lens).dot(trace.look()));
-        return lens.add(trace.look().scale(depth));
-    }
 
     /** The drawn ray: where it ends, and the block face it touches there (null on a creature, water or thin air). */
     record Ray(Vec3 end, @Nullable BlockHitResult face) {}
 
     /**
-     * The drawn ray from {@code lens}: on a block the view ray hit, exactly where the ray from the lens (parallel to the
-     * view, a little off it) meets the surface, so the beam touches the face and its scorch marks lie under it;
-     * otherwise as deep as the view ray reached.
+     * The drawn ray from the lens: it converges on exactly what the view ray hit (the spot under the crosshair, which is
+     * also where the server's beam burns), so in first person it meets the centre of the screen; its scorch marks lie on
+     * the face hit there.
      */
-    static Ray ray(Level level, Player player, BeamTrace trace, Vec3 lens) {
-        Vec3 parallel = parallelStop(trace, lens);
-        if (!trace.hitsBlock()) {
-            return new Ray(parallel, null);
-        }
-        BlockHitResult hit = level.clip(new ClipContext(lens, parallel.add(trace.look()), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
-                player));
-        if (hit.getType() != HitResult.Type.BLOCK || hit.isInside()) {
-            return new Ray(parallel, null);
-        }
-        return new Ray(hit.getLocation(), hit);
-    }
-
-    /** The lens of {@code player}'s glass in the world (last frame's offset from the eye), for the per-tick effects. */
-    static Vec3 lensAt(Player player, Vec3 eye) {
-        Vec3 offset = LENS_OFFSET.get(player);
-        return offset == null || offset.lengthSqr() > 4.0 ? eye : eye.add(offset);
+    static Ray ray(BeamTrace trace) {
+        return new Ray(trace.stop(), trace.hitsBlock() ? trace.blockHit() : null);
     }
 
     static boolean beaming(Player player) {
@@ -107,7 +81,6 @@ public final class MagnifierBeams {
             BeamTrace trace = BeamTrace.of(ctx.level(), player, player.getEyePosition(pt), player.getViewVector(pt), pt);
             boolean first = firstPerson(mc, player) && player instanceof LocalPlayer;
             Vec3 lens = first ? HandPose.bowPixel((LocalPlayer) player, ctx.camera(), pt, LENS_X, LENS_Y) : thirdPersonLens(player, pt);
-            LENS_OFFSET.put(player, lens.subtract(player.getEyePosition(pt)));
             draw(ctx, player, trace, lens, first);
         }
         MagnifierScorch.render(ctx);
@@ -135,7 +108,7 @@ public final class MagnifierBeams {
         PoseStack.Pose pose = ctx.pose().last();
         int rgb = trace.beam().color();
         int hot = mix(rgb, 0xFFFFFF, 0.7F);
-        Ray ray = ray(ctx.level(), player, trace, lens);
+        Ray ray = ray(trace);
         Vec3 end = ray.end();
         scorch(ctx, player, trace, ray);
         Vec3 a = ctx.rel(lens);
@@ -161,7 +134,7 @@ public final class MagnifierBeams {
             SolarTubes.straight(pose, a, b, lensWidth * 0.225F, 0.06F, FxDraw.argb(0.7F * k, rgb), FxDraw.argb(0.85F * k * shimmer, rgb), 0.0F,
                     len, SolarTubes.BEAM, flags);
             SolarTubes.straight(pose, a, b, coreWidth * 0.5F, 0.0225F, FxDraw.argb(1.0F, hot), FxDraw.argb(1.0F, hot), 0.0F, len,
-                    SolarTubes.BEAM, flags, 0.55F, 0.0F, 0.0F);
+                    SolarTubes.BEAM, flags, 0.55F, 0.0F);
         } else {
             // a faint outer veil of coloured light
             VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.columnOver());
@@ -239,7 +212,7 @@ public final class MagnifierBeams {
                 continue;
             }
             BeamTrace trace = BeamTrace.of(level, player, player.getEyePosition(), player.getViewVector(1.0F), 1.0F);
-            Ray ray = ray(level, player, trace, lensAt(player, trace.eye()));
+            Ray ray = ray(trace);
             Vec3 hit = ray.end().subtract(trace.look().scale(0.08));
             if (trace.beam().underwater()) {
                 if (trace.hitsSomething()) {

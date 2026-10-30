@@ -161,15 +161,16 @@ public class SolarRayEntity extends Entity {
             }
             level().addAlwaysVisibleParticle(ParticleTypes.FLASH, true, getX(), getY() + 1.0, getZ(), 0, 0, 0);
         }
-        // sunlight pouring down beside the pillar: fast streaks falling straight down through its body and halo
-        // (thinning out as the pillar fades); a few motes still boil up around its foot during the strike
-        int drops = (int) Math.round((strike ? 16 : 10) * intensity) + 1;
+        // sunlight pouring down beside the pillar: streaks falling straight down very fast through its body and halo,
+        // always over the pillar's full width (they do not shrink with it as it fades: there are only fewer of them,
+        // and each fades out on its own); a few motes still boil up around its foot during the strike
+        int drops = (int) Math.round((strike ? 28 : 16) * intensity) + 1;
         for (int i = 0; i < drops; i++) {
             double a = random.nextDouble() * Math.PI * 2.0;
-            double r = 2.0 + random.nextDouble() * 16.0;
-            double y = getY() + 12.0 + random.nextDouble() * 70.0;
+            double r = 3.0 + random.nextDouble() * 23.0;
+            double y = getY() + 30.0 + random.nextDouble() * 120.0;
             level().addAlwaysVisibleParticle(ModParticles.LIGHT_RAIN.get(), true, getX() + Math.cos(a) * r, y, getZ() + Math.sin(a) * r,
-                    0.0, -(2.4 + random.nextDouble() * 1.6), 0.0);
+                    0.0, -(5.5 + random.nextDouble() * 3.0), 0.0);
         }
         if (strike) {
             for (int i = 0; i < 3; i++) {

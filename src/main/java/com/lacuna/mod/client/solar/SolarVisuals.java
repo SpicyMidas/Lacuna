@@ -154,17 +154,17 @@ public final class SolarVisuals {
      */
     static void tube(PoseStack.Pose pose, VertexConsumer fallback, Vec3 a, Vec3 b, float widthA, float widthB, int argbA, int argbB,
                       float vA, float vB, boolean sunbeam) {
-        tube(pose, fallback, a, b, widthA, widthB, argbA, argbB, vA, vB, sunbeam, 0.0F, 0.0F, 0.0F);
+        tube(pose, fallback, a, b, widthA, widthB, argbA, argbB, vA, vB, sunbeam, 0.0F, 0.0F);
     }
 
     /**
      * {@link #tube} with the 3D extras ({@link SolarTubes}): a {@code bodyGlow} (0..1) lifting the dense light to white, soft
-     * light {@code streaks} and falling {@code sparks} (the flat fallback has none of them).
+     * light {@code streaks} winding down (the flat fallback has neither).
      */
     static void tube(PoseStack.Pose pose, VertexConsumer fallback, Vec3 a, Vec3 b, float widthA, float widthB, int argbA, int argbB,
-                     float vA, float vB, boolean sunbeam, float bodyGlow, float streaks, float sparks) {
+                     float vA, float vB, boolean sunbeam, float bodyGlow, float streaks) {
         if (SolarTubes.straight(pose, a, b, widthA * 0.5F, widthB * 0.5F, argbA, argbB, vA, vB,
-                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0, bodyGlow, streaks, sparks)) {
+                sunbeam ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, 0, bodyGlow, streaks)) {
             return;
         }
         if (sunbeam) {
@@ -297,7 +297,7 @@ public final class SolarVisuals {
             float vTo = i == n - 1 ? v[i] : 0.5F * (v[i] + v[i + 1]);
             float alpha = Math.max(cFrom >>> 24, cTo >>> 24) / 255.0F;
             SolarTubes.curve(pose, from.x, from.y, from.z, knot.x, knot.y, knot.z, to.x, to.y, to.z, wFrom * 0.5F, wTo * 0.5F, cFrom, cTo,
-                    vFrom, vTo, profile, 0, bodyGlow * alpha, 0.0F, 0.0F);
+                    vFrom, vTo, profile, 0, bodyGlow * alpha, 0.0F);
         }
     }
 
@@ -402,7 +402,7 @@ public final class SolarVisuals {
         // 1. a vast faint cone of gathered sunlight from the sun narrowing onto the target
         VertexConsumer over = ctx.buffers().getBuffer(SolarRenderTypes.skyColumnOver());
         shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, Mth.lerp(e, 20.0F, 1.6F), (float) (far * Mth.lerp(e, 0.3F, 0.06F)),
-                (0.06F + 0.2F * e) * sun, (0.025F + 0.06F * e) * sun, gold, amber, 0);
+                (0.16F + 0.34F * e) * sun, (0.08F + 0.16F * e) * sun, gold, amber, 0);
 
         // 2. soft sunbeams, turning slowly; as the light concentrates they narrow, brighten and gain a bright filament
         // (the ring lies across the sun's direction, spanned by (0, 0, 1) and dir x (0, 0, 1) = (sy, -sx, 0))
@@ -426,11 +426,12 @@ public final class SolarVisuals {
             double ky = Math.max(rt.y + sy * lens - sin * ring * sx, rt.y + 4.0 + 0.2 * ring);
             double kz = rt.z + cos * ring;
             float flicker = (0.82F + 0.18F * Mth.sin(t * 0.5F + i * 1.7F) * Mth.sin(t * 0.23F + i)) * sun;
-            shaft(pose, beam, rt, kx, ky, kz, ax, ay, az, Mth.lerp(e, 3.2F, 1.0F), sunWidth, (0.32F + 0.48F * e) * flicker,
-                    (0.1F + 0.16F * e) * flicker, warm, gold, 2);
+            // bright like the sun they leave (less than the strike's pillar), glowing white where they are dense
+            shaft(pose, beam, rt, kx, ky, kz, ax, ay, az, Mth.lerp(e, 4.4F, 1.5F), sunWidth, Math.min(1.0F, 0.62F + 0.38F * e) * flicker,
+                    (0.3F + 0.3F * e) * flicker, warm, gold, 2, 0.45F * flicker);
             if (lines > 0.01F) {
-                shaft(pose, beam, rt, kx, ky, kz, ax, ay, az, 0.25F, (float) (far * 0.004), 0.55F * lines * flicker,
-                        0.15F * lines * flicker, white, pale, 0);
+                shaft(pose, beam, rt, kx, ky, kz, ax, ay, az, 0.4F, (float) (far * 0.005), 0.9F * lines * flicker,
+                        0.35F * lines * flicker, white, pale, 0, 0.5F * lines * flicker);
             }
         }
 
@@ -439,8 +440,8 @@ public final class SolarVisuals {
         if (focus > 0.002F) {
             float quiver = 0.85F + 0.15F * Mth.sin(t * 2.7F);
             float a = focus * sun;
-            shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, 3.5F * focus, (float) (far * 0.02) * focus, 0.2F * a, 0.2F * a, gold, gold, 0);
-            shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 1.4F * focus * quiver, 1.4F * focus * quiver, 0.9F * a, 0.9F * a, pale, pale, 0);
+            shaft(pose, over, rt, mx, my, mz, cx, cy, 0.0, 3.5F * focus, (float) (far * 0.02) * focus, 0.35F * a, 0.35F * a, gold, gold, 0);
+            shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 1.8F * focus * quiver, 1.8F * focus * quiver, a, a, pale, pale, 0, 0.5F * a);
             shaft(pose, beam, rt, mx, my, mz, cx, cy, 0.0, 0.45F * focus, 0.45F * focus, a, a, white, white, 0, 0.6F * a);
         }
     }
@@ -470,7 +471,7 @@ public final class SolarVisuals {
         double chord = Math.sqrt((ax - t.x) * (ax - t.x) + (ay - t.y) * (ay - t.y) + (az - t.z) * (az - t.z));
         if (SolarTubes.curve(pose, t.x, t.y, t.z, kx, ky, kz, ax, ay, az, widthT * 0.5F, widthS * 0.5F, FxDraw.argb(alphaT, rgbT),
                 FxDraw.argb(alphaS, rgbS), 0.0F, (float) (0.5 * (chord + toK + toA)),
-                u0 == 2 ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, SolarTubes.SKY | SolarTubes.NEAR_FADE, bodyGlow, 0.0F, 0.0F)) {
+                u0 == 2 ? SolarTubes.SUNBEAM : SolarTubes.PILLAR, SolarTubes.SKY | SolarTubes.NEAR_FADE, bodyGlow, 0.0F)) {
             return;
         }
         double along = 0.0;
@@ -572,8 +573,7 @@ public final class SolarVisuals {
         float hazeWidth = 64.0F * size * breathe;
         float haloWidth = 30.0F * size * breathe;
         tube(pose, over, bottom, top, hazeWidth, hazeWidth, haze, haze, -6.0F, height, false);
-        // sparks of light falling fast through the halo
-        tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false, 0.0F, 0.0F, 4.0F);
+        tube(pose, over, bottom, top, haloWidth, haloWidth, halo, halo, -6.0F, height, false);
         // a bright splash where it meets the ground: a cone of light widening into the ground
         tube(pose, over, bottom, ctx.rel(base.add(0, 14.0, 0)), 40.0F * size, 12.0F * size,
                 FxDraw.argb(0.22F * a, WARM), FxDraw.argb(0.0F, WARM), 0.0F, 20.0F, false);
@@ -586,10 +586,10 @@ public final class SolarVisuals {
         int warm = FxDraw.argb(0.75F * a, WARM);
         int pale = FxDraw.argb(0.85F * a * (1.0F - 0.2F * day), PALE);
         int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
-        tube(pose, beam, bottom, top, 20.0F * size, 20.0F * size, gold, gold, -6.0F, height, true, 0.75F * a, 2.2F, 0.0F);
-        tube(pose, beam, bottom, top, 13.0F * size, 13.0F * size, warm, warm, -6.0F, height, false, 0.85F * a, 0.0F, 0.0F);
-        tube(pose, beam, bottom, top, 6.5F * size, 6.5F * size, pale, pale, -6.0F, height, false, 0.7F * a, 0.0F, 0.0F);
-        tube(pose, beam, bottom, top, 3.2F * size, 3.2F * size, white, white, -6.0F, height, false, 0.95F * a, 0.0F, 0.0F);
+        tube(pose, beam, bottom, top, 20.0F * size, 20.0F * size, gold, gold, -6.0F, height, true, 0.75F * a, 2.2F);
+        tube(pose, beam, bottom, top, 13.0F * size, 13.0F * size, warm, warm, -6.0F, height, false, 0.85F * a, 0.0F);
+        tube(pose, beam, bottom, top, 6.5F * size, 6.5F * size, pale, pale, -6.0F, height, false, 0.7F * a, 0.0F);
+        tube(pose, beam, bottom, top, 3.2F * size, 3.2F * size, white, white, -6.0F, height, false, 0.95F * a, 0.0F);
 
         // rings of light pouring down the pillar
         VertexConsumer marks = ctx.buffers().getBuffer(SolarRenderTypes.ring());

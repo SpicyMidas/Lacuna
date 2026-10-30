@@ -23,7 +23,7 @@
 // sky's sun disc (no distance dimming), 4 = fades out where it passes close to the eye, 8 = fades out only right at the
 // eye (within about two blocks).
 // TubeFx: x = body glow (0..1, how much the light's dense body is lifted towards white; independent of the light's own
-// intensity), y = soft light streaks winding down the shaft, z = falling sparks of light (both scaled by the intensity).
+// intensity), y = soft light streaks winding down the shaft (scaled by the intensity).
 
 uniform vec4 ColorModulator;
 uniform float GameTime;
@@ -35,7 +35,7 @@ uniform vec2 TubeRadius;
 uniform vec4 TubeColorA;
 uniform vec4 TubeColorB;
 uniform vec2 TubeV;
-uniform vec3 TubeFx;
+uniform vec2 TubeFx;
 
 in vec3 worldPos;
 in float param;
@@ -227,8 +227,8 @@ void main() {
     float hot;
     if (profile == 1) {
         // soft sunbeam: no core line, a broad hazy body
-        float drift = fbm(vec2(xs * 3.0, h * 0.05 + t * 4.0));
-        float motes = noise(vec2(xs * 11.0, h * 0.6 + t * 24.0));
+        float drift = fbm(vec2(xs * 3.0, h * 0.05 + t * 8.0));
+        float motes = noise(vec2(xs * 11.0, h * 0.6 + t * 40.0));
         float shimmer = (0.55 + 0.6 * drift) * (0.9 + 0.2 * motes);
         float wide = glow(path(4.0, b2n, ua, ub, dn));
         float inner = glow(path(16.0, b2n, ua, ub, dn));
@@ -250,14 +250,14 @@ void main() {
         hot = 1.0;
     } else {
         // heat shimmer: the outer part ripples, the core stays straight
-        float ripple = (noise(vec2(h * 0.11 + t * 4.0, 4.3)) - 0.5) * 0.16 + (noise(vec2(h * 0.37 + t * 6.0, 9.1)) - 0.5) * 0.08;
+        float ripple = (noise(vec2(h * 0.11 + t * 9.0, 4.3)) - 0.5) * 0.16 + (noise(vec2(h * 0.37 + t * 13.0, 9.1)) - 0.5) * 0.08;
         float xn = xs + ripple * smoothstep(0.15, 0.9, x);
         // long striations and bands of light pouring down the pillar from the sky, fast; nothing drifts sideways
-        float streak = fbm(vec2(xn * 6.0, h * 0.04 + t * 6.0));
-        float fine = noise(vec2(xn * 19.0, h * 0.06 + t * 12.0));
-        float band = 0.5 + 0.5 * sin(h * 0.16 + t * 16.0);
+        float streak = fbm(vec2(xn * 6.0, h * 0.04 + t * 13.0));
+        float fine = noise(vec2(xn * 19.0, h * 0.06 + t * 26.0));
+        float band = 0.5 + 0.5 * sin(h * 0.16 + t * 32.0);
         band = mix(0.78, 1.2, band * band * band);
-        float surge = 0.5 + 0.5 * sin(h * 0.035 + t * 6.0);
+        float surge = 0.5 + 0.5 * sin(h * 0.035 + t * 12.0);
 
         float core = glow(path(70.0, b2n, ua, ub, dn)) * (0.92 + 0.08 * surge);
         float mid = glow(path(7.5, b2n, ua, ub, dn));
@@ -268,24 +268,16 @@ void main() {
         hot = core / max(mid + core, 1.0e-3);
     }
 
-    // light streaks winding down the shaft and falling sparks of light, both on inner cylinders of the volume: seen on
-    // its near and far side (the far side dimmer), wherever that point is visible
+    // three slender helical light streaks turning around the shaft and pouring down it, on an inner cylinder of the
+    // volume: seen on its near and far side (the far side dimmer), wherever that point is visible
     float streaks = 0.0;
-    float sparks = 0.0;
-    if ((TubeFx.y > 0.001 || TubeFx.z > 0.001) && !alongAxis) {
+    if (TubeFx.y > 0.001 && !alongAxis) {
         vec3 ref = abs(normalize(TubeB - TubeA).y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
         vec3 en = normalize(cross(axis, ref));
         vec3 eb = cross(axis, en);
-        for (int layer = 0; layer < 2; layer++) {
-            float strength = layer == 0 ? TubeFx.y : TubeFx.z;
-            if (strength <= 0.001) {
-                continue;
-            }
-            float rs = (layer == 0 ? 0.5 : 0.72) * r;
-            float hs2 = (rs * rs - b2) / dd;
-            if (hs2 <= 0.0) {
-                continue;
-            }
+        float rs = 0.5 * r;
+        float hs2 = (rs * rs - b2) / dd;
+        if (hs2 > 0.0) {
             float hs = sqrt(hs2);
             for (int k = 0; k < 2; k++) {
                 float ts = k == 0 ? tStar - hs : tStar + hs;
@@ -297,36 +289,15 @@ void main() {
                 vec3 lat = point - sAx * axis;
                 float ang = atan(dot(lat, eb), dot(lat, en));
                 float hh = along + sAx;
-                float weight = k == 0 ? 1.0 : 0.55;
-                if (layer == 0) {
-                    // three slender helical streaks turning around the shaft and pouring down it
-                    float ph = ang * 3.0 + hh * (TAU / 26.0) + t * 8.0;
-                    float s = pow(0.5 + 0.5 * cos(ph), 9.0);
-                    s *= 0.55 + 0.45 * sin(hh * 0.06 + t * 5.0 + ang);
-                    streaks += s * weight;
-                } else {
-                    // sparks of light falling fast through the outer light, drawn out into short streaks
-                    float cells = 22.0;
-                    vec2 g = vec2((ang / TAU + 0.5) * cells, (hh + t * 60.0) / 2.6);
-                    vec2 cell = floor(g);
-                    cell.x = mod(cell.x, cells);
-                    vec2 f = fract(g);
-                    float chance = hash(cell + vec2(7.1, 3.3));
-                    if (chance > 0.7) {
-                        vec2 c = vec2(0.25 + 0.5 * hash(cell + vec2(1.3, 9.2)), 0.25 + 0.5 * hash(cell + vec2(5.9, 2.4)));
-                        vec2 d = (f - c) * vec2(TAU * rs / cells, 2.6);
-                        d.y *= 0.14;
-                        float size = 0.1 + 0.08 * hash(cell + vec2(3.7, 8.8));
-                        float twinkle = 0.8 + 0.2 * sin(t * 9.0 + chance * 40.0);
-                        sparks += exp(-dot(d, d) / (size * size)) * twinkle * weight * (1.0 - smoothstep(70.0, 170.0, ts));
-                    }
-                }
+                float ph = ang * 3.0 + hh * (TAU / 26.0) + t * 22.0;
+                float s = pow(0.5 + 0.5 * cos(ph), 9.0);
+                s *= 0.55 + 0.45 * sin(hh * 0.06 + t * 12.0 + ang);
+                streaks += s * (k == 0 ? 1.0 : 0.55);
             }
         }
         streaks *= TubeFx.y;
-        sparks *= TubeFx.z;
     }
-    col += mix(tint, white, 0.75) * streaks * 0.7 + vec3(1.0, 0.72, 0.32) * sparks * 2.2;
+    col += mix(tint, white, 0.75) * streaks * 0.7;
 
     // a soft rim (no outline where the round volume meets the sky)
     float rim = 1.0 - smoothstep(0.8, 1.0, x);

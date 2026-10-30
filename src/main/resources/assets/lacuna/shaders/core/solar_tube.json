@@ -22,6 +22,6 @@
         { "name": "TubeColorB", "type": "float", "count": 4, "values": [ 1.0, 1.0, 1.0, 1.0 ] },
         { "name": "TubeV", "type": "float", "count": 2, "values": [ 0.0, 1.0 ] },
         { "name": "TubeMode", "type": "float", "count": 2, "values": [ 0.0, 0.0 ] },
-        { "name": "TubeFx", "type": "float", "count": 3, "values": [ 0.0, 0.0, 0.0 ] }
+        { "name": "TubeFx", "type": "float", "count": 2, "values": [ 0.0, 0.0 ] }
     ]
 }

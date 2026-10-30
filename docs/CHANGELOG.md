@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.0-beta.7 — beta feedback
+
+<!-- beta7 -->
+- **Sun's Fury, faster:**
+  - **Pillar animation:** the light pours down about twice as fast, and its streaks turn about three times as fast.
+  - **Falling light:** the streaks of light beside it fall twice as fast again. They fall over the pillar's full width
+    and each fades out on its own; they no longer shrink sideways with the pillar as it fades.
+  - **No more wiggle:** the sparks drawn inside the pillar's shader, which swayed with its breathing outer layer, are
+    gone; the falling streaks replace them.
+- **Sun's Fury focus:** the sunbeams that gather from the sun onto the spear before the strike are much brighter and
+  glow white like the sun (still less than the pillar), so they are clearly visible over the day sky.
+- **Divine Magnifying Glass:**
+  - **Aim:** the beam now ends exactly under the crosshair; it used to land slightly to the right.
+  - **Scorch trail:** lasts about 2 seconds (was under 1).
+
 ## 1.0.0-beta.6 — beta feedback
 
 <!-- beta6 -->

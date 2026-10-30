@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The scorch trail of the Divine Magnifying Glass: where its beam touches a block face it leaves small dark grey
  * marks, snapped to the block's 1/16 pixel grid, lying on that face (any orientation, slabs and stairs included: the
- * marks sit on the surface the drawn beam really ends on) and fading out within {@link #LIFE_TICKS} ticks (~0.85 s).
+ * marks sit on the surface the drawn beam really ends on) and fading out within {@link #LIFE_TICKS} ticks (~2.2 s).
  * As the beam sweeps a face, the pixels between its last and current spot are scorched too, so it draws a continuous
  * pixel trail. Client only, computed by every client for every beam it draws ({@link MagnifierBeams}: the spot is
  * the end of the drawn beam, every frame); its own clock counts client ticks (the level's game time jumps whenever the
@@ -27,8 +27,8 @@ import org.jetbrains.annotations.Nullable;
  * off the surface after particles ({@link SolarRenderTypes#scorch()}).
  */
 final class MagnifierScorch {
-    private static final int MAX = 512;
-    private static final int LIFE_TICKS = 17;
+    private static final int MAX = 1536;
+    private static final int LIFE_TICKS = 44;
     private static final float PIXEL = 1.0F / 16.0F;
     /** Lift off the surface (with the render type's polygon offset: no z-fighting). */
     private static final float LIFT = 0.003F;
