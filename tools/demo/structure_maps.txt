@@ -1,0 +1,55 @@
+# The held Wayfarer's Chart with its rolls (two-handed, then one-handed), structure maps in hand (obelisk, bell tower)
+# and the two obelisks side by side: the Forgotten Land ruin's ruin-stone inscription next to the Overworld one.
+world lacuna_maps normal maps1
+wait 100
+cmd time set 6000
+cmd gamerule sendCommandFeedback false
+cmd gamerule doDaylightCycle false
+cmd weather clear
+cmd clear @s
+cmd item replace entity @s weapon.mainhand with lacuna:wayfarers_chart
+wait 240
+look 0 70
+wait 4
+shot sm_chart_two_handed
+look 0 35
+wait 4
+shot sm_chart_two_handed_level
+cmd item replace entity @s weapon.offhand with minecraft:torch
+wait 20
+look 0 60
+wait 4
+shot sm_chart_one_handed
+cmd item replace entity @s weapon.offhand with minecraft:air
+cmd item replace entity @s weapon.mainhand with minecraft:map
+cmd item modify entity @s weapon.mainhand [{function:"minecraft:exploration_map",destination:"lacuna:on_obelisk_maps",decoration:"lacuna:obelisk",zoom:1b,search_radius:100,skip_existing_chunks:false},{function:"minecraft:set_name",target:"item_name",name:{translate:"filled_map.lacuna.obelisk"}}]
+wait 120
+look 0 70
+wait 4
+shot sm_map_obelisk
+cmd item replace entity @s weapon.mainhand with minecraft:map
+cmd item modify entity @s weapon.mainhand [{function:"minecraft:exploration_map",destination:"lacuna:on_sunken_bell_tower_maps",decoration:"lacuna:sunken_bell_tower",zoom:2b,search_radius:100,skip_existing_chunks:false},{function:"minecraft:set_name",target:"item_name",name:{translate:"filled_map.lacuna.sunken_bell_tower"}}]
+wait 120
+look 0 70
+wait 4
+shot sm_map_bell_tower
+cmd loot give @s loot lacuna:extra/maps/village_cartographer
+cmd loot give @s loot lacuna:extra/maps/stronghold_library
+cmd loot give @s loot lacuna:extra/maps/shipwreck_map
+cmd item replace entity @s weapon.mainhand with minecraft:air
+# both obelisks on a cleared lawn east of the player
+cmd fill ~-2 ~ ~-9 ~16 ~14 ~9 minecraft:air
+cmd fill ~-2 ~-1 ~-9 ~16 ~-1 ~9 minecraft:grass_block
+cmd place template lacuna:ruins/obelisk_ruin_1 ~9 ~-1 ~-6
+cmd place template lacuna:obelisk ~9 ~-1 ~2
+wait 60
+look -90 -18
+wait 10
+shot sm_obelisks
+cmd setblock ~7 ~2 ~-4 minecraft:glass
+cmd tp @s ~7 ~3 ~-4 -90 0
+wait 30
+look -90 4
+wait 10
+shot sm_forgotten_obelisk_close
+quit
