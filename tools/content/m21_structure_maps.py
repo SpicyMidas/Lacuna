@@ -10,6 +10,7 @@ the map when the chest is filled. The Last Merchant sells one, one visit in two 
 The Forgotten Land's broken obelisk bears a Forgotten Obelisk Inscription: the same block (reading, rewards, the
 advancement) cut into grey ruin stone instead of the Overworld obelisk's black.
 """
+import copy
 import os
 import re
 
@@ -80,7 +81,19 @@ def map_entry(kind, weight):
          "lore": [{"translate": f"filled_map.lacuna.{kind}.lore", "color": "gray"}]}]}
 
 
+# Lacuna's structure sets whose maps are found here: their locate position moves from the start chunk's corner to its
+# centre. A map is drawn on a grid whose edges fall on chunk corners, and vanilla drops a target decoration that lies on
+# the map's very edge, so a corner target left 1 map in 16 (zoom 1) or 32 (zoom 2) per axis without its mark (as
+# buried treasure does, with its own offset). Only /locate and maps read this offset; generation is unchanged.
+LOCATE_CENTRE = ["sunken_bell_tower", "obelisk"]
+
+
 def structure_maps(g):
+    for name in LOCATE_CENTRE:
+        path = f"data/lacuna/worldgen/structure_set/{name}.json"
+        data = copy.deepcopy(g.files[path])
+        data["placement"]["locate_offset"] = [8, 0, 8]
+        g.override(path, data)
     for kind, (structures, _zoom, _radius, name, lore) in KINDS.items():
         g.tag("worldgen/structure", f"lacuna:on_{kind}_maps", *structures)
         g.name(f"filled_map.lacuna.{kind}", *name)

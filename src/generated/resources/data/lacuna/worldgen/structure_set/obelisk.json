@@ -1,5 +1,10 @@
 {
   "placement": {
+    "locate_offset": [
+      8,
+      0,
+      8
+    ],
     "salt": 772491035,
     "separation": 16,
     "spacing": 44,

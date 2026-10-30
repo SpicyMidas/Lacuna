@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -70,10 +71,13 @@ public final class StructureMaps {
      */
     @Nullable
     public static ItemStack create(ServerLevel level, BlockPos from, Kind kind, int radius) {
-        BlockPos target = level.findNearestMapStructure(kind.destination, from, radius, true);
-        if (target == null) {
+        BlockPos found = level.findNearestMapStructure(kind.destination, from, radius, true);
+        if (found == null) {
             return null;
         }
+        // the start chunk's centre: a chunk corner can fall on the map's very edge, where vanilla drops the decoration
+        BlockPos target = new BlockPos(SectionPos.sectionToBlockCoord(SectionPos.blockToSectionCoord(found.getX()), 8), found.getY(),
+                SectionPos.sectionToBlockCoord(SectionPos.blockToSectionCoord(found.getZ()), 8));
         ItemStack map = MapItem.create(level, target.getX(), target.getZ(), kind.zoom, true, true);
         MapItem.renderBiomePreviewMap(level, map);
         MapItemSavedData.addTargetDecoration(map, target, "+", kind.decoration);
