@@ -1,0 +1,57 @@
+# Illusioner (starcloth robe and hood, front and back) and the Last Merchant's robe, posed with NoAI; then a live
+# illusioner hunts an invulnerable villager: it casts duplication and its duplicates strafe and shoot illusory arrows.
+world lacuna_illusioner flat
+wait 60
+hud off
+cmd time set 6000
+cmd gamerule doDaylightCycle false
+cmd gamerule sendCommandFeedback false
+cmd tp @s 0.5 -60 0.5 180 14
+wait 40
+cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
+wait 30
+shot merchant_front
+cmd kill @e[type=lacuna:last_merchant]
+cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[180f,0f]}
+wait 30
+shot merchant_back
+cmd kill @e[type=lacuna:last_merchant]
+cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[60f,0f]}
+wait 30
+shot merchant_side
+cmd kill @e[type=lacuna:last_merchant]
+cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
+wait 30
+shot illusioner_front
+cmd kill @e[type=minecraft:illusioner]
+cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[180f,0f]}
+wait 30
+shot illusioner_back
+cmd kill @e[type=minecraft:illusioner]
+cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[-50f,0f]}
+wait 30
+shot illusioner_side
+cmd kill @e[type=minecraft:illusioner]
+cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
+cmd time set 18000
+wait 30
+shot illusioner_night
+cmd kill @e[type=minecraft:illusioner]
+cmd kill @e[type=item]
+cmd time set 6000
+cmd tp @s 0.5 -60 4.5 180 12
+cmd summon minecraft:villager 4.5 -60 -6 {NoAI:1b,Invulnerable:1b}
+cmd summon minecraft:illusioner -3.5 -60 -9 {Rotation:[0f,0f]}
+wait 30
+shot illusioner_cast
+wait 15
+shot illusioner_duplicates_1
+wait 30
+shot illusioner_duplicates_2
+wait 40
+shot illusioner_duplicates_3
+camera back
+cmd tp @s 0.5 -60 6.5 180 25
+wait 30
+shot illusioner_duplicates_4
+quit
