@@ -9,6 +9,8 @@ hud off
 cmd gamerule sendCommandFeedback false
 cmd gamerule doFireTick false
 cmd time set 6000
+# (the Almanac given on first join would sit in slot 0 and open on use)
+cmd clear @s
 # --- builds: the crater platform (top face 20 up, 40 ahead to +z), the wall behind it, the camera perch, a glass target wall
 cmd fill ~-12 ~ ~28 ~12 ~19 ~52 minecraft:stone
 cmd fill ~-45 ~ ~60 ~45 ~34 ~60 minecraft:stone
@@ -76,7 +78,10 @@ shot legend_strike_day_b
 look 0 -40
 wait 2
 shot legend_strike_day_up
-look 0 -12
+cmd tp @s ~ ~24 ~ 0 32
+wait 3
+shot legend_strike_day_down
+cmd tp @s ~ ~-24 ~ 0 -12
 wait 60
 # --- by night
 cmd time set 18000
