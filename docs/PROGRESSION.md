@@ -19,7 +19,7 @@ Tower, Mirror Hoard, Reflection), `m11_villages.py` (mint), `m15_starcaller.py` 
    civic blocks, repair kits, the Comically Large Bag. Mobs give clockwork gears, umbral nuggets, chronal shards.
 2. **Relics and the first Quintessence**: watch the night sky (falling stars), dive for Sunken Bell Towers, meet the
    Last Merchant (rubies are his only currency, and what relics cost), raid vanilla structures and bosses.
-3. **A Totem of Banishing** (Quintessence + Totem of Undying + rubies + gold) opens the **Forgotten Land**: light a
+3. **A Totem of Banishing** (Quintessence + 3 Exilite Ingots + a ruby; exilite debris hides deep in the Overworld) opens the **Forgotten Land**: light a
    Forgotten Portal with it once and the way stays open.
 4. **Forgotten Land**: divine glass, zenithite, chronal shards, exilite; ruin caches; the **Mirror Labyrinth**, whose
    Reflection always leaves a Quintessence and whose hoard always holds a relic.
@@ -41,8 +41,8 @@ Recipes (the only way to craft a totem):
 
 | Result | Recipe |
 |---|---|
-| Totem of Banishing (6 uses, never repaired) | `RQR / GTG / .R.` — 3 rubies, 1 Quintessence, 2 gold ingots, 1 Totem of Undying |
-| Totem of Confusion | `.P. / AMA / GQG` — ender pearl, 2 amethyst shards, armour stand, 2 gold ingots, 1 Quintessence |
+| Totem of Banishing (6 uses, never repaired) | `.X. / XQX / .R.` — 3 Exilite Ingots, 1 Quintessence, 1 ruby (the Totem of Undying's shape) |
+| Totem of Confusion | `RUA / UQU / .U.` — ruby, amethyst shard, 4 Umbral Steel ingots, 1 Quintessence (the Totem of Undying's shape) |
 | Totem of Undying (vanilla, the legendary path) | `EGE / GQG / .G.` — 2 emeralds, 4 gold ingots, 1 Quintessence |
 
 Repair kits refuse totems (`#lacuna:repair_kit_refuses`): their uses are final.
@@ -139,7 +139,7 @@ consumables, and the **Wayfarer's Chart** is a navigation tool everyone should b
 | Crystal Willow Shard | Crystal Willow leaves 5 % |
 | Silk Dust | Lantern Moths 0-2 (+Looting) |
 | Clockwork Gear | husks 0-2, pillagers 0-1 (+Looting) |
-| Exilite Debris | hidden veins below Y −8 in the Forgotten Land (diamond pickaxe); exilite shards also 1.2 % in ruin caches |
+| Exilite Debris | hidden veins deep in the Overworld (below Y −16, ~1 vein per 2 chunks) and below Y −8 in the Forgotten Land (diamond pickaxe); exilite shards also 1.2 % in ruin caches |
 | Village Coin | Coiner trades (ore → coins), mint strongboxes, guild contracts |
 | Guild Contract | a guild board, for members |
 | Arrival / Departure Shard | splitting a Fractured Pearl |
@@ -149,7 +149,8 @@ consumables, and the **Wayfarer's Chart** is a navigation tool everyone should b
 | Block | Where |
 |---|---|
 | Ruby, Umbral Steel ores (+ deepslate) | overworld; Silk Touch keeps the ore |
-| Zenithite ores, Divine Glass Cluster, Exilite Debris | Forgotten Land; Silk Touch keeps ores and clusters (debris drops itself) |
+| Zenithite ores, Divine Glass Cluster | Forgotten Land; Silk Touch keeps ores and clusters |
+| Exilite Debris | deep Overworld and Forgotten Land; drops itself |
 | Ashen Snow, Spore Mushroom, Rusted Gear | Forgotten Land biomes; drop themselves |
 | Clear Ice, Updraft Spring, Buried Watch | Forgotten Land biomes; Silk Touch only (the watch otherwise drops chronal shards) |
 | Molten / Prime / Extinguished Star Rock | where a star fell; Silk Touch keeps the block |

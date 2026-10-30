@@ -88,10 +88,10 @@ def totem(g):
            "Usa su un anello di cornici del portale dimenticato: accende il portale.")
     g.name("item.lacuna.totem_of_banishing.wear", "Wears out after 6 uses; it cannot be repaired.",
            "Si consuma dopo 6 usi; non può essere riparato.")
-    # a Totem of Undying taught to forget: only a Lacunar Quintessence (m19) can do that
-    g.shaped("totem_of_banishing", ["RQR", "GTG", " R "],
-             {"R": "lacuna:ruby", "Q": "lacuna:lacunar_quintessence", "G": "minecraft:gold_ingot",
-              "T": "minecraft:totem_of_undying"},
+    # shaped like the legendary Totem of Undying (m19): the effigy in exilite, the stone it was carved from, around a
+    # Lacunar Quintessence, and the ruby of its palm at the bottom (an eyeless hand: no gems in the top corners)
+    g.shaped("totem_of_banishing", [" X ", "XQX", " R "],
+             {"X": "lacuna:exilite_ingot", "Q": "lacuna:lacunar_quintessence", "R": "lacuna:ruby"},
              "lacuna:totem_of_banishing", category="misc", unlock="lacuna:lacunar_quintessence")
     g.tag("entity_type", "lacuna:cannot_be_banished", "minecraft:ender_dragon", "minecraft:wither", "minecraft:warden",
           "minecraft:elder_guardian")
@@ -183,8 +183,7 @@ def messages(g):
     g.name("lacuna.banish.arrived", "The world fades. You stand in the Forgotten Land.",
            "Il mondo svanisce. Sei nella Terra Dimenticata.")
     g.name("lacuna.banish.returned", "The Forgotten Land lets you go.", "La Terra Dimenticata ti lascia andare.")
-    g.name("lacuna.banish.countdown", "Forgotten Land — returning in %s — Overworld ≈ %s, %s",
-           "Terra Dimenticata — ritorno tra %s — Mondo normale ≈ %s, %s")
+    g.name("lacuna.banish.countdown", "Returning in %s", "Ritorno tra %s")
     g.name("lacuna.fl.cannot_leave", "The Forgotten Land does not let you leave.", "La Terra Dimenticata non ti lascia andare.")
     g.name("lacuna.fl.no_rest", "There is no rest in the Forgotten Land.", "Non c'è riposo nella Terra Dimenticata.")
     g.name("lacuna.relic.name", "Unreadable Relic", "Reliquia illeggibile")

@@ -7,7 +7,7 @@ shadow, time and space that are found and never crafted, a legendary essence tha
 and four wood families, falling stars, strange creatures, ruins, and a civic life for vanilla villages. Its only
 dependency is NeoForge. English and Italian are included.
 
-**Version 1.0.0-beta.1** — the first beta. Feedback and bug reports: <https://github.com/SpicyMidas/Lacuna/issues>.
+**Version 1.0.0-beta.2** — beta. Feedback and bug reports: <https://github.com/SpicyMidas/Lacuna/issues>.
 
 ## Where to start
 
@@ -26,7 +26,8 @@ same path. Hold **Shift** over an item for its details; you can rebind this unde
    - Sunken Bell Towers in deep oceans;
    - the Last Merchant, who wanders by with a cart and trades only in rubies;
    - always, the Reflection that guards a Mirror Labyrinth.
-3. **Totem of Banishing:** a Quintessence, a Totem of Undying, rubies and gold.
+3. **Totem of Banishing:** a Quintessence set in Exilite Ingots, a ruby below, shaped like the Totem of Undying.
+   Exilite debris hides in the deepest Overworld stone.
    - **Use it** to blast into the Forgotten Land, a gray, quiet world where every block stands for 12 Overworld blocks.
      You come back when your time runs out, when you use the totem again, or when you die.
    - **Strike a mob** with it to banish the mob instead.

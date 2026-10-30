@@ -36,11 +36,11 @@ def code():
 
 
 def advancements(g):
-    # the Almanac every player gets on first join opens the tab at once (a ruby still does, the gift can be turned off)
-    adv(g, "root", "lacuna:totem_of_banishing", {"almanac": has("lacuna:almanac"), "ruby": has("lacuna:ruby")},
+    # a ruby opens the tab (the Almanac handed out on first join is a gift, not a milestone)
+    adv(g, "root", "lacuna:totem_of_banishing", {"ruby": has("lacuna:ruby")},
         background="lacuna:textures/block/ruin_stone_bricks.png",
-        en=("Lacuna", "Pick up the Lacuna Almanac, or find a ruby: the world remembers more than it shows."),
-        it=("Lacuna", "Prendi l'Almanacco di Lacuna, o trova un rubino: il mondo ricorda più di quanto mostri."))
+        en=("Lacuna", "Find a ruby: the world remembers more than it shows."),
+        it=("Lacuna", "Trova un rubino: il mondo ricorda più di quanto mostri."))
     adv(g, "enter_forgotten_land", "lacuna:chiseled_ruin_glyph",
         {"enter": {"trigger": "minecraft:changed_dimension", "conditions": {"to": "lacuna:forgotten_land"}}},
         "totem_of_banishing",

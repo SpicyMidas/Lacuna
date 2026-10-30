@@ -1,22 +1,19 @@
 {
   "category": "misc",
   "key": {
-    "G": {
-      "item": "minecraft:gold_ingot"
-    },
     "Q": {
       "item": "lacuna:lacunar_quintessence"
     },
     "R": {
       "item": "lacuna:ruby"
     },
-    "T": {
-      "item": "minecraft:totem_of_undying"
+    "X": {
+      "item": "lacuna:exilite_ingot"
     }
   },
   "pattern": [
-    "RQR",
-    "GTG",
+    " X ",
+    "XQX",
     " R "
   ],
   "result": {

@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.0-beta.2 — beta feedback
+
+<!-- beta2 -->
+- **Totems crafted in the Totem of Undying's shape:**
+  - Totem of Banishing: 3 Exilite Ingots around a Lacunar Quintessence, a ruby at the bottom (`.X. / XQX / .R.`).
+    No Totem of Undying needed any more.
+  - Totem of Confusion: 4 Umbral Steel ingots around the Quintessence, a ruby top left and an amethyst shard top
+    right, like the eyes on its texture (`RUA / UQU / .U.`).
+- **Exilite Debris in the Overworld:** the Totem of Banishing is made of exilite, so its hidden veins now also lie
+  deep in the Overworld (below Y -16, about one vein every two chunks), not only in the Forgotten Land.
+  "The Totem's Own Stone" now comes before the totem in the advancement tree.
+- **Forgotten Land action bar:** shows only "Returning in m:ss"; the translated coordinates are gone (the Wayfarer's
+  Chart still shows them).
+- **The Almanac no longer grants the root advancement:** the Lacuna tab opens with your first ruby.
+
 ## 1.0.0-beta.1 — first beta release
 
 <!-- beta -->

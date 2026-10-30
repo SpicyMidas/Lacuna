@@ -146,6 +146,19 @@ def worldgen(g):
         {"type": "minecraft:biome"}]})
     g.data("neoforge/biome_modifier/add_ore_exilite", {"type": "neoforge:add_features", "biomes": "#lacuna:is_forgotten_land",
                                                        "features": "lacuna:ore_exilite", "step": "underground_ores"})
+    # the Totem of Banishing is made of exilite, so the stone must exist before the way to the Forgotten Land does: the
+    # same hidden veins, a size larger, deep in the Overworld's deepslate (about one vein every two chunks, below Y -16)
+    g.data("worldgen/configured_feature/ore_exilite_deep", {"type": "minecraft:ore", "config": {
+        "discard_chance_on_air_exposure": 1.0, "size": 4, "targets": [
+            {"state": {"Name": "lacuna:exilite_debris"}, "target": {"predicate_type": "minecraft:tag_match", "tag": t}}
+            for t in replace]}})
+    g.data("worldgen/placed_feature/ore_exilite_deep", {"feature": "lacuna:ore_exilite_deep", "placement": [
+        {"type": "minecraft:rarity_filter", "chance": 2}, {"type": "minecraft:in_square"},
+        {"type": "minecraft:height_range", "height": {"type": "minecraft:trapezoid", "min_inclusive": {"above_bottom": 4},
+                                                      "max_inclusive": {"absolute": -16}}},
+        {"type": "minecraft:biome"}]})
+    g.data("neoforge/biome_modifier/add_ore_exilite_deep", {"type": "neoforge:add_features", "biomes": "#minecraft:is_overworld",
+                                                            "features": "lacuna:ore_exilite_deep", "step": "underground_ores"})
     # a ruin cache now and then holds a shard (the rare pool: 1 roll, mostly empty)
     g.shared.setdefault("ruin_cache_rare", []).append(
         {"type": "minecraft:item", "name": "lacuna:exilite_shard", "weight": 12})
