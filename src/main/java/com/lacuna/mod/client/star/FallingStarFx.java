@@ -240,9 +240,10 @@ final class FallingStarFx implements ClientFx {
             return;
         }
         // volumetric (FxTubes): a soft amber glow around a flowing white-hot core, both seen from afar, bending with
-        // the path; the flat ribbons below when it cannot be drawn in 3D
+        // the path, faded where they pass the eye (a star striking next to the viewer); the flat ribbons below when
+        // it cannot be drawn in 3D
         FxTubes.Chain chain = FxTubes.chain();
-        boolean outer3d = chain.begin(pose, n, 0.85F, FxTubes.FAR);
+        boolean outer3d = chain.begin(pose, n, 0.85F, FxTubes.FAR | FxTubes.NEAR_FADE);
         if (outer3d) {
             float along = 0.0F;
             for (int i = 0; i < n; i++) {
@@ -255,7 +256,7 @@ final class FallingStarFx implements ClientFx {
             }
             chain.end();
         }
-        boolean inner3d = chain.begin(pose, n, 0.2F, FxTubes.FAR | FxTubes.FLOW);
+        boolean inner3d = chain.begin(pose, n, 0.2F, FxTubes.FAR | FxTubes.FLOW | FxTubes.NEAR_FADE);
         if (inner3d) {
             float along = 0.0F;
             for (int i = 0; i < n; i++) {

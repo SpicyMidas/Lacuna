@@ -29,9 +29,9 @@ public class PyrrhicBoltRenderer extends EntityRenderer<PyrrhicBoltEntity> {
         PoseStack.Pose p = pose.last();
         int head = FxDraw.argb(0.9F, 0xFF7A2A);
         int end = FxDraw.argb(0.0F, 0xFF3A10);
-        // the tail as a volumetric ray (FxTubes) when drawn into the level itself; a mirror's reflection or a failed
-        // or unavailable 3D draw keeps the flat ribbon
-        if (!inLevel(buffers) || !FxTubes.beam(p, center, tail, 0.45F, 0.05F, head, end, 0.0F, 3.0F, 0)) {
+        // the tail as a volumetric ray (FxTubes; faded where it passes the shooter's eye just after the shot) when
+        // drawn into the level itself; a mirror's reflection or a failed or unavailable 3D draw keeps the flat ribbon
+        if (!inLevel(buffers) || !FxTubes.beam(p, center, tail, 0.45F, 0.05F, head, end, 0.0F, 3.0F, FxTubes.NEAR_FADE)) {
             FxDraw.ribbon(p, buffers.getBuffer(FxRenderTypes.beam()), center, tail, 0.45F, 0.05F, head, end, 0.0F, 3.0F);
         }
         FxDraw.billboard(p, buffers.getBuffer(FxRenderTypes.glowShader()), this.entityRenderDispatcher.camera, center, 0.7F * flicker, 0.0F,
