@@ -87,6 +87,21 @@ One attempt every 3 days, 25 % by day (about one visit in 12 days); he stays 3 d
   Greatsword, Ember Triangle). Never a totem.
 - **Sun's Fury forge**: Solar Flare + 32 rubies → Sun's Fury, every visit.
 - **Lacunar Quintessence**: 1 visit in 5, 64 rubies + 4 ruby blocks.
+- **Structure map**: half his visits, one map drawn at random — Sunken Bell Tower 12 rubies, obelisk 8, ancient city 16
+  (scaled by the price index); none when no such place lies within 100 chunks (`exploration/MerchantMaps.java`).
+
+## Structure maps
+
+Vanilla filled maps with a target decoration of their own (a teal bell, a black obelisk, a glowing sculk frame), like
+buried treasure and explorer maps, centred on the nearest Overworld place no other map has shown yet. Chest maps are
+drawn when the chest is first opened (search radius 50 chunks; nothing nearby leaves a blank map); data in
+`tools/content/m21_structure_maps.py`. Vanilla cartographers already sell mansion, monument and trial chamber maps.
+
+| Map | Leads to | Found (one extra roll per chest) |
+|---|---|---|
+| Sunken Bell Tower Map | `lacuna:sunken_bell_tower` (zoom 2) | shipwreck map chest 15 %; big ocean ruin 10 %; small ocean ruin 5 %; village cartographer 5 %; Last Merchant |
+| Obelisk Map | `lacuna:obelisk` (zoom 1) | village cartographer 15 %; village mint 6 %; Sunken Bell Tower chest 5 %; Last Merchant |
+| Ancient City Map | `minecraft:ancient_city` (zoom 2) | stronghold library 12 %; Sunken Bell Tower chest 8 %; village cartographer 5 %; Last Merchant |
 
 ## Crafted
 
@@ -155,5 +170,5 @@ consumables, and the **Wayfarer's Chart** is a navigation tool everyone should b
 | Molten / Prime / Extinguished Star Rock | where a star fell; Silk Touch keeps the block |
 | Sunken Bell | Sunken Bell Tower (drops itself) |
 | Logs, leaves, saplings, Crystal Willow Strands, Tidebloom Roots | the wood families' trees (overworld biomes and the Forgotten Land) |
-| Ruin stone family, Mural Fragments, Obelisk Inscription, Mirror Glass, Labyrinth Seal and Ring | structure blocks, unbreakable in survival (creative only) |
+| Ruin stone family, Mural Fragments, Obelisk Inscription (and its ruin-stone Forgotten Obelisk Inscription), Mirror Glass, Labyrinth Seal and Ring | structure blocks, unbreakable in survival (creative only) |
 | Spawn eggs (Lantern Moth, Last Merchant) | creative only |
