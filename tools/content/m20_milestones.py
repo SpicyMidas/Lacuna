@@ -43,10 +43,11 @@ def used_relic(item):
     return {"trigger": "lacuna:used_relic", "conditions": {"item": {"items": item}}}
 
 
-def clicked(block):
-    """Right-clicked {@code block} with an empty hand (or an item it ignores) and the block answered."""
+def clicked(*blocks):
+    """Right-clicked one of {@code blocks} with an empty hand (or an item it ignores) and the block answered."""
+    terms = [{"condition": "minecraft:block_state_property", "block": block} for block in blocks]
     return {"trigger": "minecraft:default_block_use", "conditions": {"location": [
-        {"condition": "minecraft:block_state_property", "block": block}]}}
+        terms[0] if len(terms) == 1 else {"condition": "minecraft:any_of", "terms": terms}]}}
 
 
 def build(g):
@@ -134,7 +135,8 @@ def build(g):
     adv(g, "ore_song", "lacuna:ruby_ore", {"rang": clicked("lacuna:sunken_bell")}, "sunken_bell_tower",
         en=("Ore Song", "Ring a Sunken Bell and see the ores around it answer."),
         it=("Il canto dei minerali", "Suona una Campana sommersa e guarda rispondere i minerali intorno."))
-    adv(g, "obelisk", "lacuna:obelisk_inscription", {"read": clicked("lacuna:obelisk_inscription")}, "root",
+    adv(g, "obelisk", "lacuna:obelisk_inscription", {"read": clicked("lacuna:obelisk_inscription",
+                                                                       "lacuna:forgotten_obelisk_inscription")}, "root",
         en=("Seven Brothers, No Names", "Read an Obelisk of Unreadable Names, a black pillar standing alone in the wilds."),
         it=("Sette fratelli, nessun nome", "Leggi un Obelisco dei nomi illeggibili, un pilastro nero solitario nelle "
                                            "terre selvagge."))

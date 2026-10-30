@@ -1,0 +1,48 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 94
+        },
+        {
+          "functions": [
+            {
+              "decoration": "lacuna:obelisk",
+              "destination": "lacuna:on_obelisk_maps",
+              "function": "minecraft:exploration_map",
+              "search_radius": 50,
+              "skip_existing_chunks": true,
+              "zoom": 1
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "filled_map.lacuna.obelisk"
+              },
+              "target": "item_name"
+            },
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "gray",
+                  "translate": "filled_map.lacuna.obelisk.lore"
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "minecraft:map",
+          "type": "minecraft:item",
+          "weight": 6
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "lacuna:extra/maps/village_mint",
+  "type": "minecraft:chest"
+}

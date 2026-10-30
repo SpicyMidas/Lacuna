@@ -13,7 +13,14 @@
     "lacuna:pillager_outpost_relics",
     "lacuna:woodland_mansion_relics",
     "lacuna:desert_pyramid_relics",
-    "lacuna:end_city_treasure_relics"
+    "lacuna:end_city_treasure_relics",
+    "lacuna:shipwreck_map_structure_maps",
+    "lacuna:underwater_ruin_big_structure_maps",
+    "lacuna:underwater_ruin_small_structure_maps",
+    "lacuna:village_cartographer_structure_maps",
+    "lacuna:stronghold_library_structure_maps",
+    "lacuna:village_mint_structure_maps",
+    "lacuna:sunken_bell_tower_structure_maps"
   ],
   "replace": false
 }

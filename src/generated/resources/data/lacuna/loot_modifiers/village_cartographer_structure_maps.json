@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:chests/village/village_cartographer"
+    }
+  ],
+  "table": "lacuna:extra/maps/village_cartographer",
+  "type": "neoforge:add_table"
+}

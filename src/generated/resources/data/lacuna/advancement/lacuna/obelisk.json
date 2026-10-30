@@ -4,8 +4,17 @@
       "conditions": {
         "location": [
           {
-            "block": "lacuna:obelisk_inscription",
-            "condition": "minecraft:block_state_property"
+            "condition": "minecraft:any_of",
+            "terms": [
+              {
+                "block": "lacuna:obelisk_inscription",
+                "condition": "minecraft:block_state_property"
+              },
+              {
+                "block": "lacuna:forgotten_obelisk_inscription",
+                "condition": "minecraft:block_state_property"
+              }
+            ]
           }
         ]
       },

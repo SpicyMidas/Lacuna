@@ -53,7 +53,8 @@ public final class ModCreativeTabs {
 
     /** Structure mechanics, obtainable only with commands: never shown in the tab. */
     private static final List<Supplier<? extends ItemLike>> TECHNICAL = List.of(
-            ModBlocks.LABYRINTH_TRIGGER, ModBlocks.LABYRINTH_EXIT, ModBlocks.OBELISK_INSCRIPTION);
+            ModBlocks.LABYRINTH_TRIGGER, ModBlocks.LABYRINTH_EXIT, ModBlocks.OBELISK_INSCRIPTION,
+            ModBlocks.FORGOTTEN_OBELISK_INSCRIPTION);
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> LACUNA = TABS.register("lacuna", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.lacuna"))
