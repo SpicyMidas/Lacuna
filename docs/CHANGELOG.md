@@ -3,6 +3,16 @@
 ## 1.0.0-beta.2 — beta feedback
 
 <!-- beta2 -->
+- **Structure maps (new):** explorer maps, like vanilla treasure maps, that lead to a Sunken Bell Tower, an Obelisk of
+  Unreadable Names or an Ancient City. Each has its own map marker.
+  - Found in shipwreck map chests, ocean ruins, village cartographers, stronghold libraries, village mints and Sunken
+    Bell Towers.
+  - Half of the Last Merchant's visits offer one for 8-16 rubies.
+  - The Almanac has a page on them.
+- **Wayfarer's Chart:** held in hand it now has rolled parchment at the top and bottom, with wooden knobs as on its
+  icon, and keeps its worn side edges.
+- **Forgotten Land obelisk:** its inscription block has its own Forgotten Land version, gold glyphs cut into grey
+  ruin stone, instead of the black Overworld one.
 - **Rays in true 3D:** the other ray effects are now volumetric tubes, like Sun's Fury, instead of flat ribbons:
   - the Rewind golden thread;
   - the animated magnifying glass's sunbeam and the Wand of Quickening's spark trail;
