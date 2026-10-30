@@ -84,6 +84,7 @@ public final class Lacuna {
         com.lacuna.mod.mummy.Mummification.register(NeoForge.EVENT_BUS);
         com.lacuna.mod.chart.ChartService.register(modBus, NeoForge.EVENT_BUS);
         com.lacuna.mod.guide.Guide.register(modBus, NeoForge.EVENT_BUS);
+        com.lacuna.mod.exploration.StructureMaps.register(modBus);
         if (SmokeRunner.isActive()) {
             SmokeRunner.register(NeoForge.EVENT_BUS);
         }

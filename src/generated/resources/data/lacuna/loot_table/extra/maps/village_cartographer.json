@@ -1,0 +1,112 @@
+{
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 75
+        },
+        {
+          "functions": [
+            {
+              "decoration": "lacuna:obelisk",
+              "destination": "lacuna:on_obelisk_maps",
+              "function": "minecraft:exploration_map",
+              "search_radius": 50,
+              "skip_existing_chunks": true,
+              "zoom": 1
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "filled_map.lacuna.obelisk"
+              },
+              "target": "item_name"
+            },
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "gray",
+                  "translate": "filled_map.lacuna.obelisk.lore"
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "minecraft:map",
+          "type": "minecraft:item",
+          "weight": 15
+        },
+        {
+          "functions": [
+            {
+              "decoration": "lacuna:ancient_city",
+              "destination": "lacuna:on_ancient_city_maps",
+              "function": "minecraft:exploration_map",
+              "search_radius": 50,
+              "skip_existing_chunks": true,
+              "zoom": 2
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "filled_map.lacuna.ancient_city"
+              },
+              "target": "item_name"
+            },
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "gray",
+                  "translate": "filled_map.lacuna.ancient_city.lore"
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "minecraft:map",
+          "type": "minecraft:item",
+          "weight": 5
+        },
+        {
+          "functions": [
+            {
+              "decoration": "lacuna:sunken_bell_tower",
+              "destination": "lacuna:on_sunken_bell_tower_maps",
+              "function": "minecraft:exploration_map",
+              "search_radius": 50,
+              "skip_existing_chunks": true,
+              "zoom": 2
+            },
+            {
+              "function": "minecraft:set_name",
+              "name": {
+                "translate": "filled_map.lacuna.sunken_bell_tower"
+              },
+              "target": "item_name"
+            },
+            {
+              "function": "minecraft:set_lore",
+              "lore": [
+                {
+                  "color": "gray",
+                  "translate": "filled_map.lacuna.sunken_bell_tower.lore"
+                }
+              ],
+              "mode": "append"
+            }
+          ],
+          "name": "minecraft:map",
+          "type": "minecraft:item",
+          "weight": 5
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "lacuna:extra/maps/village_cartographer",
+  "type": "minecraft:chest"
+}

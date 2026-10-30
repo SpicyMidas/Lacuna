@@ -851,6 +851,20 @@
     },
     {
       "chapter": "creatures",
+      "icon": "minecraft:filled_map",
+      "icons": [
+        "minecraft:map",
+        "lacuna:sunken_bell",
+        "lacuna:obelisk_inscription",
+        "minecraft:sculk_shrieker"
+      ],
+      "id": "structure_maps",
+      "text": "almanac.lacuna.structure_maps.text",
+      "title": "almanac.lacuna.structure_maps",
+      "where": "almanac.lacuna.structure_maps.where"
+    },
+    {
+      "chapter": "creatures",
       "icon": "minecraft:husk_spawn_egg",
       "icons": [
         "minecraft:spider_spawn_egg",

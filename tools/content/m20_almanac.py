@@ -139,6 +139,8 @@ ENTRIES = [
     ("falling_stars", "creatures", "lacuna:prime_star_rock", ["lacuna:star_fragment"]),
     ("sunken_bell_tower", "creatures", "lacuna:sunken_bell", []),
     ("obelisk", "creatures", "lacuna:obelisk_inscription", []),
+    ("structure_maps", "creatures", "minecraft:filled_map", ["minecraft:map", "lacuna:sunken_bell", "lacuna:obelisk_inscription",
+                                                             "minecraft:sculk_shrieker"]),
     ("common_creatures", "creatures", "minecraft:husk_spawn_egg", ["minecraft:spider_spawn_egg", "minecraft:pillager_spawn_egg"]),
 ]
 

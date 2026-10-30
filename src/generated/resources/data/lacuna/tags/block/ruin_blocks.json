@@ -16,6 +16,7 @@
     "lacuna:obelisk_inscription",
     "lacuna:mirror_glass",
     "lacuna:labyrinth_exit",
-    "lacuna:labyrinth_trigger"
+    "lacuna:labyrinth_trigger",
+    "lacuna:forgotten_obelisk_inscription"
   ]
 }

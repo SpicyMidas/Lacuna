@@ -77,6 +77,8 @@ public class LastMerchant extends WanderingTrader {
             offers.add(new MerchantOffer(new ItemCost(cost, o.costCount()), second, new ItemStack(result, o.resultCount()),
                     o.maxUses(), 1, 0.05F));
         }
+        // one visit in two, a map to a Sunken Bell Tower, an obelisk or an ancient city (one bounded search, here)
+        SafeRun.run("merchant_maps", () -> com.lacuna.mod.exploration.MerchantMaps.addOffer(this, offers, priceIndex));
     }
 
     private static Item item(String id) {

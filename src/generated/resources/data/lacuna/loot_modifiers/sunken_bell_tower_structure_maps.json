@@ -1,0 +1,10 @@
+{
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "lacuna:chests/sunken_bell_tower"
+    }
+  ],
+  "table": "lacuna:extra/maps/sunken_bell_tower",
+  "type": "neoforge:add_table"
+}

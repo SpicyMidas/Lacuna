@@ -7,6 +7,7 @@ Used by m20_almanac.py (which lists the entries, their chapter and icons, and wr
   * markup: a newline starts a paragraph, "- " starts a bullet, **...** is bold.
 Numbers come from docs/PROGRESSION.md and Balance.java; keep them in step when rebalancing.
 """
+from content.m21_structure_maps import where as structure_maps_where
 
 PAGES = {
     # ============================================================================================ getting started
@@ -1140,6 +1141,25 @@ PAGES = {
          "scheggia cronale, una volta per giocatore e obelisco.",
          "Raro, nelle foreste, taighe, savane, giungle, badlands, colline, pianure, deserti e pianure innevate del Mondo "
          "normale; obelischi spezzati si ergono tra le rovine della Terra Dimenticata."),
+    ),
+    "structure_maps": (
+        ("Structure Maps",
+         "Old maps still remember where the forgotten places stand. Each is a filled map centred on its place, marked "
+         "with its own sign: the **Sunken Bell Tower Map** (a teal bell), the **Obelisk Map** (a black pillar) and the "
+         "**Ancient City Map** (a glowing frame, deep below: Echo Daggers, Null Lanterns and Whisperbone Flutes wait "
+         "there).\n"
+         "A map is drawn when its chest is first opened, or when the Last Merchant packs it, and leads to the nearest "
+         "place no other map has shown yet. When there is none nearby, a chest's map stays blank.",
+         structure_maps_where()[0]),
+        ("Mappe delle strutture",
+         "Le vecchie mappe ricordano ancora dove sorgono i luoghi dimenticati. Ognuna è una mappa centrata sul suo "
+         "luogo, segnato con un simbolo proprio: la **Mappa della torre campanaria sommersa** (una campana verde "
+         "acqua), la **Mappa dell'obelisco** (un pilastro nero) e la **Mappa della città antica** (una cornice luminosa, "
+         "nel profondo: lì attendono Pugnali dell'eco, Lanterne nulle e Flauti d'ossosussurro).\n"
+         "Una mappa viene tracciata quando il suo forziere si apre la prima volta, o quando l'Ultimo mercante la mette "
+         "nella sacca, e porta al luogo più vicino che nessun'altra mappa ha già mostrato. Se non ce n'è nessuno "
+         "vicino, la mappa di un forziere resta bianca.",
+         structure_maps_where()[1]),
     ),
     "treasure": (
         ("Bosses & Treasure",
