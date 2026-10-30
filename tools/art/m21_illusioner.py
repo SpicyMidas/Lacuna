@@ -45,7 +45,7 @@ def paint_illusioner():
         """Starcloth: the starlace check (two neighbouring tones) over soft folds, now and then a star glint."""
         if glints and r.random() < glints:
             g = r.random()
-            return GLINT[0] if g < 0.45 else GLINT[2] if g < 0.75 else GLINT[3] if g < 0.92 else GLINT[1]
+            return GLINT[2] if g < 0.4 else GLINT[3] if g < 0.75 else GLINT[0] if g < 0.95 else GLINT[1]
         v = 0.5 + folds[x] + lift + r.uniform(-0.1, 0.1) + (0.07 if (x + y) % 2 == 0 else -0.07)
         return CLOTH[max(0, min(len(CLOTH) - 1, int(v * len(CLOTH))))]
 
@@ -102,7 +102,7 @@ def paint_illusioner():
     # ------------------------------------------------------------------ hood (hat layer, uv 32,0; 8x12x8, inflated)
     hood = faces(32, 0, 8, 12, 8)
     for name in ("top", "right", "front", "left", "back"):
-        fill(hood[name], 0.08, 0.035)
+        fill(hood[name], 0.08, 0.01)
     # crown: a seam along the middle from the brow to the nape, the cloth rising to it (a pointed hood)
     for y in range(0, 8):
         for x in range(40, 48):
@@ -111,6 +111,12 @@ def paint_illusioner():
             elif x in (42, 45):
                 px[x, y] = cloth(x, y, 0.15)
         px[43 + (y % 2), y] = SILVER[0] if y % 3 == 0 else px[43 + (y % 2), y]
+    for x, y in ((40, 0), (47, 0), (40, 7), (47, 7)):
+        px[x, y] = CLOTH[1]                                             # rounded corners of the crown
+    # the peak over the brow: the crown seam meets the front in a chevron, the corners fall away into shadow
+    for (x, y), col in {(43, 8): CLOTH[5], (44, 8): CLOTH[5], (42, 9): CLOTH[5], (45, 9): CLOTH[4], (43, 9): CLOTH[3],
+                        (44, 9): CLOTH[3], (40, 8): CLOTH[1], (47, 8): CLOTH[1], (40, 9): CLOTH[2], (47, 9): CLOTH[2]}.items():
+        px[x, y] = col
     # face opening (front 40..47 x 8..19): the brim overhangs, a gold rim, side drapes down over the chest
     for y in range(8, 20):
         for x in range(40, 48):
@@ -169,7 +175,7 @@ def paint_illusioner():
             t = (y - y0) / (y1 - y0 - 1)
             for x in range(x0, x1):
                 # light on the shoulders, deeper towards the hem; more stars in the lower skirt, like a night sky
-                px[x, y] = cloth(x, y, 0.1 - 0.2 * t, 0.01 + 0.035 * t * t)
+                px[x, y] = cloth(x, y, 0.1 - 0.2 * t, 0.005 + 0.025 * t * t)
     # shoulders (top face, the strips beside the neck)
     for y in range(38, 44):
         for x in (6, 7, 12, 13):
@@ -213,19 +219,19 @@ def paint_illusioner():
 
     # ------------------------------------------------------------------ crossed arms (uv 44,22 and 40,38)
     for name, rect in faces(44, 22, 4, 8, 4).items():
-        fill(rect, 0.05, 0.02)
+        fill(rect, 0.05, 0.008)
     for x in range(44, 60):
         px[x, 32] = GOLD[1] if x % 2 else GOLD[2]                      # cuff: gold over silver
         px[x, 33] = SILVER[1]
     for name, rect in faces(40, 38, 8, 4, 4).items():
-        fill(rect, 0.02, 0.02)
+        fill(rect, 0.02, 0.008)
     for y in range(38, 46):
         px[47, y] = GOLD[1]                                             # where the two sleeves cross
         px[56, y] = GOLD[1] if y < 42 else SILVER[1]
     # ------------------------------------------------------------------ arms (uv 40,46; 4x12x4): sleeve, cuff, hand
     arm = faces(40, 46, 4, 12, 4)
     for name in ("top", "right", "front", "left", "back"):
-        fill(arm[name], 0.06, 0.02)
+        fill(arm[name], 0.06, 0.008)
     skin(arm["bottom"])
     for x in range(40, 56):
         px[x, 56] = SILVER[1] if x % 2 else SILVER[2]                   # wide sleeve ends: silver band...

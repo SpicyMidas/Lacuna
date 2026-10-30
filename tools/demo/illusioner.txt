@@ -1,5 +1,5 @@
 # Illusioner (starcloth robe and hood, front and back) and the Last Merchant's robe, posed with NoAI; then a live
-# illusioner hunts an invulnerable villager: it casts duplication and its duplicates strafe and shoot illusory arrows.
+# illusioner hunts a villager (Resistance V: an Invulnerable one is never a target): it casts duplication and its duplicates strafe and shoot illusory arrows.
 world lacuna_illusioner flat
 wait 60
 hud off
@@ -11,37 +11,38 @@ wait 40
 cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
 wait 30
 shot merchant_front
-cmd kill @e[type=lacuna:last_merchant]
+cmd tp @e[type=lacuna:last_merchant] 0.5 -130 0.5
 cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[180f,0f]}
 wait 30
 shot merchant_back
-cmd kill @e[type=lacuna:last_merchant]
+cmd tp @e[type=lacuna:last_merchant] 0.5 -130 0.5
 cmd summon lacuna:last_merchant 0.5 -60 -2 {NoAI:1b,Rotation:[60f,0f]}
 wait 30
 shot merchant_side
-cmd kill @e[type=lacuna:last_merchant]
+cmd tp @e[type=lacuna:last_merchant] 0.5 -130 0.5
 cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
 wait 30
 shot illusioner_front
-cmd kill @e[type=minecraft:illusioner]
+cmd tp @e[type=minecraft:illusioner] 0.5 -130 0.5
 cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[180f,0f]}
 wait 30
 shot illusioner_back
-cmd kill @e[type=minecraft:illusioner]
+cmd tp @e[type=minecraft:illusioner] 0.5 -130 0.5
 cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[-50f,0f]}
 wait 30
 shot illusioner_side
-cmd kill @e[type=minecraft:illusioner]
+cmd tp @e[type=minecraft:illusioner] 0.5 -130 0.5
 cmd summon minecraft:illusioner 0.5 -60 -2 {NoAI:1b,Rotation:[0f,0f]}
 cmd time set 18000
 wait 30
 shot illusioner_night
-cmd kill @e[type=minecraft:illusioner]
+cmd tp @e[type=minecraft:illusioner] 0.5 -130 0.5
 cmd kill @e[type=item]
 cmd time set 6000
-cmd tp @s 0.5 -60 4.5 180 12
-cmd summon minecraft:villager 4.5 -60 -6 {NoAI:1b,Invulnerable:1b}
-cmd summon minecraft:illusioner -3.5 -60 -9 {Rotation:[0f,0f]}
+cmd tp @s 0.5 -60 6.5 180 10
+cmd summon minecraft:villager 3.5 -60 -1 {NoAI:1b}
+cmd effect give @e[type=minecraft:villager] minecraft:resistance infinite 4 true
+cmd summon minecraft:illusioner -2.5 -60 -3 {Rotation:[90f,0f]}
 wait 30
 shot illusioner_cast
 wait 15
