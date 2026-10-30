@@ -98,6 +98,16 @@ def eclipser(g):
 # entries equal the right-hand ones on purpose: ItemTransform mirrors them, so the left hand is a true mirror image.
 _SF_THIRD = {"rotation": [-170, -90, 20], "translation": [0.49, -2.34, -4.17], "scale": [1.2, 1.2, 1.2]}
 _SF_FIRST = {"rotation": [-175, 58.6, 216.5], "translation": [5.36, 4.45, -9.84], "scale": [0.85, 0.85, 0.85]}
+# Held at rest: in third person larger than a tool, like a trident carried in the hand; in first person the vanilla
+# handheld pose, which keeps the whole three-pronged head in view.
+_SF_HELD_THIRD = {"rotation": [0, -90, 55], "translation": [0, 6.5, 0.5], "scale": [1.2, 1.2, 1.2]}
+_SF_HELD_FIRST = {"rotation": [0, -90, 25], "translation": [1.13, 3.2, 1.13], "scale": [0.68, 0.68, 0.68]}
+SUNS_FURY_HELD_DISPLAY = {
+    "thirdperson_righthand": _SF_HELD_THIRD,
+    "thirdperson_lefthand": _SF_HELD_THIRD,
+    "firstperson_righthand": _SF_HELD_FIRST,
+    "firstperson_lefthand": _SF_HELD_FIRST,
+}
 SUNS_FURY_THROWING_DISPLAY = {
     "thirdperson_righthand": _SF_THIRD,
     "thirdperson_lefthand": _SF_THIRD,
@@ -111,11 +121,23 @@ def solar(g):
     g.item("solar_flare", "Solar Flare", "Brillamento solare")
     # thrown like a trident: while it is drawn back (predicate lacuna:throwing, registered in client/solar) the
     # spear swaps to a model whose hand transforms hold it raised over the shoulder, tip forward
-    g.item("suns_fury", "Sun's Fury", "Furia del Sole", model="handheld",
-           overrides=[{"predicate": {"lacuna:throwing": 1}, "model": "lacuna:item/suns_fury_throwing"}])
+    # in the inventory, on the ground and in frames the 16x16 icon; in the hand a larger 24x24 three-pronged spear,
+    # held like a trident (its tip on the same spot of the sprite, so the throwing transforms and the charge light fit)
+    icon = {"parent": "lacuna:item/suns_fury_icon"}
+    g.item("suns_fury", "Sun's Fury", "Furia del Sole", model="none")
+    g.item_model("suns_fury", {"loader": "neoforge:separate_transforms", "gui_light": "front",
+                               "base": {"parent": "lacuna:item/suns_fury_held"},
+                               "perspectives": {"gui": icon, "fixed": icon, "ground": icon},
+                               "overrides": [{"predicate": {"lacuna:throwing": 1}, "model": "lacuna:item/suns_fury_throwing"}]})
+    g.item_model("suns_fury_icon", {"parent": "minecraft:item/generated", "textures": {"layer0": "lacuna:item/suns_fury"}})
+    g.item_model("suns_fury_held", {
+        "parent": "minecraft:item/handheld",
+        "textures": {"layer0": "lacuna:item/suns_fury_held"},
+        "display": SUNS_FURY_HELD_DISPLAY,
+    })
     g.item_model("suns_fury_throwing", {
         "parent": "minecraft:item/handheld",
-        "textures": {"layer0": "lacuna:item/suns_fury"},
+        "textures": {"layer0": "lacuna:item/suns_fury_held"},
         "display": SUNS_FURY_THROWING_DISPLAY,
     })
     g.name("item.lacuna.suns_fury.lore", "A noon that was never allowed to end.", "Un mezzogiorno a cui non fu mai permesso di finire.")

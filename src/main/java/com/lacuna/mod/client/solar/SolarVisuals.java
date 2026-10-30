@@ -586,7 +586,7 @@ public final class SolarVisuals {
         int warm = FxDraw.argb(0.75F * a, WARM);
         int pale = FxDraw.argb(0.85F * a * (1.0F - 0.2F * day), PALE);
         int white = FxDraw.argb(Math.min(1.0F, a + burst), WHITE);
-        tube(pose, beam, bottom, top, 20.0F * size, 20.0F * size, gold, gold, -6.0F, height, true, 0.75F * a, 2.2F);
+        tube(pose, beam, bottom, top, 20.0F * size, 20.0F * size, gold, gold, -6.0F, height, true, 0.75F * a, 3.0F);
         tube(pose, beam, bottom, top, 13.0F * size, 13.0F * size, warm, warm, -6.0F, height, false, 0.85F * a, 0.0F);
         tube(pose, beam, bottom, top, 6.5F * size, 6.5F * size, pale, pale, -6.0F, height, false, 0.7F * a, 0.0F);
         tube(pose, beam, bottom, top, 3.2F * size, 3.2F * size, white, white, -6.0F, height, false, 0.95F * a, 0.0F);

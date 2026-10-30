@@ -152,6 +152,50 @@ def suns_fury():
     return from_ascii(SPEAR, pal)
 
 
+def suns_fury_held():
+    """The spear as held in the hand (24x24, like a trident): a three-pronged sun head on a long gilded shaft, along the
+    same diagonal as the 16x16 icon (its tip at the same place, scaled: client/solar/SpearCharge reads it there)."""
+    img = new(24, 24)
+    px = img.load()
+    W, Y, O, o, d = c("#FFFFFF"), c("#FFF2A0"), c("#FFB000"), c("#FF7A00"), c("#B04A00")
+    s_, b_, g_ = c("#7A5230"), c("#5A3A1C"), c("#D89A1C")
+
+    def put(x, y, col):
+        if 0 <= x < 24 and 0 <= y < 24:
+            px[x, y] = col
+
+    # the shaft: two pixels wide, a gold wrap every third step, a gold butt cap
+    for k in range(13):
+        x, y = 1 + k, 22 - k
+        band = k % 3 == 1 and 3 <= k <= 9
+        put(x, y, g_ if band else s_)
+        put(x, y + 1, d if band else b_)
+    put(0, 23, g_)
+    put(0, 22, O)
+    # the collar: a small sun where the head meets the shaft
+    for (x, y, col) in ((13, 10, O), (14, 9, W), (15, 10, o), (13, 8, o), (14, 11, d), (12, 9, O), (15, 8, Y)):
+        put(x, y, col)
+    # the crossbar the side prongs grow from, across the shaft
+    for k in range(-3, 4):
+        put(14 + k, 9 + k, O if abs(k) < 3 else o)
+    # side prongs, parallel to the blade, white-hot tips
+    for (x0, y0) in ((11, 6), (17, 12)):
+        for k in range(1, 5):
+            put(x0 + k, y0 - k, Y if k < 4 else W)
+            put(x0 + k, y0 - k + 1, o if k < 4 else O)
+    # the central blade: three pixels wide, golden at the root, white at the point
+    for k in range(1, 9):
+        x, y = 15 + k, 9 - k
+        tip = k >= 6
+        put(x, y, W if tip else Y)
+        put(x - 1, y, Y if tip else O)
+        put(x, y + 1, O if tip else o)
+        if k < 7:
+            put(x + 1, y + 1, d)
+    put(23, 0, O)
+    return img
+
+
 def shadow_walk_icon():
     img = new(18, 18)
     px = img.load()
@@ -199,6 +243,7 @@ def paint():
     save(solar_fragment(), "item/solar_flare_fragment")
     save(solar_flare(), "item/solar_flare")
     save(suns_fury(), "item/suns_fury")
+    save(suns_fury_held(), "item/suns_fury_held")
     save(shadow_walk_icon(), "mob_effect/shadow_walk")
     eclipse_fx_masks()
 

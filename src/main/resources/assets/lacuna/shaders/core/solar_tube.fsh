@@ -227,8 +227,8 @@ void main() {
     float hot;
     if (profile == 1) {
         // soft sunbeam: no core line, a broad hazy body
-        float drift = fbm(vec2(xs * 3.0, h * 0.05 + t * 8.0));
-        float motes = noise(vec2(xs * 11.0, h * 0.6 + t * 40.0));
+        float drift = fbm(vec2(xs * 3.0, h * 0.05 + t * 18.0));
+        float motes = noise(vec2(xs * 11.0, h * 0.6 + t * 90.0));
         float shimmer = (0.55 + 0.6 * drift) * (0.9 + 0.2 * motes);
         float wide = glow(path(4.0, b2n, ua, ub, dn));
         float inner = glow(path(16.0, b2n, ua, ub, dn));
@@ -250,14 +250,14 @@ void main() {
         hot = 1.0;
     } else {
         // heat shimmer: the outer part ripples, the core stays straight
-        float ripple = (noise(vec2(h * 0.11 + t * 9.0, 4.3)) - 0.5) * 0.16 + (noise(vec2(h * 0.37 + t * 13.0, 9.1)) - 0.5) * 0.08;
+        float ripple = (noise(vec2(h * 0.11 + t * 20.0, 4.3)) - 0.5) * 0.16 + (noise(vec2(h * 0.37 + t * 30.0, 9.1)) - 0.5) * 0.08;
         float xn = xs + ripple * smoothstep(0.15, 0.9, x);
         // long striations and bands of light pouring down the pillar from the sky, fast; nothing drifts sideways
-        float streak = fbm(vec2(xn * 6.0, h * 0.04 + t * 13.0));
-        float fine = noise(vec2(xn * 19.0, h * 0.06 + t * 26.0));
-        float band = 0.5 + 0.5 * sin(h * 0.16 + t * 32.0);
+        float streak = fbm(vec2(xn * 6.0, h * 0.04 + t * 30.0));
+        float fine = noise(vec2(xn * 19.0, h * 0.06 + t * 60.0));
+        float band = 0.5 + 0.5 * sin(h * 0.16 + t * 72.0);
         band = mix(0.78, 1.2, band * band * band);
-        float surge = 0.5 + 0.5 * sin(h * 0.035 + t * 12.0);
+        float surge = 0.5 + 0.5 * sin(h * 0.035 + t * 26.0);
 
         float core = glow(path(70.0, b2n, ua, ub, dn)) * (0.92 + 0.08 * surge);
         float mid = glow(path(7.5, b2n, ua, ub, dn));
@@ -289,15 +289,15 @@ void main() {
                 vec3 lat = point - sAx * axis;
                 float ang = atan(dot(lat, eb), dot(lat, en));
                 float hh = along + sAx;
-                float ph = ang * 3.0 + hh * (TAU / 26.0) + t * 22.0;
-                float s = pow(0.5 + 0.5 * cos(ph), 9.0);
-                s *= 0.55 + 0.45 * sin(hh * 0.06 + t * 12.0 + ang);
+                float ph = ang * 3.0 + hh * (TAU / 26.0) + t * 50.0;
+                float s = pow(0.5 + 0.5 * cos(ph), 7.0);
+                s *= 0.55 + 0.45 * sin(hh * 0.06 + t * 26.0 + ang);
                 streaks += s * (k == 0 ? 1.0 : 0.55);
             }
         }
         streaks *= TubeFx.y;
     }
-    col += mix(tint, white, 0.75) * streaks * 0.7;
+    col += mix(tint, white, 0.85) * streaks * 1.9;
 
     // a soft rim (no outline where the round volume meets the sky)
     float rim = 1.0 - smoothstep(0.8, 1.0, x);

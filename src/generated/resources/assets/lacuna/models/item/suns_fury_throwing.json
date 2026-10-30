@@ -71,6 +71,6 @@
   },
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "lacuna:item/suns_fury"
+    "layer0": "lacuna:item/suns_fury_held"
   }
 }

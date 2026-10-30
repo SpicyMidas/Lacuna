@@ -1,4 +1,9 @@
 {
+  "base": {
+    "parent": "lacuna:item/suns_fury_held"
+  },
+  "gui_light": "front",
+  "loader": "neoforge:separate_transforms",
   "overrides": [
     {
       "model": "lacuna:item/suns_fury_throwing",
@@ -7,8 +12,15 @@
       }
     }
   ],
-  "parent": "minecraft:item/handheld",
-  "textures": {
-    "layer0": "lacuna:item/suns_fury"
+  "perspectives": {
+    "fixed": {
+      "parent": "lacuna:item/suns_fury_icon"
+    },
+    "ground": {
+      "parent": "lacuna:item/suns_fury_icon"
+    },
+    "gui": {
+      "parent": "lacuna:item/suns_fury_icon"
+    }
   }
 }

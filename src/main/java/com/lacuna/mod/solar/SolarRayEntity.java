@@ -120,6 +120,10 @@ public class SolarRayEntity extends Entity {
             server.playSound(null, getX(), getY(), getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 4.0F, 0.75F);
             server.playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.8F, 0.6F);
             server.playSound(null, getX(), getY(), getZ(), SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 3.0F, 0.8F);
+            // the sky opening: a deep choir-like swell and a ringing crystal note under the thunder
+            server.playSound(null, getX(), getY(), getZ(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 3.5F, 0.55F);
+            server.playSound(null, getX(), getY(), getZ(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 3.0F, 0.5F);
+            server.playSound(null, getX(), getY(), getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 2.0F, 0.5F);
             LacunaFx.send(server, position(), 256.0, FxPayload.at("solar_strike", position()));
             job = dryRun || sparesBlocks ? List.of() : buildJob(server);
         }
@@ -135,9 +139,21 @@ public class SolarRayEntity extends Entity {
                 server.playSound(null, getX(), getY(), getZ(), SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 2.5F, 0.5F);
                 server.playSound(null, getX(), getY(), getZ(), SoundEvents.BEACON_AMBIENT, SoundSource.PLAYERS, 2.0F, 2.0F);
             }
+            // the roar of light pouring down, and the falling light ringing like glass rain
+            if (tickCount % 7 == 2) {
+                server.playSound(null, getX(), getY() + 6.0, getZ(), SoundEvents.BLAZE_BURN, SoundSource.PLAYERS, 1.8F, 0.45F);
+            }
+            if (tickCount % 3 == 0) {
+                server.playSound(null, getX() + (random.nextDouble() - 0.5) * 16.0, getY() + 2.0, getZ() + (random.nextDouble() - 0.5) * 16.0,
+                        SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.4F, 1.3F + random.nextFloat() * 0.7F);
+            }
+            if (tickCount % 20 == 10) {
+                server.playSound(null, getX(), getY(), getZ(), SoundEvents.CONDUIT_AMBIENT_SHORT, SoundSource.PLAYERS, 2.5F, 0.6F);
+            }
         } else if (phase == SolarMath.RayPhase.FADE) {
             if (tickCount == Balance.SOLAR_RAY_TICKS + 1) {
                 server.playSound(null, getX(), getY(), getZ(), SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 2.5F, 0.7F);
+                server.playSound(null, getX(), getY(), getZ(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 2.5F, 0.8F);
             }
         } else {
             discard();
@@ -168,9 +184,9 @@ public class SolarRayEntity extends Entity {
         for (int i = 0; i < drops; i++) {
             double a = random.nextDouble() * Math.PI * 2.0;
             double r = 3.0 + random.nextDouble() * 23.0;
-            double y = getY() + 30.0 + random.nextDouble() * 120.0;
+            double y = getY() + 40.0 + random.nextDouble() * 160.0;
             level().addAlwaysVisibleParticle(ModParticles.LIGHT_RAIN.get(), true, getX() + Math.cos(a) * r, y, getZ() + Math.sin(a) * r,
-                    0.0, -(5.5 + random.nextDouble() * 3.0), 0.0);
+                    0.0, -(9.0 + random.nextDouble() * 5.0), 0.0);
         }
         if (strike) {
             for (int i = 0; i < 3; i++) {
