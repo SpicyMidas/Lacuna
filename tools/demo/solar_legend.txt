@@ -1,0 +1,97 @@
+# Solar rays as 3D light: the Divine Magnifying Glass beam (first person, F5 back / front, sneaking: it leaves the lens
+# centre of the glass in the hand) and its pixel scorch trail on a wall and on the floor; a Sun's Fury trail seen from
+# the side; the strike pillar seen from 40 blocks with a stone wall behind its lower half and open sky above (it must look
+# as wide and strong over both), by day and by night; the deeper bowl crater cut open. Fancy graphics, render distance 8
+# (copy tools/demo/options.txt, then set graphicsMode:1, renderDistance:8).
+world lacuna_legend flat
+wait 60
+hud off
+cmd gamerule sendCommandFeedback false
+cmd gamerule doFireTick false
+cmd time set 6000
+# --- builds: the crater platform (top face 20 up, 40 ahead to +z), the wall behind it, the camera perch, a glass target wall
+cmd fill ~-12 ~ ~28 ~12 ~19 ~52 minecraft:stone
+cmd fill ~-45 ~ ~60 ~45 ~34 ~60 minecraft:stone
+cmd fill ~-1 ~20 ~-1 ~1 ~20 ~1 minecraft:glass
+cmd fill ~-3 ~ ~-7 ~3 ~3 ~-7 minecraft:stone_bricks
+cmd give @s lacuna:divine_magnifying_glass
+select 0
+look 180 12
+wait 40
+# --- the Divine Magnifying Glass: first person, sweeping a wall, then the floor
+use on
+wait 16
+shot legend_glass_first
+look 184 12
+wait 2
+look 188 13
+wait 2
+look 192 14
+wait 2
+look 196 15
+wait 2
+shot legend_glass_sweep
+look 160 40
+wait 4
+look 170 40
+wait 2
+look 180 41
+wait 2
+look 190 42
+wait 2
+look 200 42
+wait 2
+shot legend_glass_floor
+look 180 12
+wait 4
+camera back
+wait 4
+shot legend_glass_back
+camera front
+wait 3
+shot legend_glass_front
+camera back
+sneak on
+wait 6
+shot legend_glass_sneak_back
+sneak off
+camera first
+use off
+wait 10
+# --- a Sun's Fury spear crossing the view (side view of its trail)
+look 90 3
+cmd summon lacuna:suns_fury ~-12 ~3 ~-16 {Motion:[0.0d,0.1d,1.6d]}
+wait 8
+shot legend_trail_side
+cmd kill @e[type=lacuna:suns_fury]
+wait 4
+# --- the strike, by day: from the perch, 40 blocks away; stone wall behind the lower half, sky above
+cmd tp @s ~ ~21 ~ 0 -12
+wait 30
+cmd summon lacuna:solar_ray ~ ~-1 ~40
+wait 14
+shot legend_strike_day_a
+wait 22
+shot legend_strike_day_b
+look 0 -40
+wait 2
+shot legend_strike_day_up
+look 0 -12
+wait 60
+# --- by night
+cmd time set 18000
+wait 10
+cmd summon lacuna:solar_ray ~ ~-1 ~40
+wait 18
+shot legend_strike_night
+wait 80
+# --- the crater, cut open (the half towards +x removed), from the side and from above
+cmd time set 6000
+cmd fill ~1 ~-1 ~28 ~12 ~-21 ~52 minecraft:air
+cmd tp @s ~28 ~2 ~40 90 22
+wait 20
+shot legend_crater_section
+cmd tp @s ~-28 ~12 ~-16 0 50
+wait 10
+shot legend_crater_top
+quit

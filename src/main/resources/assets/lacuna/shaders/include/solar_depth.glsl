@@ -63,7 +63,9 @@ vec2 lacuna_shaft(vec3 pos, float lateral, float r) {
     float t = lacuna_eye_distance(gl_FragCoord.xy, gl_FragCoord.z);
     float soft = max(halfChord, 0.3 + 0.003 * t);
     float scene = lacuna_scene_distance();
-    float visible = smoothstep(t - soft, t + soft, scene) - smoothstep(t - soft, t + soft, 0.0);
+    // only what stands in front of the axis hides the light: a surface just behind it (sky, terrain, clouds beyond the
+    // shaft) never thins it, so it looks the same over the sky and over the landscape
+    float visible = smoothstep(t - soft, t + 0.15 * soft, scene) - smoothstep(t - soft, t + soft, 0.0);
     return vec2(min(1.0 / sinA, 1.6), max(visible, 0.0));
 }
 
