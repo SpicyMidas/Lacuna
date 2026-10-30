@@ -3,6 +3,14 @@
 ## 1.0.0-beta.2 — beta feedback
 
 <!-- beta2 -->
+- **Rays in true 3D:** the other ray effects are now volumetric tubes, like Sun's Fury, instead of flat ribbons:
+  - the Rewind golden thread;
+  - the animated magnifying glass's sunbeam and the Wand of Quickening's spark trail;
+  - the Pyrrhic Scepter's fiery tail;
+  - the falling star's meteor trail and its pillar of light.
+
+  They have exact thickness from any angle, only blocks in front of them hide them, and they glow brighter seen
+  along their length. With a shader pack they fall back to the old look.
 - **Totems crafted in the Totem of Undying's shape:**
   - Totem of Banishing: 3 Exilite Ingots around a Lacunar Quintessence, a ruby at the bottom (`.X. / XQX / .R.`).
     No Totem of Undying needed any more.
