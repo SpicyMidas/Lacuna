@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-beta.11 — new textures
+
+- **New hand-drawn textures:** Sun's Fury (16x16 icon and 24x24 spear in the hand), Umbral Steel Ore, Deepslate Umbral
+  Steel Ore, Block of Umbral Steel and Block of Raw Umbral Steel.
+
 ## 1.0.0-beta.10 — beta feedback
 
 - **Sun's Fury in the hand:** the same spear as its icon, redrawn at 24x24 (finer, a leaf-shaped blade of sunlight
