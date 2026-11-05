@@ -277,7 +277,10 @@ void main() {
         vec3 eb = cross(axis, en);
         float rs = 0.5 * r;
         float hs2 = (rs * rs - b2) / dd;
-        if (hs2 > 0.0) {
+        // the streaks melt into the glow towards the inner cylinder's outline (where the view grazes it) instead of
+        // stopping on a hard edge: light, not a ribbon
+        float graze = smoothstep(0.0, 0.6, (rs * rs - b2) / (rs * rs));
+        if (hs2 > 0.0 && graze > 0.001) {
             float hs = sqrt(hs2);
             for (int k = 0; k < 2; k++) {
                 float ts = k == 0 ? tStar - hs : tStar + hs;
@@ -290,9 +293,11 @@ void main() {
                 float ang = atan(dot(lat, eb), dot(lat, en));
                 float hh = along + sAx;
                 float ph = ang * 3.0 + hh * (TAU / 26.0) + t * 50.0;
-                float s = pow(0.5 + 0.5 * cos(ph), 7.0);
+                float s = pow(0.5 + 0.5 * cos(ph), 4.0);
                 s *= 0.55 + 0.45 * sin(hh * 0.06 + t * 26.0 + ang);
-                streaks += s * (k == 0 ? 1.0 : 0.55);
+                // fading in and out where the visible part of the shaft begins and ends, too
+                float ends = smoothstep(t0, t0 + 2.0 * rs, ts) * smoothstep(tEnd, tEnd - 2.0 * rs, ts);
+                streaks += s * (k == 0 ? 1.0 : 0.55) * graze * ends;
             }
         }
         streaks *= TubeFx.y;

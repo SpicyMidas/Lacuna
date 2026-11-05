@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-beta.12 — beta feedback
+
+- **Sun's Fury spirals are light, not ribbons:** the spiral streaks winding down the pillar used to end on hard edges
+  where they turned out of view and where the visible part of the shaft began and ended. They now melt softly into
+  the pillar's glow at their sides and ends, and are a little broader and softer.
+
 ## 1.0.0-beta.11 — new textures
 
 - **New hand-drawn textures:** Sun's Fury (16x16 icon and 24x24 spear in the hand), Umbral Steel Ore, Deepslate Umbral
